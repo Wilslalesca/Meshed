@@ -1,1 +1,0 @@
-// Routes and what happens after register/login redirect
