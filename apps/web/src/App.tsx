@@ -1,35 +1,51 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { Routes, Route } from 'react-router-dom';
+import { ProtectedRoute } from './routes/ProtectedRoute';
+import { RequireRole } from './routes/RequireRole';
+import { Home } from './screens/Home';
+import LoginPage from './screens/Login';
+import { Register } from './screens/Register';
+import { Dashboard } from './screens/Dashboard';
+import { Admin } from './screens/Admin';
+import { Manager } from './screens/Manager';
+import { Profile } from './screens/Profile';
+import { Nav } from './components/Nav';
 
-function App() {
-  const [count, setCount] = useState(0)
 
+export default function App() {
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+    <div>
+      <Nav />
+      <main>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<Register />} />
 
-export default App
+          <Route path="/dashboard" element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          } />
+
+          <Route path="/admin" element={
+            <RequireRole allow="admin">
+              <Admin />
+            </RequireRole>
+          } />
+
+          <Route path="/manager" element={
+            <RequireRole allow={["manager", "admin"]}>
+              <Manager />
+            </RequireRole>
+          } />
+
+          <Route path="/profile" element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          } />
+        </Routes>
+      </main>
+    </div>
+  );
+}

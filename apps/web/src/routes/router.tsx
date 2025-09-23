@@ -1,1 +1,1 @@
-// Home Page 
+// Routes and what happens after register/login redirect
