@@ -10,6 +10,9 @@
   ],
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "composite": false
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
   }
 }
