@@ -1,19 +1,12 @@
 import React from 'react';
 import { useAuth } from '../hooks/useAuth';
-import {DndContext} from '@dnd-kit/core';
-
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 export const Upload: React.FC = () => {
   const { user } = useAuth();
   return (
-    /**<div className="wrap bg-muted">
-        <div className="container mx-auto px-10 py-10" >
-            <div class="bg-white p-10 rounded-lg shadow-lg">
-                <p className="text-lg text-muted-foreground">Upload</p>
-            </div>
-        </div>
-    </div>**/
     <body className= "bg-muted">
         <section className="px-10 py-10">
             <div className="container justify-between items-center">
@@ -23,8 +16,12 @@ export const Upload: React.FC = () => {
                             <CardTitle>Upload your schedule</CardTitle>
                             <CardDescription>Go to your student portal and export your schedule in csv, pdf, or iCal formats</CardDescription>
                         </CardHeader>
-                        <CardContent>
-                        <p>Add dndkit here :P</p>
+                        <CardContent className="flex-col gap-2 items-center">
+                            <Button asChild className="items-center w-full" variant="secondary" >
+                                <Input type="file">
+                                </Input>
+                            </Button>
+                            <Button type="submit" className="w-full">Submit</Button>
                         </CardContent>
                     </Card>
                 </div>
