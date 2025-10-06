@@ -1,33 +1,43 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import DropzoneField from "@/components/ui/dropzonefield";
 
 export const Upload: React.FC = () => {
-  const { user } = useAuth();
-  return (
-    <body className= "bg-muted">
-        <section className="px-10 py-10">
-            <div className="container justify-between items-center">
-                <div className="flex items-center">
-                    <Card className= "w-full max-w-sm shadow-lg">
-                        <CardHeader>
-                            <CardTitle>Upload your schedule</CardTitle>
-                            <CardDescription>Go to your student portal and export your schedule in csv, pdf, or iCal formats</CardDescription>
-                        </CardHeader>
-                        <CardContent className="flex-col gap-2 items-center">
-                            <Button asChild className="items-center w-full" variant="secondary" >
-                                <Input type="file">
-                                </Input>
-                            </Button>
-                            <Button type="submit" className="w-full">Submit</Button>
-                        </CardContent>
-                    </Card>
-                </div>
-            </div>
-        </section>
-    </body>
-    
-  );
+    const { user } = useAuth();
+    const [files, setFiles] = useState<File[] | undefined>();
+    const navigate = useNavigate();
+
+    const handleDrop = (files: File[]) => {
+        console.log(files);
+        setFiles(files);
+    };
+
+    const handleSubmit = async () => {
+        if (!files) {
+            alert("No files selected!");
+        }
+        else{
+            alert(`Files selected: ${files.map(f => f.name).join(", ")}`);
+        }
+        navigate('/dashboard'); 
+    }
+
+    return (
+        <div className= "bg-muted min-h-screen flex items-center justify-center">
+            <Card className= "w-full max-w-sm shadow-lg">
+                <CardHeader>
+                    <CardTitle>Upload your schedule</CardTitle>
+                    <CardDescription>Go to your student portal and export your schedule in csv, pdf, or iCal formats</CardDescription>
+                </CardHeader>
+                <CardContent className="flex-col gap-2 items-center">
+                    <DropzoneField onDrop={handleDrop} />
+                    <Button type="submit" onClick={handleSubmit} className="w-full">Submit</Button>
+                </CardContent>
+            </Card>
+        </div>
+        
+    );
 };
