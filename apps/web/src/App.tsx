@@ -1,35 +1,110 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React from "react";
+import { Routes, Route, Outlet, Navigate } from "react-router-dom";
+import { ProtectedRoute } from "./routes/ProtectedRoute";
+import { RequireRole } from "./routes/RequireRole";
 
-function App() {
-  const [count, setCount] = useState(0)
+import { Home } from "./screens/Home";
+import LoginPage from "./screens/Login";
+import { Register } from "./screens/Register";
+import { Dashboard } from "./screens/Dashboard";
+import { Admin } from "./screens/Admin";
+import { Manager } from "./screens/Manager";
+import { Profile } from "./screens/Profile";
+import { useAuth } from "./hooks/useAuth";
 
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+function AppLayout() {
+    return (
+        <div className="min-h-screen">
+            <main className="w-full">
+                <Outlet />
+            </main>
+        </div>
+    );
 }
 
-export default App
+function AuthLayout() {
+    return (
+        <div>
+            <Outlet />
+        </div>
+    );
+}
+
+function GuestRoute({ children }: { children: React.ReactNode }) {
+    const { token, isLoading } = useAuth();
+
+    if (isLoading) {
+        return <div>Loading...</div>;
+    }
+    if (token) {
+        return <Navigate to="/dashboard" replace />;
+    }
+    return <>{children}</>;
+}
+
+export default function App() {
+    return (
+        <div>
+            <Routes>
+                <Route element={<AuthLayout />}>
+                    <Route
+                        path="/login"
+                        element={
+                            <GuestRoute>
+                                <LoginPage />
+                            </GuestRoute>
+                        }
+                    />
+                    <Route
+                        path="/register"
+                        element={
+                            <GuestRoute>
+                                <Register />
+                            </GuestRoute>
+                        }
+                    />
+                </Route>
+
+                <Route element={<AppLayout />}>
+                    <Route path="/" element={<Home />} />
+                    <Route
+                        path="/dashboard"
+                        element={
+                            <ProtectedRoute>
+                                <Dashboard />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/admin"
+                        element={
+                            <ProtectedRoute>
+                                <RequireRole allow="admin">
+                                    <Admin />
+                                </RequireRole>
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/manager"
+                        element={
+                            <ProtectedRoute>
+                                <RequireRole allow={["manager", "admin"]}>
+                                    <Manager />
+                                </RequireRole>
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/profile"
+                        element={
+                            <ProtectedRoute>
+                                <Profile />
+                            </ProtectedRoute>
+                        }
+                    />
+                </Route>
+            </Routes>
+        </div>
+    );
+}
