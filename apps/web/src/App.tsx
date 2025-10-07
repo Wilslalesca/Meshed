@@ -10,6 +10,7 @@ import { Dashboard } from "./screens/Dashboard";
 import { Admin } from "./screens/Admin";
 import { Manager } from "./screens/Manager";
 import { Profile } from "./screens/Profile";
+import { Upload } from "./screens/Upload";
 import { useAuth } from "./hooks/useAuth";
 
 function AppLayout() {
@@ -100,6 +101,14 @@ export default function App() {
                         element={
                             <ProtectedRoute>
                                 <Profile />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/upload"
+                        element={
+                            <ProtectedRoute>
+                                <Upload />
                             </ProtectedRoute>
                         }
                     />
