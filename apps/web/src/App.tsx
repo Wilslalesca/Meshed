@@ -10,6 +10,7 @@ import { Dashboard } from "./screens/Dashboard";
 import { Admin } from "./screens/Admin";
 import { Manager } from "./screens/Manager";
 import { Profile } from "./screens/Profile";
+import { Upload } from "./screens/Upload";
 import { useAuth } from "./hooks/useAuth";
 import { Layout } from "./components/layout/Layout";
 
@@ -55,6 +56,7 @@ export default function App() {
         />
       </Route>
 
+
       {/* Main (with sidebar layout) */}
       <Route element={<AppLayout />}>
         <Route path="/" element={<Home />} />
@@ -86,6 +88,14 @@ export default function App() {
               </RequireRole>
             </ProtectedRoute>
           }
+        />
+        <Route
+          path="/upload"
+          element={
+            <ProtectedRoute>
+              <Upload />
+            </ProtectedRoute>
+            }
         />
         <Route
           path="/profile"

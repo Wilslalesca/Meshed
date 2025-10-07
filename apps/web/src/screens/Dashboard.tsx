@@ -33,6 +33,12 @@ export const Dashboard: React.FC = () => {
                     </Button>
                 )}
 
+                {(user?.role === "user") && (
+                    <Button asChild variant="outline">
+                        <Link to="/upload">Upload</Link>
+                    </Button>
+                )}
+
                 <Button asChild variant="outline">
                     <Link to="/profile">Profile</Link>
                 </Button>
