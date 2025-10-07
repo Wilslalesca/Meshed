@@ -11,100 +11,93 @@ import { Admin } from "./screens/Admin";
 import { Manager } from "./screens/Manager";
 import { Profile } from "./screens/Profile";
 import { useAuth } from "./hooks/useAuth";
+import { Layout } from "./components/layout/Layout";
 
 function AppLayout() {
-    return (
-        <div className="min-h-screen">
-            <main className="w-full">
-                <Outlet />
-            </main>
-        </div>
-    );
+  return (
+    <Layout title="UMA">
+      <Outlet />
+    </Layout>
+  );
 }
 
 function AuthLayout() {
-    return (
-        <div>
-            <Outlet />
-        </div>
-    );
+  return <Outlet />;
 }
 
 function GuestRoute({ children }: { children: React.ReactNode }) {
-    const { token, isLoading } = useAuth();
-
-    if (isLoading) {
-        return <div>Loading...</div>;
-    }
-    if (token) {
-        return <Navigate to="/dashboard" replace />;
-    }
-    return <>{children}</>;
+  const { token, isLoading } = useAuth();
+  if (isLoading) return <div>Loading...</div>;
+  if (token) return <Navigate to="/dashboard" replace />;
+  return <>{children}</>;
 }
 
 export default function App() {
-    return (
-        <div>
-            <Routes>
-                <Route element={<AuthLayout />}>
-                    <Route
-                        path="/login"
-                        element={
-                            <GuestRoute>
-                                <LoginPage />
-                            </GuestRoute>
-                        }
-                    />
-                    <Route
-                        path="/register"
-                        element={
-                            <GuestRoute>
-                                <Register />
-                            </GuestRoute>
-                        }
-                    />
-                </Route>
+  return (
+    <Routes>
+      {/* Auth (no sidebar) */}
+      <Route element={<AuthLayout />}>
+        <Route
+          path="/login"
+          element={
+            <GuestRoute>
+              <LoginPage />
+            </GuestRoute>
+          }
+        />
+        <Route
+          path="/register"
+          element={
+            <GuestRoute>
+              <Register />
+            </GuestRoute>
+          }
+        />
+      </Route>
 
-                <Route element={<AppLayout />}>
-                    <Route path="/" element={<Home />} />
-                    <Route
-                        path="/dashboard"
-                        element={
-                            <ProtectedRoute>
-                                <Dashboard />
-                            </ProtectedRoute>
-                        }
-                    />
-                    <Route
-                        path="/admin"
-                        element={
-                            <ProtectedRoute>
-                                <RequireRole allow="admin">
-                                    <Admin />
-                                </RequireRole>
-                            </ProtectedRoute>
-                        }
-                    />
-                    <Route
-                        path="/manager"
-                        element={
-                            <ProtectedRoute>
-                                <RequireRole allow={["manager", "admin"]}>
-                                    <Manager />
-                                </RequireRole>
-                            </ProtectedRoute>
-                        }
-                    />
-                    <Route
-                        path="/profile"
-                        element={
-                            <ProtectedRoute>
-                                <Profile />
-                            </ProtectedRoute>
-                        }
-                    />
-                </Route>
-            </Routes>
-        </div>
-    );
+      {/* Main (with sidebar layout) */}
+      <Route element={<AppLayout />}>
+        <Route path="/" element={<Home />} />
+        <Route path="/home" element={<Navigate to="/" replace />} />
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute>
+              <RequireRole allow="admin">
+                <Admin />
+              </RequireRole>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/manager"
+          element={
+            <ProtectedRoute>
+              <RequireRole allow={["manager", "admin"]}>
+                <Manager />
+              </RequireRole>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          }
+        />
+        {/* Fallback */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Route>
+    </Routes>
+  );
 }
