@@ -16,13 +16,5 @@
     "turbo": "^2.5.6",
     "typescript": "^5.9.2"
   },
-  "packageManager": "npm@11.6.0",
-  "dependencies": {
-    "@schedule-x/calendar": "^3.2.0",
-    "@schedule-x/events-service": "^3.2.0",
-    "@schedule-x/react": "^3.2.0",
-    "@schedule-x/theme-default": "^3.2.0",
-    "react-router-dom": "^7.9.3",
-    "temporal-polyfill": "^0.3.0"
-  }
+  "packageManager": "npm@11.6.0"
 }
