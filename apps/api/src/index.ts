@@ -4,6 +4,7 @@ import cors from 'cors';
 import { config } from './config';
 import authRoutes from './routes/auth.routes';
 import userRoutes from './routes/user.routes';
+import uploadRoutes from './routes/upload.routes';
 import { loadUsers } from './db';
 
 
@@ -18,7 +19,7 @@ app.use(cors({ origin: config.frontendOrigin, credentials: true }));
 app.get('/health', (_req, res) => res.json({ ok: true }));
 app.use('/auth', authRoutes);
 app.use('/users', userRoutes);
-
+app.use('/upload', uploadRoutes);
 
 app.listen(config.port, () => {
     console.log(`API on http://localhost:${config.port}`);

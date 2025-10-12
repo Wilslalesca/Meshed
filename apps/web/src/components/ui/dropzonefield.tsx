@@ -10,6 +10,7 @@ interface BasicProps {
 const Basic: React.FC<BasicProps> = ({ onDrop }) => {
   const { acceptedFiles, getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
+    maxFiles:1,
   });
 
   const files = acceptedFiles.map((file) => (

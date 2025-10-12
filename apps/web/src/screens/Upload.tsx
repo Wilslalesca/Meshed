@@ -18,11 +18,26 @@ export const Upload: React.FC = () => {
     const handleSubmit = async () => {
         if (!files) {
             alert("No files selected!");
+            return;
         }
-        else{
-            alert(`Files selected: ${files.map(f => f.name).join(", ")}`);
+
+        const fileData = new FormData();
+        files.forEach(file=>{
+            fileData.append("files",file);
+        });
+
+        try{
+            const response = await fetch("http://localhost:3000/upload",{
+                method: "POST",
+                body: fileData,
+            });
+            //alert(`Files selected: ${files.map(f => f.name).join(", ")}`);
+            alert(JSON.stringify(response));
+            navigate('/dashboard'); 
         }
-        navigate('/dashboard'); 
+        catch{
+            alert('Error Uploading Files');
+        }
     }
 
     return (
