@@ -21,7 +21,7 @@ const CalendarTimeColumn: React.FC<TimeColumnProps> = ({
 
   return (
     <div className="w-16 border-r border-gray-300 text-xs text-gray-500">
-      <div className="h-10" /> {/* top-left empty space */}
+      <div className="h-10" /> 
       {times.map((time, i) => (
         <div
           key={i}
