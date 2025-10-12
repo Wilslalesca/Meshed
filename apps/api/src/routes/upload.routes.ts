@@ -15,8 +15,4 @@ router.post("/", upload.array("files"), (req, res) => {
   res.json({ message: "Files uploaded successfully!", files: req.files });
 });
 
-router.get("/", (_req, res) => {
-  res.json({ message: "Upload route is running!" });
-});
-
 export default router;
