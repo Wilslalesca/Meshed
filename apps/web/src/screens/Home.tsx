@@ -1,15 +1,13 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { RotatingHeader } from '@/components/layout/RotatingHeader';
 
-export const Home: React.FC = () => {
-  return (
-    <div className="wrap">
-      <h1 className=''>Welcome</h1>
-      <p>Welcome page</p>
-      <div className="row">
-        <Link to="/login" className="btn">Login</Link>
-        <Link to="/register" className="btn outline">Register</Link>
+export const Home: React.FC = () => (
+  <div className="flex flex-col">
+    <RotatingHeader />
+    <section className="p-6">
+      <div className="rounded-xl border border-border bg-card/60 backdrop-blur-sm p-10 text-center text-sm text-muted-foreground">
+        Landing content placeholder.
       </div>
-    </div>
-  );
-};
+    </section>
+  </div>
+);
