@@ -3,15 +3,16 @@ import { Routes, Route, Outlet, Navigate } from "react-router-dom";
 import { ProtectedRoute } from "./routes/ProtectedRoute";
 import { RequireRole } from "./routes/RequireRole";
 
+
 import { Home } from "./screens/Home";
 import LoginPage from "./screens/Login";
 import { Register } from "./screens/Register";
 import { Dashboard } from "./screens/Dashboard";
 import { Admin } from "./screens/Admin";
-import { Manager } from "./screens/Manager";
 import { Profile } from "./screens/Profile";
 import { Upload } from "./screens/Upload";
 import { useAuth } from "./hooks/useAuth";
+import ScheduleBackground from './screens/ScheduleBackground';
 import { Layout } from "./components/layout/Layout";
 
 function AppLayout() {
@@ -84,7 +85,7 @@ export default function App() {
           element={
             <ProtectedRoute>
               <RequireRole allow={["manager", "admin"]}>
-                <Manager />
+                <ScheduleBackground />
               </RequireRole>
             </ProtectedRoute>
           }
