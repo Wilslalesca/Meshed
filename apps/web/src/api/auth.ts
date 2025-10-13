@@ -18,8 +18,8 @@ export async function apiLogin(input: { email: string; password: string; }) {
 }
 
 
-export async function apiRegister(input: { name: string; email: string; password: string; role?: 'admin'|'manager'|'user'; }) {
-  const res = await fetch(`${API_BASE}/auth/register`, {
+export async function apiRegister(input: { firstName: string; lastName?: string; email: string; password: string; phone?: string; role?: 'admin'|'manager'|'user'; }) {
+    const res = await fetch(`${API_BASE}/auth/register`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
