@@ -9,7 +9,7 @@ const links = [
   { label: 'Teams', href: '/teams' },
   { label: 'Facilities', href: '/facilities' },
   { label: 'Schedules', href: '/schedules' },
-//   { label: 'Settings', href: '/settings' },
+  { label: 'Settings', href: '/settings' },
 ];
 
 export const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {

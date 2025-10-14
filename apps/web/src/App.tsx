@@ -8,6 +8,7 @@ import { Home } from "./screens/Home";
 import LoginPage from "./screens/Login";
 import { Register } from "./screens/Register";
 import { Dashboard } from "./screens/Dashboard";
+import { Teams } from "./screens/Teams"
 import { Admin } from "./screens/Admin";
 import { Profile } from "./screens/Profile";
 import { Upload } from "./screens/Upload";
@@ -87,6 +88,14 @@ export default function App() {
               <RequireRole allow={["manager", "admin"]}>
                 <ScheduleBackground />
               </RequireRole>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/teams"
+          element={
+            <ProtectedRoute>
+              <Teams />
             </ProtectedRoute>
           }
         />

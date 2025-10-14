@@ -1,7 +1,7 @@
 import 'dotenv/config';
 
 export const config = {
-    port: Number(process.env.PORT ?? 3000),
+    port: Number(process.env.PORT ?? 4000),
     frontendOrigin: process.env.FRONTEND_ORIGIN ?? 'http://localhost:5173',
     accessSecret: process.env.JWT_ACCESS_SECRET!,
     refreshSecret: process.env.JWT_REFRESH_SECRET!,
