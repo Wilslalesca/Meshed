@@ -5,7 +5,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "../../hooks/useAuth";
 import { Link, useNavigate } from "react-router-dom";
-import { Eye, EyeOff } from "lucide-react";
 import type { Role } from "../../types/auth";
 
 const roles: Role[] = ["user", "manager", "admin"];
@@ -33,7 +32,8 @@ export function RegisterForm({
     ...props
 }: React.ComponentProps<"form">) {
     const { register } = useAuth();
-    const [name, setName] = useState("");
+    const [firstName, setFirstName] = useState("");
+    const [lastName, setLastName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirm, setConfirm] = useState("");
@@ -80,7 +80,7 @@ export function RegisterForm({
         }
         setPending(true);
         try {
-            await register({ name, email, password, role });
+            await register({firstName, lastName: lastName, email, password, role });
             nav("/dashboard", { replace: true });
         } catch (err: any) {
             setError(err?.message || "Registration failed");
@@ -103,13 +103,25 @@ export function RegisterForm({
             </div>
             <div className="grid gap-6">
                 <div className="grid gap-3">
-                    <Label htmlFor="name">Name</Label>
+                    <Label htmlFor="name">First Name</Label>
                     <Input
                         id="name"
                         type="text"
-                        placeholder="Your full name"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
+                        placeholder="Your first name"
+                        value={firstName}
+                        onChange={(e) => setFirstName(e.target.value)}
+                        autoComplete="name"
+                        required
+                    />
+                </div>
+                <div className="grid gap-3">
+                    <Label htmlFor="name">Last Name</Label>
+                    <Input
+                        id="name"
+                        type="text"
+                        placeholder="Your last name"
+                        value={lastName}
+                        onChange={(e) => setLastName(e.target.value)}
                         autoComplete="name"
                         required
                     />

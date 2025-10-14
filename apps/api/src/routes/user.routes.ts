@@ -1,19 +1,25 @@
 import { Router } from 'express';
 import { requireAuth, requireRole, AuthedRequest } from '../middleware/auth';
-import { db } from '../db';
+import { db } from '../db/users';
 
 
 const router = Router();
 
 
-router.get('/me', requireAuth, (req: AuthedRequest, res) => {
-    const user = db.findById(req.user!.id);
+router.get("/me", requireAuth, async (req: AuthedRequest, res) => {
+  const user = await db.findById(req.user!.id);
+  if (!user) return res.status(404).json({ error: "User not found" });
 
-    if (!user) {
-        return res.status(404).json({ error: 'User not found' });
-    }
-    
-    return res.json({ id: user.id, name: user.name, email: user.email, role: user.role });
+  return res.json({
+    id: user.id,
+    firstName: user.firstName,
+    lastName: user.lastName,
+    email: user.email,
+    phone: user.phone,
+    role: user.role,
+    active: user.active,
+    verified: user.verified,
+  });
 });
 
 

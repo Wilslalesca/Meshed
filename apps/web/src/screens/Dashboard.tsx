@@ -13,7 +13,7 @@ export const Dashboard: React.FC = () => {
                 <h1 className="text-3xl font-bold mb-4">Dashboard</h1>
                 <p className="text-lg text-muted-foreground">
                     Hello,{" "}
-                    <strong className="text-foreground">{user?.name}</strong>{" "}
+                    <strong className="text-foreground">{user?.firstName}</strong>{" "}
                     <Badge variant="secondary" className="ml-2">
                         {user?.role}
                     </Badge>
