@@ -31,8 +31,9 @@ export const Upload: React.FC = () => {
                 method: "POST",
                 body: fileData,
             });
-            //alert(`Files selected: ${files.map(f => f.name).join(", ")}`);
-            alert(JSON.stringify(response));
+
+            const data = await response.json();
+            alert(JSON.stringify(data.message));
             navigate('/dashboard'); 
         }
         catch{
