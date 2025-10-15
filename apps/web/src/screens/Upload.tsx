@@ -26,7 +26,7 @@ export const Upload: React.FC = () => {
     }
 
     return (
-        <div className= "bg-muted min-h-screen flex items-center justify-center">
+        <div className= "bg-white min-h-screen flex items-center justify-center">
             <Card className= "w-full max-w-sm shadow-lg">
                 <CardHeader>
                     <CardTitle>Upload your schedule</CardTitle>
