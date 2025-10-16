@@ -11,7 +11,6 @@ export const Upload: React.FC = () => {
     const navigate = useNavigate();
 
     const handleDrop = (files: File[]) => {
-        console.log(files);
         setFiles(files);
     };
 
