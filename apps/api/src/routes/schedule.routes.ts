@@ -1,7 +1,6 @@
 import { Router } from 'express';
-import { z } from 'zod';
+import { success, z } from 'zod';
 import { db } from '../db/schedule';
-import { config } from '../config';
 
 const router = Router();
 //psql -U user mydatabaseparsed
@@ -23,16 +22,13 @@ const courseTimeSchema = z.object({
 });
 
 export const athleteCourseTimeSchema = z.object({
-  athlete_id: z.string().uuid().optional(),
-  class_id: z.number().int(),
+  athlete_id: z.string().uuid(),
+  class_id: z.string(),
   created_at: z.string().datetime().optional(),
   updated_at: z.string().datetime().optional(),
 });
 
 router.post('/coursetime', async (req, res) => {
-    //onsole.log("Made it :)");
-    //const parsedSchedule = req.body;
-    //res.json({ message: "Schedule route is running!" });
     const parse = courseTimeSchema.safeParse(req.body);
 
     if (!parse.success) return res.status(400).json({ error: 'Validation error', details: parse.error.flatten() });
@@ -40,11 +36,11 @@ router.post('/coursetime', async (req, res) => {
     const { name, course_code, location, day_of_week, start_time, end_time, term, start_date, created_at, updated_at } = parse.data;
 
 
-    const course_time = await db.insert({  name, course_code, location, day_of_week, start_time, end_time, term, start_date, created_at, updated_at  });
+    const course_time = await db.courseInsert({  name, course_code, location, day_of_week, start_time, end_time, term, start_date, created_at, updated_at  });
 
 
     return res.status(201).json({
-        message: "ok",
+        message: "Added Course to DB",
         course_time:{
             id: course_time.id,
             name: course_time.name,
@@ -55,6 +51,29 @@ router.post('/coursetime', async (req, res) => {
             end_time: course_time.end_time,
             term: course_time.term,
             start_date: course_time.start_date,
+        },
+        success:true,
+    });
+});
+
+router.post('/athletecoursetime', async (req, res) => {
+  console.log("HEEYYYYYYY")
+    const parse = athleteCourseTimeSchema.safeParse(req.body);
+
+    if (!parse.success) return res.status(400).json({ error: 'Validation error', details: parse.error.flatten() });
+
+    const { athlete_id, class_id, created_at, updated_at } = parse.data;
+
+
+    const athlete_course_time = await db.athleteCourseInsert({ athlete_id, class_id, created_at, updated_at  });
+
+
+    return res.status(201).json({
+        message: "Connected Course to Athlete",
+        course_time:{
+            id: athlete_course_time.id,
+            athlete_id: athlete_course_time.athlete_id,
+            class_id: athlete_course_time.class_id,
         }
     });
 });

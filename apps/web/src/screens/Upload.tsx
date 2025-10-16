@@ -43,7 +43,9 @@ export const Upload: React.FC = () => {
             alert('Error Uploading Files');
         }
 
-        //This is not working
+        //create course_time in the DB
+        var courseTimeSuccess = false;
+        var courseTimeIds = new Array(parsedSchedule.length);
         if(sendSchedule){
             for(var i =0; i<parsedSchedule.length ; i++){
                 try{
@@ -56,9 +58,31 @@ export const Upload: React.FC = () => {
                     });
 
                     const data = await response.json();
+                    courseTimeSuccess = data.success;
+                    courseTimeIds[i] = data.course_times.id;
                 }
                 catch{
-                    alert('Error Creating Schedule');
+                    console.log('Error Creating Schedule');
+                }
+            }
+        }
+
+        //create student course connection
+        if(courseTimeSuccess){
+            for(var i =0; i<parsedSchedule.length ; i++){
+                try{
+                    const response = await fetch("http://localhost:4000/schedule/athletecoursetime",{
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({class_id:courseTimeIds[i], athlete_id:user.id}),
+                    });
+
+                    const data = await response.json();
+                }
+                catch{
+                    console.log('Error Creating Schedule');
                 }
             }
         }

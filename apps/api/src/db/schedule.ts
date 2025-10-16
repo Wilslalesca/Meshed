@@ -1,6 +1,5 @@
 import { pool } from "./index";
 import { CourseTime, AthleteCourseTime } from "../types.js";
-import { nanoid } from "nanoid";
 
 export interface NewCourseTime {
   name?: string;
@@ -22,30 +21,9 @@ export interface NewAthleteCourseTime {
   updated_at?: string;
 }
 
-/*CREATE TABLE course_times (
-  id SERIAL PRIMARY KEY,
-  name VARCHAR(100),
-  course_code VARCHAR(20),
-  instructor_name VARCHAR(100),
-  location VARCHAR(100),
-  day_of_week VARCHAR(20),
-  start_time TIME,
-  end_time TIME,
-  term VARCHAR(50)
-);
-
-CREATE TABLE athlete_course_times (
-  id SERIAL PRIMARY KEY,
-  athlete_id UUID REFERENCES athlete_profiles(id) ON DELETE CASCADE,
-  class_id INT REFERENCES course_times(id) ON DELETE CASCADE,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);*/
-
-
 export const db = {
 
-  async insert(data: NewCourseTime): Promise<CourseTime> {
+  async courseInsert(data: NewCourseTime): Promise<CourseTime> {
     const res = await pool.query(
       `INSERT INTO course_times (
           name, course_code, location, day_of_week, start_time,
@@ -67,6 +45,21 @@ export const db = {
     );
     return res.rows[0];
   },
+
+   async athleteCourseInsert(data: NewAthleteCourseTime): Promise<AthleteCourseTime> {
+      const res = await pool.query(
+        `INSERT INTO athlete_course_times (
+            athlete_id, class_id, created_at, updated_at
+         ) VALUES ($1, $2, NOW(), NOW())
+         RETURNING id, name, course_code,
+                   athlete_id, class_id, created_at, updated_at`,
+        [
+          data.athlete_id,
+          data.class_id,
+        ]
+      );
+      return res.rows[0];
+    },
 
   
 };
