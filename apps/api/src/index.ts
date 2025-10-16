@@ -8,8 +8,7 @@ import authRoutes from './routes/auth.routes';
 import userRoutes from './routes/user.routes';
 import uploadRoutes from './routes/upload.routes';
 import scheduleRoutes from './routes/schedule.routes';
-import { testingAccountGeneration } from './scripts/seedUsers';
-
+import { testingAccountGeneration, testingAddingUserToath } from './scripts/seedUsers';
 
 
 const app = express();
@@ -28,4 +27,6 @@ app.listen(config.port, async() => {
     console.log(`API on http://localhost:${config.port}`);
 
     await testingAccountGeneration(); // function for calling 3 test accounts see our docs 
+    await testingAddingUserToath();
+
 });

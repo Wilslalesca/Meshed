@@ -58,15 +58,19 @@ export const Upload: React.FC = () => {
                     });
 
                     const data = await response.json();
+                    console.log(data);
+                    console.log(data.course_time.id);
                     courseTimeSuccess = data.success;
-                    courseTimeIds[i] = data.course_times.id;
+                    courseTimeIds[i] = data.course_time.id;
+                    console.log(courseTimeIds[i])
                 }
                 catch{
                     console.log('Error Creating Schedule');
                 }
             }
         }
-
+        console.log(courseTimeIds);
+        
         //create student course connection
         if(courseTimeSuccess){
             for(var i =0; i<parsedSchedule.length ; i++){
@@ -76,13 +80,13 @@ export const Upload: React.FC = () => {
                         headers: {
                             "Content-Type": "application/json",
                         },
-                        body: JSON.stringify({class_id:courseTimeIds[i], athlete_id:user.id}),
+                        body: JSON.stringify({athlete_id: user?.id, class_id:courseTimeIds[i]}),
                     });
 
                     const data = await response.json();
                 }
                 catch{
-                    console.log('Error Creating Schedule');
+                    console.log('Error Adding Athlete Schedule');
                 }
             }
         }

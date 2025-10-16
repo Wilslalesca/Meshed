@@ -51,8 +51,7 @@ export const db = {
         `INSERT INTO athlete_course_times (
             athlete_id, class_id, created_at, updated_at
          ) VALUES ($1, $2, NOW(), NOW())
-         RETURNING id, name, course_code,
-                   athlete_id, class_id, created_at, updated_at`,
+         RETURNING id, athlete_id, class_id, created_at, updated_at`,
         [
           data.athlete_id,
           data.class_id,
