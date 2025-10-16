@@ -1,6 +1,4 @@
-export const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000';
-
-
+export const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
 export async function apiLogin(input: { email: string; password: string; }) {
   const res = await fetch(`${API_BASE}/auth/login`, {
@@ -16,7 +14,6 @@ export async function apiLogin(input: { email: string; password: string; }) {
 
   return (await res.json()) as { token: string; user: any };
 }
-
 
 export async function apiRegister(input: { firstName: string; lastName?: string; email: string; password: string; phone?: string; role?: 'admin'|'manager'|'user'; }) {
     const res = await fetch(`${API_BASE}/auth/register`, {
@@ -45,7 +42,6 @@ export async function apiRefresh() {
 
   return (await res.json()) as { token: string; user: any };
 }
-
 
 export async function apiMe(token: string) {
   const res = await fetch(`${API_BASE}/users/me`, {

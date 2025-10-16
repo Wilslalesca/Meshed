@@ -35,6 +35,9 @@ services:
       ACCESS_TTL: 15m
       REFRESH_TTL: 7d
       COOKIE_DOMAIN: localhost
+    volumes:
+      - ./apps/api:/occ/app/api
+      - /occ/app/api/node_modules
     develop:
       watch:
         - action: sync+restart
@@ -54,6 +57,9 @@ services:
       - api
     ports:
       - "5173:5173"
+    volumes:
+      - ./apps/web:/occ/app/web
+      - /occ/app/web/node_modules
     develop:
       watch:
         - action: sync

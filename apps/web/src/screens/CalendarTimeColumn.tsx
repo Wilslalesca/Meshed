@@ -20,12 +20,12 @@ const CalendarTimeColumn: React.FC<TimeColumnProps> = ({
   }
 
   return (
-    <div className="w-16 border-r border-gray-300 text-xs text-gray-500">
-      <div className="h-10" /> 
+    <div className="w-16 border-r border-gray-300 text-xs text-gray-500 flex flex-col">
+      <div className="h-12 border-t border-b border-gray-300 bg-white" /> 
       {times.map((time, i) => (
         <div
           key={i}
-          className="h-10 border-t border-gray-200 flex justify-end pr-1"
+          className="h-12 border-t border-gray-200 flex justify-end pr-1 items-start"
         >
           {time}
         </div>
