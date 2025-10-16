@@ -70,12 +70,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return r ? roles.includes(r) : false;
     }, [state.user]);
 
+    const refreshUser = useCallback(async () => {
+        if (!state.token) return;
+        const user = await apiMe(state.token);
+        storage.setUser(user);
+        setState(prev => ({ ...prev, user }));
+    }, [state.token]);
+
     const value = useMemo(() => ({
         ...state,
         login,
         register,
         logout,
         hasRole,
+        refreshUser,
         isLoading: state.loading
     }), [state, login, register, logout, hasRole]);
 

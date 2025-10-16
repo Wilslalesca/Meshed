@@ -31,5 +31,5 @@ export async function testingAddingUserToath() {
                 VALUES ($1, $2, $3, $4)`,
                 [user.id, "UNB", "4", "N/A"]
     );
-    console.log("user added to profile");
+    console.log("user added to profile: " + user.id);
 }

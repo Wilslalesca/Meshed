@@ -57,7 +57,6 @@ router.post('/coursetime', async (req, res) => {
 });
 
 router.post('/athletecoursetime', async (req, res) => {
-  console.log("HEEYYYYYYY:)")
     const parse = athleteCourseTimeSchema.safeParse(req.body);
 
     if (!parse.success) return res.status(400).json({ error: 'Validation error', details: parse.error.flatten() });

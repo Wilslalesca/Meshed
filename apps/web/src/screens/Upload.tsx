@@ -58,22 +58,23 @@ export const Upload: React.FC = () => {
                     });
 
                     const data = await response.json();
-                    console.log(data);
-                    console.log(data.course_time.id);
                     courseTimeSuccess = data.success;
                     courseTimeIds[i] = data.course_time.id;
-                    console.log(courseTimeIds[i])
                 }
                 catch{
                     console.log('Error Creating Schedule');
+                    courseTimeSuccess = false;
                 }
             }
         }
-        console.log(courseTimeIds);
         
-        //create student course connection
+        //create student course connection in DB
         if(courseTimeSuccess){
             for(var i =0; i<parsedSchedule.length ; i++){
+                //TODO
+                console.log("For testing, make sure match:")
+                console.log("Body of header: " + JSON.stringify({athlete_id: user?.id, class_id:courseTimeIds[i]}),)
+                console.log("Logged in user: " + user)
                 try{
                     const response = await fetch("http://localhost:4000/schedule/athletecoursetime",{
                         method: "POST",
