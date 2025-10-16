@@ -46,8 +46,7 @@ export const Upload: React.FC = () => {
         //This is not working
         if(sendSchedule){
             for(var i =0; i<parsedSchedule.length ; i++){
-                console.log(parsedSchedule[i])
-                 try{
+                try{
                     const response = await fetch("http://localhost:4000/schedule/coursetime",{
                         method: "POST",
                         headers: {
