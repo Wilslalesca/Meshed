@@ -68,15 +68,16 @@ CREATE TABLE coach_profiles (
 
 CREATE TABLE course_times (
   id SERIAL PRIMARY KEY,
-  user_id UUID REFERENCES users(id) ON DELETE CASCADE,
   name VARCHAR(100),
-  course_code VARCHAR(20),
-  instructor_name VARCHAR(100),
+  course_code VARCHAR(50),
   location VARCHAR(100),
   day_of_week VARCHAR(20),
   start_time TIME,
   end_time TIME,
-  term VARCHAR(50)
+  term VARCHAR(50),
+  start_date VARCHAR(100),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE athlete_course_times (

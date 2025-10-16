@@ -25,6 +25,9 @@ export const Upload: React.FC = () => {
             fileData.append("files",file);
         });
 
+        var sendSchedule = false;
+        var parsedSchedule: any[] = [];
+        
         try{
             const response = await fetch("http://localhost:4000/upload",{
                 method: "POST",
@@ -32,12 +35,35 @@ export const Upload: React.FC = () => {
             });
 
             const data = await response.json();
+            sendSchedule = data.schedule;
+            parsedSchedule = data.course_times;
             alert(JSON.stringify(data.message));
-            navigate('/dashboard'); 
         }
         catch{
             alert('Error Uploading Files');
         }
+
+        //This is not working
+        if(sendSchedule){
+            for(var i =0; i<parsedSchedule.length ; i++){
+                console.log(parsedSchedule[i])
+                 try{
+                    const response = await fetch("http://localhost:4000/schedule/coursetime",{
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify(parsedSchedule[i]),
+                    });
+
+                    const data = await response.json();
+                }
+                catch{
+                    alert('Error Creating Schedule');
+                }
+            }
+        }
+        navigate('/dashboard'); 
     }
 
     return (

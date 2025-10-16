@@ -36,9 +36,9 @@ router.post("/", upload.array("files"), (req, res) => {
           }
           //Check if already added to parsedSchedule
           else{
-            var prevSummary = parsedSchedule[parsedSchedule.length-1].summary;
-            var prevStartTime = parsedSchedule[parsedSchedule.length-1].startTime;
-            if(prevSummary === course.summary && prevStartTime === format(toZonedTime(course.start, timeZone), "h:mm a")){
+            var prevName = parsedSchedule[parsedSchedule.length-1].name;
+            var prevStartTime = parsedSchedule[parsedSchedule.length-1].start_time;
+            if(prevName === course.summary && prevStartTime === format(toZonedTime(course.start, timeZone), "h:mm a")){
               count++;
             }
             else{
@@ -48,28 +48,30 @@ router.post("/", upload.array("files"), (req, res) => {
           //Create a new schedule object if it is the first occurance of the class
           if(count === 1){
             parsedSchedule.push({
-              summary: course.summary,
-              dayOfTheWeek: format(course.start,"EEEE"),
-              startTime:format(toZonedTime(course.start, timeZone), "h:mm a"),
-              endTime:format(toZonedTime(course.end, timeZone),"h:mm a"),
-              start:toZonedTime(course.start, timeZone),
-              end:toZonedTime(course.end, timeZone),
+              name: course.summary,
+              course_code: course.summary,
+              day_of_week: format(course.start,"EEEE"),
+              start_time:format(toZonedTime(course.start, timeZone), "h:mm a"),
+              end_time:format(toZonedTime(course.end, timeZone),"h:mm a"),
               location:course.location,
+              term:"FALL 2025",//start => seot <=jan1 fall   jan1> april20< winter
+              start_date:course.start,
             })
           }
         }
       }
       //for testing purposes only, remove later
+      //TODO
       console.log("Complete Schedule: ");
       console.log(parsedSchedule);
-      res.json({ message: filetype, files: req.files });
+      res.json({ message: filetype, course_times: parsedSchedule, schedule: true });
     }
     catch{
-      res.status(400).json({ message: "Error Parsing File." });
+      res.status(400).json({ message: "Error Parsing File." , schedule: false});
     }
   }
   else{
-     res.json({ message: filetype});
+     res.json({ message: filetype, schedule: false });
   }
 
 });

@@ -7,7 +7,7 @@ import { config } from './config';
 import authRoutes from './routes/auth.routes';
 import userRoutes from './routes/user.routes';
 import uploadRoutes from './routes/upload.routes';
-import { loadUsers } from './db';
+import scheduleRoutes from './routes/schedule.routes';
 import { testingAccountGeneration } from './scripts/seedUsers';
 
 
@@ -22,6 +22,7 @@ app.get("/health", (_, res) => res.json({ ok: true, time: new Date().toISOString
 app.use('/auth', authRoutes);
 app.use('/users', userRoutes);
 app.use('/upload', uploadRoutes);
+app.use('/schedule', scheduleRoutes);
 
 app.listen(config.port, async() => {
     console.log(`API on http://localhost:${config.port}`);
