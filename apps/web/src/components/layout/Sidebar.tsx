@@ -134,20 +134,20 @@ export const Sidebar = ({
                                 to={href}
                                 className={`relative flex items-center gap-3 px-3 py-2 rounded-md font-medium transition-all ${
                                     isActive
-                                        ? `text-[${accent}] bg-white`
+                                        ? `text-[#346E68] bg-white`
                                         : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
                                 }`}
                             >
                                 {isActive && (
                                     <span
-                                        className={`absolute left-0 top-0 h-full w-1 rounded-r bg-[${accent}]`}
+                                        className={`absolute left-0 top-0 h-full w-1 rounded-r bg-[#346E68]`}
                                         aria-hidden="true"
                                     />
                                 )}
                                 <Icon
                                     className={`h-4 w-4 ${
                                         isActive
-                                            ? `text-[${accent}]`
+                                            ? `text-[#346E68]`
                                             : "text-gray-500"
                                     }`}
                                 />
