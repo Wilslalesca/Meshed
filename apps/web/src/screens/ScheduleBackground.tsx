@@ -1,5 +1,6 @@
 import React from "react";
 import CalendarTimeColumn from "./CalendarTimeColumn";
+import DayColumn from "./DayColumn";
 
 interface ScheduleBackgroundProps {
     startHour?: number;
@@ -28,20 +29,13 @@ const ScheduleBackground: React.FC<ScheduleBackgroundProps> = ({
         {/* Day Columns */}
         <div className="flex flex-1">
             {days.map((day) => (
-            <div key={day} className="flex-1 border-r border-gray-300">
-                {/* Day Header */}
-                <div className="h-10 flex justify-center items-center font-semibold bg-white border-b border-gray-300">
-                {day}
-                </div>
-
-                {/* Time Slots */}
-                {times.map((_, i) => (
-                <div
-                    key={i}
-                    className="h-10 border-t border-gray-200 hover:bg-blue-50 transition"
-                ></div>
-                ))}
-            </div>
+                <DayColumn
+                    key={day}
+                    startHour={startHour}
+                    endHour={endHour}
+                    day={day}
+                    intervalMinutes={intervalMinutes}
+                />
             ))}
         </div>
         </div>
