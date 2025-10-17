@@ -1,25 +1,24 @@
-
 // Call the login function here to get access to jwt
-import React, { 
-    createContext, 
+import React, {
+    createContext,
     useCallback,
-    useContext, 
-    useState, 
+    useContext,
+    useState,
     useEffect,
-    useMemo
-} from 'react';
-import { 
-    type AuthResponse, 
-    type AuthState, 
-    type LoginCredentials, 
-    type RegisterCredentials, 
-    type Role 
-} from '../types/auth';
+    useMemo,
+} from "react";
+import {
+    type AuthResponse,
+    type AuthState,
+    type LoginCredentials,
+    type RegisterCredentials,
+    type Role,
+} from "../types/auth";
 
-import { storage } from '../services/storage';
+import { storage } from "../services/storage";
 
-// REMOVE AFTER TESTING
-import { apiLogin, apiRegister, apiMe } from '../api/auth';
+import { apiLogin, apiRegister, apiMe } from "../api/auth";
+import { useNavigate } from "react-router-dom";
 
 interface AuthContextValue extends AuthState {
     login: (credentials: LoginCredentials) => Promise<void>;
@@ -31,16 +30,37 @@ interface AuthContextValue extends AuthState {
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const [state, setState] = useState<AuthState>({ user: null, token: null, isAuthenticated: false, loading: true, error: null });
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
+    children,
+}) => {
+    const [state, setState] = useState<AuthState>({
+        user: null,
+        token: null,
+        isAuthenticated: false,
+        loading: true,
+        error: null,
+    });
+    const navigate = useNavigate();
 
     useEffect(() => {
         const token = storage.getToken();
         const user = storage.getUser();
         if (token && user) {
-            setState({ user, token, isAuthenticated: true, loading: false, error: null });
+            setState({
+                user,
+                token,
+                isAuthenticated: true,
+                loading: false,
+                error: null,
+            });
         } else {
-            setState({ user: null, token: null, isAuthenticated: false, loading: false, error: null });
+            setState({
+                user: null,
+                token: null,
+                isAuthenticated: false,
+                loading: false,
+                error: null,
+            });
         }
     }, []);
 
@@ -48,27 +68,49 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const res: AuthResponse = await apiLogin(credentials);
         storage.setToken(res.token);
         storage.setUser(res.user);
-        setState({ user: res.user, token: res.token, isAuthenticated: true, loading: false, error: null });
+        setState({
+            user: res.user,
+            token: res.token,
+            isAuthenticated: true,
+            loading: false,
+            error: null,
+        });
     }, []);
 
     const register = useCallback(async (credentials: RegisterCredentials) => {
         const res: AuthResponse = await apiRegister(credentials);
         storage.setToken(res.token);
         storage.setUser(res.user);
-        setState({ user: res.user, token: res.token, isAuthenticated: true, loading: false, error: null });
+        setState({
+            user: res.user,
+            token: res.token,
+            isAuthenticated: true,
+            loading: false,
+            error: null,
+        });
     }, []);
 
     const logout = useCallback(() => {
         storage.clearToken();
         storage.clearUser();
-        setState({ user: null, token: null, isAuthenticated: false, loading: false, error: null });
-    }, []);
-
-    const hasRole = useCallback((allowed: Role | Role[]) => {
-        const roles = Array.isArray(allowed) ? allowed : [allowed];
-        const r = state.user?.role;
-        return r ? roles.includes(r) : false;
-    }, [state.user]);
+        setState({
+            user: null,
+            token: null,
+            isAuthenticated: false,
+            loading: false,
+            error: null,
+        });
+        navigate("/login", { replace: true });
+    }, [navigate]);
+    
+    const hasRole = useCallback(
+        (allowed: Role | Role[]) => {
+            const roles = Array.isArray(allowed) ? allowed : [allowed];
+            const r = state.user?.role;
+            return r ? roles.includes(r) : false;
+        },
+        [state.user]
+    );
 
     const refreshUser = useCallback(async () => {
         if (!state.token) return;
@@ -88,16 +130,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }), [state, login, register, logout, hasRole]);
 
     return (
-        <AuthContext.Provider value={value}>
-            {children}
-        </AuthContext.Provider>
+        <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
     );
 };
 
 export function useAuthCtx() {
     const ctx = useContext(AuthContext);
     if (!ctx) {
-        throw new Error('useAuthCtx must be used within an AuthProvider');
+        throw new Error("useAuthCtx must be used within an AuthProvider");
     }
     return ctx;
-};
+}

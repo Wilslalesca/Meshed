@@ -1,59 +1,52 @@
-import React, { useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
-import { Sidebar } from './Sidebar';
-import { BurgerButton } from './BurgerButton';
-import Logo from '@/assets/Logo.png';
-import { User } from 'lucide-react';
-import { useAuth } from '@/hooks/useAuth';
+import { useState, useEffect } from "react";
+import { Sidebar } from "./Sidebar";
+import { Topbar } from "./Topbar";
 
-interface LayoutProps { children: React.ReactNode; title?: string; }
+export const Layout = ({ children }: { children: React.ReactNode }) => {
+    const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+    const [isMobile, setIsMobile] = useState(false);
 
-export const Layout: React.FC<LayoutProps> = ({ children, title = 'UMA' }) => {
-  const [open, setOpen] = React.useState(false);
-  const { pathname } = useLocation();
-  const { token } = useAuth(); // minimal usage
+    useEffect(() => {
+        const handleResize = () => {
+            const mobile = window.innerWidth < 1024;
+            setIsMobile(mobile);
+            if (mobile) {
+                setSidebarCollapsed(false);
+            } else {
+                setSidebarOpen(false);
+            }
+        };
+        handleResize();
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
 
-  useEffect(() => { setOpen(false); }, [pathname]);
-  useEffect(() => {
-    const h = (e: KeyboardEvent) => { if (e.key === 'Escape') setOpen(false); };
-    window.addEventListener('keydown', h);
-    return () => window.removeEventListener('keydown', h);
-  }, []);
+    return (
+        <div className="flex h-screen w-screen bg-[#F9FAFB] text-gray-900">
+            <Sidebar
+                open={sidebarOpen}
+                collapsed={sidebarCollapsed}
+                isMobile={isMobile}
+                onToggleCollapse={() => setSidebarCollapsed((prev) => !prev)}
+                onClose={() => setSidebarOpen(false)}
+            />
 
-  return (
-    <div className="h-screen w-screen flex flex-col bg-background text-foreground">
-      <header className="h-14 flex items-center gap-4 px-4 border-b border-border bg-card/70 backdrop-blur">
-        <BurgerButton open={open} onClick={() => setOpen(o => !o)} />
-        <a href="/" className="flex items-center gap-2 select-none">
-          <img src={Logo} alt="UMA Logo" className="h-7 w-auto" />
-          <span className="text-sm font-semibold tracking-wide">{title}</span>
-        </a>
-        <div className="ml-auto flex items-center gap-2">
-          {token ? (
-            <a
-              href="/settings"
-              className="inline-flex items-center gap-2 px-2 py-1 rounded-md hover:bg-muted transition text-sm"
-              aria-label="User settings"
-            >
-              <User className="h-4 w-4" />
-              <span className="hidden sm:inline">Settings</span>
-            </a>
-          ) : (
-            <a
-              href="/login"
-              className="text-sm px-3 py-1 rounded-md border border-border hover:bg-muted transition"
-            >
-              Login
-            </a>
-          )}
+            <div className="flex flex-col flex-1 bg-white mt-2.5 mb-2.5 mr-2.5 ml-1 rounded-lg shadow-md overflow-hidden">
+                <Topbar
+                    onMenuClick={() =>
+                        isMobile
+                            ? setSidebarOpen(!sidebarOpen)
+                            : setSidebarCollapsed(!sidebarCollapsed)
+                    }
+                    isMobile={isMobile}
+                />
+
+                {/* NOTE the padding px and py are set to zero i had them at px-6 and py-4 just so it looked better but some pages may need no margin for example the calendar */}
+                <main className="flex-1 overflow-y-auto px-0 py-0">
+                    {children}
+                </main>
+            </div>
         </div>
-      </header>
-      <div className="flex flex-1 overflow-hidden">
-        <Sidebar open={open} onClose={() => setOpen(false)} />
-        <main className="flex-1 overflow-y-auto">
-          {children}
-        </main>
-      </div>
-    </div>
-  );
+    );
 };
