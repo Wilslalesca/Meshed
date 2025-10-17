@@ -5,7 +5,7 @@ import { format } from "date-fns";
 import { toZonedTime } from "date-fns-tz"; //Because the dates are formated in UTC it gets wonky during daylight savings so we have to convert
 
 const router = Router();
-//const upload = multer({ dest: "uploads/" }); // stores files locally
+//const upload = multer({ dest: "uploads/" }); //TODO can change to stores files locally then delete
 const upload = multer({ storage: multer.memoryStorage() });
 const timeZone = "America/Halifax"; // Atlantic Standard Time 
 
