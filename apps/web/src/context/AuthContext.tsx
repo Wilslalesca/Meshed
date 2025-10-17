@@ -16,7 +16,6 @@ import {
 } from "../types/auth";
 
 import { storage } from "../services/storage";
-
 import { apiLogin, apiRegister, apiMe } from "../api/auth";
 import { useNavigate } from "react-router-dom";
 
@@ -26,6 +25,7 @@ interface AuthContextValue extends AuthState {
     logout: () => void;
     isLoading: boolean;
     hasRole: (allowed: Role | Role[]) => boolean;
+    refreshUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
@@ -40,36 +40,59 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         loading: true,
         error: null,
     });
+    
     const navigate = useNavigate();
+
 
     useEffect(() => {
         const token = storage.getToken();
-        const user = storage.getUser();
-        if (token && user) {
-            setState({
-                user,
-                token,
-                isAuthenticated: true,
-                loading: false,
-                error: null,
-            });
-        } else {
-            setState({
-                user: null,
-                token: null,
-                isAuthenticated: false,
-                loading: false,
-                error: null,
-            });
-        }
+        const init = async () => {
+            if (!token) {
+                setState({
+                    user: null,
+                    token: null,
+                    isAuthenticated: false,
+                    loading: false,
+                    error: null,
+                });
+                return;
+            }
+            const user = await apiMe(token);
+
+            if (user) {
+                storage.setUser(user);
+                setState({
+                    user,
+                    token,
+                    isAuthenticated: true,
+                    loading: false,
+                    error: null,
+                });
+            } else {
+                storage.clearToken();
+                storage.clearUser();
+                setState({
+                    user: null,
+                    token: null,
+                    isAuthenticated: false,
+                    loading: false,
+                    error: null,
+                });
+            }
+        };
+        init();
     }, []);
 
     const login = useCallback(async (credentials: LoginCredentials) => {
         const res: AuthResponse = await apiLogin(credentials);
         storage.setToken(res.token);
-        storage.setUser(res.user);
+
+        const backendUser = await apiMe(res.token);
+        const user = backendUser ?? res.user;
+
+        storage.setUser(user);
         setState({
-            user: res.user,
+            user,
             token: res.token,
             isAuthenticated: true,
             loading: false,
@@ -80,9 +103,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     const register = useCallback(async (credentials: RegisterCredentials) => {
         const res: AuthResponse = await apiRegister(credentials);
         storage.setToken(res.token);
-        storage.setUser(res.user);
+
+        const backendUser = await apiMe(res.token);
+        const user = backendUser ?? res.user;
+
+        storage.setUser(user);
         setState({
-            user: res.user,
+            user,
             token: res.token,
             isAuthenticated: true,
             loading: false,
@@ -115,8 +142,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     const refreshUser = useCallback(async () => {
         if (!state.token) return;
         const user = await apiMe(state.token);
-        storage.setUser(user);
-        setState(prev => ({ ...prev, user }));
+        if (user) {
+            storage.setUser(user);
+            setState(prev => ({ ...prev, user }));
+        }
     }, [state.token]);
 
     const value = useMemo(() => ({

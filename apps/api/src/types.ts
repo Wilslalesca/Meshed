@@ -40,3 +40,12 @@ export interface AthleteCourseTime {
   created_at?: string;
   updated_at?: string;
 }
+
+export interface AthleteProfile {
+  id: string;
+  school_name: string | null;
+  year: string | null;
+  notes: string | null;
+  created_at?: string;
+  updated_at?: string;
+}
