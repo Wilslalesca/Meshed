@@ -19,6 +19,11 @@ export const Dashboard = () => {
         <Button asChild variant="outline">
           <Link to="/profile">Profile</Link>
         </Button>
+        {(user?.role === "admin" || user?.role === "manager") && (
+          <Button asChild variant="outline">
+              <Link to="/manager">Manager Panel</Link>
+          </Button>
+        )}
         <Button asChild variant="outline">
           <Link to="/upload">Upload</Link>
         </Button>
