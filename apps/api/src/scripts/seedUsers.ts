@@ -1,6 +1,6 @@
 import bcrypt from "bcryptjs";
 import { pool } from "../db/index";
-
+import { db } from '../db/users';
 
 const seeds = [
   { first: "Admin", last: "Account", email: "admin@email.com", pass: "Admin123!", role: "admin" },
@@ -20,3 +20,16 @@ export async function testingAccountGeneration() {
     }
 }
 
+
+export async function testingAddingUserToath() {
+    const user = await db.findByEmail("user@email.com");
+    if (!user) {
+        throw new Error("User with email user@email.com not found");
+    }
+    await pool.query(
+        `INSERT INTO athlete_profiles (id, school_name, year, notes)
+                VALUES ($1, $2, $3, $4)`,
+                [user.id, "UNB", "4", "N/A"]
+    );
+    console.log("user added to profile: " + user.id);
+}

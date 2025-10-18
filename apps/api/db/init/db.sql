@@ -13,37 +13,37 @@ CREATE TABLE users (
 );
 
 CREATE TABLE sports_lookup (
-  id SERIAL PRIMARY KEY,
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   sport_name VARCHAR(100) NOT NULL,
   season VARCHAR(50),
   position VARCHAR(50)
 );
 
 CREATE TABLE league (
-  id SERIAL PRIMARY KEY,
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   league_name VARCHAR(100) NOT NULL
 );
 
 CREATE TABLE insights (
-  id SERIAL PRIMARY KEY
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid()
 );
 
 CREATE TABLE teams (
-  id SERIAL PRIMARY KEY,
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   name VARCHAR(100) NOT NULL,
-  sport_id INT REFERENCES sports_lookup(id),
+  sport_id UUID REFERENCES sports_lookup(id),
   season VARCHAR(50),
-  insights_id INT REFERENCES insights(id),
-  league_id INT REFERENCES league(id),
+  insights_id UUID REFERENCES insights(id),
+  league_id UUID REFERENCES league(id),
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 
 CREATE TABLE user_teams (
-  id SERIAL PRIMARY KEY,
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID REFERENCES users(id) ON DELETE CASCADE,
-  team_id INT REFERENCES teams(id) ON DELETE CASCADE,
+  team_id UUID REFERENCES teams(id) ON DELETE CASCADE,
   role VARCHAR(50),
   position VARCHAR(50),
   status VARCHAR(50) DEFAULT 'active',
@@ -67,28 +67,29 @@ CREATE TABLE coach_profiles (
 );
 
 CREATE TABLE course_times (
-  id SERIAL PRIMARY KEY,
-  user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   name VARCHAR(100),
-  course_code VARCHAR(20),
-  instructor_name VARCHAR(100),
+  course_code VARCHAR(50),
   location VARCHAR(100),
   day_of_week VARCHAR(20),
   start_time TIME,
   end_time TIME,
-  term VARCHAR(50)
+  term VARCHAR(50),
+  start_date VARCHAR(100),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE athlete_course_times (
-  id SERIAL PRIMARY KEY,
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   athlete_id UUID REFERENCES athlete_profiles(id) ON DELETE CASCADE,
-  class_id INT REFERENCES course_times(id) ON DELETE CASCADE,
+  class_id UUID REFERENCES course_times(id) ON DELETE CASCADE,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE coach_athlete_visibility (
-  id SERIAL PRIMARY KEY,
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   coach_id UUID REFERENCES coach_profiles(id) ON DELETE CASCADE,
   athlete_id UUID REFERENCES athlete_profiles(id) ON DELETE CASCADE,
   input_source VARCHAR(100),
@@ -97,7 +98,7 @@ CREATE TABLE coach_athlete_visibility (
 );
 
 CREATE TABLE activity_log (
-  id SERIAL PRIMARY KEY,
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID REFERENCES users(id) ON DELETE CASCADE,
   action VARCHAR(100),
   entity VARCHAR(50),
@@ -105,3 +106,4 @@ CREATE TABLE activity_log (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
