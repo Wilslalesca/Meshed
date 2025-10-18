@@ -1,7 +1,8 @@
 import { Router } from 'express';
 import { z } from 'zod';
 import bcrypt from 'bcryptjs';
-import { db } from '../db/users';
+import { db as userDb } from '../db/users';
+import { db as athleteDb } from '../db/athleteProfile';
 import { signAccessToken, signRefreshToken, verifyRefresh } from '../auth/tokens';
 import { config } from '../config';
 
@@ -46,11 +47,18 @@ router.post('/register', async (req, res) => {
 
     const { firstName, lastName, email, password, phone, role } = parse.data;
 
-    const existing = await db.findByEmail(email);
+    const existing = await userDb.findByEmail(email);
     if (existing) return res.status(409).json({ error: "Email already registered" });
 
     const passwordHash = await bcrypt.hash(password, 10);
-    const user = await db.insert({ firstName, lastName, email, phone, role, passwordHash });
+    const user = await userDb.insert({ firstName, lastName, email, phone, role, passwordHash });
+    if (user.role === 'user') {
+        try {
+            await athleteDb.create({ id: user.id });
+        } catch (error) {
+            console.error("Error creating athlete profile:", error);  
+        }
+    }
 
     const accessToken = signAccessToken(user.id, user.role);
     const refreshToken = signRefreshToken(user.id, user.role);
@@ -81,7 +89,7 @@ router.post('/login', async (req, res) => {
 
 
     const { email, password } = parse.data;
-    const user = await db.findByEmail(email);
+    const user = await userDb.findByEmail(email);
 
 
     if (!user) return res.status(401).json({ error: 'Invalid email or password' });
@@ -127,7 +135,7 @@ router.post("/refresh", async (req, res) => {
 
   try {
     const payload = verifyRefresh(token);
-    const user = await db.findById(payload.userId);
+    const user = await userDb.findById(payload.userId);
     if (!user) return res.status(401).json({ error: "Invalid refresh token" });
 
     const newRefresh = signRefreshToken(user.id, user.role);

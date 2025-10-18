@@ -11,16 +11,81 @@ export const Upload: React.FC = () => {
     const navigate = useNavigate();
 
     const handleDrop = (files: File[]) => {
-        console.log(files);
         setFiles(files);
     };
 
     const handleSubmit = async () => {
         if (!files) {
             alert("No files selected!");
+            return;
         }
-        else{
-            alert(`Files selected: ${files.map(f => f.name).join(", ")}`);
+
+        const fileData = new FormData();
+        files.forEach(file=>{
+            fileData.append("files",file);
+        });
+
+        var sendSchedule = false;
+        var parsedSchedule: any[] = [];
+        
+        try{
+            const response = await fetch("http://localhost:4000/upload",{
+                method: "POST",
+                body: fileData,
+            });
+
+            const data = await response.json();
+            sendSchedule = data.schedule;
+            parsedSchedule = data.course_times;
+            alert(JSON.stringify(data.message));
+        }
+        catch{
+            alert('Error Uploading Files');
+        }
+
+        //create course_time in the DB
+        var courseTimeSuccess = false;
+        var courseTimeIds = new Array(parsedSchedule.length);
+        if(sendSchedule){
+            for(var i =0; i<parsedSchedule.length ; i++){
+                try{
+                    const response = await fetch("http://localhost:4000/schedule/coursetime",{
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify(parsedSchedule[i]),
+                    });
+
+                    const data = await response.json();
+                    courseTimeSuccess = data.success;
+                    courseTimeIds[i] = data.course_time.id;
+                }
+                catch{
+                    console.log('Error Creating Schedule');
+                    courseTimeSuccess = false;
+                }
+            }
+        }
+        
+        //create student course connection in DB
+        if(courseTimeSuccess){
+            for(var i =0; i<parsedSchedule.length ; i++){
+                try{
+                    const response = await fetch("http://localhost:4000/schedule/athletecoursetime",{
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({athlete_id: user?.id, class_id:courseTimeIds[i]}),
+                    });
+
+                    const data = await response.json();
+                }
+                catch{
+                    console.log('Error Adding Athlete Schedule');
+                }
+            }
         }
         navigate('/dashboard'); 
     }
