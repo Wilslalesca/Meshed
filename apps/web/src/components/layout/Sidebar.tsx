@@ -39,18 +39,17 @@ export const Sidebar = ({
 }) => {
     const { user, logout } = useAuth();
     const location = useLocation();
-    const accent = "#346E68";
+    // const accent = "#346E68";
     const [openMenu, setOpenMenu] = useState(false);
     const navigate = useNavigate();
 
-const links = [
-  { label: 'Home', href: '/' },
-  { label: 'Dashboard', href: '/dashboard' },
-  { label: 'Teams', href: '/teams' },
-  { label: 'Facilities', href: '/facilities' },
-  { label: 'Schedules', href: '/schedules' },
-  { label: 'Settings', href: '/settings' },
-];
+    const links = [
+        { name: "Dashboard", href: "/dashboard", icon: Home },
+        { name: "Teams", href: "/teams", icon: Users },
+        { name: "Schedules", href: "/schedules", icon: Calendar },
+        { name: "Facilities", href: "/facilities", icon: Building2 },
+        { name: "Settings", href: "/settings", icon: Settings },
+    ];
 
     return (
         <>
