@@ -71,10 +71,6 @@ export const Upload: React.FC = () => {
         //create student course connection in DB
         if(courseTimeSuccess){
             for(var i =0; i<parsedSchedule.length ; i++){
-                //TODO
-                console.log("For testing, make sure match below")
-                console.log("Body of header: " + JSON.stringify({athlete_id: user?.id, class_id:courseTimeIds[i]}),)
-                console.log("Logged in user: " + user?.id)
                 try{
                     const response = await fetch("http://localhost:4000/schedule/athletecoursetime",{
                         method: "POST",
