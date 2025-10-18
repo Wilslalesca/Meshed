@@ -43,7 +43,6 @@ export const Sidebar = ({
     const [openMenu, setOpenMenu] = useState(false);
     const navigate = useNavigate();
 
-<<<<<<< HEAD
 const links = [
   { label: 'Home', href: '/' },
   { label: 'Dashboard', href: '/dashboard' },
@@ -52,15 +51,6 @@ const links = [
   { label: 'Schedules', href: '/schedules' },
   { label: 'Settings', href: '/settings' },
 ];
-=======
-    const links = [
-        { name: "Dashboard", href: "/dashboard", icon: Home },
-        { name: "Teams", href: "/teams", icon: Users },
-        { name: "Schedules", href: "/schedules", icon: Calendar },
-        { name: "Facilities", href: "/facilities", icon: Building2 },
-        { name: "Settings", href: "/settings", icon: Settings },
-    ];
->>>>>>> 06eb613a2b1a1699311cb551344690740cc6c29a
 
     return (
         <>
