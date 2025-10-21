@@ -81,4 +81,15 @@ router.get("/", (_req, res) => {
   res.json({ message: "Schedule route is running!" });
 });
 
+router.get('/coursetimes', async (_req, res) => {
+    try{
+        const result = await db.getAllCourseTimes();
+        res.json(result);
+    } catch (error) {
+        console.error("Error fetching course times:", error);
+        res.status(500).json({ error: "Failed to fetch course times" });
+        
+    }
+});
+
 export default router;
