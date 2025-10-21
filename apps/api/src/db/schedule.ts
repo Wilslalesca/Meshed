@@ -61,13 +61,13 @@ export const db = {
     },
 
     async getAllCourseTimes(){
-      const res =  await pool.query(
-        `SELECT id, name, course_code,
+      const res =  await pool.query(`
+        SELECT id, name, course_code,
                 location, day_of_week, start_time, end_time,
                 term, start_date, created_at, updated_at
          FROM course_times
-         ORDER BY day_of_week, start_time;`
-      );
+         ORDER BY day_of_week, start_time;
+      `);
       return res.rows;
     }
 
