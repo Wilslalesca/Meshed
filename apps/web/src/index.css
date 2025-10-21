@@ -3,51 +3,51 @@
 
 /* ---------- Tokens (Tailwind v4) ---------- */
 @theme {
-  /* Miami palette */
-  --color-vice-teal:    #00e5ff;
-  --color-vice-pink:    #ff5ea8;
-  --color-vice-purple:  #7b5cff;
-  --color-vice-yellow:  #ffe66d;
-  --color-vice-orange:  #ff8a42;   /* NEW */
-  /* --color-vice-navy:    #0b1026;   page bg */
-  --color-vice-teal:    #b2d8d8; /* lighter teal for bg */
-  --color-vice-ink:     #0f142b;   /* panels / sidebar */
-  --color-vice-line:    #1e2442;   /* borders */
+  /* ---- Core palette (from your swatch) ---- */
+  --color-navy:    #011627;  /* deep background, sidebar */
+  --color-paper:   #FDFFFC;  /* page surface */
+  --color-teal:    #2EC4B6;  /* primary brand */
+  --color-gold:    #FF9F1C;  /* secondary brand */
+  --color-red:     #E71D36;  /* subtle highlights / errors */
 
-  /* Tailwind color tokens used by utilities like bg-background, text-foreground, etc. */
-  --color-background:         var(--color-vice-navy);
-  --color-foreground:         #eaf4ff;
-  
+  /* ---- Tailwind color tokens (used by bg-*, text-*, border-* utilities) ---- */
+  --color-background:         var(--color-paper);
+  --color-foreground:         var(--color-navy);
 
-  --color-border:             var(--color-vice-line);
-  --color-input:              var(--color-vice-line);
-  --color-ring:               var(--color-vice-pink);
+  --color-border:             color-mix(in oklab, var(--color-navy) 20%, #e7eaee);
+  --color-input:              var(--color-border);
+  --color-ring:               var(--color-teal);
 
-  --color-primary:            var(--color-vice-pink);
-  --color-primary-foreground: #0b0f1f;
-  --color-secondary:          var(--color-vice-teal);
-  --color-secondary-foreground:#001017;
-  --color-accent:             color-mix(in oklab, var(--color-vice-teal) 15%, transparent);
+  --color-primary:            var(--color-teal);
+  --color-primary-foreground: #052a26;             /* readable on teal */
+
+  --color-secondary:            var(--color-gold);
+  --color-secondary-foreground: #301d00;           /* readable on gold */
+
+  --color-accent:             color-mix(in oklab, var(--color-teal) 12%, transparent);
   --color-accent-foreground:  var(--color-foreground);
-  --color-destructive:        #ff3b6b;
 
-  --color-card:               var(--color-vice-ink);
+  --color-destructive:        var(--color-red);
+
+  --color-card:               #ffffff;             /* cards on paper */
   --color-card-foreground:    var(--color-foreground);
-  --color-popover:            var(--color-vice-ink);
+
+  --color-popover:            #ffffff;
   --color-popover-foreground: var(--color-foreground);
 
-  /* Sidebar tokens used by your components */
-  --color-sidebar:                    var(--color-vice-ink);
-  --color-sidebar-foreground:         var(--color-foreground);
-  --color-sidebar-border:             var(--color-vice-line);
-  --color-sidebar-ring:               var(--color-vice-teal);
-  --color-sidebar-primary:            var(--color-vice-pink);
-  --color-sidebar-primary-foreground: #0b0f1f;
-  --color-sidebar-accent:             color-mix(in oklab, var(--color-vice-teal) 15%, transparent);
-  --color-sidebar-accent-foreground:  var(--color-foreground);
+  /* Sidebar / shell */
+  --color-sidebar:                    var(--color-navy);
+  --color-sidebar-foreground:         #E8F6F4;      /* soft off-white on navy */
+  --color-sidebar-border:             color-mix(in oklab, var(--color-navy) 65%, #fff);
+  --color-sidebar-ring:               var(--color-teal);
+  --color-sidebar-primary:            var(--color-teal);
+  --color-sidebar-primary-foreground: #052a26;
+  --color-sidebar-accent:             color-mix(in oklab, var(--color-gold) 10%, transparent);
+  --color-sidebar-accent-foreground:  var(--color-sidebar-foreground);
 
   --radius-xl: 1rem;
 }
+
 
 /* Optional aliases so any legacy tokens still work */
 :root{
@@ -138,3 +138,9 @@ input:-webkit-autofill:focus{
   box-shadow: 0 0 0px 1000px color-mix(in oklab, var(--color-vice-ink) 85%, black) inset;
 }
 
+@utility bg-brand-soft {
+  background:
+    radial-gradient(900px 500px at -10% -10%, color-mix(in oklab, var(--color-teal) 12%, transparent), transparent 60%),
+    radial-gradient(900px 500px at 110% 110%, color-mix(in oklab, var(--color-gold) 12%, transparent), transparent 60%),
+    var(--color-paper);
+}
