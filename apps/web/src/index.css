@@ -9,13 +9,15 @@
   --color-vice-purple:  #7b5cff;
   --color-vice-yellow:  #ffe66d;
   --color-vice-orange:  #ff8a42;   /* NEW */
-  --color-vice-navy:    #0b1026;   /* page bg */
+  /* --color-vice-navy:    #0b1026;   page bg */
+  --color-vice-teal:    #b2d8d8; /* lighter teal for bg */
   --color-vice-ink:     #0f142b;   /* panels / sidebar */
   --color-vice-line:    #1e2442;   /* borders */
 
   /* Tailwind color tokens used by utilities like bg-background, text-foreground, etc. */
   --color-background:         var(--color-vice-navy);
   --color-foreground:         #eaf4ff;
+  
 
   --color-border:             var(--color-vice-line);
   --color-input:              var(--color-vice-line);
@@ -86,7 +88,7 @@
   background:
     radial-gradient(1200px 700px at -10% -20%, color-mix(in oklab, var(--color-vice-teal) 35%, transparent), transparent 60%),
     radial-gradient(1100px 600px at 120% 120%, color-mix(in oklab, var(--color-vice-pink) 35%, transparent), transparent 60%),
-    linear-gradient(160deg, color-mix(in oklab, var(--color-vice-ink) 90%, black), var(--color-vice-navy));
+    linear-gradient(160deg, color-mix(in oklab, var(--color-vice-ink) 90%, black), var(--color-vice-teal));
 }
 
 /* ---------- Reusable UI helpers ---------- */

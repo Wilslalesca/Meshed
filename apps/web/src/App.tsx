@@ -3,18 +3,18 @@ import { Routes, Route, Outlet, Navigate } from "react-router-dom";
 import { ProtectedRoute } from "./routes/ProtectedRoute";
 import { RequireRole } from "./routes/RequireRole";
 
-
 import { Home } from "./screens/Home";
 import LoginPage from "./screens/Login";
 import { Register } from "./screens/Register";
 import { Dashboard } from "./screens/Dashboard";
-import { Teams } from "./screens/Teams"
+import { Teams } from "./screens/Teams";
 import { Admin } from "./screens/Admin";
 import { Profile } from "./screens/Profile";
 import { Upload } from "./screens/Upload";
 import { useAuth } from "./hooks/useAuth";
-import ScheduleBackground from './screens/ScheduleBackground';
+import ScheduleBackground from "./screens/ScheduleBackground";
 import { Layout } from "./components/layout/Layout";
+import Contact from "./screens/Contact"; // NEW
 
 function AppLayout() {
   return (
@@ -25,6 +25,7 @@ function AppLayout() {
 }
 
 function AuthLayout() {
+  // Public pages (no sidebar, gradient bg)
   return (
     <div className="min-h-screen w-screen bg-vice-gradient text-foreground flex items-center justify-center">
       <Outlet />
@@ -42,8 +43,27 @@ function GuestRoute({ children }: { children: React.ReactNode }) {
 export default function App() {
   return (
     <Routes>
-      {/* Auth (no sidebar) */}
+      {/* Public / Auth (no sidebar) */}
       <Route element={<AuthLayout />}>
+        {/* Public landing (redirects signed-in users to /dashboard) */}
+        <Route
+          path="/"
+          element={
+            <GuestRoute>
+              <Home />
+            </GuestRoute>
+          }
+        />
+        {/* Public contact page (wire up later) */}
+        <Route
+          path="/contact"
+          element={
+            <GuestRoute>
+              <Contact />
+            </GuestRoute>
+          }
+        />
+        {/* Auth pages (still public, and redirect if already signed in) */}
         <Route
           path="/login"
           element={
@@ -62,11 +82,11 @@ export default function App() {
         />
       </Route>
 
-
-      {/* Main (with sidebar layout) */}
+      {/* Private (with sidebar layout) */}
       <Route element={<AppLayout />}>
-        <Route path="/" element={<Home />} />
+        {/* keep alias to /home if you still need it */}
         <Route path="/home" element={<Navigate to="/" replace />} />
+
         <Route
           path="/dashboard"
           element={
@@ -109,7 +129,7 @@ export default function App() {
             <ProtectedRoute>
               <Upload />
             </ProtectedRoute>
-            }
+          }
         />
         <Route
           path="/profile"
@@ -119,7 +139,8 @@ export default function App() {
             </ProtectedRoute>
           }
         />
-        {/* Fallback */}
+
+        {/* Fallback stays the same */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>
     </Routes>
