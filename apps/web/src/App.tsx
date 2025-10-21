@@ -25,7 +25,11 @@ function AppLayout() {
 }
 
 function AuthLayout() {
-  return <Outlet />;
+  return (
+    <div className="min-h-screen w-screen bg-vice-gradient text-foreground flex items-center justify-center">
+      <Outlet />
+    </div>
+  );
 }
 
 function GuestRoute({ children }: { children: React.ReactNode }) {

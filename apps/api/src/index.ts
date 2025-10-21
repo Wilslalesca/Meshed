@@ -8,6 +8,7 @@ import authRoutes from './routes/auth.routes';
 import userRoutes from './routes/user.routes';
 import lookUpRoutes from './routes/lookup.routes';
 import { seedLeaguesAndSports } from "./scripts/seedLeagueAndSport";    
+import teamsRoutes from './routes/teams.routes';
 import uploadRoutes from './routes/upload.routes';
 import scheduleRoutes from './routes/schedule.routes';
 import { testingAccountGeneration, testingAddingUserToath } from './scripts/seedUsers';
@@ -17,13 +18,13 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(cors({ origin: config.frontendOrigin, credentials: true }));
 
-
 app.get("/health", (_, res) => res.json({ ok: true, time: new Date().toISOString() }));
 app.use('/auth', authRoutes);
 app.use('/users', userRoutes);
 app.use('/lookups', lookUpRoutes);
 app.use('/upload', uploadRoutes);
 app.use('/schedule', scheduleRoutes);
+app.use('/teams', teamsRoutes);
 
 app.listen(config.port, async() => {
     console.log(`API on http://localhost:${config.port}`);

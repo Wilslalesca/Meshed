@@ -1,3 +1,4 @@
+// apps/web/src/screens/Teams.tsx
 import React, { useEffect, useMemo, useState } from "react";
 import { useAuth } from "../hooks/useAuth";
 import CalendarTimeColumn from "./CalendarTimeColumn";
@@ -13,13 +14,12 @@ type Team = {
 type Sport = { id: number; sport_name: string; season: string | null; position: string | null; };
 type League = { id: number; league_name: string; };
 
-// A basic event model for the calendar (server returns these)
 type TeamEvent = {
   id: number;
   title: string;
-  dayOfWeek: number;   // 0..6 (Sun..Sat)
-  start: string;       // "HH:MM"
-  end: string;         // "HH:MM"
+  dayOfWeek: number; // 0..6
+  start: string;     // "HH:MM"
+  end: string;       // "HH:MM"
   location?: string;
 };
 
@@ -27,7 +27,7 @@ const startHour = 6;
 const endHour = 22;
 
 export const Teams: React.FC = () => {
-  const { token, hasRole } = useAuth();
+  const { hasRole } = useAuth();
   const canManage = hasRole(["manager", "admin"]);
 
   const [myTeams, setMyTeams] = useState<Team[]>([]);
@@ -37,46 +37,83 @@ export const Teams: React.FC = () => {
   const [events, setEvents] = useState<TeamEvent[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // --- Create Team form state ---
-  const [form, setForm] = useState<{name:string; sport_id:string; season:string; league_id:string}>({
+  const [form, setForm] = useState<{ name: string; sport_id: string; season: string; league_id: string }>({
     name: "", sport_id: "", season: "", league_id: ""
   });
-  const onChange = (e: React.ChangeEvent<HTMLInputElement|HTMLSelectElement>) =>
+  const onChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
     setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
 
-  // --- Fetch helpers ---
-  const api = (path: string, init?: RequestInit) =>
-    fetch(`http://localhost:4000${path}`, {
-      credentials: "include",
-      headers: { "Content-Type": "application/json", ...(init?.headers || {}) },
-      ...init,
-    });
+  // Fetch helper: don't force JSON header on GET
+  const api = (path: string, init: RequestInit = {}) => {
+    const hasBody = "body" in init && init.body !== undefined;
+    const headers = hasBody
+      ? { "Content-Type": "application/json", ...(init.headers || {}) }
+      : init.headers;
 
-  // Load my teams + lookups
+    return fetch(`http://localhost:4000${path}`, {
+      credentials: "include",
+      ...init,
+      headers,
+    });
+  };
+
+  // Load my teams + lookups (resilient)
   useEffect(() => {
     let cancelled = false;
     (async () => {
       setLoading(true);
       try {
-        const [teamsRes, sportsRes, leaguesRes] = await Promise.all([
+        const [teamsRes, sportsRes, leaguesRes] = await Promise.allSettled([
           api("/teams/mine"),
           api("/lookups/sports"),
           api("/lookups/leagues"),
         ]);
-        if (!cancelled) {
-          const teams: Team[] = await teamsRes.json();
-          const sp: Sport[] = await sportsRes.json();
-          const lg: League[] = await leaguesRes.json();
-          setMyTeams(teams);
-          setSports(sp);
-          setLeagues(lg);
-          if (teams.length && selectedTeamId == null) setSelectedTeamId(teams[0].id);
+
+        // sports
+        if (
+          sportsRes.status === "fulfilled" &&
+          sportsRes.value.ok &&
+          (sportsRes.value.headers.get("content-type") || "").includes("application/json")
+        ) {
+          const sp: Sport[] = await sportsRes.value.json();
+          if (!cancelled) setSports(sp);
+        } else {
+          if (!cancelled) setSports([]);
+        }
+
+        // leagues
+        if (
+          leaguesRes.status === "fulfilled" &&
+          leaguesRes.value.ok &&
+          (leaguesRes.value.headers.get("content-type") || "").includes("application/json")
+        ) {
+          const lg: League[] = await leaguesRes.value.json();
+          if (!cancelled) setLeagues(lg);
+        } else {
+          if (!cancelled) setLeagues([]);
+        }
+
+        // teams (may be 200 [] or not ready yet)
+        if (
+          teamsRes.status === "fulfilled" &&
+          teamsRes.value.ok &&
+          (teamsRes.value.headers.get("content-type") || "").includes("application/json")
+        ) {
+          const teams: Team[] = await teamsRes.value.json();
+          if (!cancelled) {
+            setMyTeams(Array.isArray(teams) ? teams : []);
+            if (teams.length && selectedTeamId == null) setSelectedTeamId(teams[0].id);
+          }
+        } else {
+          if (!cancelled) setMyTeams([]);
         }
       } finally {
         if (!cancelled) setLoading(false);
       }
     })();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -86,13 +123,17 @@ export const Teams: React.FC = () => {
     let cancelled = false;
     (async () => {
       const res = await api(`/teams/${selectedTeamId}/events`);
-      const evts: TeamEvent[] = await res.json();
-      if (!cancelled) setEvents(evts);
+      if (res.ok && (res.headers.get("content-type") || "").includes("application/json")) {
+        const evts: TeamEvent[] = await res.json();
+        if (!cancelled) setEvents(evts);
+      } else {
+        if (!cancelled) setEvents([]);
+      }
     })();
     return () => { cancelled = true; };
   }, [selectedTeamId]);
 
-  const days = useMemo(() => ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"], []);
+  const days = useMemo(() => ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"], []);
 
   const createTeam = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -114,19 +155,17 @@ export const Teams: React.FC = () => {
     setForm({ name: "", sport_id: "", season: "", league_id: "" });
   };
 
-  // --- Simple grid renderer for weekly schedule ---
   const timeSlots: string[] = [];
   for (let h = startHour; h < endHour; h++) {
     timeSlots.push(`${h}:00`, `${h}:30`);
   }
 
   const eventMap = useMemo(() => {
-    // Map day->array of events, sorted by start
     const map = new Map<number, TeamEvent[]>();
-    for (const d of [0,1,2,3,4,5,6]) map.set(d, []);
+    for (const d of [0, 1, 2, 3, 4, 5, 6]) map.set(d, []);
     events.forEach(e => map.get(e.dayOfWeek)?.push(e));
-    for (const d of [0,1,2,3,4,5,6]) {
-      map.get(d)?.sort((a,b) => a.start.localeCompare(b.start));
+    for (const d of [0, 1, 2, 3, 4, 5, 6]) {
+      map.get(d)?.sort((a, b) => a.start.localeCompare(b.start));
     }
     return map;
   }, [events]);
@@ -139,8 +178,10 @@ export const Teams: React.FC = () => {
       <div className="flex flex-wrap items-center gap-2">
         <span className="text-sm text-muted-foreground">My teams:</span>
         {loading && <span className="text-sm">Loading…</span>}
-        {!loading && myTeams.length === 0 && <span className="text-sm">You are not in any teams yet.</span>}
-        {myTeams.map(t => (
+        {!loading && (!Array.isArray(myTeams) || myTeams.length === 0) && (
+          <span className="text-sm">You are not in any teams yet.</span>
+        )}
+        {(Array.isArray(myTeams) ? myTeams : []).map(t => (
           <button
             key={t.id}
             onClick={() => setSelectedTeamId(t.id)}
@@ -161,16 +202,13 @@ export const Teams: React.FC = () => {
             {days.map((d, idx) => (
               <div key={d} className="border-l">
                 <div className="h-10 px-2 flex items-center font-medium">{d}</div>
-                {/* time rows */}
                 {timeSlots.map((slot, i) => (
                   <div key={i} className="h-10 border-t border-gray-200 relative">
-                    {/* render events that start at this slot */}
                     {eventMap.get(idx)?.filter(e => e.start === slot).map(ev => {
                       const [sh, sm] = ev.start.split(":").map(Number);
                       const [eh, em] = ev.end.split(":").map(Number);
-                      const durationMin = (eh*60+em) - (sh*60+sm);
-                      // 30min = 40px (since each slot above is 40px high => h-10)
-                      const px = (durationMin / 30) * 40;
+                      const durationMin = (eh * 60 + em) - (sh * 60 + sm);
+                      const px = (durationMin / 30) * 40; // 30m == 40px
                       return (
                         <div
                           key={ev.id}
@@ -179,7 +217,9 @@ export const Teams: React.FC = () => {
                           title={`${ev.title} ${ev.start}-${ev.end}${ev.location ? ` @ ${ev.location}` : ""}`}
                         >
                           <div className="font-semibold truncate">{ev.title}</div>
-                          <div className="opacity-90">{ev.start}–{ev.end}{ev.location ? ` • ${ev.location}` : ""}</div>
+                          <div className="opacity-90">
+                            {ev.start}–{ev.end}{ev.location ? ` • ${ev.location}` : ""}
+                          </div>
                         </div>
                       );
                     })}
@@ -225,7 +265,11 @@ export const Teams: React.FC = () => {
                 className="border rounded px-2 py-1"
               >
                 <option value="">(none)</option>
-                {sports.map(s => <option key={s.id} value={s.id}>{s.sport_name}</option>)}
+                {(Array.isArray(sports) ? sports : []).map(s => (
+                  <option key={s.id} value={s.id}>
+                    {s.sport_name}{s.season ? ` (${s.season})` : ""}
+                  </option>
+                ))}
               </select>
             </label>
             <label className="flex flex-col text-sm">
@@ -237,11 +281,17 @@ export const Teams: React.FC = () => {
                 className="border rounded px-2 py-1"
               >
                 <option value="">(none)</option>
-                {leagues.map(l => <option key={l.id} value={l.id}>{l.league_name}</option>)}
+                {(Array.isArray(leagues) ? leagues : []).map(l => (
+                  <option key={l.id} value={l.id}>
+                    {l.league_name}
+                  </option>
+                ))}
               </select>
             </label>
             <div className="sm:col-span-2 flex gap-2">
-              <button type="submit" className="px-3 py-2 rounded bg-black text-white">Create</button>
+              <button type="submit" className="px-3 py-2 rounded bg-black text-white">
+                Create
+              </button>
             </div>
           </form>
         </div>
