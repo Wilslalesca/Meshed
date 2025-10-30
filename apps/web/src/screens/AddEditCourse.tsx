@@ -11,6 +11,18 @@ import {apiAddCourse2} from "../api/addeditcourse"
 
 
 export const AddEditCourse: React.FC = () => {
+  const [schedule, setSchedule] = React.useState({
+    name: '',
+    course_code: '',
+    day_of_week: '',
+    start_time:'',
+    end_time:'',
+    location:'',
+    term:"",
+    start_date:'',
+    end_date:'',
+    reoccurring: "",
+  })
    /*const handleSubmit = async () => {
         toast("Event has been created", {
           description: "Sunday, December 03, 2023 at 9:00 AM",
@@ -34,17 +46,31 @@ export const AddEditCourse: React.FC = () => {
   }, [])
   const handleSubmit = async () => {
     const parsedSchedule = {
-              name: 'CS1012',
-              course_code: 'CS1012',
-              day_of_week: 'Wednesday',
-              start_time:'10:00AM',
-              end_time:'10:00PM',
-              location:'Head Hall',
-              term:"FALL 2025",
-              start_date:'10-23-10',
-              end_date:'10-23-10',
-            }
-    apiAddCourse2(parsedSchedule);
+      name: 'CS1012',
+      course_code: 'CS1012',
+      day_of_week: 'Wednesday',
+      start_time:'10:00AM',
+      end_time:'10:00PM',
+      location:'Head Hall',
+      term:"FALL 2025",
+      start_date:'10-23-10',
+      end_date:'10-23-10',
+    }
+
+    const formSchedule = {
+      name: schedule.name,
+      course_code: schedule.name,
+      day_of_week: "Wednesday",
+      start_time: schedule.start_time,
+      end_time: schedule.end_time,
+      location: schedule.location,
+      term: "FALL 2025",
+      start_date: schedule.start_date,
+      end_date: schedule.end_date,
+      reoccurring: schedule.reoccurring,
+    }
+    
+    apiAddCourse2(formSchedule);
   }
 
   return (
