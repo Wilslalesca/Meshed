@@ -10,6 +10,7 @@ export interface NewCourseTime {
   end_time?: string;
   term?:string;
   start_date?: string;
+  end_date?: string;
   created_at?: string;
   updated_at?: string;
 }
@@ -27,11 +28,11 @@ export const db = {
     const res = await pool.query(
       `INSERT INTO course_times (
           name, course_code, location, day_of_week, start_time,
-          end_time, term, start_date, created_at, updated_at
-       ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW(), NOW())
+          end_time, term, start_date, end_date, created_at, updated_at
+       ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW(), NOW())
        RETURNING id, name, course_code,
                  location, day_of_week, start_time, end_time,
-                 term, start_date, created_at, updated_at`,
+                 term, start_date, end_date, created_at, updated_at`,
       [
         data.name,
         data.course_code,
@@ -41,6 +42,7 @@ export const db = {
         data.end_time,
         data.term,
         data.start_date,
+        data.end_date,
       ]
     );
     return res.rows[0];

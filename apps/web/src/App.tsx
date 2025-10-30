@@ -14,6 +14,7 @@ import { Upload } from "./screens/Upload";
 import { useAuth } from "./hooks/useAuth";
 import ScheduleBackground from './screens/ScheduleBackground';
 import { Layout } from "./components/layout/Layout";
+import { AddEditCourse } from "./screens/AddEditCourse.tsx";
 
 function AppLayout() {
   return (
@@ -103,6 +104,14 @@ export default function App() {
           element={
             <ProtectedRoute>
               <Profile />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/addeditcourse"
+          element={
+            <ProtectedRoute>
+              <AddEditCourse />
             </ProtectedRoute>
           }
         />

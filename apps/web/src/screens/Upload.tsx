@@ -90,6 +90,10 @@ export const Upload: React.FC = () => {
         navigate('/dashboard'); 
     }
 
+    const addEditCourse = async () => {
+        navigate('/addeditcourse');
+    }
+
     return (
         <div className= "bg-white min-h-screen flex items-center justify-center">
             <Card className= "w-full max-w-sm shadow-lg">
@@ -99,6 +103,7 @@ export const Upload: React.FC = () => {
                 </CardHeader>
                 <CardContent className="flex-col gap-2 items-center">
                     <DropzoneField onDrop={handleDrop} />
+                    <Button type="submit" onClick={addEditCourse} className="w-full py-2 bg-cyan-500 hover:bg-cyan-800">Add/Edit your Schedule</Button>
                     <Button type="submit" onClick={handleSubmit} className="w-full">Submit</Button>
                 </CardContent>
             </Card>

@@ -17,6 +17,7 @@ const courseTimeSchema = z.object({
     .regex(/^(0?[1-9]|1[0-2]):[0-5][0-9]\s?(AM|PM)$/i, "Invalid time format (use like '1:00 PM')").optional(),
     term: z.string().min(1).max(50),
     start_date:z.string().min(1).max(100),
+    end_date:z.string().min(1).max(100),
     created_at: z.string().datetime().optional(),
     updated_at: z.string().datetime().optional(),
 });
@@ -33,10 +34,10 @@ router.post('/coursetime', async (req, res) => {
 
     if (!parse.success) return res.status(400).json({ error: 'Validation error', details: parse.error.flatten() });
 
-    const { name, course_code, location, day_of_week, start_time, end_time, term, start_date, created_at, updated_at } = parse.data;
+    const { name, course_code, location, day_of_week, start_time, end_time, term, start_date, end_date, created_at, updated_at } = parse.data;
 
 
-    const course_time = await db.courseInsert({  name, course_code, location, day_of_week, start_time, end_time, term, start_date, created_at, updated_at  });
+    const course_time = await db.courseInsert({  name, course_code, location, day_of_week, start_time, end_time, term, start_date, end_date, created_at, updated_at  });
 
 
     return res.status(201).json({
@@ -51,6 +52,7 @@ router.post('/coursetime', async (req, res) => {
             end_time: course_time.end_time,
             term: course_time.term,
             start_date: course_time.start_date,
+            end_date: course_time.end_date,
         },
         success:true,
     });
