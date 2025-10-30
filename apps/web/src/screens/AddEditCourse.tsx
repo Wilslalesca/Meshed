@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import {apiAddCourse} from "../api/addeditcourse"
+import {apiAddCourse2} from "../api/addeditcourse"
 //import { Checkbox } from "@/components/ui/checkbox"
 //import { type DateRange } from "react-day-picker"
 //import { Calendar } from "@/components/ui/calendar"
@@ -44,7 +44,7 @@ export const AddEditCourse: React.FC = () => {
               start_date:'10-23-10',
               end_date:'10-23-10',
             }
-    apiAddCourse();
+    apiAddCourse2(parsedSchedule);
   }
 
   return (
