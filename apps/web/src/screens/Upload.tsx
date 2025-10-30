@@ -81,6 +81,8 @@ export const Upload: React.FC = () => {
                     });
 
                     const data = await response.json();
+                    
+
                 }
                 catch{
                     console.log('Error Adding Athlete Schedule');
@@ -90,8 +92,8 @@ export const Upload: React.FC = () => {
         navigate('/dashboard'); 
     }
 
-    const addEditCourse = async () => {
-        navigate('/addeditcourse');
+    const addCourse = async () => {
+        navigate('/addcourse');
     }
 
     return (
@@ -101,10 +103,10 @@ export const Upload: React.FC = () => {
                     <CardTitle>Upload your schedule</CardTitle>
                     <CardDescription>Go to your student portal and export your schedule in csv, pdf, or iCal formats</CardDescription>
                 </CardHeader>
-                <CardContent className="flex-col gap-2 py-2 items-center">
+                <CardContent className="flex flex-col p-4 items-center">
                     <DropzoneField onDrop={handleDrop} />
-                    <Button type="submit" onClick={addEditCourse} className="w-full gap-3 py-2 bg-cyan-500 hover:bg-cyan-800">Add/Edit your Schedule</Button>
-                    <Button type="submit" onClick={handleSubmit} className="w-full gap-3 py-2">Submit</Button>
+                    <Button type="submit" onClick={addCourse} className="w-full gap-3 bg-cyan-500 hover:bg-cyan-800">Add/Edit your Schedule</Button>
+                    <Button type="submit" onClick={handleSubmit} className="w-full gap-3">Submit</Button>
                 </CardContent>
             </Card>
         </div>
