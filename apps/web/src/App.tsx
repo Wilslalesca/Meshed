@@ -16,7 +16,7 @@ import ScheduleBackground from './screens/ScheduleBackground';
 import { Layout } from "./components/layout/Layout";
 import AthleteSchedulePage from "./routes/athlete/schedule";
 
-function AppLayout() {
+function AppLayout() { 
   return (
     <Layout>
       <Outlet />
