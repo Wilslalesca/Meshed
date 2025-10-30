@@ -61,8 +61,8 @@ export function AddCourseForm({
                 Add an event to your schedule, like a course or a doctor's appointment.
                 </p>
             </div>
-            <div className="flex-col gap-2 items-center">
-                <div className="grid w-full max-w-sm items-center gap-3 py-2">
+            <div className="flex-col items-center">
+                <div className="grid w-full items-center gap-3 py-2">
                 <Label htmlFor="event">Event/Course Name</Label>
                 <Input
                     type="text"
@@ -74,7 +74,7 @@ export function AddCourseForm({
                 />
                 </div>
 
-                    <div className="grid w-full max-w-sm items-center gap-3 py-2">
+                    <div className="grid w-full items-center gap-3 py-2">
                     <Label htmlFor="location">Location</Label>
                     <Input
                         type="text"
@@ -86,7 +86,7 @@ export function AddCourseForm({
                     />
                     </div>
 
-                    <div className="grid w-full max-w-sm items-center gap-3 py-2">
+                    <div className="grid w-full items-center gap-3 py-2">
                     <Label htmlFor="start_time">Start Time</Label>
                     <Input
                         type="time"
@@ -98,7 +98,7 @@ export function AddCourseForm({
                     />
                     </div>
 
-                    <div className="grid w-full max-w-sm items-center gap-3 py-2">
+                    <div className="grid w-full items-center gap-3 py-2">
                     <Label htmlFor="end_time">End Time</Label>
                     <Input
                         type="time"
@@ -110,7 +110,7 @@ export function AddCourseForm({
                     />
                     </div>
 
-                    <div className="grid w-full max-w-sm items-center gap-3 py-2">
+                    <div className="grid w-full items-center gap-3 py-2">
                     <Label htmlFor="reoccurring">Is the event reoccurring?</Label>
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
@@ -130,7 +130,7 @@ export function AddCourseForm({
                     </DropdownMenu>
                     </div>
 
-                    <div className="grid w-full max-w-sm items-center gap-3 py-2">
+                    <div className="grid w-full items-center gap-3 py-2">
                         <Label htmlFor="start_date">{reoccurring === "Yes" ? "Start Date" : "Date"}</Label>
                         <Input
                             type="date"
@@ -144,7 +144,7 @@ export function AddCourseForm({
                     </div>
 
                     {reoccurring === "Yes" && (
-                    <div className="grid w-full max-w-sm items-center gap-3 py-2">
+                    <div className="grid w-full items-center gap-3 py-2">
                         <Label htmlFor="end_date">End Date</Label>
                         <Input
                             type="date"
@@ -156,7 +156,7 @@ export function AddCourseForm({
                         />
                     </div>
                     )}
-                <div className="grid w-full max-w-sm items-center gap-3 py-2">
+                <div className="grid w-full items-center gap-3 py-2">
                     <Button type="submit" onClick={handleSubmit}>
                     Submit
                     </Button>
