@@ -15,8 +15,9 @@ import { useAuth } from "./hooks/useAuth";
 import ScheduleBackground from './screens/ScheduleBackground';
 import { Layout } from "./components/layout/Layout";
 import { AddCourse } from "./routes/courses/AddCourse.tsx";
+import AthleteSchedulePage from "./routes/athlete/schedule";
 
-function AppLayout() {
+function AppLayout() { 
   return (
     <Layout>
       <Outlet />
@@ -98,6 +99,14 @@ export default function App() {
               <Upload />
             </ProtectedRoute>
             }
+        />
+        <Route
+          path="/mySchedule"
+          element={
+            <ProtectedRoute>
+              <AthleteSchedulePage />
+            </ProtectedRoute>
+          }
         />
         <Route
           path="/profile"
