@@ -2,10 +2,11 @@ import { useState, useEffect } from "react";
 import { Sidebar } from "./Sidebar";
 import { Topbar } from "./Topbar";
 
-export const Layout = ({ children }: { children: React.ReactNode }) => {
+export const Layout = ({ children, title }: { children: React.ReactNode, title?: string }) => {
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
+    const pagetitle = title || "";
 
     useEffect(() => {
         const handleResize = () => {
@@ -40,6 +41,7 @@ export const Layout = ({ children }: { children: React.ReactNode }) => {
                             : setSidebarCollapsed(!sidebarCollapsed)
                     }
                     isMobile={isMobile}
+                    title={pagetitle}
                 />
 
                 {/* NOTE the padding px and py are set to zero i had them at px-6 and py-4 just so it looked better but some pages may need no margin for example the calendar */}

@@ -1,8 +1,7 @@
-import React from "react";
-import { Routes, Route, Outlet, Navigate } from "react-router-dom";
+import React, { use } from "react";
+import { Routes, Route, Outlet, Navigate, useLocation } from "react-router-dom";
 import { ProtectedRoute } from "./routes/ProtectedRoute";
 import { RequireRole } from "./routes/RequireRole";
-
 
 import { Home } from "./screens/Home";
 import LoginPage from "./screens/Login";
@@ -16,9 +15,21 @@ import ScheduleBackground from './screens/ScheduleBackground';
 import { Layout } from "./components/layout/Layout";
 import AthleteSchedulePage from "./routes/athlete/schedule";
 
-function AppLayout() { 
+const pageTitles: Record<string, string> = {
+  "/": "Home",
+  "/dashboard": "Dashboard",
+  "/admin": "Admin Panel",
+  "/manager": "Schedule Background Tasks",
+  "/upload": "Upload",
+  "/mySchedule": "My Schedule",
+  "/profile": "Profile",
+};
+
+function AppLayout() {
+  const location = useLocation();
+  const title = pageTitles[location.pathname] || "UMA App";
   return (
-    <Layout>
+    <Layout title={title}>
       <Outlet />
     </Layout>
   );
@@ -40,81 +51,22 @@ export default function App() {
     <Routes>
       {/* Auth (no sidebar) */}
       <Route element={<AuthLayout />}>
-        <Route
-          path="/login"
-          element={
-            <GuestRoute>
-              <LoginPage />
-            </GuestRoute>
-          }
-        />
-        <Route
-          path="/register"
-          element={
-            <GuestRoute>
-              <Register />
-            </GuestRoute>
-          }
-        />
+        <Route path="/login" element={ <GuestRoute> <LoginPage /> </GuestRoute> } />
+        <Route path="/register" element={ <GuestRoute> <Register /> </GuestRoute> } />
       </Route>
-
 
       {/* Main (with sidebar layout) */}
       <Route element={<AppLayout />}>
+
         <Route path="/" element={<Home />} />
         <Route path="/home" element={<Navigate to="/" replace />} />
-        <Route
-          path="/dashboard"
-          element={
-            <ProtectedRoute>
-              <Dashboard />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin"
-          element={
-            <ProtectedRoute>
-              <RequireRole allow="admin">
-                <Admin />
-              </RequireRole>
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/manager"
-          element={
-            <ProtectedRoute>
-              <RequireRole allow={["manager", "admin"]}>
-                <ScheduleBackground />
-              </RequireRole>
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/upload"
-          element={
-            <ProtectedRoute>
-              <Upload />
-            </ProtectedRoute>
-            }
-        />
-        <Route
-          path="/mySchedule"
-          element={
-            <ProtectedRoute>
-              <AthleteSchedulePage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/profile"
-          element={
-            <ProtectedRoute>
-              <Profile />
-            </ProtectedRoute>
-          }
-        />
+        <Route path="/dashboard" element={ <ProtectedRoute> <Dashboard /> </ProtectedRoute> }/>
+        <Route path="/admin" element={ <ProtectedRoute> <RequireRole allow="admin"> <Admin /> </RequireRole> </ProtectedRoute> }/>
+        <Route path="/manager" element={ <ProtectedRoute> <RequireRole allow={["manager", "admin"]}> <ScheduleBackground /> </RequireRole> </ProtectedRoute> }/>
+        <Route path="/upload" element={ <ProtectedRoute> <Upload /> </ProtectedRoute> }/>
+        <Route path="/mySchedule" element={ <ProtectedRoute> <AthleteSchedulePage /> </ProtectedRoute> }/>
+        <Route path="/profile" element={ <ProtectedRoute> <Profile /> </ProtectedRoute> }/>
+
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>
