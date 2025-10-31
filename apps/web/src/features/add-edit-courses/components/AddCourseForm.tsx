@@ -50,6 +50,7 @@ export function AddCourseForm({
       end_date: ( !endDate ? startDate : endDate),
     }
     await apiAddCourse(formSchedule, user?.id);
+    window.location.reload();
   }
 
   return (

@@ -1,37 +1,48 @@
 import React from 'react';
 import type { Schedule } from '@/features/athlete-schedule/types/Schedule';
 import { formatTime } from '@/features/athlete-schedule/utils/formatTime';
+import { Card,CardHeader, CardContent } from "@/components/ui/card"
 
 interface Props {
     data: Schedule[];
 }
 
-export const CourseBlock: React.FC<Props> = ({ data }) => (
+export const CourseBlock: React.FC<Props> = ({ data }) => {
+    // Group the schedule entries by course name since repeating courses
+    const grouped: Record<string, Schedule[]> = {};
 
-    <table className="w-full text-sm border-collapse border border-gray-300 rounded-xl">
-    <thead className="bg-gray-100">
-      <tr>
-        <th className="p-2 border">Course</th>
-        <th className="p-2 border">Day</th>
-        <th className="p-2 border">Time</th>
-        <th className="p-2 border">Location</th>
-        <th className="p-2 border">Term</th>
-      </tr>
-    </thead>
-    <tbody>
-      {data.map((c) => (
-        <tr key={c.id}>
-          <td className="p-2 border">{c.name}</td>
-          <td className="p-2 border">{c.day_of_week}</td>
-          <td className="p-2 border">
-            {formatTime(c.start_time)} – {formatTime(c.end_time)}
-          </td>
-          <td className="p-2 border">{c.location}</td>
-          <td className="p-2 border">{c.term}</td>
-        </tr>
-      ))}
-    </tbody>
-  </table>
-);
+    for (const course of data) {
+        const key = course.name; // or course.course_id
+        if (!grouped[key]) grouped[key] = [];
+        grouped[key].push(course);
+    }
+
+    return (
+        <div className="flex flex-col gap-4">
+        {Object.entries(grouped).map(([courseName, schedules]) => (
+            <Card
+            key={courseName}
+            className="w-full max-w-sm shadow-lg rounded-lg"
+            >
+            <CardHeader>
+                <h1 className="text-xl font-bold">{courseName}</h1>
+            </CardHeader>
+            <CardContent className="p-4">
+                {schedules.map((c, index) => (
+                <div key={index} className="mb-2 last:mb-0">
+                    <p className="text-muted-foreground text-sm">{c.day_of_week}</p>
+                    <p className="text-muted-foreground text-sm">
+                    {formatTime(c.start_time)} – {formatTime(c.end_time)}
+                    </p>
+                    <p className="text-muted-foreground text-sm">{c.location}</p>
+                    <p className="text-muted-foreground text-sm">{c.term}</p>
+                </div>
+                ))}
+            </CardContent>
+            </Card>
+        ))}
+        </div>
+    );
+};
 
 export default CourseBlock;
