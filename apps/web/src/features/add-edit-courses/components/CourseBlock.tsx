@@ -8,6 +8,15 @@ interface Props {
 }
 
 export const CourseBlock: React.FC<Props> = ({ data }) => {
+    const dayOrder: Record<string, number> = {
+        Sunday: 0,
+        Monday: 1,
+        Tuesday: 2,
+        Wednesday: 3,
+        Thursday: 4,
+        Friday: 5,
+        Saturday: 6,
+    };
     // Group the schedule entries by course name since repeating courses
     const grouped: Record<string, Schedule[]> = {};
 
@@ -28,9 +37,17 @@ export const CourseBlock: React.FC<Props> = ({ data }) => {
                 <h1 className="text-xl font-bold">{courseName}</h1>
             </CardHeader>
             <CardContent className="p-4">
-                {schedules.map((c, index) => (
+                {schedules
+                .sort((a, b) => dayOrder[a.day_of_week] - dayOrder[b.day_of_week])
+                .map((c, index) => (
                 <div key={index} className="mb-2 last:mb-0">
                     <p className="text-muted-foreground text-sm">{c.day_of_week}</p>
+                    <p className="text-muted-foreground text-sm">
+                        {c.end_date != c.start_date
+                        ? `${c.start_date} to ${c.end_date}`
+                        : `${c.start_date}`
+                        }
+                    </p>
                     <p className="text-muted-foreground text-sm">
                     {formatTime(c.start_time)} – {formatTime(c.end_time)}
                     </p>
