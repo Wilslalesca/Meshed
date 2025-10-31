@@ -21,7 +21,6 @@ export async function apiAddCourse(parsedSchedule: unknown, athlete_id: unknown)
             await apiAddAthleteCourse(courseTimeId,  athlete_id);
         }
 
-        console.log(data);
         return;
     }
     catch{
@@ -40,8 +39,6 @@ export async function apiAddAthleteCourse(courseTimeID: unknown, athlete_id: unk
         });
 
         const data = await response.json();
-        console.log(data);
-        
     }
     catch{
         console.log('Error Adding Athlete Schedule');

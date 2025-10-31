@@ -1,19 +1,21 @@
 import React from "react";
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { useNavigate } from 'react-router-dom';
-import {apiAddCourse, formatTimeTo12Hour} from "../../api/addcourse"
 import { AddCourseForm } from "@/features/add-edit-courses/components/AddCourseForm";
+import CourseBlock from "@/features/add-edit-courses/components/CourseBlock";
+import { useAthleteSchedule } from '@/features/athlete-schedule/hooks/useAthleteSchedule';
+import { useAuth } from '@/hooks/useAuth';
+
 
 
 
 export const AddCourse: React.FC = () => {
+  const { user, loading: authLoading } = useAuth();
+  const athleteId = user?.id;
+  //const { schedule, loading } = useAthleteSchedule(athleteId);
 
   return (
     <div className="bg-white min-h-screen flex p-4">
       <AddCourseForm />
+
     </div>
       
   );
