@@ -1,19 +1,51 @@
 export const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
-export async function apiAddCourse(parsedSchedule: unknown): Promise<void> {
-    const res = await fetch(`${API_BASE}/schedule/coursetime`, {
-        method: 'POST',
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify(parsedSchedule),
-    });
+export async function apiAddCourse(parsedSchedule: unknown, athlete_id: unknown): Promise<void> {
+    try{
+        const res = await fetch(`${API_BASE}/schedule/coursetime`, {
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(parsedSchedule),
+        });
 
-    if (!res.ok) {
-        throw new Error('failed');
+        if (!res.ok) {
+            throw new Error('failed');
+        }
+        const data = await res.json();
+        const courseTimeSuccess = data.success;
+        const courseTimeId = data.course_time.id;
+
+        if(courseTimeSuccess){
+            await apiAddAthleteCourse(courseTimeId,  athlete_id);
+        }
+
+        console.log(data);
+        return;
     }
-    console.log(res);
-    return;
+    catch{
+        console.log('Error Adding Course');
+    }
+}
+
+export async function apiAddAthleteCourse(courseTimeID: unknown, athlete_id: unknown): Promise<void> {
+    try{
+        const response = await fetch("http://localhost:4000/schedule/athletecoursetime",{
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({athlete_id: athlete_id, class_id:courseTimeID}),
+        });
+
+        const data = await response.json();
+        console.log(data);
+        
+    }
+    catch{
+        console.log('Error Adding Athlete Schedule');
+    }
 }
 
 export function formatTimeTo12Hour(time: string) {

@@ -1,5 +1,6 @@
 import React from "react";
 import { Button } from "@/components/ui/button"
+import { useAuth } from '@/hooks/useAuth';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -20,6 +21,7 @@ export function AddCourseForm({
     ...props
 }: React.ComponentProps<"form">) {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [eventName, setEventName] = React.useState("");
   const [location, setLocation] = React.useState("");
   const [startTime, setStartTime] = React.useState("10:30:00");
@@ -48,7 +50,7 @@ export function AddCourseForm({
       start_date: startDate,
       end_date: ( !endDate ? startDate : endDate),
     }
-    apiAddCourse(formSchedule);
+    await apiAddCourse(formSchedule, user?.id);
     navigate('/upload');
   }
 
