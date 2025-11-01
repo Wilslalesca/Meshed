@@ -42,7 +42,7 @@ router.post('/coursetime', async (req, res) => {
         const course_time = await db.courseInsert({  name, course_code, location, day_of_week, start_time, end_time, term, start_date, end_date, created_at, updated_at  });
 
         console.log("Added Course to DB")
-        return res.status(201).json({
+        return res.status(200).json({
             message: "Added Course to DB",
             course_time:{
                 id: course_time.id,
@@ -76,7 +76,7 @@ router.post('/athletecoursetime', async (req, res) => {
         const athlete_course_time = await db.athleteCourseInsert({ athlete_id, class_id, created_at, updated_at  });
 
         console.log("Added AthleteCourse to DB")
-        return res.status(201).json({
+        return res.status(200).json({
             message: "Connected Course to Athlete",
             course_time:{
                 id: athlete_course_time.id,
@@ -147,7 +147,7 @@ router.post("/addcourseandathlete", async (req, res) => {
 
       await client.query("COMMIT");
 
-      res.status(201).json({
+      res.status(200).json({
         success: true,
         message: "Added course and linked athlete",
       });

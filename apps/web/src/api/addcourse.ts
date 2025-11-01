@@ -49,25 +49,39 @@ export async function apiAddCourse(parsedSchedule: unknown): Promise<CourseRespo
 }
 
 //getting error here
-export async function apiAddCourseAndAthleteCourse(parsedSchedule: unknown, athlete_id: unknown): Promise<CourseResponse | undefined> {
+export async function apiAddCourseAndAthleteCourse(parsedSchedule: unknown, athlete_id: unknown){
     console.log(parsedSchedule)
     console.log(athlete_id)
-    try{
-        const res = await fetch(`${API_BASE}/schedule/addcourseandathlete`, {
-            method: 'POST',
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({user_id: athlete_id, coursetimedata:parsedSchedule}),
-        });
+    try {
+    const res = await fetch(`${API_BASE}/schedule/addcourseandathlete`, {
+        method: 'POST',
+        headers: {
+        "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            user_id: athlete_id,
+            coursetimedata: parsedSchedule
+        }),
 
-        const data = await res.json();
-        
-        return data;
+    });
+
+    if (!res.ok) {
+      const errText = await res.text();
+      throw new Error(`Server error ${res.status}: ${errText}`);
     }
-    catch (err) {
-        console.error("Error Adding Course:", err);
-    }
+
+    const data = await res.json();
+    return data;
+  } catch (err) {
+  if (err instanceof Error) {
+    console.error("Error Adding Course:", err);
+    return { success: false, message: err.message };
+  } else {
+    console.error("Unknown error Adding Course:", err);
+    return { success: false, message: String(err) };
+  }
+}
+
 }
 
 export async function apiAddAthleteCourse(courseTimeID: unknown, athlete_id: unknown): Promise<AthleteCourseResponse | undefined> {

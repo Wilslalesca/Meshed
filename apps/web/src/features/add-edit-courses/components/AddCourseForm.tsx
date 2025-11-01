@@ -50,12 +50,11 @@ export function AddCourseForm({
       end_date: ( !endDate ? startDate : endDate),
     }
     const data = await apiAddCourseAndAthleteCourse(formSchedule, user?.id);
-    alert(data)
-    /*if(data && data.success){
-        console.log("User id"+ user?.id)
-        const athleteCourseData = await apiAddAthleteCourse(data?.course_time.id,  user?.id);
-        console.log(athleteCourseData)
-    }*/
+    if (data?.success) {
+        alert(data.message)
+    } else {
+        alert(`Error: ${data?.message || "Unknown error"}`)
+    }
   }
 
   return (
