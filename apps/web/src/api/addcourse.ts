@@ -48,6 +48,7 @@ export async function apiAddCourse(parsedSchedule: unknown): Promise<CourseRespo
     }
 }
 
+//getting error here
 export async function apiAddCourseAndAthleteCourse(parsedSchedule: unknown, athlete_id: unknown): Promise<CourseResponse | undefined> {
     console.log(parsedSchedule)
     console.log(athlete_id)
@@ -60,9 +61,6 @@ export async function apiAddCourseAndAthleteCourse(parsedSchedule: unknown, athl
             body: JSON.stringify({user_id: athlete_id, coursetimedata:parsedSchedule}),
         });
 
-        if (!res.ok) {
-            throw new Error('failed');
-        }
         const data = await res.json();
         
         return data;
