@@ -78,91 +78,41 @@ router.post('/athletecoursetime', async (req, res) => {
         console.log("Added AthleteCourse to DB")
         return res.status(200).json({
             message: "Connected Course to Athlete",
-            course_time:{
-                id: athlete_course_time.id,
-                athlete_id: athlete_course_time.athlete_id,
-                class_id: athlete_course_time.class_id,
-            }
+            success: true
         });
     }
     catch (error) {
         console.error("Error adding course to athlete schedule:", error);
-        return res.status(500).json({ message: "Internal server error" });
+        return res.status(500).json({ message: "Internal server error" , success:false});
     }
 });
 
 router.post("/addcourseandathlete", async (req, res) => {
   const { user_id, coursetimedata } = req.body;
 
+  const parseCourse = courseTimeSchema.safeParse(coursetimedata);
+  if (!parseCourse.success) {
+    return res.status(400).json({ error: "Validation error", details: parseCourse.error.flatten() });
+  }
+
   try {
-    const parseCourse = courseTimeSchema.safeParse(coursetimedata);
-    if (!parseCourse.success) {
-      return res.status(400).json({ error: "Validation error", details: parseCourse.error.flatten() });
-    }
+    const { course, athleteCourse } = await db.addCourseAndAthlete(
+      parseCourse.data,
+      { athlete_id: user_id, class_id: "" }
+    );
 
-    const client = await pool.connect();
-    try {
-      await client.query("BEGIN");
-
-      const courseRes = await client.query(
-        `INSERT INTO course_times (
-          name, course_code, location, day_of_week, start_time,
-          end_time, term, start_date, end_date, created_at, updated_at
-        ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,NOW(),NOW())
-        RETURNING id, name, course_code, location, day_of_week, start_time,
-                  end_time, term, start_date, end_date, created_at, updated_at`,
-        [
-          parseCourse.data.name,
-          parseCourse.data.course_code,
-          parseCourse.data.location,
-          parseCourse.data.day_of_week,
-          parseCourse.data.start_time,
-          parseCourse.data.end_time,
-          parseCourse.data.term,
-          parseCourse.data.start_date,
-          parseCourse.data.end_date,
-        ]
-      );
-
-      const course_time = courseRes.rows[0];
-
-      const parseAthleteCourse = athleteCourseTimeSchema.safeParse({
-        athlete_id: user_id,
-        class_id: course_time.id,
-      });
-      if (!parseAthleteCourse.success) {
-        await client.query("ROLLBACK");
-        return res.status(400).json({ error: "Validation error", details: parseAthleteCourse.error.flatten() });
-      }
-
-      const { athlete_id, class_id } = parseAthleteCourse.data;
-
-      const athleteRes = await client.query(
-        `INSERT INTO athlete_course_times (
-          athlete_id, class_id, created_at, updated_at
-        ) VALUES ($1,$2,NOW(),NOW())
-        RETURNING id, athlete_id, class_id, created_at, updated_at`,
-        [athlete_id, class_id]
-      );
-
-      await client.query("COMMIT");
-
-      res.status(200).json({
-        success: true,
-        message: "Added course and linked athlete",
-      });
-    } catch (txErr) {
-      await client.query("ROLLBACK");
-      console.error("Transaction failed:", txErr);
-      res.status(500).json({ success: false, message: "Transaction failed" });
-    } finally {
-      client.release();
-    }
+    res.status(200).json({
+      success: true,
+      message: "Added course and linked athlete",
+      course,
+      athleteCourse,
+    });
   } catch (err) {
-    console.error("Error adding course:", err);
-    res.status(500).json({ message: "Internal server error" });
+    console.error("Error adding course and athlete:", err);
+    res.status(500).json({ success: false, message: "Transaction failed" });
   }
 });
+
 
 
 router.get("/", (_req, res) => {

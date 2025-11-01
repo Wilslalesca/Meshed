@@ -31,6 +31,12 @@ export function AddCourseForm({
   const weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
   const handleSubmit = async () => {
+    
+    if (!eventName || !location || !startTime || !endTime || !startDate) {
+        alert("Please fill in all required fields before submitting!");
+        return;
+    }
+
     const d = new Date(startDate);
     const formSchedule = {
       name: eventName,
@@ -49,11 +55,18 @@ export function AddCourseForm({
       start_date: startDate,
       end_date: ( !endDate ? startDate : endDate),
     }
-    const data = await apiAddCourseAndAthleteCourse(formSchedule, user?.id);
-    if (data?.success) {
-        alert(data.message)
-    } else {
-        alert(`Error: ${data?.message || "Unknown error"}`)
+
+    try {
+        const data = await apiAddCourseAndAthleteCourse(formSchedule, user?.id);
+        console.log("API response:", data);
+        if (data?.success) {
+            alert(`Course ${data.course.name} added successfully!`);
+        } else {
+            alert(`Error: ${data?.message}`);
+        }
+    } catch (err) {
+        console.error("Error submitting course:", err);
+        alert("An unexpected error occurred");
     }
   }
 
