@@ -30,53 +30,113 @@ export const athleteCourseTimeSchema = z.object({
 });
 
 router.post('/coursetime', async (req, res) => {
-    const parse = courseTimeSchema.safeParse(req.body);
+    try{
+        const parse = courseTimeSchema.safeParse(req.body);
 
-    if (!parse.success) return res.status(400).json({ error: 'Validation error', details: parse.error.flatten() });
+        if (!parse.success) return res.status(400).json({ error: 'Validation error', details: parse.error.flatten() });
 
-    const { name, course_code, location, day_of_week, start_time, end_time, term, start_date, end_date, created_at, updated_at } = parse.data;
-
-
-    const course_time = await db.courseInsert({  name, course_code, location, day_of_week, start_time, end_time, term, start_date, end_date, created_at, updated_at  });
+        const { name, course_code, location, day_of_week, start_time, end_time, term, start_date, end_date, created_at, updated_at } = parse.data;
 
 
-    return res.status(201).json({
-        message: "Added Course to DB",
-        course_time:{
-            id: course_time.id,
-            name: course_time.name,
-            course_code: course_time.course_code,
-            location: course_time.location,
-            day_of_week: course_time.day_of_week,
-            start_time: course_time.start_time,
-            end_time: course_time.end_time,
-            term: course_time.term,
-            start_date: course_time.start_date,
-            end_date: course_time.end_date,
-        },
-        success:true,
-    });
+        const course_time = await db.courseInsert({  name, course_code, location, day_of_week, start_time, end_time, term, start_date, end_date, created_at, updated_at  });
+
+        console.log("Added Course to DB")
+        return res.status(201).json({
+            message: "Added Course to DB",
+            course_time:{
+                id: course_time.id,
+                name: course_time.name,
+                course_code: course_time.course_code,
+                location: course_time.location,
+                day_of_week: course_time.day_of_week,
+                start_time: course_time.start_time,
+                end_time: course_time.end_time,
+                term: course_time.term,
+                start_date: course_time.start_date,
+                end_date: course_time.end_date,
+            },
+            success:true,
+        });
+    }
+    catch (error) {
+        console.error("Error adding course", error);
+        return res.status(500).json({ message: "Internal server error" });
+    }
 });
 
 router.post('/athletecoursetime', async (req, res) => {
-    const parse = athleteCourseTimeSchema.safeParse(req.body);
+    try{
+        const parse = athleteCourseTimeSchema.safeParse(req.body);
 
-    if (!parse.success) return res.status(400).json({ error: 'Validation error', details: parse.error.flatten() });
+        if (!parse.success) return res.status(400).json({ error: 'Validation error', details: parse.error.flatten() });
 
-    const { athlete_id, class_id, created_at, updated_at } = parse.data;
+        const { athlete_id, class_id, created_at, updated_at } = parse.data;
+        console.log(athlete_id + " " + class_id )
+        const athlete_course_time = await db.athleteCourseInsert({ athlete_id, class_id, created_at, updated_at  });
 
+        console.log("Added AthleteCourse to DB")
+        return res.status(201).json({
+            message: "Connected Course to Athlete",
+            course_time:{
+                id: athlete_course_time.id,
+                athlete_id: athlete_course_time.athlete_id,
+                class_id: athlete_course_time.class_id,
+            }
+        });
+    }
+    catch (error) {
+        console.error("Error adding course to athlete schedule:", error);
+        return res.status(500).json({ message: "Internal server error" });
+    }
+});
 
-    const athlete_course_time = await db.athleteCourseInsert({ athlete_id, class_id, created_at, updated_at  });
+router.post("/addcourseandathlete", async (req, res) => {
+    const { user_id, coursetimedata } = req.body;
+    try{
+        const parseCourse = courseTimeSchema.safeParse(coursetimedata);
 
+        if (!parseCourse.success) return res.status(400).json({ error: 'Validation error', details: parseCourse.error.flatten() });
 
-    return res.status(201).json({
-        message: "Connected Course to Athlete",
-        course_time:{
-            id: athlete_course_time.id,
-            athlete_id: athlete_course_time.athlete_id,
-            class_id: athlete_course_time.class_id,
+        const { name, course_code, location, day_of_week, start_time, end_time, term, start_date, end_date, created_at, updated_at } = parseCourse.data;
+
+        const course_time = await db.courseInsert({  name, course_code, location, day_of_week, start_time, end_time, term, start_date, end_date, created_at, updated_at  });
+
+        console.log("Added Course to DB")
+
+        const athleteCourseData = {
+            athlete_id: user_id,
+            class_id: course_time.id,
         }
-    });
+        
+        const parseAthleteCourse = athleteCourseTimeSchema.safeParse(athleteCourseData);
+
+        if (!parseAthleteCourse.success) return res.status(400).json({ error: 'Validation error', details: parseAthleteCourse.error.flatten() });
+
+        const { athlete_id, class_id, created_at, updated_at } = parseAthleteCourse.data;
+
+        const athlete_course_time = await db.athleteCourseInsert({ athlete_id, class_id, created_at, updated_at  });
+        
+        /*return res.status(201).json({
+            message: "Added Course to DB",
+            course_time:{
+                id: course_time.id,
+                name: course_time.name,
+                course_code: course_time.course_code,
+                location: course_time.location,
+                day_of_week: course_time.day_of_week,
+                start_time: course_time.start_time,
+                end_time: course_time.end_time,
+                term: course_time.term,
+                start_date: course_time.start_date,
+                end_date: course_time.end_date,
+            },
+            success:true,
+        });*/
+    }
+    catch (error) {
+        console.error("Error adding course", error);
+        return res.status(500).json({ message: "Internal server error" });
+    }
 });
 
 router.get("/", (_req, res) => {

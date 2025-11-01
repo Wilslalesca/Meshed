@@ -1,6 +1,32 @@
 export const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
-export async function apiAddCourse(parsedSchedule: unknown, athlete_id: unknown): Promise<void> {
+type CourseResponse = {
+    message: string,
+    course_time: {
+    id: number;
+    name: string,
+    course_code: string,
+    location: string,
+    day_of_week: string,
+    start_time: string,
+    end_time: string,
+    term: string,
+    start_date: string,
+    end_date: string,
+    };
+    success: boolean;
+}
+
+type AthleteCourseResponse = {
+    message: string,
+    course_time:{
+        id: string,
+        athlete_id: string,
+        class_id: string,
+    }
+}
+
+export async function apiAddCourse(parsedSchedule: unknown): Promise<CourseResponse | undefined> {
     try{
         const res = await fetch(`${API_BASE}/schedule/coursetime`, {
             method: 'POST',
@@ -14,21 +40,37 @@ export async function apiAddCourse(parsedSchedule: unknown, athlete_id: unknown)
             throw new Error('failed');
         }
         const data = await res.json();
-        const courseTimeSuccess = data.success;
-        const courseTimeId = data.course_time.id;
-
-        if(courseTimeSuccess){
-            await apiAddAthleteCourse(courseTimeId,  athlete_id);
-        }
-
-        return;
+        
+        return data;
     }
-    catch{
-        console.log('Error Adding Course');
+    catch (err) {
+        console.error("Error Adding Course:", err);
     }
 }
 
-export async function apiAddAthleteCourse(courseTimeID: unknown, athlete_id: unknown): Promise<void> {
+export async function apiAddCourseAndAthleteCourse(parsedSchedule: unknown, athlete_id: unknown): Promise<CourseResponse | undefined> {
+    try{
+        const res = await fetch(`${API_BASE}/schedule/coursetime`, {
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(parsedSchedule),
+        });
+
+        if (!res.ok) {
+            throw new Error('failed');
+        }
+        const data = await res.json();
+        
+        return data;
+    }
+    catch (err) {
+        console.error("Error Adding Course:", err);
+    }
+}
+
+export async function apiAddAthleteCourse(courseTimeID: unknown, athlete_id: unknown): Promise<AthleteCourseResponse | undefined> {
     try{
         const response = await fetch("http://localhost:4000/schedule/athletecoursetime",{
             method: "POST",
@@ -39,9 +81,10 @@ export async function apiAddAthleteCourse(courseTimeID: unknown, athlete_id: unk
         });
 
         const data = await response.json();
+        return data;
     }
-    catch{
-        console.log('Error Adding Athlete Schedule');
+    catch (err) {
+        console.error("Error Adding Athlete Schedule:", err);
     }
 }
 

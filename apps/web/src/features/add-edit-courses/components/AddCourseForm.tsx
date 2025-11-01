@@ -4,7 +4,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useNavigate } from 'react-router-dom';
-import {apiAddCourse, formatTimeTo12Hour} from "@/api/addcourse"
+import {apiAddCourse, formatTimeTo12Hour, apiAddAthleteCourse} from "@/api/addcourse"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -49,8 +49,13 @@ export function AddCourseForm({
       start_date: startDate,
       end_date: ( !endDate ? startDate : endDate),
     }
-    await apiAddCourse(formSchedule, user?.id);
-    window.location.reload();
+    const data = await apiAddCourse(formSchedule);
+
+    if(data && data.success){
+        console.log("User id"+ user?.id)
+        const athleteCourseData = await apiAddAthleteCourse(data?.course_time.id,  user?.id);
+        console.log(athleteCourseData)
+    }
   }
 
   return (
