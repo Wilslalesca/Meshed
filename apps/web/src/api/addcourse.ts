@@ -49,13 +49,15 @@ export async function apiAddCourse(parsedSchedule: unknown): Promise<CourseRespo
 }
 
 export async function apiAddCourseAndAthleteCourse(parsedSchedule: unknown, athlete_id: unknown): Promise<CourseResponse | undefined> {
+    console.log(parsedSchedule)
+    console.log(athlete_id)
     try{
-        const res = await fetch(`${API_BASE}/schedule/coursetime`, {
+        const res = await fetch(`${API_BASE}/schedule/addcourseandathlete`, {
             method: 'POST',
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify(parsedSchedule),
+            body: JSON.stringify({user_id: athlete_id, coursetimedata:parsedSchedule}),
         });
 
         if (!res.ok) {

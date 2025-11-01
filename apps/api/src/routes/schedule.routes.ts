@@ -92,6 +92,8 @@ router.post('/athletecoursetime', async (req, res) => {
 
 router.post("/addcourseandathlete", async (req, res) => {
     const { user_id, coursetimedata } = req.body;
+    console.log(user_id)
+    console.log(coursetimedata)
     try{
         const parseCourse = courseTimeSchema.safeParse(coursetimedata);
 
@@ -107,31 +109,21 @@ router.post("/addcourseandathlete", async (req, res) => {
             athlete_id: user_id,
             class_id: course_time.id,
         }
-        
+
         const parseAthleteCourse = athleteCourseTimeSchema.safeParse(athleteCourseData);
 
         if (!parseAthleteCourse.success) return res.status(400).json({ error: 'Validation error', details: parseAthleteCourse.error.flatten() });
 
-        const { athlete_id, class_id, created_at, updated_at } = parseAthleteCourse.data;
+        const { athlete_id, class_id, created_at: athlete_created_at, updated_at: athlete_updated_at } = parseAthleteCourse.data;
 
-        const athlete_course_time = await db.athleteCourseInsert({ athlete_id, class_id, created_at, updated_at  });
-        
-        /*return res.status(201).json({
-            message: "Added Course to DB",
-            course_time:{
-                id: course_time.id,
-                name: course_time.name,
-                course_code: course_time.course_code,
-                location: course_time.location,
-                day_of_week: course_time.day_of_week,
-                start_time: course_time.start_time,
-                end_time: course_time.end_time,
-                term: course_time.term,
-                start_date: course_time.start_date,
-                end_date: course_time.end_date,
-            },
-            success:true,
-        });*/
+        const athlete_course_time = await db.athleteCourseInsert({ athlete_id, class_id, created_at: athlete_created_at, updated_at: athlete_updated_at  });
+
+        return res.status(201).json({
+            success: true,
+            message: "Added course and linked athlete",
+            course_time,
+            athlete_course_time,
+        });
     }
     catch (error) {
         console.error("Error adding course", error);
