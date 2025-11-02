@@ -2,6 +2,8 @@ import React from 'react';
 import type { Schedule } from '@/features/athlete-schedule/types/Schedule';
 import { formatTime } from '@/features/athlete-schedule/utils/formatTime';
 import { Card,CardHeader, CardContent } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Pencil, Trash2 } from "lucide-react";
 
 interface Props {
     data: Schedule[];
@@ -35,6 +37,20 @@ export const CourseBlock: React.FC<Props> = ({ data }) => {
             >
             <CardHeader>
                 <h1 className="text-xl font-bold">{courseName}</h1>
+                <div className="flex gap-2">
+                    <Button
+                        size="icon"
+                        variant="outline"
+                    >
+                        <Pencil className="w-4 h-4" />
+                    </Button>
+                    <Button
+                        size="icon"
+                        variant="destructive"
+                    >
+                        <Trash2 className="w-4 h-4" />
+                    </Button>
+                </div>
             </CardHeader>
             <CardContent className="p-4">
                 {schedules
