@@ -6,71 +6,72 @@ import { Label } from "@/components/ui/label"
 import { useNavigate } from 'react-router-dom';
 import {apiAddCourse, formatTimeTo12Hour, apiAddAthleteCourse, apiAddCourseAndAthleteCourse} from "@/api/addcourse"
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
+DropdownMenu,
+DropdownMenuContent,
+DropdownMenuLabel,
+DropdownMenuRadioGroup,
+DropdownMenuRadioItem,
+DropdownMenuSeparator,
+DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
 export function AddCourseForm({
-    className,
-    ...props
+className,
+...props
 }: React.ComponentProps<"form">) {
-  const navigate = useNavigate();
-  const { user } = useAuth();
-  const [eventName, setEventName] = React.useState("");
-  const [location, setLocation] = React.useState("");
-  const [startTime, setStartTime] = React.useState("10:30:00");
-  const [endTime, setEndTime] = React.useState("11:20:00");
-  const [startDate, setStartDate] = React.useState("");
-  const [endDate, setEndDate] = React.useState("");
-  const [reoccurring, setReoccurring] = React.useState("");
-  const weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+    const navigate = useNavigate();
+    const { user } = useAuth();
+    const [eventName, setEventName] = React.useState("");
+    const [location, setLocation] = React.useState("");
+    const [startTime, setStartTime] = React.useState("10:30:00");
+    const [endTime, setEndTime] = React.useState("11:20:00");
+    const [startDate, setStartDate] = React.useState("");
+    const [endDate, setEndDate] = React.useState("");
+    const [reoccurring, setReoccurring] = React.useState("");
+    const weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
-  const handleSubmit = async () => {
-    
-    if (!eventName || !location || !startTime || !endTime || !startDate) {
-        alert("Please fill in all required fields before submitting!");
-        return;
-    }
+    const handleSubmit = async () => {
 
-    const d = new Date(startDate);
-    const formSchedule = {
-      name: eventName,
-      course_code: eventName,
-      day_of_week: weekdays[d.getDay()],
-      start_time: formatTimeTo12Hour(startTime),
-      end_time: formatTimeTo12Hour(endTime),
-      location: location,
-      term:( 
-        d.getMonth() >= 8 && d.getMonth() <=11
-        ? 'FALL'
-        :  d.getMonth() >= 0 && d.getMonth() <= 3
-        ? 'WINTER'
-        : 'SUMMER'
-      ),
-      start_date: startDate,
-      end_date: ( !endDate ? startDate : endDate),
-    }
-
-    try {
-        const data = await apiAddCourseAndAthleteCourse(formSchedule, user?.id);
-        console.log("API response:", data);
-        if (data?.success) {
-            alert(`Course ${data.course.name} added successfully!`);
-        } else {
-            alert(`Error: ${data?.message}`);
+        if (!eventName || !location || !startTime || !endTime || !startDate) {
+            alert("Please fill in all required fields before submitting!");
+            return;
         }
-    } catch (err) {
-        console.error("Error submitting course:", err);
-        alert("An unexpected error occurred");
-    }
-  }
 
-  return (
+        const d = new Date(startDate);
+        const formSchedule = {
+            name: eventName,
+            course_code: eventName,
+            day_of_week: weekdays[d.getDay()],
+            start_time: formatTimeTo12Hour(startTime),
+            end_time: formatTimeTo12Hour(endTime),
+            location: location,
+            term:( 
+            d.getMonth() >= 8 && d.getMonth() <=11
+            ? 'FALL'
+            :  d.getMonth() >= 0 && d.getMonth() <= 3
+            ? 'WINTER'
+            : 'SUMMER'
+            ),
+            start_date: startDate,
+            end_date: ( !endDate ? startDate : endDate),
+        }
+
+        try {
+            const data = await apiAddCourseAndAthleteCourse(formSchedule, user?.id);
+            console.log("API response:", data);
+            if (data?.success) {
+                alert(`Course ${data.course.name} added successfully!`);
+            } else {
+                alert(`Error: ${data?.message}`);
+            }
+        } catch (err) {
+            console.error("Error submitting course:", err);
+            alert("An unexpected error occurred");
+        }
+        window.location.reload();
+    }
+
+    return (
     <form className="bg-white min-h-screen flex">
         <div className="w-full">
             <div>
@@ -81,18 +82,18 @@ export function AddCourseForm({
             </div>
             <div className="flex-col items-center">
                 <div className="grid w-full items-center gap-3 py-2">
-                <Label htmlFor="event">Event/Course Name</Label>
-                <Input
-                    type="text"
-                    id="event"
-                    placeholder="e.g. Appointment or MATH1003"
-                    value={eventName}
-                    onChange={(e) => setEventName(e.target.value)}
-                    required
-                />
+                    <Label htmlFor="event">Event/Course Name</Label>
+                    <Input
+                        type="text"
+                        id="event"
+                        placeholder="e.g. Appointment or MATH1003"
+                        value={eventName}
+                        onChange={(e) => setEventName(e.target.value)}
+                        required
+                    />
                 </div>
 
-                    <div className="grid w-full items-center gap-3 py-2">
+                <div className="grid w-full items-center gap-3 py-2">
                     <Label htmlFor="location">Location</Label>
                     <Input
                         type="text"
@@ -102,9 +103,9 @@ export function AddCourseForm({
                         onChange={(e) => setLocation(e.target.value)}
                         required
                     />
-                    </div>
+                </div>
 
-                    <div className="grid w-full items-center gap-3 py-2">
+                <div className="grid w-full items-center gap-3 py-2">
                     <Label htmlFor="start_time">Start Time</Label>
                     <Input
                         type="time"
@@ -114,9 +115,9 @@ export function AddCourseForm({
                         className="bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
                         required
                     />
-                    </div>
+                </div>
 
-                    <div className="grid w-full items-center gap-3 py-2">
+                <div className="grid w-full items-center gap-3 py-2">
                     <Label htmlFor="end_time">End Time</Label>
                     <Input
                         type="time"
@@ -126,42 +127,42 @@ export function AddCourseForm({
                         className="bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
                         required
                     />
-                    </div>
+                </div>
 
-                    <div className="grid w-full items-center gap-3 py-2">
-                    <Label htmlFor="reoccurring">Is the event reoccurring?</Label>
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                        <Button variant="outline">
-                            {reoccurring}
-                        </Button>
-                        </DropdownMenuTrigger>
+                <div className="grid w-full items-center gap-3 py-2">
+                <Label htmlFor="reoccurring">Is the event reoccurring?</Label>
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                    <Button variant="outline">
+                        {reoccurring}
+                    </Button>
+                    </DropdownMenuTrigger>
 
-                        <DropdownMenuContent className="w-40">
-                        <DropdownMenuLabel>Will the event reoccurr?</DropdownMenuLabel>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuRadioGroup value={reoccurring} onValueChange={setReoccurring}>
-                            <DropdownMenuRadioItem value="Yes">Yes</DropdownMenuRadioItem>
-                            <DropdownMenuRadioItem value="No">No</DropdownMenuRadioItem>
-                        </DropdownMenuRadioGroup>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
-                    </div>
+                    <DropdownMenuContent className="w-40">
+                    <DropdownMenuLabel>Will the event reoccurr?</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuRadioGroup value={reoccurring} onValueChange={setReoccurring}>
+                        <DropdownMenuRadioItem value="Yes">Yes</DropdownMenuRadioItem>
+                        <DropdownMenuRadioItem value="No">No</DropdownMenuRadioItem>
+                    </DropdownMenuRadioGroup>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+                </div>
 
-                    <div className="grid w-full items-center gap-3 py-2">
-                        <Label htmlFor="start_date">{reoccurring === "Yes" ? "Start Date" : "Date"}</Label>
-                        <Input
-                            type="date"
-                            id="start_date"
-                            min="2025-01-01"
-                            max="2035-12-31"
-                            value={startDate}
-                            onChange={(e) => setStartDate(e.target.value)}
-                            required
-                        />
-                    </div>
+                <div className="grid w-full items-center gap-3 py-2">
+                    <Label htmlFor="start_date">{reoccurring === "Yes" ? "Start Date" : "Date"}</Label>
+                    <Input
+                        type="date"
+                        id="start_date"
+                        min="2025-01-01"
+                        max="2035-12-31"
+                        value={startDate}
+                        onChange={(e) => setStartDate(e.target.value)}
+                        required
+                    />
+                </div>
 
-                    {reoccurring === "Yes" && (
+                {reoccurring === "Yes" && (
                     <div className="grid w-full items-center gap-3 py-2">
                         <Label htmlFor="end_date">End Date</Label>
                         <Input
@@ -173,15 +174,15 @@ export function AddCourseForm({
                             onChange={(e) => setEndDate(e.target.value)}
                         />
                     </div>
-                    )}
+                )}
                 <div className="grid w-full items-center gap-3 py-2">
-                    <Button type="submit" onClick={handleSubmit}>
+                    <Button type="button" onClick={handleSubmit}>
                     Submit
                     </Button>
                 </div>
             </div>
         </div>
     </form>
-      
-  );
+        
+    );
 };

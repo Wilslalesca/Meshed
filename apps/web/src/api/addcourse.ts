@@ -17,15 +17,6 @@ type CourseResponse = {
     success: boolean;
 }
 
-type AthleteCourseResponse = {
-    message: string,
-    course_time:{
-        id: string,
-        athlete_id: string,
-        class_id: string,
-    }
-}
-
 type ApiResponse = {
     message: string,
     success: boolean
@@ -54,8 +45,7 @@ export async function apiAddCourse(parsedSchedule: unknown): Promise<CourseRespo
 }
 
 export async function apiAddCourseAndAthleteCourse(parsedSchedule: unknown, athlete_id: unknown){
-    console.log(parsedSchedule)
-    console.log(athlete_id)
+    console.log(API_BASE)
     try {
         const res = await fetch(`${API_BASE}/schedule/addcourseandathlete`, {
             method: 'POST',
@@ -108,9 +98,9 @@ export async function apiAddAthleteCourse(courseTimeID: unknown, athlete_id: unk
 }
 
 export function formatTimeTo12Hour(time: string) {
-  if (!time) return "";
-  const [hour, minute] = time.split(":").map(Number);
-  const ampm = hour >= 12 ? "PM" : "AM";
-  const hour12 = hour % 12 || 12;
-  return `${hour12}:${minute.toString().padStart(2, "0")} ${ampm}`;
+    if (!time) return "";
+    const [hour, minute] = time.split(":").map(Number);
+    const ampm = hour >= 12 ? "PM" : "AM";
+    const hour12 = hour % 12 || 12;
+    return `${hour12}:${minute.toString().padStart(2, "0")} ${ampm}`;
 }
