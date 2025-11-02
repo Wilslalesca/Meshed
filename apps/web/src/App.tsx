@@ -10,7 +10,7 @@ import { Register } from "./screens/Register";
 import { Dashboard } from "./screens/Dashboard";
 import { Admin } from "./screens/Admin";
 import { Profile } from "./screens/Profile";
-import { Upload } from "./screens/Upload";
+import { Upload } from "./routes/upload/Upload";
 import { useAuth } from "./hooks/useAuth";
 import ScheduleBackground from './screens/ScheduleBackground';
 import { Layout } from "./components/layout/Layout";

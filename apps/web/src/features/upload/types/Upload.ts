@@ -1,6 +1,6 @@
-export interface CourseResponse {
+export interface UploadResponse {
     message: string,
-    course_time: {
+    course_times?: {
         id: number;
         name: string,
         course_code: string,
@@ -11,11 +11,6 @@ export interface CourseResponse {
         term: string,
         start_date: string,
         end_date: string,
-    };
-    success: boolean;
-}
-
-export interface ApiResponse {
-    message: string,
-    success: boolean
+    } [];
+    schedule: boolean
 }
