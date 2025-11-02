@@ -72,7 +72,6 @@ router.post('/athletecoursetime', async (req, res) => {
         if (!parse.success) return res.status(400).json({ error: 'Validation error', details: parse.error.flatten() });
 
         const { athlete_id, class_id, created_at, updated_at } = parse.data;
-        console.log(athlete_id + " " + class_id )
         const athlete_course_time = await db.athleteCourseInsert({ athlete_id, class_id, created_at, updated_at  });
 
         console.log("Added AthleteCourse to DB")

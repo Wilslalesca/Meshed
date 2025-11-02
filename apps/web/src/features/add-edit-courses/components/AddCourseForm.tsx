@@ -4,7 +4,8 @@ import { useAuth } from '@/hooks/useAuth';
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useNavigate } from 'react-router-dom';
-import {apiAddCourse, formatTimeTo12Hour, apiAddAthleteCourse, apiAddCourseAndAthleteCourse} from "@/api/addcourse"
+import { apiAddCourseAndAthleteCourse } from "@/features/add-edit-courses/api/addcourse"
+import { formatTimeTo12Hour } from '../utils/formatTime'
 import {
 DropdownMenu,
 DropdownMenuContent,
