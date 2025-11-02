@@ -1,22 +1,22 @@
 import React from "react";
 
 interface ScheduleBoxProps {
-    startHour: number;
-    endHour: number;
+    start: number; // decimal hours, e.g. 9.5 for 9:30
+    end: number;   // decimal hours
     dayIndex: number;
     calendarStartHour?: number;
     slotHeight: number; 
 }
 
 const ScheduleBox: React.FC<ScheduleBoxProps> = ({
-    startHour,
-    endHour,
+    start,
+    end,
     dayIndex,
     calendarStartHour = 7,
     slotHeight,
 }) => {
-    const topOffset = (startHour - calendarStartHour) * 2 * slotHeight;
-    const boxHeight = (endHour - startHour) * 2 * slotHeight;
+    const topOffset = (start - calendarStartHour) * 2 * slotHeight;
+    const boxHeight = (end - start) * 2 * slotHeight;
 
     return (
         <div
@@ -26,9 +26,9 @@ const ScheduleBox: React.FC<ScheduleBoxProps> = ({
                 height: `${boxHeight}px`,
             }}
             >
-                <div className="font-semibold text-blue-900">Class</div>
-                <div>{`${startHour}:00-${endHour}:00`}</div>
-            </div>
+            <div className="font-semibold text-blue-900">Class</div>
+            <div>{`${Math.floor(start)}:${String(Math.round((start%1)*60)).padStart(2,'0')} - ${Math.floor(end)}:${String(Math.round((end%1)*60)).padStart(2,'0')}`}</div>
+        </div>
     );
 };
 

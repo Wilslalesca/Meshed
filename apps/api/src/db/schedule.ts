@@ -69,7 +69,37 @@ export const db = {
          ORDER BY day_of_week, start_time;
       `);
       return res.rows;
-    }
+    },
 
-  
+    async getCourseTimesByAthlete(athlete_id: string): Promise<CourseTime[]> {
+      const res = await pool.query(
+        `
+        SELECT ct.id, ct.name, ct.course_code, ct.location, ct.day_of_week,
+               ct.start_time, ct.end_time, ct.term, ct.start_date, ct.created_at, ct.updated_at
+        FROM course_times ct
+        JOIN athlete_course_times act ON act.class_id = ct.id
+        WHERE act.athlete_id = $1
+        ORDER BY ct.day_of_week, ct.start_time;
+        `,
+        [athlete_id]
+      );
+      return res.rows;
+    },
+
+    async getCourseTimesByCoach(coach_id: string): Promise<CourseTime[]> {
+    const res = await pool.query(
+      `
+      SELECT DISTINCT ct.id, ct.name, ct.course_code, ct.location, ct.day_of_week,
+             ct.start_time, ct.end_time, ct.term, ct.start_date, ct.created_at, ct.updated_at
+      FROM course_times ct
+      JOIN athlete_course_times act ON act.class_id = ct.id
+      JOIN coach_athlete_visibility cav ON cav.athlete_id = act.athlete_id
+      WHERE cav.coach_id = $1
+      ORDER BY ct.day_of_week, ct.start_time;
+      `,
+      [coach_id]
+    );
+    return res.rows;
+  }
+
 };

@@ -2,6 +2,7 @@ import React from "react";
 import { Routes, Route, Outlet, Navigate } from "react-router-dom";
 import { ProtectedRoute } from "./routes/ProtectedRoute";
 import { RequireRole } from "./routes/RequireRole";
+import scheduleRoutes from './routes/scheduleRoutes';
 
 
 import { Home } from "./screens/Home";

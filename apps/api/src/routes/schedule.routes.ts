@@ -3,6 +3,7 @@ import { success, z } from 'zod';
 import { db } from '../db/schedule';
 
 const router = Router();
+
 //psql -U user mydatabaseparsed
 const courseTimeSchema = z.object({
     name: z.string().min(1).max(100),
@@ -77,10 +78,6 @@ router.post('/athletecoursetime', async (req, res) => {
     });
 });
 
-router.get("/", (_req, res) => {
-  res.json({ message: "Schedule route is running!" });
-});
-
 router.get('/coursetimes', async (_req, res) => {
     try{
         const result = await db.getAllCourseTimes();
@@ -90,6 +87,31 @@ router.get('/coursetimes', async (_req, res) => {
         res.status(500).json({ error: "Failed to fetch course times" });
         
     }
+});
+
+router.get('/athlete/:id/coursetimes', async (req, res) => {
+  const athleteId = req.params.id;
+  try {
+    const rows = await db.getCourseTimesByAthlete(athleteId);
+    return res.json(rows);
+  } catch (err) {
+    console.error("Error fetching athlete course times", err);
+    return res.status(500).json({ error: "Failed to fetch athlete course times" });
+  }
+});
+
+router.get("/coach/:id/coursetimes", async (req, res) => {
+  try {
+    const rows = await db.getCourseTimesByCoach(req.params.id);
+    return res.json(rows);
+  } catch (err) {
+    console.error("Error fetching coach course times", err);
+    return res.status(500).json({ error: "Failed to fetch coach course times" });
+  }
+});
+
+router.get("/", (_req, res) => {
+  res.json({ message: "Schedule route is running!" });
 });
 
 export default router;
