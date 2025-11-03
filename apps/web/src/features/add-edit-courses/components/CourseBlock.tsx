@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from "react-router-dom";
 import type { Schedule } from '@/features/athlete-schedule/types/Schedule';
 import { formatTime } from '@/features/athlete-schedule/utils/formatTime';
 import { Card,CardHeader, CardContent } from "@/components/ui/card"
@@ -13,6 +14,7 @@ interface Props {
 
 export const CourseBlock: React.FC<Props> = ({ data }) => {
     const { user } = useAuth();
+    const navigate = useNavigate();
     const dayOrder: Record<string, number> = {
         Sunday: 0,
         Monday: 1,
@@ -74,6 +76,7 @@ export const CourseBlock: React.FC<Props> = ({ data }) => {
                     <Button
                         size="icon"
                         variant="outline"
+                        onClick={() => navigate(`/editcourse/${c.id}`)}
                     >
                         <Pencil className="w-4 h-4" />
                     </Button>

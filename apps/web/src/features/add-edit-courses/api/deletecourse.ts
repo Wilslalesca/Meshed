@@ -19,29 +19,6 @@ export async function apiDeleteCourseById(class_id: unknown, athlete_id:unknown)
 
     } catch (err) {
         console.error("Error deleting course:", err);
-        alert("Failed to delete course. Please try again.");
         return false;
     }
 }
-/*
-export async function apiDeleteCourseByName(name: unknown, athlete_id:unknown) {
-    try{
-        const res = await fetch(`${API_BASE}/delete/coursetime/name`, {
-            method: 'POST',
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(parsedSchedule),
-        });
-
-        if (!res.ok) {
-            throw new Error('failed');
-        }
-        const data = await res.json();
-        
-        return data;
-    }
-    catch (err) {
-        console.error("Error Deleting Course:", err);
-    }
-}*/

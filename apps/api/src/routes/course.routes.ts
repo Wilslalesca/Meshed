@@ -31,26 +31,24 @@ const router = express.Router();
 
 const updateCourseSchema = courseTimeSchema.partial(); // allow partial updates
 
-// PATCH /coursetime/:id → Edit course
-/*router.patch("/coursetime/:id", async (req, res) => {
-  try {
-    const id = Number(req.params.id);
-    if (isNaN(id)) return res.status(400).json({ message: "Invalid course ID" });
+router.patch("/:classId", async (req, res) => {
+    try {
+        const { classId } = req.params;
 
-    const parse = updateCourseSchema.safeParse(req.body);
-    if (!parse.success) {
-      return res.status(400).json({ error: "Validation error", details: parse.error.flatten() });
+        const parse = updateCourseSchema.safeParse(req.body);
+        if (!parse.success) {
+            return res.status(400).json({ error: "Validation error", details: parse.error.flatten() });
+        }
+
+        const updated = await db.updateCourse(classId, parse.data);
+        if (!updated) return res.status(404).json({ message: "Course not found" });
+
+        res.status(200).json({ message: "Course updated", course: updated, success: true });
+    } catch (err) {
+        console.error("Error updating course:", err);
+        res.status(500).json({ message: "Internal server error", success: false });
     }
-
-    const updated = await db.courseUpdate(id, parse.data);
-    if (!updated) return res.status(404).json({ message: "Course not found" });
-
-    res.status(200).json({ message: "Course updated", course: updated, success: true });
-  } catch (err) {
-    console.error("Error updating course:", err);
-    res.status(500).json({ message: "Internal server error", success: false });
-  }
-});*/
+});
 
 router.delete("/:classId", async (req, res) => {
   const { classId } = req.params;

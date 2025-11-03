@@ -89,49 +89,4 @@ export const db = {
     return res.rows;
   },
 
-  async getCourseTimeByID(id: string) {
-    const res = await pool.query(
-      `SELECT ct.id, ct.name, ct.course_code, ct.location, ct.day_of_week, ct.start_time, ct.end_time, ct.term, ct.start_date, ct.end_date, act.created_at, act.updated_at
-       FROM course_times ct
-       WHERE ct.id = $1`,
-      [id]
-    );
-    return res.rows;
-  },
-
-  async getCourseTimeByName(name: string) {
-    const res = await pool.query(
-      `SELECT ct.id, ct.name, ct.course_code, ct.location, ct.day_of_week, ct.start_time, ct.end_time, ct.term, ct.start_date, ct.end_date, act.created_at, act.updated_at
-       FROM course_times ct
-       WHERE ct.name = $1`,
-      [name]
-    );
-    return res.rows;
-  },
-
-  async deleteCourseByID(id: string) {
-    const res = await pool.query(
-      `DELETE FROM course_times WHERE id = $1 RETURNING *`,
-      [id]
-    );
-    return res.rows[0];
-  },
-
-  async deleteAthleteCourseByID(athlete_id: string, class_id: string) {
-    const res = await pool.query(
-      `DELETE FROM athlete_course_times WHERE athlete_id = $1 and class_id = $2 RETURNING *`,
-      [athlete_id, class_id]
-    );
-    return res.rows[0];
-  },
-
-  async deleteCourseByName(name: string) {
-    const res = await pool.query(
-      `DELETE FROM course_times WHERE name = $1 RETURNING *`,
-      [name]
-    );
-    return res.rows[0];
-  },
-
-
 };

@@ -15,6 +15,7 @@ import { useAuth } from "./hooks/useAuth";
 import ScheduleBackground from './screens/ScheduleBackground';
 import { Layout } from "./components/layout/Layout";
 import { AddCourse } from "./routes/courses/AddCourse.tsx";
+import { EditCourse } from "./routes/courses/EditCourse.tsx";
 import AthleteSchedulePage from "./routes/athlete/schedule";
 
 function AppLayout() { 
@@ -121,6 +122,14 @@ export default function App() {
           element={
             <ProtectedRoute>
               <AddCourse />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/editcourse/:courseId"
+          element={
+            <ProtectedRoute>
+              <EditCourse />
             </ProtectedRoute>
           }
         />

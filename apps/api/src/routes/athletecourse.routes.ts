@@ -2,24 +2,6 @@ import express from "express";
 import { z } from "zod";
 import { db } from "../db/athletecoursetime";
 
-const courseTimeSchema = z.object({
-    name: z.string().min(1).max(100),
-    course_code: z.string().min(1).max(100).optional(),
-    location: z.string().min(1).max(100),
-    day_of_week: z.string().min(1).max(20),
-    start_time: z
-    .string()
-    .regex(/^(0?[1-9]|1[0-2]):[0-5][0-9]\s?(AM|PM)$/i, "Invalid time format (use like '9:00 AM')").optional(),
-  end_time: z
-    .string()
-    .regex(/^(0?[1-9]|1[0-2]):[0-5][0-9]\s?(AM|PM)$/i, "Invalid time format (use like '1:00 PM')").optional(),
-    term: z.string().min(1).max(50),
-    start_date:z.string().min(1).max(100),
-    end_date:z.string().min(1).max(100),
-    created_at: z.string().datetime().optional(),
-    updated_at: z.string().datetime().optional(),
-});
-
 export const athleteCourseTimeSchema = z.object({
   athlete_id: z.string(),
   class_id: z.string(),
@@ -29,28 +11,32 @@ export const athleteCourseTimeSchema = z.object({
 
 const router = express.Router();
 
-const updateCourseSchema = courseTimeSchema.partial(); // allow partial updates
+const updateCourseSchema = athleteCourseTimeSchema.partial(); // allow partial updates
 
-// PATCH /coursetime/:id → Edit course
-/*router.patch("/coursetime/:id", async (req, res) => {
-  try {
-    const id = Number(req.params.id);
-    if (isNaN(id)) return res.status(400).json({ message: "Invalid course ID" });
+router.patch("/:athleteId/:courseId", async (req, res) => {
+    try {
+      const { athleteId, courseId } = req.params;
 
-    const parse = updateCourseSchema.safeParse(req.body);
-    if (!parse.success) {
-      return res.status(400).json({ error: "Validation error", details: parse.error.flatten() });
+      const parse = updateCourseSchema.safeParse(req.body);
+      if (!parse.success) {
+        return res
+          .status(400)
+          .json({ error: "Validation error", details: parse.error.flatten() });
+      }
+
+      const updated = await db.updateAthleteCourseTime(courseId, athleteId, parse.data);
+
+      if (!updated) {
+        return res.status(404).json({ message: "Athlete-course record not found" });
+      }
+
+      res.status(200).json({ message: "Athlete course updated", updated, success: true });
+    } catch (err) {
+      console.error("Error updating athlete course:", err);
+      res.status(500).json({ message: "Internal server error", success: false });
     }
+});
 
-    const updated = await db.courseUpdate(id, parse.data);
-    if (!updated) return res.status(404).json({ message: "Course not found" });
-
-    res.status(200).json({ message: "Course updated", course: updated, success: true });
-  } catch (err) {
-    console.error("Error updating course:", err);
-    res.status(500).json({ message: "Internal server error", success: false });
-  }
-});*/
 
 router.delete("/:athleteId/:classId", async (req, res) => {
   const { athleteId, classId } = req.params;
