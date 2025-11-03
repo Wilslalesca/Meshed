@@ -2,6 +2,8 @@ import React from 'react';
 import type { Schedule } from '@/features/athlete-schedule/types/Schedule';
 import { formatTime } from '@/features/athlete-schedule/utils/formatTime';
 import { Card,CardHeader, CardContent } from "@/components/ui/card"
+import { apiDeleteCourseById } from "@/features/add-edit-courses/api/deletecourse"
+import { useAuth } from '@/hooks/useAuth';
 import { Button } from "@/components/ui/button"
 import { Pencil, Trash2 } from "lucide-react";
 
@@ -10,6 +12,7 @@ interface Props {
 }
 
 export const CourseBlock: React.FC<Props> = ({ data }) => {
+    const { user } = useAuth();
     const dayOrder: Record<string, number> = {
         Sunday: 0,
         Monday: 1,
@@ -28,6 +31,18 @@ export const CourseBlock: React.FC<Props> = ({ data }) => {
         grouped[key].push(course);
     }
 
+    const handleDelete = async (classId: string) => {
+        if (!window.confirm("Are you sure you want to delete this course?")) return;
+
+        const success = await apiDeleteCourseById(classId, user?.id);
+
+        if (success) {
+           window.location.reload();
+        } else {
+            alert("Failed to delete course. Please try again.");
+        }
+    };
+
     return (
         <div className="flex flex-col gap-4">
         {Object.entries(grouped).map(([courseName, schedules]) => (
@@ -37,20 +52,6 @@ export const CourseBlock: React.FC<Props> = ({ data }) => {
             >
             <CardHeader>
                 <h1 className="text-xl font-bold">{courseName}</h1>
-                <div className="flex gap-2">
-                    <Button
-                        size="icon"
-                        variant="outline"
-                    >
-                        <Pencil className="w-4 h-4" />
-                    </Button>
-                    <Button
-                        size="icon"
-                        variant="destructive"
-                    >
-                        <Trash2 className="w-4 h-4" />
-                    </Button>
-                </div>
             </CardHeader>
             <CardContent className="p-4">
                 {schedules
@@ -69,6 +70,21 @@ export const CourseBlock: React.FC<Props> = ({ data }) => {
                     </p>
                     <p className="text-muted-foreground text-sm">{c.location}</p>
                     <p className="text-muted-foreground text-sm">{c.term}</p>
+                    <div className="flex gap-2">
+                    <Button
+                        size="icon"
+                        variant="outline"
+                    >
+                        <Pencil className="w-4 h-4" />
+                    </Button>
+                    <Button
+                        size="icon"
+                        variant="destructive"
+                        onClick={() => handleDelete(c.id)}
+                    >
+                        <Trash2 className="w-4 h-4" />
+                    </Button>
+                </div>
                 </div>
                 ))}
             </CardContent>

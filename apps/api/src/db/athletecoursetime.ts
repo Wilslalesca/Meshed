@@ -25,5 +25,31 @@ export const db = {
     return res.rows[0];
   },
 
+  async updateAthleteCourseTime(classId: string, athleteId: string, data: Partial<NewAthleteCourseTime>): Promise<void> {
+    const fields = Object.keys(data);
+    const values = Object.values(data);
+    const setClause = fields.map((field, index) => `${field} = $${index + 1}`).join(", ");
+
+    if (fields.length === 0) return;
+
+    await pool.query(
+      `UPDATE athlete_course_times
+        SET ${setClause}, updated_at = NOW()
+        WHERE class_id = $${fields.length + 1} AND athlete_id = $${fields.length + 2}`,
+      [...values, classId, athleteId]
+    );
+  },
+
+  async deleteAthleteCourseTime(classId: string, athleteId: string): Promise<boolean> {
+    const res = await pool.query(
+      `DELETE FROM athlete_course_times
+       WHERE class_id = $1 AND athlete_id = $2
+       RETURNING id`,
+      [classId, athleteId]
+    );
+
+    return (res.rowCount ?? 0) > 0;
+  },
+
   
 };

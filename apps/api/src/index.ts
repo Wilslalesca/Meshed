@@ -8,6 +8,8 @@ import authRoutes from './routes/auth.routes';
 import userRoutes from './routes/user.routes';
 import uploadRoutes from './routes/upload.routes';
 import scheduleRoutes from './routes/schedule.routes';
+import courseRoutes from './routes/course.routes';
+import athleteCourseRoutes from './routes/athletecourse.routes';
 import { testingAccountGeneration, testingAddingUserToath } from './scripts/seedUsers';
 
 
@@ -22,6 +24,8 @@ app.use('/auth', authRoutes);
 app.use('/users', userRoutes);
 app.use('/upload', uploadRoutes);
 app.use('/schedule', scheduleRoutes);
+app.use('/course', courseRoutes);
+app.use('/athletecourse', athleteCourseRoutes);
 
 app.listen(config.port, async() => {
     console.log(`API on http://localhost:${config.port}`);
