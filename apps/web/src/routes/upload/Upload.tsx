@@ -6,6 +6,7 @@ import { apiUploadCourses } from '@/features/upload/api/upload'
 import { apiAddCourseAndAthleteCourse } from '@/features/add-edit-courses/api/addcourse'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import DropzoneField from "@/components/ui/dropzonefield";
+import { toast } from "sonner"
 
 export const Upload: React.FC = () => {
     const { user } = useAuth();
@@ -18,7 +19,7 @@ export const Upload: React.FC = () => {
 
     const handleSubmit = async () => {
         if (!files) {
-            alert("No files selected!");
+            toast.error("No files selected!");
             return;
         }
 
@@ -38,7 +39,7 @@ export const Upload: React.FC = () => {
                     }
                 }
             }
-            alert("Files Uploaded Successfully")
+            toast.success("Files Uploaded Successfully")
         } 
         catch (err) {
             console.error("Unknown error Adding Course:", err);

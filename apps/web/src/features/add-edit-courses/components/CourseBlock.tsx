@@ -7,6 +7,7 @@ import { apiDeleteCourseById } from "@/features/add-edit-courses/api/deletecours
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from "@/components/ui/button"
 import { Pencil, Trash2 } from "lucide-react";
+import { toast } from 'sonner';
 
 interface Props {
     data: Schedule[];
@@ -41,7 +42,7 @@ export const CourseBlock: React.FC<Props> = ({ data }) => {
         if (success) {
            window.location.reload();
         } else {
-            alert("Failed to delete course. Please try again.");
+            toast.error("Failed to delete course. Please try again.");
         }
     };
 
