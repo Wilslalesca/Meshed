@@ -22,7 +22,7 @@ export const db = {
         data.class_id,
       ]
     );
-    return res.rows[0];
+    return res.rows[0] || null;
   },
 
   async updateAthleteCourseTime(classId: string, athleteId: string, data: Partial<NewAthleteCourseTime>): Promise<boolean> {

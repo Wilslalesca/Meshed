@@ -18,7 +18,7 @@ router.get("/athlete/:athleteId", async (req, res) => {
         if (!athleteId) return res.status(400).json({ error: "Missing athlete ID" });
 
         const schedule = await db.getAthleteSchedule(athleteId);
-        if (!schedule || schedule.length === 0) return res.status(404).json({ message: "No schedule found for this athlete." });
+        
         
         return res.status(200).json(schedule);
 
