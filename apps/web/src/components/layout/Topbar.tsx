@@ -13,25 +13,15 @@ import { useState } from "react";
 export const Topbar = ({
     onMenuClick,
     isMobile,
+    title,
 }: {
     onMenuClick(): void;
     isMobile: boolean;
+    title: string;
 }) => {
-    const location = useLocation();
     // TODO will talk about this later, but this is notifications if a user gets an update or a coach sends out an update etc
     const [notifications] = useState<string[]>([]);
-
-    const title =
-        location.pathname === "/"
-            ? "Home"
-            : location.pathname
-                  .split("/")
-                  .filter(Boolean)
-                  .map(
-                      (segment) =>
-                          segment.charAt(0).toUpperCase() + segment.slice(1)
-                  )
-                  .join(" / ");
+    const pagetitle = title || "";
 
     return (
         <header className="h-16 border-b border-[#E5E7EB] bg-white px-6 flex items-center justify-between">
@@ -44,7 +34,7 @@ export const Topbar = ({
                         <Menu className="h-5 w-5 text-gray-700" />
                     </button>
                 )}
-                <h1 className="text-lg font-semibold text-gray-900">{title}</h1>
+                <h1 className="text-lg font-semibold text-gray-900">{pagetitle}</h1>
             </div>
 
             <div className="flex items-center gap-3">

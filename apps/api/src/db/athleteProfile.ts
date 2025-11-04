@@ -18,6 +18,10 @@ export const db = {
             RETURNING id, school_name, year, notes`,
             [data.id, data.school_name ?? null, data.year ?? null, data.notes ?? null]
         );
+        if (res.rows.length === 0 ) {
+            const existing = await this.findById(data.id);
+            return existing;
+        }
         return res.rows[0] || null;
     },
 
