@@ -31,6 +31,7 @@ export interface CourseTime {
   end_time?: string;
   term?:string;
   start_date?: string;
+  end_date?:string;
 }
 
 export interface AthleteCourseTime {

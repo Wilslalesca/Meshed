@@ -9,10 +9,12 @@ import { Register } from "./screens/Register";
 import { Dashboard } from "./screens/Dashboard";
 import { Admin } from "./screens/Admin";
 import { Profile } from "./screens/Profile";
-import { Upload } from "./screens/Upload";
+import { Upload } from "./routes/upload/Upload";
 import { useAuth } from "./hooks/useAuth";
 import ScheduleBackground from './screens/ScheduleBackground';
 import { Layout } from "./components/layout/Layout";
+import { AddCourse } from "./routes/courses/AddCourse.tsx";
+import { EditCourse } from "./routes/courses/EditCourse.tsx";
 import AthleteSchedulePage from "./routes/athlete/schedule";
 
 const pageTitles: Record<string, string> = {
@@ -66,6 +68,8 @@ export default function App() {
         <Route path="/upload" element={ <ProtectedRoute> <Upload /> </ProtectedRoute> }/>
         <Route path="/mySchedule" element={ <ProtectedRoute> <AthleteSchedulePage /> </ProtectedRoute> }/>
         <Route path="/profile" element={ <ProtectedRoute> <Profile /> </ProtectedRoute> }/>
+        <Route path="/editcourse/:courseId" element={<ProtectedRoute><EditCourse /></ProtectedRoute>}/>
+        <Route path="/addcourse" element={ <ProtectedRoute><AddCourse /></ProtectedRoute>}/>
 
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/" replace />} />

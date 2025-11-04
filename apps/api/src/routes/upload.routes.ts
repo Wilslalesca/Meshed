@@ -30,6 +30,7 @@ router.post("/", upload.array("files"), (req, res) => {
       const parsedFile = ical.parseICS(icsData);
       for (const key in parsedFile){
         const course = parsedFile[key];
+        var existingCourse;
         if(course.type == "VEVENT"){
           //Check if parsed schedule is empty
           if(!parsedSchedule || parsedSchedule.length === 0){
@@ -37,9 +38,16 @@ router.post("/", upload.array("files"), (req, res) => {
           }
           //Check if already added to parsedSchedule
           else{
-            var prevName = parsedSchedule[parsedSchedule.length-1].name;
-            var prevStartTime = parsedSchedule[parsedSchedule.length-1].start_time;
-            if(prevName === course.summary && prevStartTime === format(toZonedTime(course.start, timeZone), "h:mm a")){
+            var courseName = course.summary;
+            var courseStartTime = format(toZonedTime(course.start, timeZone), "h:mm a");
+            var courseDotw = format(course.start,"EEEE");
+            existingCourse = parsedSchedule.find(
+              (item) =>
+                item.name === courseName &&
+                item.start_time === courseStartTime &&
+                item.day_of_week === courseDotw
+            );
+            if(existingCourse){
               count++;
             }
             else{
@@ -56,8 +64,13 @@ router.post("/", upload.array("files"), (req, res) => {
               end_time:format(toZonedTime(course.end, timeZone),"h:mm a"),
               location:course.location,
               term:"FALL 2025",//start => seot <=jan1 fall   jan1> april20< winter
-              start_date:course.start,
+              start_date:format(course.start, "yyyy-MM-dd"),
+              end_date:format(course.start, "yyyy-MM-dd"),
             })
+          }
+          else{
+            //update to new end date everytime the same class reoccurs
+            existingCourse.end_date = format(course.start, "yyyy-MM-dd");
           }
         }
       }
