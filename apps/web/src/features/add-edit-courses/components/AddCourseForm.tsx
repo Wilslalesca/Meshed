@@ -69,7 +69,7 @@ className,
             console.error("Error submitting course:", err);
             alert("An unexpected error occurred");
         }
-        window.location.reload();
+        setTimeout(() => window.location.reload(), 200);
     }
 
     return (
