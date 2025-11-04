@@ -3,7 +3,7 @@ export const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
 export async function apiAddCourse(parsedSchedule: unknown): Promise<CourseResponse | undefined> {
     try{
-        const res = await fetch(`${API_BASE}/schedule/coursetime`, {
+        const res = await fetch(`${API_BASE}/course/coursetime`, {
             method: 'POST',
             headers: {
                 "Content-Type": "application/json",
@@ -25,7 +25,7 @@ export async function apiAddCourse(parsedSchedule: unknown): Promise<CourseRespo
 
 export async function apiAddCourseAndAthleteCourse(parsedSchedule: unknown, athlete_id: unknown){
     try {
-        const res = await fetch(`${API_BASE}/schedule/addcourseandathlete`, {
+        const res = await fetch(`${API_BASE}/course/addcourseandathlete`, {
             method: 'POST',
             headers: {
             "Content-Type": "application/json",
@@ -58,7 +58,7 @@ export async function apiAddCourseAndAthleteCourse(parsedSchedule: unknown, athl
 
 export async function apiAddAthleteCourse(courseTimeID: unknown, athlete_id: unknown): Promise<ApiResponse | undefined> {
     try{
-        const response = await fetch(`${API_BASE}/schedule/athletecoursetime`,{
+        const response = await fetch(`${API_BASE}/course/athletecoursetime`,{
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
