@@ -12,6 +12,7 @@ import teamsRoutes from './routes/teams.routes';
 import uploadRoutes from './routes/upload.routes';
 import scheduleRoutes from './routes/schedule.routes';
 import { testingAccountGeneration, testingAddingUserToath } from './scripts/seedUsers';
+import facilitiesRoutes from "./routes/facilities.routes"
 
 const app = express();
 app.use(express.json());
@@ -25,6 +26,7 @@ app.use('/lookups', lookUpRoutes);
 app.use('/upload', uploadRoutes);
 app.use('/schedule', scheduleRoutes);
 app.use('/teams', teamsRoutes);
+app.use('/facilities', facilitiesRoutes);
 
 app.listen(config.port, async() => {
     console.log(`API on http://localhost:${config.port}`);

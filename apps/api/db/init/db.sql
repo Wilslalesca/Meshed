@@ -107,3 +107,25 @@ CREATE TABLE activity_log (
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Facilities
+CREATE TABLE IF NOT EXISTS facilities (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name VARCHAR(100) NOT NULL,
+  address1 VARCHAR(100),
+  address2 VARCHAR(100),
+  city VARCHAR(50),
+  province_state VARCHAR(50),
+  postal_code VARCHAR(20),
+  country VARCHAR(50),
+  email VARCHAR(255),
+  phone VARCHAR(20),
+  latitude DECIMAL,
+  longitude DECIMAL,
+  notes TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Helpful list view
+CREATE INDEX IF NOT EXISTS idx_facilities_name ON facilities (name);
+

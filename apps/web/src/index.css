@@ -8,7 +8,7 @@
   --color-paper:   #FDFFFC;  /* page surface */
   --color-teal:    #2EC4B6;  /* primary brand */
   --color-gold:    #FF9F1C;  /* secondary brand */
-  --color-red:     #E71D36;  /* subtle highlights / errors */
+  --color-red:     #E71D36;  /* subtle highlights */
 
   /* ---- Tailwind color tokens (used by bg-*, text-*, border-* utilities) ---- */
   --color-background:         var(--color-paper);
@@ -91,56 +91,64 @@
     linear-gradient(160deg, color-mix(in oklab, var(--color-vice-ink) 90%, black), var(--color-vice-teal));
 }
 
+@utility bg-brand-soft {
+  background:
+    radial-gradient(900px 500px at -10% -10%, color-mix(in oklab, var(--color-teal) 14%, transparent), transparent 60%),
+    radial-gradient(900px 500px at 110% 110%, color-mix(in oklab, var(--color-gold) 14%, transparent), transparent 60%),
+    var(--color-paper);
+}
+
 /* ---------- Reusable UI helpers ---------- */
 @utility card {
   @apply rounded-xl border bg-card/85 backdrop-blur;
 }
 
+/* primary button (teal by default) */
 @utility btn-primary {
   @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2 font-semibold
-         text-primary-foreground bg-primary hover:bg-secondary transition-colors;
+         text-[--color-primary-foreground] bg-[--color-primary] transition-colors;
 }
+.btn-primary:hover { background: var(--color-secondary); } /* gold on hover */
 
+/* outline button – base and hover */
 @utility btn-outline {
-  @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2 font-semibold
-         border hover:bg-accent;
-  border-color: color-mix(in oklab, var(--color-vice-teal) 50%, var(--color-vice-line));
+  @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2 font-semibold border;
+  border-color: color-mix(in oklab, var(--color-teal) 55%, var(--color-border));
 }
 
+@utility btn-outline:hover {
+  background: color-mix(in oklab, var(--color-teal) 12%, transparent);
+}
+
+/* small pill/chip */
 @utility chip {
   @apply inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold;
-  background: var(--color-vice-teal);
-  color: #001017;
+  background: var(--color-gold);
+  color: var(--color-secondary-foreground);
 }
 
+/* links with brand underline */
 @utility vice-link {
-  @apply underline decoration-2 underline-offset-[6px] hover:decoration-transparent;
-  text-decoration-color: var(--color-vice-pink);
+  @apply underline decoration-2 underline-offset-[6px];
+  text-decoration-color: var(--color-teal);
 }
 
-/* Focus glow (for inputs/buttons with focus-visible) */
+/* Focus glow */
 @utility neon-ring {
   box-shadow:
-    0 0 0 2px color-mix(in oklab, var(--color-vice-pink) 40%, transparent),
-    0 0 18px color-mix(in oklab, var(--color-vice-teal) 45%, transparent);
+    0 0 0 2px color-mix(in oklab, var(--color-teal) 40%, transparent),
+    0 0 18px color-mix(in oklab, var(--color-gold) 45%, transparent);
 }
 
 /* Scrollbar + selection */
-::selection{ background: color-mix(in oklab, var(--color-vice-pink) 40%, transparent); }
-::-webkit-scrollbar{ width:10px; height:10px; }
-::-webkit-scrollbar-thumb{ background:#2a315a; border-radius:999px; }
+::selection { background: color-mix(in oklab, var(--color-gold) 40%, transparent); }
+::-webkit-scrollbar { width:10px; height:10px; }
+::-webkit-scrollbar-thumb { background: color-mix(in oklab, var(--color-navy) 25%, #8fa1b5); border-radius:999px; }
 
-/* Keep inputs themed when Chrome autofills */
+/* Chrome autofill */
 input:-webkit-autofill,
-input:-webkit-autofill:focus{
+input:-webkit-autofill:focus {
   -webkit-text-fill-color: var(--color-foreground);
   transition: background-color 9999s ease-in-out 0s;
-  box-shadow: 0 0 0px 1000px color-mix(in oklab, var(--color-vice-ink) 85%, black) inset;
-}
-
-@utility bg-brand-soft {
-  background:
-    radial-gradient(900px 500px at -10% -10%, color-mix(in oklab, var(--color-teal) 12%, transparent), transparent 60%),
-    radial-gradient(900px 500px at 110% 110%, color-mix(in oklab, var(--color-gold) 12%, transparent), transparent 60%),
-    var(--color-paper);
+  box-shadow: 0 0 0px 1000px color-mix(in oklab, var(--color-paper) 94%, #fff) inset;
 }

@@ -15,6 +15,7 @@ import { useAuth } from "./hooks/useAuth";
 import ScheduleBackground from "./screens/ScheduleBackground";
 import { Layout } from "./components/layout/Layout";
 import Contact from "./screens/Contact"; // NEW
+import { Facilities } from "./screens/Facilities"; // NEW
 
 function AppLayout() {
   return (
@@ -136,6 +137,16 @@ export default function App() {
           element={
             <ProtectedRoute>
               <Profile />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/facilities"
+          element={
+            <ProtectedRoute>
+              <RequireRole allow={["admin"]}>
+                <Facilities />
+              </RequireRole>
             </ProtectedRoute>
           }
         />
