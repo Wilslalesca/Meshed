@@ -83,7 +83,7 @@
   body { @apply bg-background text-foreground antialiased; }
 }
 
-/* ---------- Backgrounds ---------- */
+/* ---------- Backgrounds ----------
 @utility bg-vice-gradient{
   background:
     radial-gradient(1200px 700px at -10% -20%, color-mix(in oklab, var(--color-vice-teal) 35%, transparent), transparent 60%),
@@ -103,22 +103,24 @@
   @apply rounded-xl border bg-card/85 backdrop-blur;
 }
 
-/* primary button (teal by default) */
+/* primary button (teal by default)
 @utility btn-primary {
   @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2 font-semibold
          text-[--color-primary-foreground] bg-[--color-primary] transition-colors;
 }
-.btn-primary:hover { background: var(--color-secondary); } /* gold on hover */
+.btn-primary:hover { background: var(--color-secondary); }
+*/
 
-/* outline button – base and hover */
+/* outline button – base and hover
 @utility btn-outline {
   @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2 font-semibold border;
   border-color: color-mix(in oklab, var(--color-teal) 55%, var(--color-border));
 }
+*/
 
-@utility btn-outline:hover {
+/* @utility btn-outline:hover {
   background: color-mix(in oklab, var(--color-teal) 12%, transparent);
-}
+} */
 
 /* small pill/chip */
 @utility chip {
@@ -138,7 +140,7 @@
   box-shadow:
     0 0 0 2px color-mix(in oklab, var(--color-teal) 40%, transparent),
     0 0 18px color-mix(in oklab, var(--color-gold) 45%, transparent);
-}
+} */
 
 /* Scrollbar + selection */
 ::selection { background: color-mix(in oklab, var(--color-gold) 40%, transparent); }
