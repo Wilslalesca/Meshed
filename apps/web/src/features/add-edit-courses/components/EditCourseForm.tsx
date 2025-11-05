@@ -23,6 +23,11 @@ export const EditCourseForm: React.FC<EditCourseModalProps> = ({ course }) => {
     const weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
     const handleSubmit = async () => {
+        if ( (formData.start_time > formData.end_time) || (formData.end_date && formData.start_date > formData.end_date)) {
+            toast.error("Ensure start date/time are before end date/time");
+            return;
+        }
+
         const d = new Date(formData.start_date);
         const formSchedule = {
             id: formData.id,
