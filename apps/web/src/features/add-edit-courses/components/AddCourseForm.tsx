@@ -32,9 +32,12 @@ className,
     const weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
     const handleSubmit = async () => {
-
         if (!eventName || !location || !startTime || !endTime || !startDate) {
             alert("Please fill in all required fields before submitting!");
+            return;
+        }
+        if ( (startTime > endTime) || (endDate && startDate > endDate)) {
+            alert("Ensure start date/time are before end date/time");
             return;
         }
 
@@ -113,7 +116,6 @@ className,
                         id="start_time"
                         value={startTime}
                         onChange={(e) => setStartTime(e.target.value)}
-                        className="bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
                         required
                     />
                 </div>
@@ -125,7 +127,6 @@ className,
                         id="end_time"
                         value={endTime}
                         onChange={(e) => setEndTime(e.target.value)}
-                        className="bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
                         required
                     />
                 </div>
