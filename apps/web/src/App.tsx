@@ -16,6 +16,7 @@ import { Layout } from "./components/layout/Layout";
 import { AddCourse } from "./routes/courses/AddCourse.tsx";
 import { EditCourse } from "./routes/courses/EditCourse.tsx";
 import AthleteSchedulePage from "./routes/athlete/schedule";
+import { Toaster } from "@/components/ui/sonner"
 
 const pageTitles: Record<string, string> = {
   "/": "Home",
@@ -33,6 +34,7 @@ function AppLayout() {
   return (
     <Layout title={title}>
       <Outlet />
+      <Toaster />
     </Layout>
   );
 }

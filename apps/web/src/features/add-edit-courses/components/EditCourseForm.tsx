@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { formatTimeTo12Hour } from "../utils/formatTime"
+import { toast } from "sonner";
 
 interface EditCourseModalProps {
   course: Schedule;
@@ -48,11 +49,11 @@ export const EditCourseForm: React.FC<EditCourseModalProps> = ({ course }) => {
         }
         const success = await apiEditCourse(formData.id, user?.id, formSchedule);
         if (success) {
-            alert("Successfully updated course");
+            toast.success("Successfully updated course");
             navigate('/addcourse');
 
         }
-        else alert("Failed to update course");
+        else toast.error("Failed to update course");
     };
 
     const handleCancel = async () => {

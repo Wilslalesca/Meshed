@@ -15,6 +15,7 @@ DropdownMenuRadioItem,
 DropdownMenuSeparator,
 DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { toast } from "sonner";
 
 export function AddCourseForm({
 className,
@@ -33,7 +34,7 @@ className,
 
     const handleSubmit = async () => {
         if (!eventName || !location || !startTime || !endTime || !startDate) {
-            alert("Please fill in all required fields before submitting!");
+            toast.error("Please fill in all required fields before submitting!");
             return;
         }
         if ( (startTime > endTime) || (endDate && startDate > endDate)) {
@@ -64,13 +65,13 @@ className,
             const data = await apiAddCourseAndAthleteCourse(formSchedule, user?.id);
             console.log("API response:", data);
             if (data?.success) {
-                alert(`Course ${data.course.name} added successfully!`);
+                toast.success(`Course ${data.course.name} added successfully!`);
             } else {
-                alert(`Error: ${data?.message}`);
+                toast.error(`Error: ${data?.message}`);
             }
         } catch (err) {
             console.error("Error submitting course:", err);
-            alert("An unexpected error occurred");
+            toast.error("An unexpected error occurred");
         }
         setTimeout(() => window.location.reload(), 200);
     }
