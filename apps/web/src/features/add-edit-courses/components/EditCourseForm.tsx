@@ -24,7 +24,7 @@ export const EditCourseForm: React.FC<EditCourseModalProps> = ({ course }) => {
 
     const handleSubmit = async () => {
         if ( (formData.start_time > formData.end_time) || (formData.end_date && formData.start_date > formData.end_date)) {
-            alert("Ensure start date/time are before end date/time");
+            toast.error("Ensure start date/time are before end date/time");
             return;
         }
 

@@ -38,7 +38,7 @@ className,
             return;
         }
         if ( (startTime > endTime) || (endDate && startDate > endDate)) {
-            alert("Ensure start date/time are before end date/time");
+            toast.error("Ensure start date/time are before end date/time");
             return;
         }
 
