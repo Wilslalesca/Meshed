@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import { verifyAccess } from '../auth/tokens';
-import { Role } from '../types';
+import { verifyAccess } from '../utils/tokens';
+import { Role } from '../types/index';
 
 export interface AuthedRequest extends Request { user?: { id: string; role: Role }; }
 
