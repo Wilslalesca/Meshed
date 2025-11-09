@@ -48,12 +48,8 @@ export const Upload: React.FC = () => {
         navigate('/dashboard'); 
     }
 
-    const addCourse = async () => {
-        navigate('/addcourse');
-    }
-
     return (
-        <div className= "bg-white min-h-screen flex items-center justify-center">
+        <dialog className= "bg-white min-h-screen flex items-center justify-center">
             <Card className= "w-full max-w-sm shadow-lg">
                 <CardHeader>
                     <CardTitle>Upload your schedule</CardTitle>
@@ -61,11 +57,9 @@ export const Upload: React.FC = () => {
                 </CardHeader>
                 <CardContent className="flex flex-col p-4 items-center">
                     <DropzoneField onDrop={handleDrop} />
-                    <Button type="submit" onClick={addCourse} className="w-full gap-3 bg-cyan-500 hover:bg-cyan-800">Add/Edit your Schedule</Button>
                     <Button type="submit" onClick={handleSubmit} className="w-full gap-3">Submit</Button>
                 </CardContent>
             </Card>
-        </div>
-        
+        </dialog>
     );
 };

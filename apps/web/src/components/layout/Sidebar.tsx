@@ -46,7 +46,14 @@ export const Sidebar = ({
     const links = [
         { name: "Dashboard", href: "/dashboard", icon: Home },
         { name: "Teams", href: "/teams", icon: Users },
-        { name: "Schedules", href: "/schedules", icon: Calendar },
+        { 
+            name: "Schedules",
+            href: "/schedules",
+            icon: Calendar,
+            subLinks: [
+                { name: "My Schedule", href: "/myschedule" },
+            ],
+        },
         { name: "Facilities", href: "/facilities", icon: Building2 },
         { name: "Settings", href: "/settings", icon: Settings },
     ];
