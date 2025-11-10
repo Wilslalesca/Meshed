@@ -4,95 +4,87 @@ workspace "Name" "Description" {
 
     model {
         //users
-        customer = person "Customer"
-        parkingStaff = person "Parking Staff"
+        athlete = person "Student-Athlete"
+        coach = person "Coach"
+        facilitymng = person "Facility Administrator"
         
         //main system
-        smartPark = softwareSystem "SmartPark" "Online Smart Parking Management Software" {
-            tags "SmartPark"
+        uma = softwareSystem "UMA" "Optimized Facility and Practice Scheduling Software" {
+            tags "UMA"
             //containers
-            db = container "Database Schema" "MongoDB"{
+            db = container "Database Schema" "PostgreSQL"{
                 tags "Database"
             }
             wa = container "Web Application" "React JS"
             //components
-            api = container "API Gateway" "SpringBoot"{
-                resReq = component "Reservation Requests"
-                transReq = component "Payment Requests"
+            api = container "API Gateway" "TypeScript"{
+                courseUploadReq = component "Course Upload Requests"
+                facilityReq = component "Facility Requests"
+                optiReq = component "Optimize Schedule Requests"
                 auth = component "User Authentication"
                 mng = component "Account Management and Registration"
             }
-            iot = container "IoT Server" "Azure"
             
             //components
-            appServer = container "Application Server" "Azure"{
-                res = component "Reservation Processing"
-                trans = component "Transaction Processing"
+            appServer = container "Application Server" "Google Cloud"{
+                upload = component "Upload Course Processing"
+                facility = component "Facility Booking Processing"
+                optimize = component "Optimized Schedule Processing"
                 notif = component "Notification Service"
             }
         }
         
-        //external systems
-        iotSensor = softwareSystem "IoT Sensor" "Vehicle Detection System"{
-            tags "External"
-        }
         notificationGateway = softwareSystem "Notification Gateway" "SMS/Email reminders"{
-            tags "External"
-        }
-        paymentGateways = softwareSystem "Payment Gateways"{
-            tags "External"
-        }
-        regulatoryAuthorities = softwareSystem "Municipal Authorities" "Authorities for Parking Regulations"{
             tags "External"
         }
         
         //people
-        customer -> smartPark "Uses"
-        customer -> smartPark.wa "Visits"
-        parkingStaff -> smartPark "Uses"
-        parkingStaff -> smartPark.wa "Visits"
+        athlete -> uma "Uses"
+        athlete -> uma.wa "Visits"
+        coach -> uma "Uses"
+        coach -> uma.wa "Visits"
+        facilitymng -> uma "Uses"
+        facilitymng -> uma.wa "Visits"
         
         //supporting software systems
-        smartPark -> iotSensor "Uses to detect vehicles in parking spots"
-        smartPark -> notificationGateway "Send parking spot availability notifications"
-        smartPark -> paymentGateways "Sends parking payments "
-        smartPark -> regulatoryAuthorities "Uses for parking compliance"
+        uma -> notificationGateway "Send parking spot availability notifications"
         
         //containers
-        smartPark.wa -> smartPark.api "Communicates to"
-        smartPark.api -> smartPark.appServer "Sends logic to compute"
-        smartPark.wa -> smartPark.appServer "Sends authentication logic to"
-        smartPark.appServer -> smartPark.db "Reads from and writes to"
-        smartPark.appServer -> smartPark.iot "Reads IoT data"
+        uma.wa -> uma.api "Communicates to"
+        uma.api -> uma.appServer "Sends logic to compute"
+        uma.wa -> uma.appServer "Sends authentication logic to"
+        uma.appServer -> uma.db "Reads from and writes to"
         
         //appserver comp
-        smartPark.wa -> smartPark.api.auth "Manages logins and authentication"
-        smartPark.wa -> smartPark.api.mng "Provides way to manage account vehicle and payment settings"
-        smartPark.wa -> smartPark.api.resReq "Recieves requests for Reservations"
-        smartPark.wa -> smartPark.api.transReq "Recieves requests for Payments"
-        smartPark.wa -> smartPark.appServer.trans "Handles fund transfers"
-        smartPark.wa -> smartPark.appServer.notif "Manages notifcations and authentication"
-        smartPark.wa -> smartPark.appServer.res "Creates Reservation"
+        uma.wa -> uma.api.auth "Manages logins and authentication"
+        uma.wa -> uma.api.mng "Provides way to manage account settings"
+        uma.wa -> uma.api.courseUploadReq "Recieves requests for uploading course information"
+        uma.wa -> uma.api.facilityReq "Recieves requests for facility bookings"
+        uma.wa -> uma.api.optiReq "Recieves requests for optimization generation requests"
+        uma.wa -> uma.appServer.facility "Handles facility booking creation"
+        uma.wa -> uma.appServer.optimize "Handles schedule optimization Generation"
+        uma.wa -> uma.appServer.notif "Manages notifcations and authentication"
+        uma.wa -> uma.appServer.upload "Manages course saving"
 
         
     }
 
     views {
-        systemContext smartPark "ContextDiagram" {
+        systemContext uma "ContextDiagram" {
             include *
             autolayout lr
         }
         
-        container smartPark "ContainerDiagram" {
+        container uma "ContainerDiagram" {
             include *
             autolayout lr
         }
         
-        component smartPark.appServer "ApplicationServerComponent" {
+        component uma.appServer "ApplicationServerComponent" {
             include *
             autolayout lr
         }
-        component smartPark.api "APIComponent" {
+        component uma.api "APIComponent" {
             include *
             autolayout lr
         }
@@ -119,7 +111,7 @@ workspace "Name" "Description" {
                 color #ffffff       
                 border dashed
             }
-            element "SmartPark" {
+            element "UMA" {
                 background #900C3F
                 border solid
             }
