@@ -1,0 +1,36 @@
+
+== Architecture Decisions
+
+Architectural decisions document key design choices made during the development of UMA. These decisions are based on functional and non-functional requirements, technical constraints, and business needs.
+
+=== ADR 1: Use of MVC Architecture.
+**Decision**: 
+
+Implement MVC as the primary software architecture pattern.
+
+**Rationale**:
+
+- Integrated well into the prototypes front end back end configurations.
+- Allowed design pattern choices to be maintained.
+- Increased modularity, readability and maintainability.
+- Familiar to all team members.
+
+**Consequences**:
+
+- Less scalable than serverless.
+
+=== ADR 2: PostgreSQL for data storage.
+**Decision**: 
+
+Use PostgreSQL for all data storage and prototype database requirements.
+
+**Rationale**:
+
+- Integrates well with TypeScript and React.
+- Beginner friendly as established by early project research.
+
+**Consequences**:
+
+- Potentially higher storage costs affects scalability
+
+These decisions shape the architecture of UMA and contribute to its performance, development, and maintainability.

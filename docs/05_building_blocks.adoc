@@ -1,0 +1,59 @@
+:imagesdir: diagrams
+== Building Block View
+
+UMA is structured into different building blocks that define its core functionalities. These building blocks are categorized into different levels as per the C4 model.
+
+=== Level 1: System Scope
+
+- The **UMA System** represents the entire platform providing optimized schedule services, facility booking requests, and schedule update notifications.
+
+=== Level 2: Major Containers
+
+- **Web Application**: Provides the user interface for customers.
+        Tech Stack:
+        Front end: React, TypeScript
+        Back end: SpringBoot 
+- **API Gateway**: Central access point for backend services.
+        Tech Stack:
+        TypeScript
+- **Application Server**: Handles business logic and request processing.
+        Tech Stack:
+        TypeScript, React, Google Cloud, Docker
+- **Database**: Stores coach, student-athlete, and facility administrator account details. Also stores schedule, team, and facility information
+        Tech stack:
+        PostgreSQL, Firebase
+
+=== Container Diagram
+
+image::structurizr-ContainerDiagram.png[Diagram]
+
+image::structurizr-ContainerDiagram-key.png[Diagram]
+
+=== Level 3.1: Core Components - Application Server
+
+Core components of the  Application Server are:
+
+- **Course/Event Processing**: Creates and undoes course and other events for student athletes.
+- **Optimized Schedule Processing**: Creates and presents possible practice times to coaches.
+- **Facility Request Processing**: Creates and undoes facility booking requests.
+- **Notification Service**: Sends alerts and notifications about schedule updates.
+
+=== Application Server Component Diagram
+
+image::structurizr-ApplicationServerComponent.png[Diagram]
+
+image::structurizr-ApplicationServerComponent-key.png[Diagram]
+
+=== Level 3.2: Core Components - API
+
+Core components of the  API Gateway are:
+
+- **User Authentication**: Manages login and access control.
+- **Account Management**: Manages ways to add courses and events to accounts.
+- **Facility Requests**: Receives and handles business logic for facility booking requests.
+
+=== API Component Diagram
+
+image::structurizr-APIComponent.png[Diagram]
+
+image::structurizr-APIComponent-key.png[Diagram]

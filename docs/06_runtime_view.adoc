@@ -1,0 +1,35 @@
+:imagesdir: diagrams
+== Runtime View
+
+The runtime view describes how SmartSpot components interact at runtime to process user actions and system workflows. It focuses on key scenarios that demonstrate how different parts of the system work together.
+
+=== Key Runtime Scenarios
+
+1. **User Login & Authentication**
+   - A user submits login credentials via the web application.
+   - The credentials are verified against those stored in the PostgreSQL database.
+   - The user is taken to the home page.
+  
+2. **Student-Athlete Upload iCal**
+   - The user navigates to the MySchedule page and uploads their course schedule.
+   - The API Gateway forwards the request to the Application Server.
+   - The server validates the file.
+   - If valid, the iCal is parsed and then saved to the database.
+   - A message is displayed on the user interface to indicate success, and the page refreshes to show new course information.
+
+3. **Coach Optimized Practice Schedule Creation**
+   - Coach sees the combined schedule of all of the athletes on their team. The coach then clicks the option to generate a schedule.
+   - The API executes a optimized schedule creation request.
+   - Options of valid practice schedule times are displayed.
+
+4. **Coach Practice Time Request**
+   - The coach navigates to submit a facility booking request for their practices.
+   - The user fills in required information based on the desired practice times (custom or recommended options).
+   - The API confirms the facility request, and saves it to the database.
+
+
+=== UML Diagram
+
+image::uml_SmartSpot.png[Diagram]
+
+This section provides insights into real-time interactions between services and how different system components contribute to the overall functionality. The runtime view helps in understanding the flow of data and control during user actions and system operations.
