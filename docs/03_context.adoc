@@ -1,0 +1,38 @@
+:imagesdir: diagrams
+
+== Context View
+
+The context view provides an overview of the SmartSpot system and its interactions with external entities. It focuses on the system's boundaries, external actors, and key dependencies.
+
+The SmartSpot prototype works with a variety of simulators, users and third party softwares, interacting with multiple external entities and internal systems. The context diagram provides an overview of the system’s interaction with users and third-party services.
+
+=== System Overview
+
+SmartSpot is a smart parking management system that monitors parking lot availability in real-time. It allows users to create reservations and provides automatic payment services.
+
+=== External Entities
+
+- **Customers**: End-users of the platform who reserve spaces, make payments, and receive notifications regarding available parking spaces.
+- **Parking Staff**: Users who interact with the system in a supervisory or administrative capacity.
+- **Municipal Authorities**: Ensure that parking compliance, including proper payment and abiding by time limits.
+- **Iot Sensors**: Service that detects real-time data on parking spot availability.
+- **Notification Gateway**: Service that notifies users on parking spot availability.
+- **Payment Gateway**: Handles payment methods for reserving parking spots or paying tickets.
+
+
+
+=== System Interaction
+
+- Customers interact with SmartSpot through a web interface.
+- Currently, parking staff use SmartSpot through the same web interface.
+- Payment gateways handle online transactions securely.
+- Notifications are sent to external receivers like email or SMS.
+
+
+=== Context Diagram
+
+image::structurizr-ContextDiagram.png[Diagram]
+
+image::structurizr-ContextDiagram-key.png[Diagram]
+
+The context view helps in understanding the system's external dependencies and the overall ecosystem in which SmartSpot operates. It provides a high-level perspective on the interactions between the platform and external entities.

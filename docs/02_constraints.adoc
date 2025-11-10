@@ -1,0 +1,24 @@
+== Constraints
+
+Constraints represent the limitations and restrictions that influence the design and implementation of the SmartSpot system. These constraints are essential to consider during the architectural decision-making process to ensure that the final solution aligns with the project requirements and constraints.
+
+The design of UMA must adhere to several prototype requirements, design patterns, quality attribute requirements, and assignment specific specifications.
+
+### Prototype Requirements
+
+- Optimization Algorithm: Automatic generation of recommended practice times for Coaches to review and select from.
+- Conflict Report: A report of all conflicting facility requests for Administrators to review.
+- Facility Booking: Coaches submit facility booking requests for the semester or year.
+- Centralized Schedule: User-friendly interface for a centralized athletic and academic student schedule.
+- Notifications: Alerts for student-athletes when athletic schedule updates.
+
+### Design Pattern Requirements
+
+- TODO
+
+### Quality Attribute Requirements
+
+- Scalability: Dynamic scaling to handle varying numbers of teams.
+- Cost Efficiency: Optimizing resource usage with cloud technologies to minimize expenses.
+- Usability: Ensuring simple user-friendly interfaces and features throughout the system.
+- Performance: Ensure quick response times when uploading and generating schedules.

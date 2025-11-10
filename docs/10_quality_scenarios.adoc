@@ -1,0 +1,40 @@
+
+== Quality Scenarios
+Quality scenarios define measurable criteria for assessing the performance, reliability, security, and maintainability of SmartSpot. Each scenario follows the **SEI six-part format**, which includes:
+
+1. **Source of Stimulus** – The entity that generates the stimulus.
+2. **Stimulus** – A condition that affects the system.
+3. **Environment** – The context in which the stimulus occurs.
+4. **Artifact** – The part of the system that is affected.
+5. **Response** – The action that the system takes.
+6. **Response Measure** – The metric for success.
+
+=== Performance Scenarios
+==== **Scenario 1: Reserving a Parking Spot**
+- **Source of Stimulus**: Parking customer.
+- **Stimulus**: A customer initiates a parking reservation.
+- **Environment**: Normal operational conditions.
+- **Artifact**: Reservation system.
+- **Response**: The system validates, processes, and confirms the transaction.
+- **Response Measure**: When tested, the response occurred within 1 second.
+
+=== Security Scenarios
+==== **Scenario 2: Unauthorized Access Attempt**
+- **Source of Stimulus**: A user without an account/with the wrong password.
+- **Stimulus**: Attempted log in with an unregistered email/password combination.
+- **Environment**: Public-facing web application.
+- **Artifact**: Authentication service.
+- **Response**: The system blocks the user from entering the system and displays a message about the error.
+- **Response Measure**: The system blocks the user from entering immediately in all scenarios.
+
+
+=== Usability Scenarios
+==== **Scenario 8: Creating a Reservation**
+- **Source of Stimulus**: Parking lot customer.
+- **Stimulus**: A user attempts to reserve a parking spot.
+- **Environment**: Web application.
+- **Artifact**: Reservation system and notification service.
+- **Response**: The reservation appears in the user's profile and they get a pop up notification indicating success.
+- **Response Measure**: Developer manual testing worked 5 times in a row.
+
+These quality scenarios ensure that SmartSpot maintains **high performance, security, and usability standards**.

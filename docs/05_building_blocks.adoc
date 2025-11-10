@@ -1,0 +1,63 @@
+:imagesdir: diagrams
+== Building Block View
+
+SmartSpot is structured into different building blocks that define its core functionalities. These building blocks are categorized into different levels as per the C4 model.
+
+=== Level 1: System Scope
+
+- The **SmartSpot System** represents the entire platform providing parking spot notification and payment services.
+
+=== Level 2: Major Containers
+
+- **Web Application**: Provides the user interface for customers.
+        Tech Stack:
+        Front end: React, JavaScript
+        Back end: SpringBoot 
+- **API Gateway**: Central access point for backend services.
+        Tech Stack:
+        Spring Cloud
+- **Application Server**: Handles business logic and request processing.
+        Tech Stack:
+        Spring boot, React, Azure
+- **Database**: Stores customer, account and parking lot details.
+        Tech stack:
+        MongoDB
+- **IoT Server**: Parking spot monitoring.
+        Tech Stack:
+        Azure Functions
+
+=== Container Diagram
+
+image::structurizr-ContainerDiagram.png[Diagram]
+
+image::structurizr-ContainerDiagram-key.png[Diagram]
+
+=== Level 3.1: Core Components - Application Server
+
+Core components of the  Application Server are:
+
+- **Reservation Processing**: Creates and undoes reservations for users.
+- **Transaction Processing**: Handles fund transfers from user's accounts to pay for a reserved parking spot.
+- **Notification Service**: Sends alerts and notifications about payments and parking spot availability.
+
+=== Application Server Component Diagram
+
+image::structurizr-ApplicationServerComponent.png[Diagram]
+
+image::structurizr-ApplicationServerComponent-key.png[Diagram]
+
+=== Level 3.2: Core Components - API
+
+Core components of the  API Gateway are:
+
+- **User Authentication**: Manages login and access control.
+- **Account Management**: Manages ways to add vehicle and payment methods to accounts.
+- **Reservation Requests**: Receives and handles business logic for reservations.
+- **Payment Requests**: Processes online payments for parking spot reservations.
+
+
+=== API Component Diagram
+
+image::structurizr-APIComponent.png[Diagram]
+
+image::structurizr-APIComponent-key.png[Diagram]
