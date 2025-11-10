@@ -1,5 +1,5 @@
 import { pool } from "./index";
-import { AthleteProfile } from "../types.js";
+import { AthleteProfile } from "../old/types.js";
 import { da } from "zod/v4/locales";
 import { data } from "react-router-dom";
 
@@ -11,14 +11,19 @@ export interface NewAthleteProfile {
 }
 
 export const db = {
-  async create(data: NewAthleteProfile): Promise<AthleteProfile | null> {
+    async create(data: NewAthleteProfile): Promise<AthleteProfile | null> {
         const res = await pool.query(
             `INSERT INTO athlete_profiles (id, school_name, year, notes) 
             VALUES ($1, $2, $3, $4) 
             RETURNING id, school_name, year, notes`,
-            [data.id, data.school_name ?? null, data.year ?? null, data.notes ?? null]
+            [
+                data.id,
+                data.school_name ?? null,
+                data.year ?? null,
+                data.notes ?? null,
+            ]
         );
-        if (res.rows.length === 0 ) {
+        if (res.rows.length === 0) {
             const existing = await this.findById(data.id);
             return existing;
         }
@@ -51,5 +56,5 @@ export const db = {
             WHERE id = $4`,
             [school_name ?? null, year ?? null, notes ?? null, id]
         );
-    }
-}
+    },
+};

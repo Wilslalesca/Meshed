@@ -1,6 +1,5 @@
-import { pool } from "./index";
-import { User, Role } from "../types.js";
-import { nanoid } from "nanoid";
+import { pool } from "../config/db";
+import { User, Role } from "../types/index";
 
 export interface NewUserInput {
   firstName: string;
@@ -11,7 +10,7 @@ export interface NewUserInput {
   passwordHash: string;
 }
 
-export const db = {
+export const UserModel = {
   async findByEmail(email: string): Promise<User | null> {
     const res = await pool.query(
       `SELECT id, first_name AS "firstName", last_name AS "lastName", email, phone, role,
@@ -35,7 +34,6 @@ export const db = {
   },
 
   async insert(data: NewUserInput): Promise<User> {
-    const id = nanoid();
     const res = await pool.query(
       `INSERT INTO users (
           first_name, last_name, email, phone, role, password_hash,
