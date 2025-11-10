@@ -1,14 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, type JSX } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from "@/components/ui/button"
 import { useNavigate } from 'react-router-dom';
 import { apiUploadCourses } from '@/features/upload/api/upload'
 import { apiAddCourseAndAthleteCourse } from '@/features/add-edit-courses/api/addcourse'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import DropzoneField from "@/components/ui/dropzonefield";
+import { Dialog, DialogTrigger, DialogHeader, DialogTitle, DialogDescription, DialogContent } from "@/components/ui/dialog";
+
 import { toast } from "sonner"
 
-export const Upload: React.FC = () => {
+export function Upload(): JSX.Element {
     const { user } = useAuth();
     const [files, setFiles] = useState<File[] | undefined>();
     const navigate = useNavigate();
@@ -45,21 +46,24 @@ export const Upload: React.FC = () => {
             console.error("Unknown error Adding Course:", err);
             return { success: false, message: String(err) };
         }
-        navigate('/dashboard'); 
+        window.location.reload();
     }
 
     return (
-        <dialog className= "bg-white min-h-screen flex items-center justify-center">
-            <Card className= "w-full max-w-sm shadow-lg">
-                <CardHeader>
-                    <CardTitle>Upload your schedule</CardTitle>
-                    <CardDescription>Go to your student portal and export your schedule in csv, pdf, or iCal formats</CardDescription>
-                </CardHeader>
-                <CardContent className="flex flex-col p-4 items-center">
+        <Dialog>
+        <DialogTrigger asChild>
+            <Button className="flex-1 sm:flex-none" >Upload iCal</Button>
+        </DialogTrigger>
+        <DialogContent className="max-w-md">
+                <DialogHeader>
+                    <DialogTitle>Upload your schedule</DialogTitle>
+                    <DialogDescription>Go to your student portal and export your schedule in csv, pdf, or iCal formats</DialogDescription>
+                </DialogHeader>
+                <div className="flex flex-col p-4 items-center">
                     <DropzoneField onDrop={handleDrop} />
                     <Button type="submit" onClick={handleSubmit} className="w-full gap-3">Submit</Button>
-                </CardContent>
-            </Card>
-        </dialog>
+                </div>
+        </DialogContent>
+        </Dialog>
     );
 };

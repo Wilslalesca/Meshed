@@ -9,7 +9,7 @@ import { Register } from "./screens/Register";
 import { Dashboard } from "./screens/Dashboard";
 import { Admin } from "./screens/Admin";
 import { Profile } from "./screens/Profile";
-import { Upload } from "./routes/upload/Upload";
+import { Upload } from "./features/upload/components/Upload.tsx";
 import { useAuth } from "./hooks/useAuth";
 import ScheduleBackground from './screens/ScheduleBackground';
 import { Layout } from "./components/layout/Layout";
@@ -23,7 +23,6 @@ const pageTitles: Record<string, string> = {
   "/dashboard": "Dashboard",
   "/admin": "Admin Panel",
   "/manager": "Schedule Background Tasks",
-  "/upload": "Upload",
   "/mySchedule": "My Schedule",
   "/profile": "Profile",
 };
@@ -67,7 +66,6 @@ export default function App() {
         <Route path="/dashboard" element={ <ProtectedRoute> <Dashboard /> </ProtectedRoute> }/>
         <Route path="/admin" element={ <ProtectedRoute> <RequireRole allow="admin"> <Admin /> </RequireRole> </ProtectedRoute> }/>
         <Route path="/manager" element={ <ProtectedRoute> <RequireRole allow={["manager", "admin"]}> <ScheduleBackground /> </RequireRole> </ProtectedRoute> }/>
-        <Route path="/upload" element={ <ProtectedRoute> <Upload /> </ProtectedRoute> }/>
         <Route path="/mySchedule" element={ <ProtectedRoute> <AthleteSchedulePage /> </ProtectedRoute> }/>
         <Route path="/profile" element={ <ProtectedRoute> <Profile /> </ProtectedRoute> }/>
         <Route path="/editcourse/:courseId" element={<ProtectedRoute><EditCourse /></ProtectedRoute>}/>

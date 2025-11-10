@@ -24,9 +24,6 @@ export const Dashboard = () => {
               <Link to="/manager">Manager Panel</Link>
           </Button>
         )}
-        <Button asChild variant="outline">
-          <Link to="/upload">Upload</Link>
-        </Button>
         <Button variant="destructive" onClick={logout}>
           Logout
         </Button>

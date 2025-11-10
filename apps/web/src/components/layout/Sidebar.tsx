@@ -54,6 +54,7 @@ export const Sidebar = ({
                 { name: "My Schedule", href: "/myschedule" },
             ],
         },
+        { name: "My Schedule", href: "/myschedule", icon: Users },
         { name: "Facilities", href: "/facilities", icon: Building2 },
         { name: "Settings", href: "/settings", icon: Settings },
     ];
