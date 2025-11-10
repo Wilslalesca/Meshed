@@ -41,6 +41,7 @@ export const Sidebar = ({
     const location = useLocation();
     const accent = "#346E68";
     const [openMenu, setOpenMenu] = useState(false);
+    const [openSubMenu, setOpenSubMenu] = useState<string | null>(null);
     const navigate = useNavigate();
 
     const links = [
@@ -54,7 +55,6 @@ export const Sidebar = ({
                 { name: "My Schedule", href: "/myschedule" },
             ],
         },
-        { name: "My Schedule", href: "/myschedule", icon: Users },
         { name: "Facilities", href: "/facilities", icon: Building2 },
         { name: "Settings", href: "/settings", icon: Settings },
     ];
@@ -134,35 +134,70 @@ export const Sidebar = ({
 
                 {/* Navigation */}
                 <nav className="flex-1 overflow-y-auto px-3 pt-2 space-y-1 text-sm">
-                    {links.map(({ name, href, icon: Icon }) => {
+                    {links.map(({ name, href, icon: Icon, subLinks }) => {
                         const isActive = location.pathname === href;
+                        const isOpen = openSubMenu === name;
+                        const hasSub = (subLinks?.length ?? 0) > 0;
+
+                        const handleClick = () => {
+                            if (hasSub) setOpenSubMenu(isOpen ? null : name);
+                            else navigate(href);
+                        };
+                        
                         return (
-                            <NavLink
-                                key={name}
-                                to={href}
-                                className={`relative flex items-center gap-3 px-3 py-2 rounded-md font-medium transition-all ${
-                                    isActive
-                                        ? `text-[#346E68] bg-white`
-                                        : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
-                                }`}
-                            >
-                                {isActive && (
-                                    <span
-                                        className={`absolute left-0 top-0 h-full w-1 rounded-r bg-[#346E68]`}
-                                        aria-hidden="true"
-                                    />
-                                )}
-                                <Icon
-                                    className={`h-4 w-4 ${
+                            <div key={name}>
+                                <button
+                                    onClick={handleClick}
+                                    className={`relative flex items-center gap-3 px-3 py-2 rounded-md font-medium transition-all ${
                                         isActive
-                                            ? `text-[#346E68]`
-                                            : "text-gray-500"
+                                            ? `text-[#346E68] bg-white`
+                                            : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
                                     }`}
-                                />
-                                {!collapsed && name}
-                            </NavLink>
-                        );
-                    })}
+                                >
+                                    {isActive && (
+                                        <span
+                                            className={`absolute left-0 top-0 h-full w-1 rounded-r bg-[#346E68]`}
+                                            aria-hidden="true"
+                                        />
+                                    )}
+                                    <Icon
+                                        className={`h-4 w-4 ${
+                                            isActive
+                                                ? `text-[#346E68]`
+                                                : "text-gray-500"
+                                        }`}
+                                    />
+                                    {!collapsed && name}
+                                    {!collapsed &&
+                                        hasSub &&
+                                        (isOpen ? (
+                                        <ChevronUp className="h-4 w-4 text-gray-400" />
+                                        ) : (
+                                        <ChevronDown className="h-4 w-4 text-gray-400" />
+                                    ))}
+                                </button>
+                                
+                                {/*SubMenu*/}
+                                {hasSub && isOpen && !collapsed && (
+                                    <div className="ml-8 mt-1 space-y-1">
+                                        {subLinks?.map((sub) => (
+                                            <NavLink
+                                                key={sub.name}
+                                                to={sub.href}
+                                                className={`relative flex items-center gap-3 px-3 py-2 rounded-md font-medium transition-all ${
+                                                    isActive
+                                                        ? `text-[#346E68] bg-white`
+                                                        : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+                                                }`}
+                                            >
+                                                {sub.name}
+                                            </NavLink>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                            );
+                        })}
                 </nav>
 
                 {/* Account */}
