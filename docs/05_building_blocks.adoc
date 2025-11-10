@@ -1,30 +1,27 @@
 :imagesdir: diagrams
 == Building Block View
 
-SmartSpot is structured into different building blocks that define its core functionalities. These building blocks are categorized into different levels as per the C4 model.
+UMA is structured into different building blocks that define its core functionalities. These building blocks are categorized into different levels as per the C4 model.
 
 === Level 1: System Scope
 
-- The **SmartSpot System** represents the entire platform providing parking spot notification and payment services.
+- The **UMA System** represents the entire platform providing optimized schedule services, facility booking requests, and schedule update notifications.
 
 === Level 2: Major Containers
 
 - **Web Application**: Provides the user interface for customers.
         Tech Stack:
-        Front end: React, JavaScript
+        Front end: React, TypeScript
         Back end: SpringBoot 
 - **API Gateway**: Central access point for backend services.
         Tech Stack:
-        Spring Cloud
+        TypeScript
 - **Application Server**: Handles business logic and request processing.
         Tech Stack:
-        Spring boot, React, Azure
-- **Database**: Stores customer, account and parking lot details.
+        TypeScript, React, Google Cloud, Docker
+- **Database**: Stores coach, student-athlete, and facility administrator account details. Also stores schedule, team, and facility information
         Tech stack:
-        MongoDB
-- **IoT Server**: Parking spot monitoring.
-        Tech Stack:
-        Azure Functions
+        PostgreSQL, Firebase
 
 === Container Diagram
 
@@ -36,9 +33,10 @@ image::structurizr-ContainerDiagram-key.png[Diagram]
 
 Core components of the  Application Server are:
 
-- **Reservation Processing**: Creates and undoes reservations for users.
-- **Transaction Processing**: Handles fund transfers from user's accounts to pay for a reserved parking spot.
-- **Notification Service**: Sends alerts and notifications about payments and parking spot availability.
+- **Course/Event Processing**: Creates and undoes course and other events for student athletes.
+- **Optimized Schedule Processing**: Creates and presents possible practice times to coaches.
+- **Facility Request Processing**: Creates and undoes facility booking requests.
+- **Notification Service**: Sends alerts and notifications about schedule updates.
 
 === Application Server Component Diagram
 
@@ -51,10 +49,8 @@ image::structurizr-ApplicationServerComponent-key.png[Diagram]
 Core components of the  API Gateway are:
 
 - **User Authentication**: Manages login and access control.
-- **Account Management**: Manages ways to add vehicle and payment methods to accounts.
-- **Reservation Requests**: Receives and handles business logic for reservations.
-- **Payment Requests**: Processes online payments for parking spot reservations.
-
+- **Account Management**: Manages ways to add courses and events to accounts.
+- **Facility Requests**: Receives and handles business logic for facility booking requests.
 
 === API Component Diagram
 

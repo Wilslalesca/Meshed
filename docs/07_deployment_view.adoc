@@ -1,24 +1,22 @@
 == Deployment View
 
-The deployment view describes how SmartSpot is deployed across the development environment.
+The deployment view describes how UMA is deployed across the development environment.
 
 === Infrastructure Setup
 
-- **Cloud Provider**: Azure Static Web Apps was researched as the cloud provider but not fully implemented. Azure functions provides some event-driven third party functionality to display the team's competency and work towards achieving this.
-- **Databases**: MongoDB.
-- **Monitoring & Logging**: Gradle build tests log errors.
+- **Cloud Provider**: Google Cloud.
+- **Databases**: PostgreSQL and Firebase.
+- **Monitoring & Logging**: TypeScript backend build tests log errors.
 
 
 === Deployment Environments
 
-As SmartSpot is a prototype, the only deployment environment that currently exists is the development environment.
-
 1. **Development**:
 
-   - Runs on local server with a minimal setup.
-   - Uses a local database for accounts, parking lots, etc.
+   - Runs on local Dockerized container with a minimal setup.
+   - Uses a local PostgreSQL database for accounts, course information, etc.
    - Uses API gateways to communicate between application server and user.
 
-2. **Hypothetical Production Environment**
+2. **Production Environment**
 
-    - Research was put into using Azure Static Web Apps to host the production environment. While not implemented in this prototype, ASW would provide an automated deployment platform and is compatible with React.
+   - Hosted on Google Cloud

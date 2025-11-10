@@ -1,60 +1,52 @@
 
 == Crosscutting Concepts
 
-Crosscutting concepts represent essential non-functional requirements and design principles that apply throughout the system architecture of SmartSpot. These aspects impact multiple components and ensure the system's quality, security, and maintainability.
+Crosscutting concepts represent essential non-functional requirements and design principles that apply throughout the system architecture of UMA. These aspects impact multiple components and ensure the system's quality, security, and maintainability.
 
 === Security
 
-- **Authentication & Authorization**: Hashed passwords in database via Pbkdf2PasswordEncoder.
-- **MongoDB**: uses TLS/SSL Encryption which encrypts data in transit.
+- **Authentication & Authorization**: Hashed passwords in database via BCrypt.
+- **PostgreSQL**: uses TLS/SSL Encryption which encrypts data in transit.
 
 === Logging & Monitoring
 
-- **Error Tracking**: The application implements basic error handling using try-catch blocks in both the React frontend and Spring Boot backend controllers to prevent application crashes. While this ensures a stable user experience, it does not include automated error reporting or centralized logging.
-- **Azure Logging**: Azure automatically collects performance metrics, CPU usage, memory, disk I/O, and more.
+- **Error Tracking**: The application implements basic error handling using try-catch blocks in both the React frontend and TypeScript backend controllers to prevent application crashes. While this ensures a stable user experience, it does not include automated error reporting or centralized logging.
+- **Google Cloud Logging**: Google Cloud automatically collects performance metrics, CPU usage, memory, disk I/O, and more.
 - **Error Handling**: API's provide consistent error responses with appropriate HTTP status codes and detailed error messages.
 
 === Performance Optimization
 - **Database Indexing**: Optimized queries and indexed tables for faster response times.
 
-
 === Scalability & Availability
 
-==== **SprintBoot Backend**
-    - **Scalability**: Hosted on Azure App Service, which allows for scalable deployment based on CPU, memory, or HTTP request counts with options to increase resources as demand grows (by pricing tier). However, higher traffic could lead to increased operational costs due to the continuous nature of the service.
-    - **Availability**: The use of Azure App Service for the backend ensures high availability with built-in load balancing and automatic failover options, especially when scaled to higher tiers.
-    - **Auto-Configuration**: SpringBoot Automatically configures beans and dependencies but doesn’t handle system-level scaling.
+==== **TypeScript Backend**
+    - **Scalability**: Hosted on Google Cloud, which allows for scalable deployment based on CPU, memory, or HTTP request counts with options to increase resources as demand grows (by pricing tier). However, higher traffic could lead to increased operational costs due to the continuous nature of the service.
+    - **Availability**: The use of Google Cloud for the backend ensures high availability with built-in load balancing and automatic failover options, especially when scaled to higher tiers.
 
 ==== **React Frontend**
-    - **Scalability**: Hosted on Azure Static Web Apps, remains highly cost-effective due to its static content and limited number of pages.
-    - **Availability**: Azure Static Web Apps used for the frontend, is served from globally distributed edge nodes. This means the application maintains reliable availability for users, even during periods of increased traffic.
+    - **Scalability**: Hosted on Google Cloud, remains highly cost-effective due to its static content and limited number of pages.
+    - **Availability**: Google Cloud is served from globally distributed edge nodes. This means the application maintains reliable availability for users, even during periods of increased traffic.
 
 === API Design & Interoperability
 
 - **RESTful APIs**: Follows standard HTTP methods (GET, PUT, POST, and DELETE) and best practices.
-- **Versioning Strategy**: API versioning is handled via URL path (/api/reservations/request), ensuring backward compatibility.
+- **Versioning Strategy**: API versioning is handled via URL path (/api/facility/request), ensuring backward compatibility.
 - **Data Format**: Supports JSON for request and response payloads
-
 
 === Maintainability & Code Quality
 
 - **CI/CD Integration**: Automated tests, manual pull and merge requests reviewed by developers.
 - **Code Review & Linting**: Automated linting in gradle build.
-- **Automated Testing**: integrated in gradle build and ran each time the local back end is run.
+- **Automated Testing**: integrated in CI/CD build and ran each time the local back end is run.
 - **Design Patterns**: By implementing design patterns like command, strategy, and observer we increase the maintainability of our system. As well as the use of MVC promotes maintainability through its separation of concerns. 
-
-=== Internationalization & Localization
-- **Timezone Handling**: Reservations based off of the local time based on parking lot location
 
 === Compliance & Regulatory Requirements
 
-- **Password Hashing**: Passwords are hashed using Pbkdf2PasswordEncoder, which is a secure hashing algorithm that meets industry standards for password storage.
+- **Password Hashing**: Passwords are hashed using BCrypt, which is a secure hashing algorithm that meets industry standards for password storage.
 - **Protected Routes**: The application implements protected routes to ensure that only authenticated users can access certain features, such as creating or managing reservations. 
-- **Data Encryption**: MongoDB uses TLS/SSL encryption to secure data in transit, ensuring that sensitive information is protected during transmission. 
-- **Local Municipal Regulations**: Implemented a system to enforce parking lot compliance, where violations automatically result in a payable ticket issued through SmartSpot.
-
+- **Data Encryption**: PostgreSQL uses TLS/SSL encryption to secure data in transit, ensuring that sensitive information is protected during transmission. 
 
 === Diagram Representation
-The architecture consists of a React frontend hosted on Azure Static Web Apps, which communicates with a Spring Boot backend deployed on Azure App Service via RESTful HTTPS API calls. Data is temporarily stored in the frontend using localStorage for the purpose of demonstration. Authentication and user data handling occur in the backend. The architecture separates frontend and backend concerns, enabling independent scaling and deployment.
+The architecture consists of a React frontend hosted on Azure Static Web Apps, which communicates with a TypeScript backend via RESTful HTTPS API calls. Authentication and user data handling occur in the backend. The architecture separates frontend and backend concerns, enabling independent scaling and deployment.
 
-These crosscutting concerns ensure that SmartSpot maintains high standards for security, performance, and maintainability across its entire architecture.
+These crosscutting concerns ensure that UMA maintains high standards for security, performance, and maintainability across its entire architecture.

@@ -1,98 +1,36 @@
 
 == Architecture Decisions
 
-Architectural decisions document key design choices made during the development of SmartSpot. These decisions are based on functional and non-functional requirements, technical constraints, and business needs.
+Architectural decisions document key design choices made during the development of UMA. These decisions are based on functional and non-functional requirements, technical constraints, and business needs.
 
-=== ADR 1: Use of Serverless Architecture.
+=== ADR 1: Use of MVC Architecture.
 **Decision**: 
 
-Adopt a design that relies on servers despite assignment description asking for serverless architecture to be incorporated.
+Implement MVC as the primary software architecture pattern.
 
 **Rationale**:
 
-- Knowledge of serverless patterns at the start of development was insufficient to begin the  project. The team began by focusing on required design patterns.
-- Later migration to a serverless pattern was too time consuming.
-- Allowed team to properly integrate design patterns and known architectures into development
-- Concerned about cost of third party hosting platforms
-- Able to implement event driven functionality in a piecewise manner to still meet learning outcomes of assignment
-
-**Consequences**:
-
-- Doesn't fully cover the assignment specifications.
-- Adjustments required to still meet learning outcomes (i.e., using event driven/third parties for some functionality but not all).
-
-=== ADR 2: Use of MVC Architecture.
-**Decision**: 
-
-Implement MVC as the primary software architecture pattern rather than serverless.
-
-**Rationale**:
-
-- Displayed understanding of software architectures discussed in class.
 - Integrated well into the prototypes front end back end configurations.
 - Allowed design pattern choices to be maintained.
 - Increased modularity, readability and maintainability.
+- Familiar to all team members.
 
 **Consequences**:
 
-- Similar to above, alters the assignment specifications.
 - Less scalable than serverless.
 
-=== ADR 3: Use of Spring Boot for Backend Development
+=== ADR 2: PostgreSQL for data storage.
 **Decision**: 
 
-Use Spring Boot as the primary backend framework.
+Use PostgreSQL for all data storage and prototype database requirements.
 
 **Rationale**:
 
-- Ease of implementation with Java, MongoDB, and Gradle as the initial back end.
-- Automated configuration integrates well with Gradle.
-- Built in support for restful APIs and and web server interaction.
-
-
-**Consequences**:
-
-- Introduces additional dependencies that led to a need for many troubleshooting sessions.
-- Increased deployment complexity.
-- Increased education requirements to familiarize developers with SpringBoot.
-- Introduced conflicts with Azure Functions
-
-
-=== ADR 4: MongoDB for data storage.
-**Decision**: 
-
-Use MongoDB for all data storage and prototype database requirements.
-
-**Rationale**:
-
-- Integrates well with SpringBoot and React.
+- Integrates well with TypeScript and React.
 - Beginner friendly as established by early project research.
-- Highly scalable, supplements some of the scalability requirements lost when serverless architecture was discarded.
-
 
 **Consequences**:
 
 - Potentially higher storage costs affects scalability
 
-
-=== ADR 5: CI/CD with GitHub and Azure Static Web Apps
-**Decision**: 
-
-Implement a manual pipeline for development and have a separate branch with research into deploying with Azure functionality.
-
-**Rationale**:
-
-- Manual pipeline allowed for closer review of code considering different development skill levels on the team.
-- Automated CI/CD pipeline increased complexity.
-- Automated testing implemented in different areas such as the back end Gradle files and linting.
-- Azure ended up being incompatible with SpringBoot which was not revealed until later.
-- GitHub is free and holds all source code decreasing both complexity and cost.
-- CI/CD pipeline not included in assignment requirements.
-
-**Consequences**:
-
-- Manual deployment requires more hands on time
-- Full testing is not included in every push/merge
-
-
-These decisions shape the architecture of SmartSpot and contribute to its performance, development, and maintainability.
+These decisions shape the architecture of UMA and contribute to its performance, development, and maintainability.

@@ -7,29 +7,27 @@ The architecture of SmartSpot is designed in accordance with assignment specific
 
 === Architectural Approach
 
-- **Serverless Architecture**: While the assignment specified a serverless approach, the team initially focused on design patterns. Azure Functions were implemented for login and IoT sensor features on a separate branch to demonstrate understanding, but with the later shift to Spring Boot, time constraints prevented full integration. The team remains confident in applying serverless principles in a full implementation should time have allowed.
 - **Model View Controller Architecture**: Follows a MVC approach **Model, View, and Controller aspects**.
 
 === Technology Stack
 
-- **Backend**: Spring Boot (Java).
-- **Frontend**: React for web application, JavaScript.
-- **Database**: MongoDB and local storage.
-- **Security**: SpringBoot security library Pbkdf2PasswordEncoder for password hashing.
-- **IoT Integration**: Research into Azure Functions Timer Trigger to simulate IoT sensors, or in other cases a timed React notification to update the parking spot availabilities
+- **Backend**: TypeScript.
+- **Frontend**: React for web application, TypeScript.
+- **Database**: PostgreSQL.
+- **Security**: BCrypt for password hashing.
+- **Cloud**: Google suite (Firebase, and Google Cloud) for infrastructure.
+- **Infrastructure**: Dockerized containers for local hosting of the prototype.
 
 === Integrated Design Patterns
 
-- **Observer Pattern**: For notifying users of parking space status changes.
-- **Command Pattern**: To manage reservation and payment operations.
-- **Singleton Pattern**: For handling centralized configuration settings and database connections.
+-TODO
 
 
 === CI/CD & DevOps Practices
 
-- **CI/CD Pipelines** Azure Static Web Apps provides automatic deployment, if the team were to further develop this this would be integrated. Integrated to some extent in this application. Branching and pull request structure creates a simulated CI/CD process throughout development.
+- **CI/CD Pipelines**  Integrated to some extent in this application. Branching and pull request structure creates a simulated CI/CD process throughout development.
 - **Linter** VS Code packages were installed to lint the code. It flagged programming errors and simple bugs.
-- **Automated Testing**: The Gradle project includes automatic tests that are run every time the backend is run locally.
+- **Automated Testing**: The Google Cloud and CI/CD pipeline includes automatic tests that are run every time the backend is run locally.
 
 
 

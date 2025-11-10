@@ -7,35 +7,26 @@ The runtime view describes how SmartSpot components interact at runtime to proce
 
 1. **User Login & Authentication**
    - A user submits login credentials via the web application.
-   - The credentials are verified against those stored in the MongoDB database.
+   - The credentials are verified against those stored in the PostgreSQL database.
    - The user is taken to the home page.
   
-2. **Parking Spot Reservation**
-   - The user initiates a parking spot reservation request, selecting an available parking space for a specific time.
+2. **Student-Athlete Upload iCal**
+   - The user navigates to the MySchedule page and uploads their course schedule.
    - The API Gateway forwards the request to the Application Server.
-   - The server validates that the request is valid, and that the parking spot is available.
-   - If valid, the reservation is recorded in the database.
-   - A message is displayed on the user interface to indicate success.
+   - The server validates the file.
+   - If valid, the iCal is parsed and then saved to the database.
+   - A message is displayed on the user interface to indicate success, and the page refreshes to show new course information.
 
-3. **Parking Payment**
-   - After a reservation request is initiated and completed, the payment method is fetched and linked to the parking spot reservation.
-   - The API executes a payment command based on the type of payment given.
-   - The payment would then theoretically be processed but not in this prototype.
+3. **Coach Optimized Practice Schedule Creation**
+   - Coach sees the combined schedule of all of the athletes on their team. The coach then clicks the option to generate a schedule.
+   - The API executes a optimized schedule creation request.
+   - Options of valid practice schedule times are displayed.
 
-4. **Adding Parking Payment Methods**
-   - The user navigates to the "My Wallet" tab.
-   - The user fills in required information based on the desired payment strategy.
-      - The API confirms the request for a new payment, and saves it to the database.
+4. **Coach Practice Time Request**
+   - The coach navigates to submit a facility booking request for their practices.
+   - The user fills in required information based on the desired practice times (custom or recommended options).
+   - The API confirms the facility request, and saves it to the database.
 
-5. **Parking Spot Browsing**
-   - The user navigates to the live parking status page and inputs their desired city and time.
-   - The available parking spots are displayed.
-   - The available parking spots are updated using the IoT simulation tools (Azure timer triggers or React timed functions)
-
-6. **Adding Vehicles to Account**
-   - The user navigates to the "My Vehicles" tab.
-   - The user fills in required information, such as make, model, year, and license plate of the desired vehicle.
-   - The API confirms the request for a new vehicle, and saves it to the database.
 
 === UML Diagram
 
