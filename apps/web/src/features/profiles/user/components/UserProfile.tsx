@@ -6,7 +6,8 @@ import { Input } from "@/components/ui/input"
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from "@/components/ui/button"
 import { Pencil, Check } from "lucide-react";
-import {apiEditCourse} from "../apis/editprofile"
+import {apiEditUser} from "../apis/editprofile"
+import { toast } from "sonner";
 
 export function UserProfile() {
     const { user } = useAuth();
@@ -19,11 +20,35 @@ export function UserProfile() {
     const [phone, setPhone] = React.useState(user?.phone);
 
     const handleSubmit = async () => {
-        setDisabled((prev) => !prev);
-        apiEditCourse(user?.id);
+        if (!firstname || !lastname) {
+            toast.error("Please fill in all required fields before submitting!");
+            return;
+        }
+
+        const plainUser = JSON.parse(JSON.stringify(user));
+        const userData = {
+            id: plainUser.id,
+            first_name: firstname ?? "",
+            last_name: lastname ?? "",
+            phone: phone ?? "",
+            email: plainUser.email ?? "",
+            role: plainUser.role,
+            password_hash: plainUser.passwordHash,
+            active: plainUser.active,
+            verified: plainUser.verified,
+        } as any;
+
+        const success = await apiEditUser(plainUser.id, userData);
+        if(success){
+            setDisabled((prev) => !prev);
+            toast.success("Successfully updated profile");
+            navigate('/profile');
+        }
+        else{
+            toast.error("Error updating profile, please try again");
+        }
     }
     
-
     return (
         <div className="m-4 gap-4">
             <form>
