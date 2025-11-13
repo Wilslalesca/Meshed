@@ -45,8 +45,8 @@ async function upsertSport(s: SportSeed): Promise<void> {
      VALUES ($1, $2, $3)`,
     [s.sport_name, s.season ?? null, s.position ?? null]
   );
-
-  console.log(`[sports] inserted: ${s.sport_name}`);
+  // dont need to show each insert - was just for initial testing
+  // console.log(`[sports] inserted: ${s.sport_name}`);
 }
 
 async function upsertLeague(l: LeagueSeed): Promise<void> {
@@ -66,7 +66,8 @@ async function upsertLeague(l: LeagueSeed): Promise<void> {
     [l.league_name]
   );
 
-  console.log(`[league] inserted: ${l.league_name}`);
+  // dont need to show each insert - was just for initial testing
+  // console.log(`[league] inserted: ${l.league_name}`);
 }
 
 export async function seedLeaguesAndSports() {
