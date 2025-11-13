@@ -22,7 +22,6 @@ type League = {
   id: number;
   league_name: string;
 };
-
 export const Teams: React.FC = () => {
   const { hasRole } = useAuth();
   const canManage = hasRole(["manager", "admin"]);

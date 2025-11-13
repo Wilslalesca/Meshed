@@ -124,5 +124,14 @@ CREATE TABLE IF NOT EXISTS facilities (
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE team_facilities (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  team_id UUID REFERENCES teams(id) ON DELETE CASCADE,
+  facility_id UUID REFERENCES facilities(id) ON DELETE CASCADE,
+  is_home BOOLEAN DEFAULT FALSE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
 CREATE INDEX IF NOT EXISTS idx_facilities_name ON facilities (name);
 
