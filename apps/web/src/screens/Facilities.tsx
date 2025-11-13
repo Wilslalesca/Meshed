@@ -14,10 +14,25 @@ type NewFacility = {
   country?: string;
   email?: string;
   phone?: string;
-  latitude?: string;
-  longitude?: string;
   notes?: string;
 };
+
+const CANADIAN_PROVINCES_TERRITORIES = [
+  { value: "", label: "Select province/territory" },
+  { value: "AB", label: "Alberta" },
+  { value: "BC", label: "British Columbia" },
+  { value: "MB", label: "Manitoba" },
+  { value: "NB", label: "New Brunswick" },
+  { value: "NL", label: "Newfoundland and Labrador" },
+  { value: "NS", label: "Nova Scotia" },
+  { value: "ON", label: "Ontario" },
+  { value: "PE", label: "Prince Edward Island" },
+  { value: "QC", label: "Quebec" },
+  { value: "SK", label: "Saskatchewan" },
+  { value: "NT", label: "Northwest Territories" },
+  { value: "NU", label: "Nunavut" },
+  { value: "YT", label: "Yukon" },
+];
 
 export const Facilities: React.FC = () => {
   const { token, hasRole } = useAuth();
@@ -30,7 +45,11 @@ export const Facilities: React.FC = () => {
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
 
-  const onChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const onChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
     const { name, value } = e.target;
     setForm((p) => ({ ...p, [name]: value }));
   };
@@ -48,12 +67,11 @@ export const Facilities: React.FC = () => {
       const res = await fetch("http://localhost:4000/facilities", {
         method: "POST",
         credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...form,
-          latitude: form.latitude ? Number(form.latitude) : undefined,
-          longitude: form.longitude ? Number(form.longitude) : undefined,
-        }),
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify(form),
       });
 
       if (!res.ok) {
@@ -87,61 +105,109 @@ export const Facilities: React.FC = () => {
 
       <div className="card p-4">
         <h2 className="font-semibold mb-3">Create facility</h2>
-        {!isAdmin && <p className="text-sm text-red-600 mb-2">Only admins can create facilities.</p>}
+        {!isAdmin && (
+          <p className="text-sm text-red-600 mb-2">
+            Only admins can create facilities.
+          </p>
+        )}
+
         <form onSubmit={create} className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <Label htmlFor="name">Name *</Label>
-            <Input id="name" name="name" value={form.name} onChange={onChange} required />
+            <Input
+              id="name"
+              name="name"
+              value={form.name}
+              onChange={onChange}
+              required
+            />
           </div>
 
           <div>
             <Label htmlFor="email">Email</Label>
-            <Input id="email" name="email" value={form.email || ""} onChange={onChange} />
+            <Input
+              id="email"
+              name="email"
+              value={form.email || ""}
+              onChange={onChange}
+            />
           </div>
 
           <div>
             <Label htmlFor="phone">Phone</Label>
-            <Input id="phone" name="phone" value={form.phone || ""} onChange={onChange} />
+            <Input
+              id="phone"
+              name="phone"
+              value={form.phone || ""}
+              onChange={onChange}
+            />
           </div>
 
           <div>
             <Label htmlFor="address1">Address 1</Label>
-            <Input id="address1" name="address1" value={form.address1 || ""} onChange={onChange} />
+            <Input
+              id="address1"
+              name="address1"
+              value={form.address1 || ""}
+              onChange={onChange}
+            />
           </div>
 
           <div>
             <Label htmlFor="address2">Address 2</Label>
-            <Input id="address2" name="address2" value={form.address2 || ""} onChange={onChange} />
+            <Input
+              id="address2"
+              name="address2"
+              value={form.address2 || ""}
+              onChange={onChange}
+            />
           </div>
 
           <div>
             <Label htmlFor="city">City</Label>
-            <Input id="city" name="city" value={form.city || ""} onChange={onChange} />
+            <Input
+              id="city"
+              name="city"
+              value={form.city || ""}
+              onChange={onChange}
+            />
           </div>
 
           <div>
-            <Label htmlFor="province_state">Province/State</Label>
-            <Input id="province_state" name="province_state" value={form.province_state || ""} onChange={onChange} />
+            <Label htmlFor="province_state">Province / Territory</Label>
+            <select
+              id="province_state"
+              name="province_state"
+              value={form.province_state || ""}
+              onChange={onChange}
+              className="w-full rounded-md border border-[--color-border] bg-[--color-background] px-3 py-2 text-sm"
+            >
+              {CANADIAN_PROVINCES_TERRITORIES.map((opt) => (
+                <option key={opt.value || "default"} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div>
             <Label htmlFor="postal_code">Postal Code</Label>
-            <Input id="postal_code" name="postal_code" value={form.postal_code || ""} onChange={onChange} />
+            <Input
+              id="postal_code"
+              name="postal_code"
+              value={form.postal_code || ""}
+              onChange={onChange}
+            />
           </div>
 
           <div>
             <Label htmlFor="country">Country</Label>
-            <Input id="country" name="country" value={form.country || ""} onChange={onChange} />
-          </div>
-
-          <div>
-            <Label htmlFor="latitude">Latitude</Label>
-            <Input id="latitude" name="latitude" value={form.latitude || ""} onChange={onChange} />
-          </div>
-
-          <div>
-            <Label htmlFor="longitude">Longitude</Label>
-            <Input id="longitude" name="longitude" value={form.longitude || ""} onChange={onChange} />
+            <Input
+              id="country"
+              name="country"
+              value={form.country || ""}
+              onChange={onChange}
+            />
           </div>
 
           <div className="md:col-span-2">

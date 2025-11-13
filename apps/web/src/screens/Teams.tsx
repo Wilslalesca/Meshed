@@ -1,30 +1,27 @@
 // apps/web/src/screens/Teams.tsx
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useAuth } from "../hooks/useAuth";
-import CalendarTimeColumn from "./CalendarTimeColumn";
 
 type Team = {
-  id: number;
+  id: string;                      // UUID from DB
   name: string;
   sport_id: number | null;
   season: string | null;
   league_id: number | null;
+  gender?: "male" | "female" | "coed" | null;
 };
 
-type Sport = { id: number; sport_name: string; season: string | null; position: string | null; };
-type League = { id: number; league_name: string; };
-
-type TeamEvent = {
+type Sport = {
   id: number;
-  title: string;
-  dayOfWeek: number; // 0..6
-  start: string;     // "HH:MM"
-  end: string;       // "HH:MM"
-  location?: string;
+  sport_name: string;
+  season: string | null;
+  position: string | null;
 };
 
-const startHour = 6;
-const endHour = 22;
+type League = {
+  id: number;
+  league_name: string;
+};
 
 export const Teams: React.FC = () => {
   const { hasRole } = useAuth();
@@ -34,14 +31,26 @@ export const Teams: React.FC = () => {
   const [sports, setSports] = useState<Sport[]>([]);
   const [leagues, setLeagues] = useState<League[]>([]);
   const [selectedTeamId, setSelectedTeamId] = useState<number | null>(null);
-  const [events, setEvents] = useState<TeamEvent[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const [form, setForm] = useState<{ name: string; sport_id: string; season: string; league_id: string }>({
-    name: "", sport_id: "", season: "", league_id: ""
+  const [form, setForm] = useState<{
+    name: string;
+    sport_id: string;
+    season: string;
+    league_id: string;
+    gender: string;
+  }>({
+    name: "",
+    sport_id: "",
+    season: "",
+    league_id: "",
+    gender: "",
   });
-  const onChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
-    setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
+
+  const onChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) =>
+    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
 
   // Fetch helper: don't force JSON header on GET
   const api = (path: string, init: RequestInit = {}) => {
@@ -73,7 +82,9 @@ export const Teams: React.FC = () => {
         if (
           sportsRes.status === "fulfilled" &&
           sportsRes.value.ok &&
-          (sportsRes.value.headers.get("content-type") || "").includes("application/json")
+          (sportsRes.value.headers.get("content-type") || "").includes(
+            "application/json"
+          )
         ) {
           const sp: Sport[] = await sportsRes.value.json();
           if (!cancelled) setSports(sp);
@@ -85,7 +96,9 @@ export const Teams: React.FC = () => {
         if (
           leaguesRes.status === "fulfilled" &&
           leaguesRes.value.ok &&
-          (leaguesRes.value.headers.get("content-type") || "").includes("application/json")
+          (leaguesRes.value.headers.get("content-type") || "").includes(
+            "application/json"
+          )
         ) {
           const lg: League[] = await leaguesRes.value.json();
           if (!cancelled) setLeagues(lg);
@@ -97,12 +110,16 @@ export const Teams: React.FC = () => {
         if (
           teamsRes.status === "fulfilled" &&
           teamsRes.value.ok &&
-          (teamsRes.value.headers.get("content-type") || "").includes("application/json")
+          (teamsRes.value.headers.get("content-type") || "").includes(
+            "application/json"
+          )
         ) {
           const teams: Team[] = await teamsRes.value.json();
           if (!cancelled) {
-            setMyTeams(Array.isArray(teams) ? teams : []);
-            if (teams.length && selectedTeamId == null) setSelectedTeamId(teams[0].id);
+            const list = Array.isArray(teams) ? teams : [];
+            setMyTeams(list);
+            if (list.length && selectedTeamId == null)
+              setSelectedTeamId(list[0].id);
           }
         } else {
           if (!cancelled) setMyTeams([]);
@@ -117,24 +134,6 @@ export const Teams: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Load events whenever selected team changes
-  useEffect(() => {
-    if (!selectedTeamId) return;
-    let cancelled = false;
-    (async () => {
-      const res = await api(`/teams/${selectedTeamId}/events`);
-      if (res.ok && (res.headers.get("content-type") || "").includes("application/json")) {
-        const evts: TeamEvent[] = await res.json();
-        if (!cancelled) setEvents(evts);
-      } else {
-        if (!cancelled) setEvents([]);
-      }
-    })();
-    return () => { cancelled = true; };
-  }, [selectedTeamId]);
-
-  const days = useMemo(() => ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"], []);
-
   const createTeam = async (e: React.FormEvent) => {
     e.preventDefault();
     const body = {
@@ -142,33 +141,32 @@ export const Teams: React.FC = () => {
       sport_id: form.sport_id ? Number(form.sport_id) : null,
       season: form.season || null,
       league_id: form.league_id ? Number(form.league_id) : null,
+      gender: form.gender || null,
     };
-    const res = await api("/teams", { method: "POST", body: JSON.stringify(body) });
+
+    const res = await api("/teams", {
+      method: "POST",
+      body: JSON.stringify(body),
+    });
     if (!res.ok) {
       const msg = await res.text();
       alert(`Create team failed: ${msg}`);
       return;
     }
+
     const team: Team = await res.json();
-    setMyTeams(t => [...t, team]);
+    setMyTeams((t) => [...t, team]);
     setSelectedTeamId(team.id);
-    setForm({ name: "", sport_id: "", season: "", league_id: "" });
+    setForm({
+      name: "",
+      sport_id: "",
+      season: "",
+      league_id: "",
+      gender: "",
+    });
   };
 
-  const timeSlots: string[] = [];
-  for (let h = startHour; h < endHour; h++) {
-    timeSlots.push(`${h}:00`, `${h}:30`);
-  }
-
-  const eventMap = useMemo(() => {
-    const map = new Map<number, TeamEvent[]>();
-    for (const d of [0, 1, 2, 3, 4, 5, 6]) map.set(d, []);
-    events.forEach(e => map.get(e.dayOfWeek)?.push(e));
-    for (const d of [0, 1, 2, 3, 4, 5, 6]) {
-      map.get(d)?.sort((a, b) => a.start.localeCompare(b.start));
-    }
-    return map;
-  }, [events]);
+  const selectedTeam = myTeams.find((t) => t.id === selectedTeamId) ?? null;
 
   return (
     <div className="p-6 space-y-6">
@@ -178,15 +176,20 @@ export const Teams: React.FC = () => {
       <div className="flex flex-wrap items-center gap-2">
         <span className="text-sm text-muted-foreground">My teams:</span>
         {loading && <span className="text-sm">Loading…</span>}
-        {!loading && (!Array.isArray(myTeams) || myTeams.length === 0) && (
-          <span className="text-sm">You are not in any teams yet.</span>
-        )}
-        {(Array.isArray(myTeams) ? myTeams : []).map(t => (
+        {!loading &&
+          (!Array.isArray(myTeams) || myTeams.length === 0) && (
+            <span className="text-sm">
+              You are not in any teams yet.
+            </span>
+          )}
+        {(Array.isArray(myTeams) ? myTeams : []).map((t) => (
           <button
             key={t.id}
             onClick={() => setSelectedTeamId(t.id)}
             className={`px-3 py-1 text-sm rounded-md border ${
-              selectedTeamId === t.id ? "bg-primary text-primary-foreground" : "hover:bg-accent"
+              selectedTeamId === t.id
+                ? "bg-primary text-primary-foreground"
+                : "hover:bg-accent"
             }`}
           >
             {t.name}
@@ -194,48 +197,31 @@ export const Teams: React.FC = () => {
         ))}
       </div>
 
-      {/* Weekly calendar */}
-      <div className="border rounded-md overflow-hidden">
-        <div className="flex">
-          <CalendarTimeColumn startHour={startHour} endHour={endHour} intervalMinutes={30} />
-          <div className="grid grid-cols-7 flex-1">
-            {days.map((d, idx) => (
-              <div key={d} className="border-l">
-                <div className="h-10 px-2 flex items-center font-medium">{d}</div>
-                {timeSlots.map((slot, i) => (
-                  <div key={i} className="h-10 border-t border-gray-200 relative">
-                    {eventMap.get(idx)?.filter(e => e.start === slot).map(ev => {
-                      const [sh, sm] = ev.start.split(":").map(Number);
-                      const [eh, em] = ev.end.split(":").map(Number);
-                      const durationMin = (eh * 60 + em) - (sh * 60 + sm);
-                      const px = (durationMin / 30) * 40; // 30m == 40px
-                      return (
-                        <div
-                          key={ev.id}
-                          className="absolute left-1 right-1 top-0 rounded-md text-xs p-1 bg-blue-500 text-white shadow"
-                          style={{ height: `${px - 2}px` }}
-                          title={`${ev.title} ${ev.start}-${ev.end}${ev.location ? ` @ ${ev.location}` : ""}`}
-                        >
-                          <div className="font-semibold truncate">{ev.title}</div>
-                          <div className="opacity-90">
-                            {ev.start}–{ev.end}{ev.location ? ` • ${ev.location}` : ""}
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                ))}
-              </div>
-            ))}
-          </div>
+      {/* Selected team summary (for context) */}
+      {selectedTeam && (
+        <div className="border rounded-md p-4 text-sm space-y-1">
+          <div className="font-semibold">{selectedTeam.name}</div>
+          {selectedTeam.season && <div>Season: {selectedTeam.season}</div>}
+          {selectedTeam.gender && (
+            <div>
+              Gender:{" "}
+              {selectedTeam.gender === "coed"
+                ? "Co-ed"
+                : selectedTeam.gender[0].toUpperCase() +
+                  selectedTeam.gender.slice(1)}
+            </div>
+          )}
         </div>
-      </div>
+      )}
 
       {/* Manager/Admin: Create Team */}
       {canManage && (
         <div className="border rounded-md p-4">
           <h2 className="font-semibold mb-3">Create team</h2>
-          <form onSubmit={createTeam} className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <form
+            onSubmit={createTeam}
+            className="grid grid-cols-1 sm:grid-cols-2 gap-3"
+          >
             <label className="flex flex-col text-sm">
               <span>Name</span>
               <input
@@ -246,6 +232,7 @@ export const Teams: React.FC = () => {
                 className="border rounded px-2 py-1"
               />
             </label>
+
             <label className="flex flex-col text-sm">
               <span>Season</span>
               <input
@@ -256,6 +243,7 @@ export const Teams: React.FC = () => {
                 className="border rounded px-2 py-1"
               />
             </label>
+
             <label className="flex flex-col text-sm">
               <span>Sport</span>
               <select
@@ -265,13 +253,15 @@ export const Teams: React.FC = () => {
                 className="border rounded px-2 py-1"
               >
                 <option value="">(none)</option>
-                {(Array.isArray(sports) ? sports : []).map(s => (
+                {(Array.isArray(sports) ? sports : []).map((s) => (
                   <option key={s.id} value={s.id}>
-                    {s.sport_name}{s.season ? ` (${s.season})` : ""}
+                    {s.sport_name}
+                    {s.season ? ` (${s.season})` : ""}
                   </option>
                 ))}
               </select>
             </label>
+
             <label className="flex flex-col text-sm">
               <span>League</span>
               <select
@@ -281,15 +271,35 @@ export const Teams: React.FC = () => {
                 className="border rounded px-2 py-1"
               >
                 <option value="">(none)</option>
-                {(Array.isArray(leagues) ? leagues : []).map(l => (
+                {(Array.isArray(leagues) ? leagues : []).map((l) => (
                   <option key={l.id} value={l.id}>
                     {l.league_name}
                   </option>
                 ))}
               </select>
             </label>
+
+            <label className="flex flex-col text-sm">
+              <span>Gender</span>
+              <select
+                name="gender"
+                value={form.gender}
+                onChange={onChange}
+                required
+                className="border rounded px-2 py-1"
+              >
+                <option value="">Select gender</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="coed">Co-ed</option>
+              </select>
+            </label>
+
             <div className="sm:col-span-2 flex gap-2">
-              <button type="submit" className="px-3 py-2 rounded bg-black text-white">
+              <button
+                type="submit"
+                className="px-3 py-2 rounded bg-black text-white"
+              >
                 Create
               </button>
             </div>

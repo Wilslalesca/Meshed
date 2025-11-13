@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { pool } from "../db/index";
+import { pool } from "../config/db";
 
 const r = Router();
 
@@ -25,17 +25,34 @@ r.post("/", async (req: any, res) => {
   if (req.user?.role !== "admin") return res.status(403).send("Forbidden");
 
   const {
-    name, address1, address2, city, province_state, postal_code,
-    country, email, phone, latitude, longitude, notes
+    name,
+    address1,
+    address2,
+    city,
+    province_state,
+    postal_code,
+    country,
+    email,
+    phone,
+    notes,
   } = req.body;
 
   const { rows } = await pool.query(
     `INSERT INTO facilities (
-      name, address1, address2, city, province_state, postal_code,
-      country, email, phone, latitude, longitude, notes, created_by
-     )
-     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)
-     RETURNING *`,
+      name,
+      address1,
+      address2,
+      city,
+      province_state,
+      postal_code,
+      country,
+      email,
+      phone,
+      notes,
+      created_by
+    )
+    VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)
+    RETURNING *`,
     [
       name ?? null,
       address1 ?? null,
@@ -46,8 +63,6 @@ r.post("/", async (req: any, res) => {
       country ?? null,
       email ?? null,
       phone ?? null,
-      latitude ?? null,
-      longitude ?? null,
       notes ?? null,
       req.user?.id ?? null,
     ]

@@ -1,29 +1,25 @@
 // apps/api/src/routes/teams.routes.ts
 import { Router } from "express";
-import { pool } from "../db/index";
+import { pool } from "../config/db";
 
 const r = Router();
 
-/**
- * NOTE:
- * - This file is intentionally minimal so it won't collide with the rest of your API.
- * - It returns JSON for the routes your UI calls so you don't get 404 / JSON.parse errors.
- * - If your auth middleware sets req.user or res.locals.user, we'll use it.
- * - If no user is present (not logged in yet), /teams/mine will simply return [] (200),
- *   so the page can still render and your lookups will populate.
- */
-
 function getUserId(req: any): string | undefined {
-  // support either style your auth might set
-  return req?.user?.id ?? req?.userId ?? req?.auth?.id ?? req?.locals?.user?.id ?? req?.res?.locals?.user?.id;
+  // adjust if your auth middleware uses a specific shape
+  return (
+    req?.user?.id ??
+    req?.userId ??
+    req?.auth?.id ??
+    req?.locals?.user?.id ??
+    req?.res?.locals?.user?.id
+  );
 }
 
-/** GET /teams/mine  → teams for current user (or [] if not logged in yet) */
+/** GET /teams/mine → teams for current user (or [] if not logged in yet) */
 r.get("/mine", async (req, res) => {
   const uid = getUserId(req);
 
   if (!uid) {
-    // not authenticated yet – return an empty list but still 200 + JSON
     return res.json([]);
   }
 
@@ -39,36 +35,50 @@ r.get("/mine", async (req, res) => {
   return res.json(rows);
 });
 
-/** GET /teams/:id/events  → placeholder; return [] so the UI doesn't 404 */
-r.get("/:id/events", async (_req, res) => {
-  return res.json([]); // wire up when you add events
-});
-
 /**
- * POST /teams  → create a team so you can test the form
- * body: { name: string, sport_id?: number|null, season?: string|null, league_id?: number|null }
- * If authenticated, we also link the creator as 'manager' (best-effort).
+ * POST /teams → create a team
+ * body: { name, sport_id?, season?, league_id?, gender? }
+ * If authenticated, we also link the creator as 'manager'.
  */
 r.post("/", async (req, res) => {
-  const { name, sport_id = null, season = null, league_id = null } = req.body || {};
+  const {
+    name,
+    sport_id = null,
+    season = null,
+    league_id = null,
+    gender = null,
+  } = req.body || {};
+
   if (!name || String(name).trim().length < 2) {
     return res.status(400).send("name required");
   }
 
+  const normalizedGender =
+    typeof gender === "string" && gender.length
+      ? gender.toLowerCase()
+      : null;
+
+  if (
+    normalizedGender &&
+    !["male", "female", "coed"].includes(normalizedGender)
+  ) {
+    return res.status(400).send("invalid gender");
+  }
+
   const insert = await pool.query(
-    `INSERT INTO teams (name, sport_id, season, league_id, created_at, updated_at)
-     VALUES ($1, $2, $3, $4, NOW(), NOW())
+    `INSERT INTO teams (name, sport_id, season, league_id, gender, created_at, updated_at)
+     VALUES ($1, $2, $3, $4, $5, NOW(), NOW())
      RETURNING *`,
-    [name.trim(), sport_id, season, league_id]
+    [name.trim(), sport_id, season, league_id, normalizedGender]
   );
+
   const team = insert.rows[0];
 
-  // best-effort: link creator if we can detect a user id
   const uid = getUserId(req);
   if (uid) {
     await pool.query(
-      `INSERT INTO user_teams (user_id, team_id, role, status, joined_at, updated_at)
-       VALUES ($1, $2, 'manager', 'active', NOW(), NOW())
+      `INSERT INTO user_teams (user_id, team_id, role, position, status, joined_at, updated_at)
+       VALUES ($1, $2, 'manager', NULL, 'active', NOW(), NOW())
        ON CONFLICT DO NOTHING`,
       [uid, team.id]
     );
