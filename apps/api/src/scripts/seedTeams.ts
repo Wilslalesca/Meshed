@@ -1,4 +1,3 @@
-// much like seedLeagueAndSports script, this script seeds initial teams into the database
 import { pool } from "../config/db";
 
 type TeamSeed = { team_name: string; league_name: string };

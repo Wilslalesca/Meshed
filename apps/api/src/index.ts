@@ -7,7 +7,8 @@ import { config } from './config';
 import authRoutes from './routes/auth.routes';
 import userRoutes from './routes/user.routes';
 import lookUpRoutes from './routes/lookup.routes';
-import { seedLeaguesAndSports } from "./scripts/seedLeagueAndSport";    
+import { seedLeaguesAndSports } from "./scripts/seedLeagueAndSport"; 
+import { seedTeams } from "./scripts/seedTeams";   
 import teamsRoutes from './routes/teams.routes';
 import uploadRoutes from './routes/upload.routes';
 import scheduleRoutes from './routes/schedule.routes';
@@ -34,5 +35,6 @@ app.listen(config.port, async() => {
     await testingAccountGeneration(); // function for calling 3 test accounts see our docs 
     await seedLeaguesAndSports(); // function for seeding leagues and sports
     await testingAddingUserToath();
+    await seedTeams(); // function for seeding teams
 
 });

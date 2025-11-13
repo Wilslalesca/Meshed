@@ -1,6 +1,8 @@
 // apps/api/src/controllers/TeamController.ts
 import { Request, Response } from "express";
 import { TeamModel } from "../models/TeamModel";
+import { UserModel } from "../models/UserModel";
+
 
 function getUserId(req: any): string | undefined {
   return (
@@ -78,4 +80,30 @@ export class TeamController {
       return res.status(400).send(err.message ?? "Could not add athlete");
     }
   }
+    /** POST /teams/:teamId/athletes/by-email { email } */
+  static async addAthleteByEmail(req: any, res: Response) {
+    if (!isManagerOrAdmin(req)) {
+      return res.status(403).send("Forbidden");
+    }
+
+    const { teamId } = req.params;
+    const { email } = req.body || {};
+
+    if (!email || typeof email !== "string") {
+      return res.status(400).send("email required");
+    }
+
+    const user = await UserModel.findByEmail(email.trim());
+    if (!user) {
+      return res.status(404).send("User not found");
+    }
+
+    try {
+      await TeamModel.addAthlete(teamId, user.id);
+      return res.status(204).send();
+    } catch (err: any) {
+      return res.status(400).send(err.message ?? "Could not add athlete");
+    }
+  }
+
 }

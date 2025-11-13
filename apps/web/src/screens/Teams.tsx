@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useAuth } from "../hooks/useAuth";
 
 type Team = {
-  id: string;                      // UUID from DB
+  id: string; // UUID from DB
   name: string;
   sport_id: number | null;
   season: string | null;
@@ -22,14 +22,35 @@ type League = {
   id: number;
   league_name: string;
 };
+
+type AuthShape = {
+  hasRole: (roles: string[]) => boolean;
+  token?: string | null;
+  accessToken?: string | null;
+};
+
+type Athlete = {
+  id: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+  role: string;
+  position: string | null;
+  status: string;
+  joined_at: string;
+};
+
 export const Teams: React.FC = () => {
-  const { hasRole } = useAuth();
+  const auth = useAuth() as AuthShape;
+  const { hasRole } = auth;
+  const token = auth.token ?? auth.accessToken ?? null;
+
   const canManage = hasRole(["manager", "admin"]);
 
   const [myTeams, setMyTeams] = useState<Team[]>([]);
   const [sports, setSports] = useState<Sport[]>([]);
   const [leagues, setLeagues] = useState<League[]>([]);
-  const [selectedTeamId, setSelectedTeamId] = useState<number | null>(null);
+  const [selectedTeamId, setSelectedTeamId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   const [form, setForm] = useState<{
@@ -46,17 +67,25 @@ export const Teams: React.FC = () => {
     gender: "",
   });
 
+  const [athletes, setAthletes] = useState<Athlete[]>([]);
+  const [athleteError, setAthleteError] = useState<string | null>(null);
+  const [addEmail, setAddEmail] = useState("");
+  const [adding, setAdding] = useState(false);
+
   const onChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) =>
-    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  ) => setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
 
-  // Fetch helper: don't force JSON header on GET
+  // API helper – always send Authorization if we have a token
   const api = (path: string, init: RequestInit = {}) => {
-    const hasBody = "body" in init && init.body !== undefined;
-    const headers = hasBody
-      ? { "Content-Type": "application/json", ...(init.headers || {}) }
-      : init.headers;
+    const headers: Record<string, string> = {
+      ...(init.headers as Record<string, string> | undefined),
+      "Content-Type": "application/json",
+    };
+
+    if (token) {
+      headers["Authorization"] = `Bearer ${token}`;
+    }
 
     return fetch(`http://localhost:4000${path}`, {
       credentials: "include",
@@ -87,8 +116,8 @@ export const Teams: React.FC = () => {
         ) {
           const sp: Sport[] = await sportsRes.value.json();
           if (!cancelled) setSports(sp);
-        } else {
-          if (!cancelled) setSports([]);
+        } else if (!cancelled) {
+          setSports([]);
         }
 
         // leagues
@@ -101,11 +130,11 @@ export const Teams: React.FC = () => {
         ) {
           const lg: League[] = await leaguesRes.value.json();
           if (!cancelled) setLeagues(lg);
-        } else {
-          if (!cancelled) setLeagues([]);
+        } else if (!cancelled) {
+          setLeagues([]);
         }
 
-        // teams (may be 200 [] or not ready yet)
+        // teams
         if (
           teamsRes.status === "fulfilled" &&
           teamsRes.value.ok &&
@@ -117,11 +146,12 @@ export const Teams: React.FC = () => {
           if (!cancelled) {
             const list = Array.isArray(teams) ? teams : [];
             setMyTeams(list);
-            if (list.length && selectedTeamId == null)
+            if (list.length && selectedTeamId == null) {
               setSelectedTeamId(list[0].id);
+            }
           }
-        } else {
-          if (!cancelled) setMyTeams([]);
+        } else if (!cancelled) {
+          setMyTeams([]);
         }
       } finally {
         if (!cancelled) setLoading(false);
@@ -132,6 +162,39 @@ export const Teams: React.FC = () => {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Load roster whenever selected team changes
+  useEffect(() => {
+    if (!selectedTeamId) {
+      setAthletes([]);
+      setAthleteError(null);
+      return;
+    }
+
+    let cancelled = false;
+    (async () => {
+      setAthleteError(null);
+      try {
+        const res = await api(`/teams/${selectedTeamId}/athletes`);
+        if (!res.ok) {
+          const txt = await res.text();
+          throw new Error(txt || "Failed to load roster");
+        }
+        const data: Athlete[] = await res.json();
+        if (!cancelled) setAthletes(Array.isArray(data) ? data : []);
+      } catch (err: unknown) {
+        if (!cancelled) {
+          setAthleteError(
+            err instanceof Error ? err.message : "Failed to load roster"
+          );
+        }
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [selectedTeamId]); // depends on selected team
 
   const createTeam = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -147,6 +210,7 @@ export const Teams: React.FC = () => {
       method: "POST",
       body: JSON.stringify(body),
     });
+
     if (!res.ok) {
       const msg = await res.text();
       alert(`Create team failed: ${msg}`);
@@ -165,7 +229,59 @@ export const Teams: React.FC = () => {
     });
   };
 
-  const selectedTeam = myTeams.find((t) => t.id === selectedTeamId) ?? null;
+  const selectedTeam =
+    selectedTeamId == null
+      ? null
+      : myTeams.find((t) => t.id === selectedTeamId) ?? null;
+
+  const selectedSport =
+    selectedTeam && selectedTeam.sport_id != null
+      ? sports.find((s) => s.id === selectedTeam.sport_id) ?? null
+      : null;
+
+  const selectedLeague =
+    selectedTeam && selectedTeam.league_id != null
+      ? leagues.find((l) => l.id === selectedTeam.league_id) ?? null
+      : null;
+
+  const addAthleteByEmail = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedTeamId) return;
+
+    const email = addEmail.trim();
+    if (!email) {
+      setAthleteError("Email is required");
+      return;
+    }
+
+    setAdding(true);
+    setAthleteError(null);
+    try {
+      const res = await api(`/teams/${selectedTeamId}/athletes/by-email`, {
+        method: "POST",
+        body: JSON.stringify({ email }),
+      });
+      if (!res.ok) {
+        const txt = await res.text();
+        throw new Error(txt || "Failed to add athlete");
+      }
+
+      setAddEmail("");
+
+      // reload roster
+      const rosterRes = await api(`/teams/${selectedTeamId}/athletes`);
+      if (rosterRes.ok) {
+        const data: Athlete[] = await rosterRes.json();
+        setAthletes(Array.isArray(data) ? data : []);
+      }
+    } catch (err: unknown) {
+      setAthleteError(
+        err instanceof Error ? err.message : "Error adding athlete"
+      );
+    } finally {
+      setAdding(false);
+    }
+  };
 
   return (
     <div className="p-6 space-y-6">
@@ -177,9 +293,7 @@ export const Teams: React.FC = () => {
         {loading && <span className="text-sm">Loading…</span>}
         {!loading &&
           (!Array.isArray(myTeams) || myTeams.length === 0) && (
-            <span className="text-sm">
-              You are not in any teams yet.
-            </span>
+            <span className="text-sm">You are not in any teams yet.</span>
           )}
         {(Array.isArray(myTeams) ? myTeams : []).map((t) => (
           <button
@@ -196,19 +310,78 @@ export const Teams: React.FC = () => {
         ))}
       </div>
 
-      {/* Selected team summary (for context) */}
+      {/* Selected team details */}
       {selectedTeam && (
         <div className="border rounded-md p-4 text-sm space-y-1">
           <div className="font-semibold">{selectedTeam.name}</div>
-          {selectedTeam.season && <div>Season: {selectedTeam.season}</div>}
-          {selectedTeam.gender && (
-            <div>
-              Gender:{" "}
-              {selectedTeam.gender === "coed"
+          <div>Season: {selectedTeam.season ?? "—"}</div>
+          <div>Sport: {selectedSport ? selectedSport.sport_name : "—"}</div>
+          <div>League: {selectedLeague ? selectedLeague.league_name : "—"}</div>
+          <div>
+            Gender:{" "}
+            {selectedTeam.gender
+              ? selectedTeam.gender === "coed"
                 ? "Co-ed"
                 : selectedTeam.gender[0].toUpperCase() +
-                  selectedTeam.gender.slice(1)}
-            </div>
+                  selectedTeam.gender.slice(1)
+              : "—"}
+          </div>
+        </div>
+      )}
+
+      {/* Roster card for selected team */}
+      {selectedTeam && (
+        <div className="border rounded-md p-4 text-sm space-y-3">
+          <h3 className="font-semibold">Roster</h3>
+
+          {canManage && (
+            <form
+              onSubmit={addAthleteByEmail}
+              className="flex flex-col sm:flex-row gap-2 items-start sm:items-end"
+            >
+              <div className="flex flex-col text-sm w-full sm:w-64">
+                <span>Add athlete by email</span>
+                <input
+                  type="email"
+                  value={addEmail}
+                  onChange={(e) => setAddEmail(e.target.value)}
+                  placeholder="athlete@example.com"
+                  className="border rounded px-2 py-1"
+                />
+              </div>
+              <button
+                type="submit"
+                disabled={adding}
+                className="px-3 py-2 rounded bg-black text-white text-sm"
+              >
+                {adding ? "Adding..." : "Add"}
+              </button>
+            </form>
+          )}
+
+          {athleteError && (
+            <p className="text-xs text-red-600">{athleteError}</p>
+          )}
+
+          {athletes.length === 0 && !athleteError && (
+            <p className="text-xs text-muted-foreground">
+              No athletes on this team yet.
+            </p>
+          )}
+
+          {athletes.length > 0 && (
+            <ul className="space-y-1">
+              {athletes.map((a) => (
+                <li key={a.id} className="flex justify-between gap-2">
+                  <span>
+                    {a.first_name} {a.last_name} ({a.email})
+                  </span>
+                  <span className="text-xs text-muted-foreground">
+                    {a.status ?? "active"}
+                  </span>
+                </li>
+              ))}
+            </ul>
           )}
         </div>
       )}
