@@ -8,4 +8,5 @@ export interface Schedule {
     end_time: string;
     term: string;
     start_date: string;
+    end_date: string;
 }

@@ -1,0 +1,22 @@
+== Deployment View
+
+The deployment view describes how UMA is deployed across the development environment.
+
+=== Infrastructure Setup
+
+- **Cloud Provider**: Google Cloud.
+- **Databases**: PostgreSQL and Firebase.
+- **Monitoring & Logging**: TypeScript backend build tests log errors.
+
+
+=== Deployment Environments
+
+1. **Development**:
+
+   - Runs on local Dockerized container with a minimal setup.
+   - Uses a local PostgreSQL database for accounts, course information, etc.
+   - Uses API gateways to communicate between application server and user.
+
+2. **Production Environment**
+
+   - Hosted on Google Cloud

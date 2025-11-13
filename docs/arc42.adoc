@@ -1,0 +1,25 @@
+= SmartSpot Software Architecture Documentation
+:toc:
+:sectnums:
+:sectlinks:
+:source-highlighter: pygments
+:icons: font
+:imagesdir: diagrams
+:figure-caption!:
+
+## Table of Contents
+- [1.0 Introduction](01_introduction.md)
+- [2.0 Constraints](02_constraints.md)
+- [3.0 Context](03_context.md)
+- [4.0 Solution Strategy](04_solution_strategy.md)
+- [5.0 Building Blocks](05_building_blocks.md)
+- [6.0 Runtime View](06_runtime_view.md)
+- [7.0 Deployment View](07_deployment_view.md)
+- [8.0 Crosscutting Concepts](08_crosscutting_concepts.md)
+- [9.0 Architecture Decisions](09_architecture_decisions.md)
+- [10.0 Quality Scenarios](10_quality_scenarios.md)
+- [11.0 Technical Risks](11_technical_risks.md)
+- [12.0 Glossary](12_glossary.md)
+
+---
+

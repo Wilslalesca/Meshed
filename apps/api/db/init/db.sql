@@ -76,6 +76,7 @@ CREATE TABLE course_times (
   end_time TIME,
   term VARCHAR(50),
   start_date VARCHAR(100),
+  end_date VARCHAR(100),
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
