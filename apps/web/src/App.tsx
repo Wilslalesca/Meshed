@@ -8,6 +8,7 @@ import LoginPage from "./screens/Login";
 import { Register } from "./screens/Register";
 import { Dashboard } from "./screens/Dashboard";
 import { Teams } from "./screens/Teams";
+import { Facilities } from "./screens/Facilities";
 import { Admin } from "./screens/Admin";
 import { Profile } from "./screens/Profile";
 import { Upload } from "./screens/Upload";
@@ -21,6 +22,7 @@ const pageTitles: Record<string, string> = {
   "/dashboard": "Dashboard",
   "/admin": "Admin Panel",
   "/teams": "Teams",
+  "/facilities": "Facilities",
   "/manager": "Schedule Background Tasks",
   "/upload": "Upload",
   "/mySchedule": "My Schedule",
@@ -68,8 +70,8 @@ export default function App() {
         <Route path="/" element={<Home />} />
         <Route path="/home" element={<Navigate to="/" replace />} />
         <Route path="/dashboard" element={ <ProtectedRoute> <Dashboard /> </ProtectedRoute> }/>
-        {/* import the protected route for Teams */}
         <Route path="/teams" element={ <ProtectedRoute> <Teams /> </ProtectedRoute> }/>
+        <Route path="/facilities" element={ <ProtectedRoute> <Facilities /> </ProtectedRoute> }/>
         <Route path="/admin" element={ <ProtectedRoute> <RequireRole allow="admin"> <Admin /> </RequireRole> </ProtectedRoute> }/>
         <Route path="/manager" element={ <ProtectedRoute> <RequireRole allow={["manager", "admin"]}> <ScheduleBackground /> </RequireRole> </ProtectedRoute> }/>
         <Route path="/upload" element={ <ProtectedRoute> <Upload /> </ProtectedRoute> }/>
