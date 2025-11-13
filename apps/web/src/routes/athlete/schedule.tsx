@@ -1,7 +1,7 @@
 import { useAthleteSchedule } from '@/features/athlete-schedule/hooks/useAthleteSchedule';
 import { ScheduleTable } from '@/features/athlete-schedule/components/ScheduleTable';
 import { EmptyState } from '@/features/athlete-schedule/components/EmptyState';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/shared/hooks/useAuth';
 
 export default function AthleteSchedulePage() {
     const { user, loading: authLoading } = useAuth();

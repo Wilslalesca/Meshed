@@ -1,13 +1,13 @@
-import React from 'react';
+import React from "react";
 import { useNavigate } from "react-router-dom";
-import type { Schedule } from '@/features/athlete-schedule/types/Schedule';
-import { formatTime } from '@/features/athlete-schedule/utils/formatTime';
-import { Card,CardHeader, CardContent } from "@/components/ui/card"
-import { apiDeleteCourseById } from "@/features/add-edit-courses/api/deletecourse"
-import { useAuth } from '@/hooks/useAuth';
-import { Button } from "@/components/ui/button"
+import type { Schedule } from "@/features/athlete-schedule/types/Schedule";
+import { formatTime } from "@/features/athlete-schedule/utils/formatTime";
+import { Card, CardHeader, CardContent } from "@/shared/components//ui/card";
+import { apiDeleteCourseById } from "@/features/add-edit-courses/api/deletecourse";
+import { useAuth } from "@/shared/hooks/useAuth";
+import { Button } from "@/shared/components//ui/button";
 import { Pencil, Trash2 } from "lucide-react";
-import { toast } from 'sonner';
+import { toast } from "sonner";
 
 interface Props {
     data: Schedule[];
@@ -35,12 +35,13 @@ export const CourseBlock: React.FC<Props> = ({ data }) => {
     }
 
     const handleDelete = async (classId: string) => {
-        if (!window.confirm("Are you sure you want to delete this course?")) return;
+        if (!window.confirm("Are you sure you want to delete this course?"))
+            return;
 
         const success = await apiDeleteCourseById(classId, user?.id);
 
         if (success) {
-           window.location.reload();
+            window.location.reload();
         } else {
             toast.error("Failed to delete course. Please try again.");
         }
@@ -48,52 +49,64 @@ export const CourseBlock: React.FC<Props> = ({ data }) => {
 
     return (
         <div className="flex flex-col gap-4">
-        {Object.entries(grouped).map(([courseName, schedules]) => (
-            <Card
-            key={courseName}
-            className="w-full max-w-sm shadow-lg rounded-lg"
-            >
-            <CardHeader>
-                <h1 className="text-xl font-bold">{courseName}</h1>
-            </CardHeader>
-            <CardContent className="p-4">
-                {schedules
-                .sort((a, b) => dayOrder[a.day_of_week] - dayOrder[b.day_of_week])
-                .map((c, index) => (
-                <div key={index} className="mb-2 last:mb-0">
-                    <p className="text-muted-foreground text-sm">{c.day_of_week}</p>
-                    <p className="text-muted-foreground text-sm">
-                        {c.end_date != c.start_date
-                        ? `${c.start_date} to ${c.end_date}`
-                        : `${c.start_date}`
-                        }
-                    </p>
-                    <p className="text-muted-foreground text-sm">
-                    {formatTime(c.start_time)} – {formatTime(c.end_time)}
-                    </p>
-                    <p className="text-muted-foreground text-sm">{c.location}</p>
-                    <p className="text-muted-foreground text-sm">{c.term}</p>
-                    <div className="flex gap-2">
-                    <Button
-                        size="icon"
-                        variant="outline"
-                        onClick={() => navigate(`/editcourse/${c.id}`)}
-                    >
-                        <Pencil className="w-4 h-4" />
-                    </Button>
-                    <Button
-                        size="icon"
-                        variant="destructive"
-                        onClick={() => handleDelete(c.id)}
-                    >
-                        <Trash2 className="w-4 h-4" />
-                    </Button>
-                </div>
-                </div>
-                ))}
-            </CardContent>
-            </Card>
-        ))}
+            {Object.entries(grouped).map(([courseName, schedules]) => (
+                <Card
+                    key={courseName}
+                    className="w-full max-w-sm shadow-lg rounded-lg"
+                >
+                    <CardHeader>
+                        <h1 className="text-xl font-bold">{courseName}</h1>
+                    </CardHeader>
+                    <CardContent className="p-4">
+                        {schedules
+                            .sort(
+                                (a, b) =>
+                                    dayOrder[a.day_of_week] -
+                                    dayOrder[b.day_of_week]
+                            )
+                            .map((c, index) => (
+                                <div key={index} className="mb-2 last:mb-0">
+                                    <p className="text-muted-foreground text-sm">
+                                        {c.day_of_week}
+                                    </p>
+                                    <p className="text-muted-foreground text-sm">
+                                        {c.end_date != c.start_date
+                                            ? `${c.start_date} to ${c.end_date}`
+                                            : `${c.start_date}`}
+                                    </p>
+                                    <p className="text-muted-foreground text-sm">
+                                        {formatTime(c.start_time)} –{" "}
+                                        {formatTime(c.end_time)}
+                                    </p>
+                                    <p className="text-muted-foreground text-sm">
+                                        {c.location}
+                                    </p>
+                                    <p className="text-muted-foreground text-sm">
+                                        {c.term}
+                                    </p>
+                                    <div className="flex gap-2">
+                                        <Button
+                                            size="icon"
+                                            variant="outline"
+                                            onClick={() =>
+                                                navigate(`/editcourse/${c.id}`)
+                                            }
+                                        >
+                                            <Pencil className="w-4 h-4" />
+                                        </Button>
+                                        <Button
+                                            size="icon"
+                                            variant="destructive"
+                                            onClick={() => handleDelete(c.id)}
+                                        >
+                                            <Trash2 className="w-4 h-4" />
+                                        </Button>
+                                    </div>
+                                </div>
+                            ))}
+                    </CardContent>
+                </Card>
+            ))}
         </div>
     );
 };
