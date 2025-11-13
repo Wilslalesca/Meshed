@@ -6,6 +6,7 @@ export type TeamInput = {
   sport_id?: string | null;
   season?: string | null;
   league_id?: string | null;
+  gender?: string | null;
 };
 
 export class TeamModel {
@@ -22,18 +23,17 @@ export class TeamModel {
   }
 
   static async create(input: TeamInput) {
-    const { name, sport_id = null, season = null, league_id = null } = input;
+    const { name, sport_id = null, season = null, league_id = null, gender = null } = input;
 
     const { rows } = await pool.query(
-      `INSERT INTO teams (name, sport_id, season, league_id, created_at, updated_at)
-       VALUES ($1, $2, $3, $4, NOW(), NOW())
-       RETURNING *`,
-      [name, sport_id, season, league_id]
+      `INSERT INTO teams (name, sport_id, season, league_id, gender, created_at, updated_at)
+      VALUES ($1, $2, $3, $4, $5, NOW(), NOW())
+      RETURNING *`,
+      [name, sport_id, season, league_id, gender]
     );
 
     return rows[0];
   }
-
   static async addManagerToTeam(userId: string, teamId: string) {
     await pool.query(
       `INSERT INTO user_teams (user_id, team_id, role, position, status, joined_at, updated_at)

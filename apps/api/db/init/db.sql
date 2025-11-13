@@ -35,6 +35,7 @@ CREATE TABLE teams (
   season VARCHAR(50),
   insights_id UUID REFERENCES insights(id),
   league_id UUID REFERENCES league(id),
+  gender VARCHAR(20),
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

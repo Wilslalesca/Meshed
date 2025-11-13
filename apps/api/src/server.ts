@@ -18,4 +18,6 @@ app.listen(port, async () => {
     await testingAccountGeneration();
     await testingAddingUserToath();
     await seedLeaguesAndSports();
+    // await seedTeams(); // function for seeding teams
+    
 });

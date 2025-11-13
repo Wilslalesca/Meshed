@@ -5,21 +5,21 @@ import { useAuth } from "../hooks/useAuth";
 type Team = {
   id: string; // UUID from DB
   name: string;
-  sport_id: number | null;
+  sport_id: string | null;
   season: string | null;
-  league_id: number | null;
+  league_id: string | null;
   gender?: "male" | "female" | "coed" | null;
 };
 
 type Sport = {
-  id: number;
+  id: string; // UUID
   sport_name: string;
   season: string | null;
   position: string | null;
 };
 
 type League = {
-  id: number;
+  id: string; // UUID
   league_name: string;
 };
 
@@ -194,16 +194,16 @@ export const Teams: React.FC = () => {
     return () => {
       cancelled = true;
     };
-  }, [selectedTeamId]); // depends on selected team
+  }, [selectedTeamId]);
 
   const createTeam = async (e: React.FormEvent) => {
     e.preventDefault();
     const body = {
       name: form.name.trim(),
-      sport_id: form.sport_id ? Number(form.sport_id) : null,
+      sport_id: form.sport_id || null,        // UUID string or null
       season: form.season || null,
-      league_id: form.league_id ? Number(form.league_id) : null,
-      gender: form.gender || null,
+      league_id: form.league_id || null,      // UUID string or null
+      gender: (form.gender || null) as "male" | "female" | "coed" | null,
     };
 
     const res = await api("/teams", {
@@ -235,12 +235,12 @@ export const Teams: React.FC = () => {
       : myTeams.find((t) => t.id === selectedTeamId) ?? null;
 
   const selectedSport =
-    selectedTeam && selectedTeam.sport_id != null
+    selectedTeam && selectedTeam.sport_id
       ? sports.find((s) => s.id === selectedTeam.sport_id) ?? null
       : null;
 
   const selectedLeague =
-    selectedTeam && selectedTeam.league_id != null
+    selectedTeam && selectedTeam.league_id
       ? leagues.find((l) => l.id === selectedTeam.league_id) ?? null
       : null;
 
