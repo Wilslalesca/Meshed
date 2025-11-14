@@ -50,14 +50,14 @@ export const EditCourseForm: React.FC<EditCourseModalProps> = ({ course }) => {
         const success = await apiEditCourse(formData.id, user?.id, formSchedule);
         if (success) {
             toast.success("Successfully updated course");
-            navigate('/addcourse');
+            navigate('/myschedule');
 
         }
         else toast.error("Failed to update course");
     };
 
     const handleCancel = async () => {
-        navigate('/addcourse')
+        navigate('/myschedule')
     };
 
     return (
