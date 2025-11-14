@@ -44,7 +44,6 @@ function AppLayout() {
 }
 
 function AuthLayout() {
-  // Public pages (no sidebar, gradient bg)
   return (
       <Outlet />
   );
