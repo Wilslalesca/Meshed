@@ -1,234 +1,163 @@
 import {
-    Home,
-    Users,
-    Calendar,
-    Building2,
-    Settings,
-    X,
-    LogOut,
-    PanelLeftOpen,
-    PanelLeftClose,
-    User,
-    ChevronUp,
-    ChevronDown,
+  Home, Users, Calendar, Building2, Settings, X, LogOut,
+  PanelLeftOpen, PanelLeftClose, User, ChevronUp, ChevronDown,
 } from "lucide-react";
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
+  DropdownMenu, DropdownMenuContent, DropdownMenuItem,
+  DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useState } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import { cn } from "@/lib/utils";
 
 export const Sidebar = ({
-    open,
-    collapsed,
-    isMobile,
-    onClose,
-    onToggleCollapse,
+  open, collapsed, isMobile, onClose, onToggleCollapse,
 }: {
-    open: boolean;
-    collapsed: boolean;
-    isMobile: boolean;
-    onClose(): void;
-    onToggleCollapse(): void;
+  open: boolean; collapsed: boolean; isMobile: boolean;
+  onClose(): void; onToggleCollapse(): void;
 }) => {
-    const { user, logout } = useAuth();
-    const location = useLocation();
-    const accent = "#346E68";
-    const [openMenu, setOpenMenu] = useState(false);
-    const navigate = useNavigate();
+  const { user, logout } = useAuth();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [openMenu, setOpenMenu] = useState(false);
 
-    const links = [
-        { name: "Dashboard", href: "/dashboard", icon: Home },
-        { name: "Teams", href: "/teams", icon: Users },
-        { name: "Schedules", href: "/schedules", icon: Calendar },
-        { name: "Facilities", href: "/facilities", icon: Building2 },
-        { name: "Settings", href: "/settings", icon: Settings },
-    ];
+  const links = [
+    { name: "Dashboard", href: "/dashboard", icon: Home },
+    { name: "Teams", href: "/teams", icon: Users },
+    { name: "Schedules", href: "/schedules", icon: Calendar },
+    { name: "Facilities", href: "/facilities", icon: Building2 },
+    { name: "Settings", href: "/settings", icon: Settings },
+  ];
 
-    return (
-        <>
-            {/* Mobile overlay */}
-            {open && isMobile && (
-                <div
-                    onClick={onClose}
-                    className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 transition-opacity"
-                />
-            )}
+  return (
+    <>
+      {open && isMobile && (
+        <div onClick={onClose} className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 transition-opacity" />
+      )}
 
-            {/* Sidebar */}
-            <aside
-                className={`fixed lg:static z-50 inset-y-0 left-0 flex flex-col bg-[#F9FAFB] border-r border-[#F9FAFB] transition-all duration-300
-                  ${
-                      isMobile
-                          ? open
-                              ? "translate-x-0 w-full"
-                              : "-translate-x-full w-full"
-                          : collapsed
-                          ? "lg:w-[72px]"
-                          : "lg:w-64"
-                  }
-                `}
+      <aside
+        className={cn(
+          "fixed lg:static z-50 inset-y-0 left-0 flex flex-col",
+          "bg-sidebar text-sidebar-foreground border-r border-sidebar-border",
+          "transition-all duration-300",
+          isMobile ? (open ? "translate-x-0 w-full" : "-translate-x-full w-full")
+                   : (collapsed ? "lg:w-[72px]" : "lg:w-64")
+        )}
+      >
+        {/* Header */}
+        <div className={cn("h-16 mt-2 flex items-center justify-between px-4", collapsed ? "lg:px-2" : "lg:px-4")}>
+          {!collapsed ? (
+            <div className="flex items-center gap-2">
+              <img src="/Logo.png" alt="UMA" className="h-8 w-auto" />
+              <span className="font-semibold text-lg">UMA</span>
+            </div>
+          ) : (
+            <div className="flex-1 flex items-center justify-center">
+              <button
+                onClick={onToggleCollapse}
+                className="p-2 rounded-md hover:bg-[color-mix(in_olab,var(--color-gold)_12%,transparent)]"
+                aria-label="Expand sidebar"
+              >
+                <PanelLeftOpen className="h-5 w-5 text-sidebar-foreground/70" />
+              </button>
+            </div>
+          )}
+
+          {!isMobile && !collapsed && (
+            <button
+              onClick={onToggleCollapse}
+              className="p-2 rounded-md hover:bg-[color-mix(in_olab,var(--color-gold)_12%,transparent)] text-sidebar-foreground/70"
+              aria-label="Collapse sidebar"
             >
-                {/* Header */}
-                <div
-                    className={`h-16 mt-2 flex items-center justify-between px-4 ${
-                        collapsed ? "lg:px-2" : "lg:px-4"
-                    }`}
-                >
-                    {/* Logo  */}
-                    {!collapsed ? (
-                        <div className="flex items-center gap-2">
-                            <img
-                                src="/Logo.png"
-                                alt="UMA"
-                                className="h-8 w-auto"
-                            />
-                            <span className="font-semibold text-lg">UMA</span>
-                        </div>
-                    ) : (
-                        <div className="flex-1 flex items-center justify-center">
-                            <button
-                                onClick={onToggleCollapse}
-                                className="p-2 rounded-md hover:bg-gray-100 flex items-center justify-center"
-                                aria-label="Expand sidebar"
-                            >
-                                <PanelLeftOpen className="h-5 w-5 text-gray-500" />
-                            </button>
-                        </div>
-                    )}
+              <PanelLeftClose className="h-5 w-5" />
+            </button>
+          )}
 
-                    {!isMobile && !collapsed && (
-                        <button
-                            onClick={onToggleCollapse}
-                            className="p-2 rounded-md hover:bg-gray-100 text-gray-500"
-                            aria-label="Collapse sidebar"
-                        >
-                            <PanelLeftClose className="h-5 w-5" />
-                        </button>
-                    )}
+          {isMobile && (
+            <button onClick={onClose} className="p-1 rounded-md hover:bg-[color-mix(in_olab,var(--color-gold)_12%,transparent)]" aria-label="Close sidebar">
+              <X className="h-5 w-5 text-sidebar-foreground" />
+            </button>
+          )}
+        </div>
 
-                    {isMobile && (
-                        <button
-                            onClick={onClose}
-                            className="p-1 rounded-md hover:bg-gray-200"
-                            aria-label="Close sidebar"
-                        >
-                            <X className="h-5 w-5 text-gray-700" />
-                        </button>
-                    )}
+        {/* Nav */}
+        <nav className="flex-1 overflow-y-auto px-3 pt-2 space-y-1 text-sm">
+          {links.map(({ name, href, icon: Icon }) => {
+            const isActive = location.pathname === href;
+            return (
+              <NavLink
+                key={name}
+                to={href}
+                className={cn(
+                  "relative flex items-center gap-3 px-3 py-2 rounded-md font-medium transition-colors",
+                  isActive
+                    ? "text-[--color-teal] bg-[color-mix(in_olab,var(--color-teal)_12%,transparent)]"
+                    : "text-sidebar-foreground/75 hover:text-sidebar-foreground hover:bg-[color-mix(in_olab,var(--color-gold)_10%,transparent)]"
+                )}
+              >
+                {isActive && (
+                  <span className="absolute left-0 top-0 h-full w-1 bg-[--color-teal] rounded-r" />
+                )}
+                <Icon className={cn("h-4 w-4", isActive ? "text-[--color-teal]" : "text-sidebar-foreground/60")} />
+                {!collapsed && name}
+              </NavLink>
+            );
+          })}
+        </nav>
+
+        {/* Account */}
+        <div className="mt-auto p-4 mb-2">
+          <DropdownMenu open={openMenu} onOpenChange={setOpenMenu}>
+            <DropdownMenuTrigger asChild>
+              <button
+                className={cn(
+                  "w-full flex items-center gap-3 rounded-md p-1 transition",
+                  "hover:bg-[color-mix(in_olab,var(--color-gold)_12%,transparent)]",
+                  collapsed && "justify-center"
+                )}
+              >
+                <div className="h-8 w-8 rounded-full bg-sidebar-foreground/10 flex items-center justify-center font-semibold">
+                  {user?.firstName?.[0] ?? "U"}
                 </div>
+                {!collapsed && (
+                  <div className="flex-1 text-left min-w-0">
+                    <p className="truncate font-medium text-sm">{user?.firstName ?? "User"}</p>
+                    <p className="truncate text-xs opacity-70">{user?.email ?? "example@email.com"}</p>
+                  </div>
+                )}
+                {!collapsed && (openMenu ? <ChevronDown className="h-4 w-4 opacity-60" /> : <ChevronUp className="h-4 w-4 opacity-60" />)}
+              </button>
+            </DropdownMenuTrigger>
 
-                {/* Navigation */}
-                <nav className="flex-1 overflow-y-auto px-3 pt-2 space-y-1 text-sm">
-                    {links.map(({ name, href, icon: Icon }) => {
-                        const isActive = location.pathname === href;
-                        return (
-                            <NavLink
-                                key={name}
-                                to={href}
-                                className={`relative flex items-center gap-3 px-3 py-2 rounded-md font-medium transition-all ${
-                                    isActive
-                                        ? `text-[#346E68] bg-white`
-                                        : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
-                                }`}
-                            >
-                                {isActive && (
-                                    <span
-                                        className={`absolute left-0 top-0 h-full w-1 rounded-r bg-[#346E68]`}
-                                        aria-hidden="true"
-                                    />
-                                )}
-                                <Icon
-                                    className={`h-4 w-4 ${
-                                        isActive
-                                            ? `text-[#346E68]`
-                                            : "text-gray-500"
-                                    }`}
-                                />
-                                {!collapsed && name}
-                            </NavLink>
-                        );
-                    })}
-                </nav>
-
-                {/* Account */}
-                <div className="mt-auto p-4 mb-2">
-                    <DropdownMenu open={openMenu} onOpenChange={setOpenMenu}>
-                        <DropdownMenuTrigger asChild>
-                            <button
-                                className={`w-full flex items-center gap-3 rounded-md p-1 hover:bg-gray-100 transition ${
-                                    collapsed ? "justify-center" : ""
-                                }`}
-                            >
-                                <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center font-semibold text-gray-700">
-                                    {user?.firstName?.[0] ?? "U"}
-                                </div>
-                                {!collapsed && (
-                                    <div className="flex-1 text-left min-w-0">
-                                        <p className="truncate font-medium text-sm">
-                                            {user?.firstName ?? "User"}
-                                        </p>
-                                        <p className="truncate text-xs text-gray-500">
-                                            {user?.email ?? "example@email.com"}
-                                        </p>
-                                    </div>
-                                )}
-                                {!collapsed &&
-                                    (openMenu ? (
-                                        <ChevronDown className="h-4 w-4 text-gray-400" />
-                                    ) : (
-                                        <ChevronUp className="h-4 w-4 text-gray-400" />
-                                    ))}
-                            </button>
-                        </DropdownMenuTrigger>
-
-                        <DropdownMenuContent
-                            align="end"
-                            side="top"
-                            sideOffset={8}
-                            className="w-56 rounded-lg border border-gray-200 bg-white shadow-lg"
-                        >
-                            <DropdownMenuLabel className="flex flex-col gap-1">
-                                <span className="text-sm font-medium">
-                                    {user?.firstName ?? "User"}
-                                </span>
-                                <span className="text-xs text-gray-500 truncate">
-                                    {user?.email ?? "example@email.com"}
-                                </span>
-                            </DropdownMenuLabel>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem
-                                className="flex items-center gap-2 cursor-pointer"
-                                onClick={() => navigate("/profile")}
-                            >
-                                <User className="h-4 w-4 text-gray-500" />
-                                Profile
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                                className="flex items-center gap-2 cursor-pointer"
-                                onClick={() => navigate("/settings")}
-                            >
-                                <Settings className="h-4 w-4 text-gray-500" />
-                                Settings
-                            </DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem
-                                className="flex items-center gap-2 text-red-600 cursor-pointer focus:text-red-600"
-                                onClick={logout}
-                            >
-                                <LogOut className="h-4 w-4 text-red-600 cursor-pointer focus:text-red-600" />
-                                Log out
-                            </DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
-                </div>
-            </aside>
-        </>
-    );
+            <DropdownMenuContent
+              align="end"
+              side="top"
+              sideOffset={8}
+              className="w-56 rounded-lg border border-sidebar-border bg-card shadow-lg"
+            >
+              <DropdownMenuLabel className="flex flex-col gap-1">
+                <span className="text-sm font-medium">{user?.firstName ?? "User"}</span>
+                <span className="text-xs opacity-70 truncate">{user?.email ?? "example@email.com"}</span>
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem className="flex items-center gap-2 cursor-pointer" onClick={() => navigate("/profile")}>
+                <User className="h-4 w-4 opacity-70" /> Profile
+              </DropdownMenuItem>
+              <DropdownMenuItem className="flex items-center gap-2 cursor-pointer" onClick={() => navigate("/settings")}>
+                <Settings className="h-4 w-4 opacity-70" /> Settings
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                className="flex items-center gap-2 text-[--color-gold] cursor-pointer focus:text-[--color-gold]"
+                onClick={logout}
+              >
+                <LogOut className="h-4 w-4 text-[--color-gold]" /> Log out
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      </aside>
+    </>
+  );
 };
