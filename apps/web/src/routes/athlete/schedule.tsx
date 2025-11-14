@@ -1,5 +1,5 @@
 import { useAthleteSchedule } from '@/features/athlete-schedule/hooks/useAthleteSchedule';
-import { ScheduleTable } from '@/features/athlete-schedule/components/ScheduleTable';
+import { CourseBlock } from '@/features/add-edit-courses/components/CourseBlock'
 import { EmptyState } from '@/features/athlete-schedule/components/EmptyState';
 import { Button } from "@/components/ui/button"
 import { useNavigate } from 'react-router-dom';
@@ -30,7 +30,7 @@ export default function AthleteSchedulePage() {
             </div>   
             {!schedule?.length 
             ? <EmptyState />
-            : <ScheduleTable data={schedule} />
+            : <CourseBlock data={schedule}/>
             }
         </div>
     );
