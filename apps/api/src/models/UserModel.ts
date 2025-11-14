@@ -63,4 +63,24 @@ export const UserModel = {
     );
     return res.rows;
   },
+
+  async updateUser(userId: string, data: Partial<User>) {
+    console.log("Updating User: " + userId);
+    const fields = Object.keys(data);
+    const values = Object.values(data);
+
+    if (fields.length === 0) return null;
+
+    const setClause = fields.map((field, i) => `"${field}" = $${i + 1}`).join(", ");
+
+    const query = `
+      UPDATE users
+      SET ${setClause}, updated_at = NOW()
+      WHERE id = $${fields.length + 1}
+      RETURNING *;
+    `;
+
+    const result = await pool.query(query, [...values, userId]);
+    return result.rows[0] || null;
+  },
 };
