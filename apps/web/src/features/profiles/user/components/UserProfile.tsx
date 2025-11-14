@@ -3,7 +3,6 @@ import {useState} from 'react';
 import { useNavigate } from "react-router-dom";
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
-import { useAuth } from '@/hooks/useAuth';
 import { Button } from "@/components/ui/button"
 import { Pencil, Check } from "lucide-react";
 import {apiEditUser} from "../apis/editprofile"
