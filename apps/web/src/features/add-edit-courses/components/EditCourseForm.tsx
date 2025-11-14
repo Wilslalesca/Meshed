@@ -57,7 +57,7 @@ export const EditCourseForm: React.FC<EditCourseModalProps> = ({ course }) => {
     };
 
     const handleCancel = async () => {
-        navigate('/addcourse')
+        navigate('/myschedule')
     };
 
     return (
