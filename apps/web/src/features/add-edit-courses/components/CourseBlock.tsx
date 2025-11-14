@@ -47,11 +47,11 @@ export const CourseBlock: React.FC<Props> = ({ data }) => {
     };
 
     return (
-        <div className="flex flex-col gap-4">
+        <div className="columns-1 sm:columns-2 lg:columns-3 gap-6">
         {Object.entries(grouped).map(([courseName, schedules]) => (
             <Card
             key={courseName}
-            className="w-full max-w-sm shadow-lg rounded-lg"
+            className="break-inside-avoid shadow-lg rounded-lg mb-6"
             >
             <CardHeader>
                 <h1 className="text-xl font-bold">{courseName}</h1>
