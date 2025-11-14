@@ -7,17 +7,42 @@ import { useAuth } from '@/hooks/useAuth';
 import { Button } from "@/components/ui/button"
 import { Pencil, Check } from "lucide-react";
 import {apiEditUser} from "../apis/editprofile"
+import { apiMe } from "@/api/auth"
 import { toast } from "sonner";
 
 export function UserProfile() {
-    const { user } = useAuth();
+    const token = localStorage.getItem("auth_token") ?? "";
+    const [user, setUser] = useState<any>(null);
+    const [firstname, setFirstName] = React.useState("");
+    const [lastname, setLastName] = React.useState("");
+    const [email, setEmail] = React.useState("");
+    const [phone, setPhone] = React.useState("");
+
+    React.useEffect(() => {
+        const fetchUser = async () => {
+            try {
+                const data = await apiMe(token);
+                setUser(data);
+            } catch (err) {
+                console.error("Failed to load user:", err);
+            }
+        };
+
+        fetchUser();
+    }, [token]);
+
+
     const navigate = useNavigate();
     const [disabled, setDisabled] = useState(true)
 
-    const [firstname, setFirstName] = React.useState(user?.firstName);
-    const [lastname, setLastName] = React.useState(user?.lastName);
-    const [email, setEmail] = React.useState(user?.email);
-    const [phone, setPhone] = React.useState(user?.phone);
+    React.useEffect(() => {
+        if (user) {
+            setFirstName(user?.firstName);
+            setLastName(user?.lastName);
+            setEmail(user?.email);
+            setPhone(user?.phone);
+        }
+    }, [user]);
 
     const handleSubmit = async () => {
         if (!firstname || !lastname) {
@@ -63,7 +88,7 @@ export function UserProfile() {
                                 type="text"
                                 id="firstname"
                                 name="firstname"
-                                value={firstname}
+                                value={firstname || ""}
                                 disabled = {disabled}
                                 onChange={(e) => setFirstName(e.target.value)}
                             />
@@ -74,7 +99,7 @@ export function UserProfile() {
                                 type="text"
                                 id="lastname"
                                 name="lastname"
-                                value={lastname}
+                                value={lastname || ""}
                                 disabled = {disabled}
                                 onChange={(e) => setLastName(e.target.value)}
                             />
@@ -87,7 +112,7 @@ export function UserProfile() {
                                 type="text"
                                 id="email"
                                 name="email"
-                                value={email}
+                                value={email || ""}
                                 disabled = {true}
                                 onChange={(e) => setEmail(e.target.value)}
                             />
@@ -98,7 +123,7 @@ export function UserProfile() {
                                 type="text"
                                 id="phone"
                                 name="phone"
-                                value={phone}
+                                value={phone || ""}
                                 disabled = {disabled}
                                 onChange={(e) => setPhone(e.target.value)}
                             />
