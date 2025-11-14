@@ -46,9 +46,7 @@ function AppLayout() {
 function AuthLayout() {
   // Public pages (no sidebar, gradient bg)
   return (
-    <div className="min-h-screen w-screen bg-vice-gradient text-foreground flex items-center justify-center">
       <Outlet />
-    </div>
   );
 }
 
