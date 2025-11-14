@@ -1,52 +1,36 @@
-import React from "react";
-import { useAuth } from "../hooks/useAuth";
-import { Link } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 
-export const Dashboard: React.FC = () => {
-    const { user, logout } = useAuth();
+export const Dashboard = () => {
+  const { user, logout } = useAuth();
 
-    return (
-        <div className="max-w-4xl mx-auto p-8">
-            <div className="mb-8">
-                <h1 className="text-3xl font-bold mb-4">Dashboard</h1>
-                <p className="text-lg text-muted-foreground">
-                    Hello,{" "}
-                    <strong className="text-foreground">{user?.firstName}</strong>{" "}
-                    <Badge variant="secondary" className="ml-2">
-                        {user?.role}
-                    </Badge>
-                </p>
-            </div>
+  return (
+    <div className="space-y-6 mx-6 my-4">
+      <div className="p-4 rounded-lg border border-[#E5E7EB] bg-gray-50">
+        <p className="text-gray-700">
+          Hello, <strong>{user?.firstName}</strong>{" "}
+          <Badge variant="secondary">{user?.role}</Badge>
+        </p>
+      </div>
 
-            <div className="flex flex-wrap gap-4">
-                {user?.role === "admin" && (
-                    <Button asChild>
-                        <Link to="/admin">Admin Panel</Link>
-                    </Button>
-                )}
-
-                {(user?.role === "admin" || user?.role === "manager") && (
-                    <Button asChild>
-                        <Link to="/manager">Manager Panel</Link>
-                    </Button>
-                )}
-
-                {(user?.role === "user") && (
-                    <Button asChild variant="outline">
-                        <Link to="/upload">Upload</Link>
-                    </Button>
-                )}
-
-                <Button asChild variant="outline">
-                    <Link to="/profile">Profile</Link>
-                </Button>
-
-                <Button variant="destructive" onClick={logout}>
-                    Logout
-                </Button>
-            </div>
-        </div>
-    );
+      <div className="flex gap-3">
+        <Button asChild variant="outline">
+          <Link to="/profile">Profile</Link>
+        </Button>
+        {(user?.role === "admin" || user?.role === "manager") && (
+          <Button asChild variant="outline">
+              <Link to="/manager">Manager Panel</Link>
+          </Button>
+        )}
+        <Button asChild variant="outline">
+          <Link to="/upload">Upload</Link>
+        </Button>
+        <Button variant="destructive" onClick={logout}>
+          Logout
+        </Button>
+      </div>
+    </div>
+  );
 };

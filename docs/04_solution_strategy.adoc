@@ -1,0 +1,33 @@
+
+== Solution Strategy
+
+SmartSpot is designed to provide an event driven and user friendly reservation platform that caters to modern parking lot payment needs. The solution strategy encompasses the architectural approach, technology stack, scalability, performance, CI/CD, DevOps practices, fault tolerance, and availability considerations.
+
+The architecture of SmartSpot is designed in accordance with assignment specifications, it involves event-driven simulations and leverages modern software engineering principles. The key solution strategies include:
+
+=== Architectural Approach
+
+- **Model View Controller Architecture**: Follows a MVC approach **Model, View, and Controller aspects**.
+
+=== Technology Stack
+
+- **Backend**: TypeScript.
+- **Frontend**: React for web application, TypeScript.
+- **Database**: PostgreSQL.
+- **Security**: BCrypt for password hashing.
+- **Cloud**: Google suite (Firebase, and Google Cloud) for infrastructure.
+- **Infrastructure**: Dockerized containers for local hosting of the prototype.
+
+=== Integrated Design Patterns
+
+-TODO
+
+
+=== CI/CD & DevOps Practices
+
+- **CI/CD Pipelines**  Integrated to some extent in this application. Branching and pull request structure creates a simulated CI/CD process throughout development.
+- **Linter** VS Code packages were installed to lint the code. It flagged programming errors and simple bugs.
+- **Automated Testing**: The Google Cloud and CI/CD pipeline includes automatic tests that are run every time the backend is run locally.
+
+
+

@@ -1,0 +1,88 @@
+== Glossary
+
+The glossary provides definitions for key terms and abbreviations used throughout the SmartSpot architecture documentation.
+
+**A**
+
+- **API (Application Programming Interface)**: A set of defined rules that allow different software entities to communicate with each other.
+- **Authentication**: The process of verifying the identity of a user, system, or application.
+- **Azure Web Apps**: A cloud service for hosting web applications, REST APIs, and mobile backends.
+- **Azure Functions**: A serverless compute service that enables event-driven programming and execution of code in response to events.
+- **Azure Static Web Apps**: A service that automatically builds and deploys full-stack web apps to Azure from a GitHub repository.
+- **Azure App Services**: A cloud computing service for building, deploying, and managing web applications and services.
+
+
+**C**
+
+- **Caching**: The process of storing frequently accessed data in memory for faster retrieval.
+- **CI/CD (Continuous Integration/Continuous Deployment)**: A methodology for automating software testing and deployment processes.
+- **Cost Efficiency**: A quality attribute referring to achieving optimal performance with minimal cost.
+- **Command Pattern**: A quality atttribute that encapsulates a request as an object, allowing parameterization of clients, request queuing, and undoable operations.
+- **Compostability**: Quality attribute to allow for easy integration of new features, pages, and components in the future.
+
+
+**D**
+
+- **Disaster Recovery**: A set of policies and procedures to restore systems in the event of a failure or disaster.
+
+**E**
+
+- **Encryption**: The process of encoding data to prevent unauthorized access.
+- **Event-Driven Architecture**: A software design pattern that enables services to communicate through events rather than direct calls.
+
+**G**
+
+- **GitHub Actions**: A CI/CD tool that automates the software development process directly within GitHub repositories.
+- **Gradle**: An open-source build automation tool used for Java projects.
+
+**J**
+
+- **JSON (JavaScript Object Notation)**: A lightweight data-interchange format that is easy for humans to read and write.
+
+**L**
+
+- **Latency**: The time delay between a request and response in a system.
+- **Linter**: Analyzes source code for stylistic and programming errors, enforcing coding standards and improving code quality.
+- **Load Balancing**: The process of distributing network or application traffic across multiple servers to ensure reliability and performance.
+
+**M**
+
+-**Maintainability**: Quality attribute referring to the ease with which a system can be modified, debugged, and updated to fix issues, improve performance, or add new features.
+- **Monitoring**: The process of collecting and analyzing system metrics to ensure performance and health.
+- **Model View Controller**: An architectural pattern that separates applications into Model (data/business logic), View (UI), and Controller (user input handling) for better modularity and maintainability.
+- **MongoDB**: A NoSQL document database that stores data in JSON-like BSON format, enabling high scalability, flexibility, and efficient querying.
+
+**O**
+
+- **Observer Pattern**: A behavioral pattern where objects (observers) subscribe to another object (subject) to get notified of state changes, promoting decoupling.
+
+
+**N**
+- **NoSQL Database**: A type of database designed for scalability and flexibility in handling unstructured data.
+
+**R**
+
+- **REST API**: A web service that follows REST (Representational State Transfer) principles for interaction between clients and servers.
+- **React**: A JavaScript library for building user interfaces.
+
+**S**
+
+- **Scalability**: The ability of a system to handle increasing workloads by adding resources.
+- **Singleton Pattern**: Ensures a class has only one instance and provides a global access point to it, often used for configuration or resource management.
+- **SpringBoot**: A Java-based framework used to create stand-alone, production-grade Spring applications.
+
+**T**
+
+- **Transaction Processing**: The execution of parking payments.
+
+**U**
+
+- **Usability**: How easily and effectively users can interact with a system, ensuring a smooth, intuitive, and efficient experience.
+
+
+
+
+This glossary serves as a reference guide for understanding the terminology used in the SmartSpot architecture documentation. It provides clarity on key concepts and terms to facilitate better comprehension of the system design and implementation.
+
+
+// End of glossary

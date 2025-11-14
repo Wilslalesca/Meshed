@@ -10,6 +10,7 @@ interface BasicProps {
 const Basic: React.FC<BasicProps> = ({ onDrop }) => {
   const { acceptedFiles, getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
+    maxFiles:1,
   });
 
   const files = acceptedFiles.map((file) => (
@@ -30,7 +31,7 @@ const Basic: React.FC<BasicProps> = ({ onDrop }) => {
         {isDragActive ? (
           <p>Drop the files here...</p>
         ) : (
-          <p>Drag & drop files here, or click to select files</p>
+          <p>Drag & drop your file here, or click to select file</p>
         )}
       </div>
 

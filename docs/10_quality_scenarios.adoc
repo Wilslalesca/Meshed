@@ -1,0 +1,14 @@
+
+== Quality Scenarios
+Quality scenarios define measurable criteria for assessing the performance, reliability, security, and maintainability of UMA. Each scenario follows the **SEI six-part format**, which includes:
+
+=== Security Scenarios
+==== **Scenario 1: Unauthorized Access Attempt**
+- **Source of Stimulus**: A user without an account/with the wrong password.
+- **Stimulus**: Attempted log in with an unregistered email/password combination.
+- **Environment**: Public-facing web application.
+- **Artifact**: Authentication service.
+- **Response**: The system blocks the user from entering the system and displays a message about the error.
+- **Response Measure**: The system blocks the user from entering immediately in all scenarios.
+
+These quality scenarios ensure that SmartSpot maintains **high performance, security, and usability standards**.
