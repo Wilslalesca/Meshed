@@ -8,7 +8,7 @@ import { ActivityFeed } from "../components/ActivityFeed";
 export const UserDashboard = () => {
   return (
     <div className="flex flex-col gap-6 p-4">
-      {/* === Stats Row === */}
+
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
         <StatCard title="Upcoming Classes" value="6" subtitle="+2 this week" />
         <StatCard title="Training Sessions" value="3" subtitle="+1 added" />
@@ -16,12 +16,9 @@ export const UserDashboard = () => {
         <StatCard title="Unread Messages" value="4" subtitle="Coach updates" />
       </div>
 
-      {/* === Quick Actions === */}
       <QuickActions />
 
-      {/* === Middle Section: Schedule / Activity / Facilities === */}
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
-        {/* Left: Schedule Overview */}
         <Card className="col-span-2">
           <CardHeader>
             <CardTitle>My Schedule</CardTitle>
@@ -31,7 +28,6 @@ export const UserDashboard = () => {
           </CardContent>
         </Card>
 
-        {/* Right: Activity Feed */}
         <Card>
           <CardHeader>
             <CardTitle>Recent Activity</CardTitle>
@@ -42,7 +38,6 @@ export const UserDashboard = () => {
         </Card>
       </div>
 
-      {/* === Bottom Section: Facilities / Additional Info === */}
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
         <Card>
           <CardHeader>

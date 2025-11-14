@@ -1,4 +1,3 @@
-// Call the login function here to get access to jwt
 import React, {
     createContext,
     useCallback,
@@ -15,7 +14,7 @@ import {
     type Role,
 } from "@/features/auth/types/auth";
 
-import { storage } from "@/services/storage";
+import { storage } from "@/shared/services/storage";
 import { apiLogin, apiRegister, apiMe } from "@/features/auth/api/auth";
 import { useNavigate } from "react-router-dom";
 
