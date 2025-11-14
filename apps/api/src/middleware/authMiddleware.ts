@@ -4,7 +4,6 @@ import { Role } from '../types/index';
 
 export interface AuthedRequest extends Request { user?: { id: string; role: Role }; }
 
-
 export function requireAuth(req: AuthedRequest, res: Response, next: NextFunction) {
     const header = req.header('Authorization');
     

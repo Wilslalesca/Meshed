@@ -1,0 +1,40 @@
+
+== Technical Risks
+
+Identifying and mitigating technical risks is critical to ensuring the stability, security, and maintainability of UMA. Below are the key technical risks associated with the system, along with mitigation strategies that would be implemented when UMA goes past its prototype design.
+
+=== Security Risks
+
+**Risk**: Exposure of financial information through payment services.
+
+- **Impact**: Financial losses and loss of customer trust.
+- **Mitigation**:
+  * Encrypt payment data in transit
+  * Regular security audits and vulnerability assessments.
+  * Utilize trusted third party payment services like PayPal
+
+  **Risk**: Unauthorized account access.
+
+- **Impact**: Financial losses and loss of customer trust.
+- **Mitigation**:
+  * Implement standard user authentication practices
+  * Implement strong password requirements and consistent password changes.
+
+=== Performance Risks
+
+**Risk**: System performance degradation under high user loads.
+
+- **Impact**: Slow transaction processing, increased failure rates, poor user experience.
+- **Mitigation**:
+  * Implement scaling, caching and monitoring procedures.
+
+=== Availability Risks
+
+**Risk**: Downtime due to failed deployments.
+
+- **Impact**: Service disruptions affecting users.
+- **Mitigation**:
+  * Constantly save a working back up to be implemented in a moments notice.
+  * Implement thorough test procedure before deployment.
+
+Note: This document especially was adapted from the risks provided in the Lab7 Arc42 example documentation.

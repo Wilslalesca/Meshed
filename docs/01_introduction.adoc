@@ -1,0 +1,35 @@
+== Introduction
+
+Unite Match Align (UMA)  is a optimization scheduling system that generates practice schedules for coaches, and submit facility requests. It allows student-athletes to have a centralized academic and athletic schedule. Facility Administrators
+have the ability to view conflicting facility requests, as well as approve and deny requests.
+
+The purpose of this document is to provide a structured architecture description of UMA following the arc42 template. By utilizing the C4 model, this documentation aims to create a clear and standardized representation of the system architecture for developers, architects, and stakeholders.
+
+### Goals of the Documentation
+The primary goals of these documents are to:
+
+- Provide a structured and detailed overview of UMA's architecture.
+- Ensure a clear understanding of system interactions, components, and deployment strategies.
+- Facilitate maintainability and scalability by documenting key architectural decisions.
+- Enhance security and compliance by outlining specific choices made by the team.
+
+### Target Audience
+This document is intended for:
+
+- Software Architects
+- Developers
+- System Administrators
+- TME4025 Professors
+- SWE Senior Design Advisors
+
+### Scope
+The document covers the entire system architecture of UMA, including:
+
+- System context and external dependencies.
+- High-level building blocks and components.
+- Runtime behavior and deployment strategies.
+- Security, quality attributes, and crosscutting concerns.
+- Architectural decisions and risk assessment.
+
+
+Citation Note: These documents were taken from the SWE4403 Winter 2025 Lab 7 documentation and altered to fit the needs of this project.

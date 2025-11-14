@@ -35,6 +35,7 @@ CREATE TABLE teams (
   season VARCHAR(50),
   insights_id UUID REFERENCES insights(id),
   league_id UUID REFERENCES league(id),
+  gender VARCHAR(20),
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -107,4 +108,31 @@ CREATE TABLE activity_log (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE IF NOT EXISTS facilities (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name VARCHAR(100) NOT NULL,
+  address1 VARCHAR(100),
+  address2 VARCHAR(100),
+  city VARCHAR(50),
+  province_state VARCHAR(50),
+  postal_code VARCHAR(20),
+  country VARCHAR(50),
+  email VARCHAR(255),
+  phone VARCHAR(20),
+  notes TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE team_facilities (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  team_id UUID REFERENCES teams(id) ON DELETE CASCADE,
+  facility_id UUID REFERENCES facilities(id) ON DELETE CASCADE,
+  is_home BOOLEAN DEFAULT FALSE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
+CREATE INDEX IF NOT EXISTS idx_facilities_name ON facilities (name);
 
