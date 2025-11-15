@@ -1,16 +1,16 @@
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import { Button } from "@/shared/components//ui/button";
+import { Input } from "@/shared/components//ui/input";
+import { Label } from "@/shared/components//ui/label";
 import { apiEditCourse } from "../api/editcourse";
-import type { Schedule } from '@/features/athlete-schedule/types/Schedule';
-import { useNavigate } from 'react-router-dom';
+import type { Schedule } from "@/features/athlete-schedule/types/Schedule";
+import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { useAuth } from "@/hooks/useAuth";
-import { formatTimeTo12Hour } from "../utils/formatTime"
+import { useAuth } from "@/shared/hooks/useAuth";
+import { formatTimeTo12Hour } from "../utils/formatTime";
 import { toast } from "sonner";
 
 interface EditCourseModalProps {
-  course: Schedule;
+    course: Schedule;
 }
 
 export const EditCourseForm: React.FC<EditCourseModalProps> = ({ course }) => {
@@ -20,10 +20,21 @@ export const EditCourseForm: React.FC<EditCourseModalProps> = ({ course }) => {
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
-    const weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+    const weekdays = [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+        "Sunday",
+    ];
 
     const handleSubmit = async () => {
-        if ( (formData.start_time > formData.end_time) || (formData.end_date && formData.start_date > formData.end_date)) {
+        if (
+            formData.start_time > formData.end_time ||
+            (formData.end_date && formData.start_date > formData.end_date)
+        ) {
             toast.error("Ensure start date/time are before end date/time");
             return;
         }
@@ -37,17 +48,22 @@ export const EditCourseForm: React.FC<EditCourseModalProps> = ({ course }) => {
             start_time: formatTimeTo12Hour(formData.start_time),
             end_time: formatTimeTo12Hour(formData.end_time),
             location: formData.location,
-            term:( 
-            d.getMonth() >= 8 && d.getMonth() <=11
-            ? 'FALL'
-            :  d.getMonth() >= 0 && d.getMonth() <= 3
-            ? 'WINTER'
-            : 'SUMMER'
-            ),
+            term:
+                d.getMonth() >= 8 && d.getMonth() <= 11
+                    ? "FALL"
+                    : d.getMonth() >= 0 && d.getMonth() <= 3
+                    ? "WINTER"
+                    : "SUMMER",
             start_date: formData.start_date,
-            end_date: ( !formData.end_date ? formData.start_date : formData.end_date),
-        }
-        const success = await apiEditCourse(formData.id, user?.id, formSchedule);
+            end_date: !formData.end_date
+                ? formData.start_date
+                : formData.end_date,
+        };
+        const success = await apiEditCourse(
+            formData.id,
+            user?.id,
+            formSchedule
+        );
         if (success) {
             toast.success("Successfully updated course");
             navigate('/myschedule');
@@ -105,7 +121,7 @@ export const EditCourseForm: React.FC<EditCourseModalProps> = ({ course }) => {
                         <Input
                             type="time"
                             id="end_time"
-                            name = "end_time"
+                            name="end_time"
                             value={formData.end_time}
                             onChange={handleChange}
                         />
@@ -121,7 +137,6 @@ export const EditCourseForm: React.FC<EditCourseModalProps> = ({ course }) => {
                             onChange={handleChange}
                         />
                     </div>
-
 
                     <div className="grid w-full items-center gap-3 py-2">
                         <Label htmlFor="end_date">End Date</Label>

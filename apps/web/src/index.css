@@ -114,6 +114,20 @@
   --sidebar-ring: oklch(0.556 0 0);
   --custom-color: oklch(0.6 0.2 150);
 }
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.rdp-day_today {
+  background-color: transparent !important;
+  color: inherit !important;
+  border: none !important;
+}
+
 
 @layer base {
   * {

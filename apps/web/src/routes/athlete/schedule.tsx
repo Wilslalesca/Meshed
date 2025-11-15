@@ -1,10 +1,7 @@
 import { useAthleteSchedule } from '@/features/athlete-schedule/hooks/useAthleteSchedule';
 import { CourseBlock } from '@/features/add-edit-courses/components/CourseBlock'
 import { EmptyState } from '@/features/athlete-schedule/components/EmptyState';
-import { Button } from "@/components/ui/button"
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@/hooks/useAuth';
-import { Upload } from '@/features/upload/components/Upload';
+import { useAuth } from '@/shared/hooks/useAuth';
 
 export default function AthleteSchedulePage() {
     const { user, loading: authLoading } = useAuth();

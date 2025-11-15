@@ -1,5 +1,5 @@
 import React from 'react';
-import { RotatingHeader } from '@/components/layout/RotatingHeader';
+import { RotatingHeader } from '@/shared/components/layout/RotatingHeader';
 import { Hero } from "@/components/marketing/Hero";
 import { Features } from "@/components/marketing/Features";
 import { Stats } from "@/components/marketing/Stats";
