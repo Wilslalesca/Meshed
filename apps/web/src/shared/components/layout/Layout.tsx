@@ -7,30 +7,27 @@ export const Layout = ({ children }: { children: React.ReactNode }) => {
     const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
 
-    useEffect(() => {
-        const handleResize = () => {
-            const mobile = window.innerWidth < 1024;
-            setIsMobile(mobile);
-            if (mobile) {
-                setSidebarCollapsed(false);
-            } else {
-                setSidebarOpen(false);
-            }
-        };
-        handleResize();
-        window.addEventListener("resize", handleResize);
-        return () => window.removeEventListener("resize", handleResize);
-    }, []);
+  useEffect(() => {
+    const onResize = () => {
+      const mobile = window.innerWidth < 1024;
+      setIsMobile(mobile);
+      if (mobile) setSidebarCollapsed(false);
+      else setSidebarOpen(false);
+    };
+    onResize();
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
 
-    return (
-        <div className="flex h-screen w-screen bg-[#F9FAFB] text-gray-900">
-            <Sidebar
-                open={sidebarOpen}
-                collapsed={sidebarCollapsed}
-                isMobile={isMobile}
-                onToggleCollapse={() => setSidebarCollapsed((prev) => !prev)}
-                onClose={() => setSidebarOpen(false)}
-            />
+  return (
+    <div className="min-h-screen w-screen bg-brand-soft text-foreground flex">
+      <Sidebar
+        open={sidebarOpen}
+        collapsed={sidebarCollapsed}
+        isMobile={isMobile}
+        onToggleCollapse={() => setSidebarCollapsed((v) => !v)}
+        onClose={() => setSidebarOpen(false)}
+      />
 
             <div className="flex flex-col flex-1 bg-white mt-2.5 mb-2.5 mr-2.5 ml-1 rounded-lg shadow-md overflow-hidden">
                 <Topbar

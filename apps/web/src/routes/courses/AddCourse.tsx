@@ -5,21 +5,10 @@ import { useAthleteSchedule } from '@/features/athlete-schedule/hooks/useAthlete
 import { useAuth } from '@/shared/hooks/useAuth';
 
 export const AddCourse: React.FC = () => {
-  const { user } = useAuth();
-  const athleteId = user?.id;
-  const { schedule } = useAthleteSchedule(athleteId);
-
   return (
     <div className="bg-white min-h-screen flex flex-col md:flex-row p-4 gap-4">
-      <div className="w-full md:w-1/2 md:pr-4">
+      <div className="w-full">
         <AddCourseForm />
-      </div>
-
-      <div className="w-full md:w-1/2 items-center justify-center overflow-y-auto max-h-[80vh]">
-        {!schedule?.length
-        ? <div></div>
-        : <CourseBlock data={schedule}/>
-        }
       </div>
     </div>
       

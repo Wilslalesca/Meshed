@@ -85,8 +85,8 @@ export function AddCourseForm({
             console.error("Error submitting course:", err);
             toast.error("An unexpected error occurred");
         }
-        setTimeout(() => window.location.reload(), 200);
-    };
+        setTimeout(() => navigate("/myschedule"), 200);
+    }
 
     return (
         <form className="bg-white min-h-screen flex">

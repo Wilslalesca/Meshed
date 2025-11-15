@@ -66,12 +66,14 @@ export const EditCourseForm: React.FC<EditCourseModalProps> = ({ course }) => {
         );
         if (success) {
             toast.success("Successfully updated course");
-            navigate("/addcourse");
-        } else toast.error("Failed to update course");
+            navigate('/myschedule');
+
+        }
+        else toast.error("Failed to update course");
     };
 
     const handleCancel = async () => {
-        navigate("/addcourse");
+        navigate('/myschedule')
     };
 
     return (

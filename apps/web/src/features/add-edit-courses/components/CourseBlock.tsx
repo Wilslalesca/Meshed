@@ -48,65 +48,53 @@ export const CourseBlock: React.FC<Props> = ({ data }) => {
     };
 
     return (
-        <div className="flex flex-col gap-4">
-            {Object.entries(grouped).map(([courseName, schedules]) => (
-                <Card
-                    key={courseName}
-                    className="w-full max-w-sm shadow-lg rounded-lg"
-                >
-                    <CardHeader>
-                        <h1 className="text-xl font-bold">{courseName}</h1>
-                    </CardHeader>
-                    <CardContent className="p-4">
-                        {schedules
-                            .sort(
-                                (a, b) =>
-                                    dayOrder[a.day_of_week] -
-                                    dayOrder[b.day_of_week]
-                            )
-                            .map((c, index) => (
-                                <div key={index} className="mb-2 last:mb-0">
-                                    <p className="text-muted-foreground text-sm">
-                                        {c.day_of_week}
-                                    </p>
-                                    <p className="text-muted-foreground text-sm">
-                                        {c.end_date != c.start_date
-                                            ? `${c.start_date} to ${c.end_date}`
-                                            : `${c.start_date}`}
-                                    </p>
-                                    <p className="text-muted-foreground text-sm">
-                                        {formatTime(c.start_time)} –{" "}
-                                        {formatTime(c.end_time)}
-                                    </p>
-                                    <p className="text-muted-foreground text-sm">
-                                        {c.location}
-                                    </p>
-                                    <p className="text-muted-foreground text-sm">
-                                        {c.term}
-                                    </p>
-                                    <div className="flex gap-2">
-                                        <Button
-                                            size="icon"
-                                            variant="outline"
-                                            onClick={() =>
-                                                navigate(`/editcourse/${c.id}`)
-                                            }
-                                        >
-                                            <Pencil className="w-4 h-4" />
-                                        </Button>
-                                        <Button
-                                            size="icon"
-                                            variant="destructive"
-                                            onClick={() => handleDelete(c.id)}
-                                        >
-                                            <Trash2 className="w-4 h-4" />
-                                        </Button>
-                                    </div>
-                                </div>
-                            ))}
-                    </CardContent>
-                </Card>
-            ))}
+        <div className="columns-1 sm:columns-2 lg:columns-3 gap-6">
+        {Object.entries(grouped).map(([courseName, schedules]) => (
+            <Card
+            key={courseName}
+            className="break-inside-avoid shadow-lg rounded-lg mb-6"
+            >
+            <CardHeader>
+                <h1 className="text-xl font-bold">{courseName}</h1>
+            </CardHeader>
+            <CardContent className="p-4">
+                {schedules
+                .sort((a, b) => dayOrder[a.day_of_week] - dayOrder[b.day_of_week])
+                .map((c, index) => (
+                <div key={index} className="mb-2 last:mb-0">
+                    <p className="text-muted-foreground text-sm">{c.day_of_week}</p>
+                    <p className="text-muted-foreground text-sm">
+                        {c.end_date != c.start_date
+                        ? `${c.start_date} to ${c.end_date}`
+                        : `${c.start_date}`
+                        }
+                    </p>
+                    <p className="text-muted-foreground text-sm">
+                    {formatTime(c.start_time)} – {formatTime(c.end_time)}
+                    </p>
+                    <p className="text-muted-foreground text-sm">{c.location}</p>
+                    <p className="text-muted-foreground text-sm">{c.term}</p>
+                    <div className="flex gap-2">
+                    <Button
+                        size="icon"
+                        variant="outline"
+                        onClick={() => navigate(`/editcourse/${c.id}`)}
+                    >
+                        <Pencil className="w-4 h-4" />
+                    </Button>
+                    <Button
+                        size="icon"
+                        variant="destructive"
+                        onClick={() => handleDelete(c.id)}
+                    >
+                        <Trash2 className="w-4 h-4" />
+                    </Button>
+                </div>
+                </div>
+                ))}
+            </CardContent>
+            </Card>
+        ))}
         </div>
     );
 };

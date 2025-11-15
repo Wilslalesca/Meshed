@@ -7,6 +7,7 @@ import {
     testingAccountGeneration,
     testingAddingUserToath,
 } from "./scripts/seedUsers";
+import { seedLeaguesAndSports } from "./scripts/seedLeagueAndSport";
 
 const port = config.port;
 
@@ -16,4 +17,7 @@ app.listen(port, async () => {
     // test scripts
     await testingAccountGeneration();
     await testingAddingUserToath();
+    await seedLeaguesAndSports();
+    // await seedTeams(); // function for seeding teams
+    
 });
