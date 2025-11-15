@@ -7,6 +7,7 @@ import { apiAddCourseAndAthleteCourse } from '@/features/add-edit-courses/api/ad
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/components//ui/card";
 import DropzoneField from "@/shared/components/ui/dropzonefield";
 import { toast } from "sonner"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/shared/components/ui/dialog';
 
 export function Upload(): JSX.Element {
     const { user } = useAuth();

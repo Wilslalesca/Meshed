@@ -1,6 +1,6 @@
 // apps/web/src/screens/Teams.tsx
 import React, { useEffect, useState } from "react";
-import { useAuth } from "../hooks/useAuth";
+import { useAuth } from "@/shared/hooks/useAuth";
 
 type Team = {
   id: string; // UUID from DB

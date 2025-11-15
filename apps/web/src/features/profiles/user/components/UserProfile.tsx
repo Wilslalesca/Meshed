@@ -1,12 +1,12 @@
 import React from 'react';
 import {useState} from 'react';
 import { useNavigate } from "react-router-dom";
-import { Label } from "@/components/ui/label"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
+import { Label } from "@/shared/components/ui/label"
+import { Input } from "@/shared/components/ui/input"
+import { Button } from "@/shared/components/ui/button"
 import { Pencil, Check } from "lucide-react";
 import {apiEditUser} from "../apis/editprofile"
-import { apiMe } from "@/api/auth"
+import { apiMe } from "@/features/auth/api/auth"
 import { toast } from "sonner";
 
 export function UserProfile() {

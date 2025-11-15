@@ -6,7 +6,7 @@ import { Register } from "./routes/auth/Register.tsx";
 import { Dashboard } from "./routes/dashboard";
 import { Admin } from "./screens/Admin";
 import { Profile } from "./screens/Profile";
-import { Teams } from "./screens/Teams";
+import { Teams } from "./routes/teams/teams.tsx";
 import { Upload } from "./features/upload/components/Upload.tsx";
 import { useAuth } from "./shared/hooks/useAuth";
 import ScheduleBackground from './screens/ScheduleBackground';
