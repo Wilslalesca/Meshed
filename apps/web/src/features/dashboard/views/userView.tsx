@@ -4,15 +4,14 @@ import {
     CardHeader,
     CardTitle,
 } from "@/shared/components/ui/card";
-import { QuickActions } from "../components/QuickActions";
+import { QuickActions } from "../components/user/QuickActions";
 import { StatCard } from "../components/StatCard";
-import { TeamSchedule } from "../components/TeamSchedule";
-import { ActivityFeed } from "../components/ActivityFeed";
+import { TeamSchedule } from "../components/user/TeamSchedule";
+import { ActivityFeed } from "../components/user/ActivityFeed";
 import { EventWidget } from "../components/EventWidget";
 import { getAthleteEvents } from "../api/dashboardApi";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/shared/hooks/useAuth";
-
 
 export const UserDashboard = () => {
     const [events, setEvents] = useState<

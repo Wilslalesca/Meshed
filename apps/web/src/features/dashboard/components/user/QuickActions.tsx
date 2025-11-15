@@ -1,12 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { toast } from "sonner"; 
 import {
   FileUp,
   Calendar,
-  User,
   MapPin,
-  MessageSquare,
   Contact2,
   Megaphone,
 } from "lucide-react";

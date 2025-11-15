@@ -12,7 +12,6 @@ interface EventItem {
 }
     
 export const EventWidget = ({ events }: { events: EventItem[] }) => {
-    const accent = "#346E68";
     const [selectedDate, setSelectedDate] = useState<Date | undefined>(
         new Date()
     );
