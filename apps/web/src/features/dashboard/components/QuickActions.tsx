@@ -7,6 +7,8 @@ import {
   User,
   MapPin,
   MessageSquare,
+  Contact2,
+  Megaphone,
 } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
 import {
@@ -26,17 +28,16 @@ export const QuickActions = () => {
 
     setTimeout(() => {
       setActiveAction(null);
-      toast.success(`${label} completed successfully`);
       navigate(path);
     }, 1000);
   };
 
   const actions = [
     { id: "upload", label: "Upload Schedule", icon: FileUp, path: "/upload" },
-    { id: "profile", label: "Edit Profile", icon: User, path: "/profile" },
+    { id: "contactCoach", label: "Contact Coach", icon: Contact2, path: "/profile" },
     { id: "schedule", label: "View Schedule", icon: Calendar, path: "/mySchedule" },
     { id: "facilities", label: "Book Facility", icon: MapPin, path: "/facilities" },
-    { id: "messages", label: "Messages", icon: MessageSquare, path: "/messages" },
+    { id: "messages", label: "Team Announcements", icon: Megaphone, path: "/messages" },
   ];
 
   return (

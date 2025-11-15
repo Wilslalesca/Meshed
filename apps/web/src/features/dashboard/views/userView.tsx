@@ -1,64 +1,87 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/shared/components/ui/card";
+import {
+    Card,
+    CardContent,
+    CardHeader,
+    CardTitle,
+} from "@/shared/components/ui/card";
 import { QuickActions } from "../components/QuickActions";
 import { StatCard } from "../components/StatCard";
-import { ScheduleWidget } from "../components/ScheduleWidget";
-import { FacilityWidget } from "../components/FacilityWidget";
+import { TeamSchedule } from "../components/TeamSchedule";
 import { ActivityFeed } from "../components/ActivityFeed";
+import { EventWidget } from "../components/EventWidget";
+import { getAthleteEvents } from "../api/dashboardApi";
+import { useEffect, useState } from "react";
+import { useAuth } from "@/shared/hooks/useAuth";
+
 
 export const UserDashboard = () => {
-  return (
-    <div className="flex flex-col gap-6 p-4">
+    const [events, setEvents] = useState<
+        Array<{ id: string; title: string; date: string; time: string }>
+    >([]);
+    const { user } = useAuth();
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-        <StatCard title="Upcoming Classes" value="6" subtitle="+2 this week" />
-        <StatCard title="Training Sessions" value="3" subtitle="+1 added" />
-        <StatCard title="Available Facilities" value="5" subtitle="Open today" />
-        <StatCard title="Unread Messages" value="4" subtitle="Coach updates" />
-      </div>
+    useEffect(() => {
+        if (user?.id) {
+            getAthleteEvents(user.id).then(setEvents);
+        }
+    }, [user?.id]);
 
-      <QuickActions />
-
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
-        <Card className="col-span-2">
-          <CardHeader>
-            <CardTitle>My Schedule</CardTitle>
-          </CardHeader>
-          <CardContent className="p-0">
-            <ScheduleWidget />
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Recent Activity</CardTitle>
-          </CardHeader>
-          <CardContent className="p-0">
-            <ActivityFeed />
-          </CardContent>
-        </Card>
-      </div>
-
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
-        <Card>
-          <CardHeader>
-            <CardTitle>Facility Availability</CardTitle>
-          </CardHeader>
-          <CardContent className="p-0">
-            <FacilityWidget />
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Performance Summary</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center justify-center h-48 text-muted-foreground">
-              Coming soon: athlete performance metrics
+    return (
+        <div className="flex flex-col gap-6 p-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <StatCard
+                    title="Upcoming Classes"
+                    value={null}
+                    subtitle="No API connection"
+                    loading={false}
+                />
+                <StatCard
+                    title="Training Sessions"
+                    value={null}
+                    subtitle="No API connection"
+                    loading={false}
+                />
+                <StatCard
+                    title="Available Facilities"
+                    value={null}
+                    subtitle="No API connection"
+                    loading={false}
+                />
+                <StatCard
+                    title="Unread Messages"
+                    value={null}
+                    subtitle="No API connection"
+                    loading={false}
+                />
             </div>
-          </CardContent>
-        </Card>
-      </div>
-    </div>
-  );
+
+            <QuickActions />
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                <div className="flex flex-col gap-4 lg:col-span-2">
+                    <Card className="h-full">
+                        <CardHeader>
+                            <CardTitle>Your Team</CardTitle>
+                        </CardHeader>
+                        <CardContent className="p-0">
+                            <TeamSchedule data={[]} />
+                        </CardContent>
+                    </Card>
+
+                    <Card className="h-full">
+                        <CardHeader>
+                            <CardTitle>Updates</CardTitle>
+                        </CardHeader>
+                        <CardContent className="p-0">
+                            <ActivityFeed data={[]} />
+                        </CardContent>
+                    </Card>
+                </div>
+
+                <div className="lg:col-span-1 flex flex-col gap-4">
+                    <EventWidget events={events} />
+                </div>
+            </div>
+        </div>
+    );
 };

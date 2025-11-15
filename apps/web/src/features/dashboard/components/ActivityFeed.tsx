@@ -1,38 +1,38 @@
-import { MessageCircle } from "lucide-react";
-
-interface ActivityFeedProps {
-  data?: { text: string; timestamp?: string }[];
+export interface ActivityItem {
+  user: string
+  text: string
+  time: string
 }
 
-export const ActivityFeed = ({
-  data = [
-    { text: "🏋️ Completed a strength training session", timestamp: "Today" },
-    { text: "📅 New schedule uploaded by Coach Miller", timestamp: "Yesterday" },
-    { text: "💬 Message: 'Practice moved to 2 PM'", timestamp: "2 days ago" },
-  ],
-}: ActivityFeedProps) => {
-  return (
-    <div className="p-3">
-      <ul className="space-y-3">
-        {data.map((item, idx) => (
+export const ActivityFeed = ({ data = [] }: { data?: ActivityItem[] }) => {
+    if (data.length === 0) {
+      return (
+        <div className="flex w-full flex-col items-center justify-center text-sm text-muted-foreground">
+          No recent activity.
+        </div>
+      );
+    }
+
+    return (
+      <ul className="divide-y divide-border text-sm">
+        {data.map((a, i) => (
           <li
-            key={idx}
-            className="flex items-start gap-3 rounded-lg border border-transparent hover:border-border hover:bg-muted/40 transition-colors px-3 py-2"
+            key={i}
+            className="flex items-start gap-3 p-3 hover:bg-muted/40 transition-colors"
           >
-            <div className="rounded-md bg-primary/10 p-2 mt-0.5">
-              <MessageCircle className="h-4 w-4 text-primary" />
+            <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center text-xs font-bold">
+              {a.user.charAt(0)}
             </div>
+
             <div className="flex flex-col">
-              <p className="text-sm">{item.text}</p>
-              {item.timestamp && (
-                <span className="text-xs text-muted-foreground">
-                  {item.timestamp}
-                </span>
-              )}
+              <p className="font-medium">{a.user}</p>
+              <p className="text-muted-foreground text-xs">{a.text}</p>
+              <span className="text-[11px] text-muted-foreground mt-1">
+                {a.time}
+              </span>
             </div>
           </li>
         ))}
       </ul>
-    </div>
-  );
+    );
 };
