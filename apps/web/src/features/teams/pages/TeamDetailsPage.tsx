@@ -19,112 +19,107 @@ import { TeamStaffTab } from "../components/tabs/TeamStaffTab";
 import { EditTeamModal } from "../modals/EditTeamModal";
 import { DeleteTeamModal } from "../modals/DeleteTeamModal";
 import { InviteMemberModal } from "../modals/InviteMemberModal";
-// import { InviteStaffModal } from "../modals/InviteStaffModal";
 
 export const TeamDetailsPage = () => {
-  const { teamId } = useParams<{ teamId: string }>();
-  const navigate = useNavigate();
+    const { teamId } = useParams<{ teamId: string }>();
+    const navigate = useNavigate();
 
-  const [viewMode, setViewMode] = useState<"cards" | "table">("cards");
+    const [viewMode, setViewMode] = useState<"cards" | "table">("cards");
 
-  const { team, loading } = useTeamById(teamId!);
-  const { roster, reloadRoster } = useRoster(teamId!);
-  const { staff, reloadStaff } = useStaff(teamId!);
-  const { sports, leagues } = useLookups();
+    const { team, loading, reload: reloadTeam } = useTeamById(teamId!);
+    const { roster, removeAthlete, reloadRoster } = useRoster(teamId!);
+    const { staff, reloadStaff, removeStaff } = useStaff(teamId!);
+    const { sports, leagues } = useLookups();
 
-  const [openEdit, setOpenEdit] = useState(false);
-  const [openDelete, setOpenDelete] = useState(false);
-  const [openInviteAthlete, setOpenInviteAthlete] = useState(false);
-  const [openInviteStaff, setOpenInviteStaff] = useState(false);
+    const [openEdit, setOpenEdit] = useState(false);
+    const [openDelete, setOpenDelete] = useState(false);
+    const [openInvite, setOpenInvite] = useState(false);
 
-  if (loading || !team) return <p className="p-6">Loading...</p>;
+    if (loading || !team) return <p className="p-6">Loading...</p>;
 
-  const sport = sports.find((s) => s.id === team.sport_id) ?? null;
-  const league = leagues.find((l) => l.id === team.league_id) ?? null;
+    const sport = sports.find((s) => s.id === team.sport_id) ?? null;
+    const league = leagues.find((l) => l.id === team.league_id) ?? null;
 
-  return (
-    <div className="p-6 space-y-6">
+    return (
+        <div className="p-6 space-y-6">
+            <Button
+                variant="ghost"
+                onClick={() => navigate("/teams")}
+                className="flex items-center gap-2"
+            >
+                <ArrowLeft size={18} />
+                Back to Teams
+            </Button>
 
-      <Button
-        variant="ghost"
-        onClick={() => navigate("/teams")}
-        className="flex items-center gap-2"
-      >
-        <ArrowLeft size={18} />
-        Back to Teams
-      </Button>
+            <TeamTabs
+                team={team}
+                sport={sport}
+                league={league}
+                viewMode={viewMode}
+                onViewModeChange={setViewMode}
+                onEdit={() => setOpenEdit(true)}
+                onDelete={() => setOpenDelete(true)}
+                onInviteAthlete={() => setOpenInvite(true)}
+                onInviteStaff={() => setOpenInvite(true)}
+            >
+                {{
+                    profile: (
+                        <TeamProfileTab
+                            team={team}
+                            sport={sport}
+                            league={league}
+                        />
+                    ),
 
-      <TeamTabs
-        team={team}
-        sport={sport}
-        league={league}
-        viewMode={viewMode}
-        onViewModeChange={setViewMode}
-        onEdit={() => setOpenEdit(true)}
-        onDelete={() => setOpenDelete(true)}
-        onInviteAthlete={() => setOpenInviteAthlete(true)}
-        onInviteStaff={() => setOpenInviteStaff(true)}
-      >
-        {{
-          profile: (
-            <TeamProfileTab
-              team={team}
-              sport={sport}
-              league={league}
+                    roster:
+                        viewMode === "cards" ? (
+                            <RosterCardView
+                                roster={roster}
+                                onRemoveAthlete={(id) => removeAthlete(id)}
+                            />
+                        ) : (
+                            <RosterTableView
+                                roster={roster}
+                                onRemoveAthlete={(id) => removeAthlete(id)}
+                            />
+                        ),
+
+                    staff: (
+                        <TeamStaffTab
+                            staff={staff}
+                            onUpdated={reloadStaff}
+                            onRemoved={(id) => removeStaff(id)}
+                        />
+                    ),
+
+                    schedule: <TeamScheduleTab />,
+                }}
+            </TeamTabs>
+
+            <EditTeamModal
+                open={openEdit}
+                onOpenChange={setOpenEdit}
+                team={team}
+                sports={sports}
+                leagues={leagues}
+                onUpdated={() => reloadTeam()}
             />
-          ),
 
-          roster:
-            viewMode === "cards" ? (
-              <RosterCardView
-                roster={roster}
-                onRemoved={() => reloadRoster()}
-              />
-            ) : (
-              <RosterTableView
-                roster={roster}
-                onRemoved={() => reloadRoster()}
-              />
-            ),
-
-          staff: (
-            <TeamStaffTab
-              staff={staff}
-              onUpdated={reloadStaff}
-              onRemoved={reloadStaff}
+            <DeleteTeamModal
+                open={openDelete}
+                onOpenChange={setOpenDelete}
+                teamId={team.id}
             />
-          ),
 
-          schedule: <TeamScheduleTab />,
-        }}
-      </TeamTabs>
-
-      <EditTeamModal
-        open={openEdit}
-        onOpenChange={setOpenEdit}
-        team={team}
-      />
-
-      <DeleteTeamModal
-        open={openDelete}
-        onOpenChange={setOpenDelete}
-        teamId={team.id}
-      />
-
-      <InviteAthleteModal
-        open={openInviteAthlete}
-        onOpenChange={setOpenInviteAthlete}
-        teamId={team.id}
-        onInvited={() => reloadRoster()}
-      />
-
-      <InviteStaffModal
-        open={openInviteStaff}
-        onOpenChange={setOpenInviteStaff}
-        teamId={team.id}
-        onInvited={() => reloadStaff()}
-      />
-
-    </div>
-  );
+            <InviteMemberModal
+                open={openInvite}
+                onOpenChange={setOpenInvite}
+                teamId={team.id}
+                onInvited={() => {
+                    reloadRoster();
+                    reloadStaff();
+                }}
+            />
+        </div>
+    );
 };

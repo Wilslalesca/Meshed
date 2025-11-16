@@ -1,39 +1,54 @@
-import {
-  Table,
-  TableHead,
-  TableHeader,
-  TableRow,
-  TableCell,
-  TableBody,
-} from "@/shared/components/ui/table";
-import type { Athlete } from "../types/roster";
+import { Button } from "@/shared/components/ui/button";
+import { Trash } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 interface Props {
-  roster: Athlete[];
+  roster: any[];
+  onRemoveAthlete?: (id: string) => void;
 }
 
-export const RosterTableView = ({ roster }: Props) => {
-  return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>Name</TableHead>
-          <TableHead>Email</TableHead>
-          <TableHead>Position</TableHead>
-          <TableHead>Status</TableHead>
-        </TableRow>
-      </TableHeader>
+export const RosterTableView = ({ roster, onRemoveAthlete }: Props) => {
+  const navigate = useNavigate();
 
-      <TableBody>
-        {roster.map((a) => (
-          <TableRow key={a.id}>
-            <TableCell>{a.first_name} {a.last_name}</TableCell>
-            <TableCell>{a.email}</TableCell>
-            <TableCell>{a.position ?? "—"}</TableCell>
-            <TableCell>{a.status}</TableCell>
-          </TableRow>
+  return (
+    <table className="w-full text-sm">
+      <thead>
+        <tr className="border-b">
+          <th className="text-left p-2">Name</th>
+          <th className="text-left p-2">Email</th>
+          <th className="text-left p-2">Status</th>
+          <th className="text-right p-2">Actions</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {roster.map((athlete) => (
+          <tr
+            key={athlete.id}
+            className="border-b hover:bg-muted cursor-pointer"
+            onClick={() => navigate(`/athletes/${athlete.id}`)}
+          >
+            <td className="p-2">
+              {athlete.first_name} {athlete.last_name}
+            </td>
+            <td className="p-2">{athlete.email}</td>
+            <td className="p-2">{athlete.status}</td>
+
+            <td className="p-2 text-right">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onRemoveAthlete?.(athlete.id);
+                }}
+              >
+                <Trash className="text-red-500" size={18} />
+              </Button>
+            </td>
+          </tr>
         ))}
-      </TableBody>
-    </Table>
+      </tbody>
+    </table>
   );
 };

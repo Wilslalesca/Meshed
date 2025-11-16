@@ -1,29 +1,29 @@
-import { useState, useEffect, useCallback } from "react";
-import { apiGetStaff } from "../api/staff";
+import { useEffect, useState } from "react";
+import { apiGetStaff, apiRemoveStaff } from "../api/staff";
 import { useAuth } from "@/shared/hooks/useAuth";
-import type { StaffMember } from "../types/staff";
 
-export function useStaff(teamId: string) {
+export const useStaff = (teamId: string) => {
   const { token } = useAuth();
-
-  const [staff, setStaff] = useState<StaffMember[]>([]);
+  const [staff, setStaff] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const load = useCallback(async () => {
-    if (!token || !teamId) return;
+  async function load() {
+    if (!token) return;
     setLoading(true);
     const data = await apiGetStaff(teamId, token);
     setStaff(data);
     setLoading(false);
-  }, [teamId, token]);
+  }
+
+  async function removeStaff(id: string) {
+    if (!token) return;
+    const ok = await apiRemoveStaff(teamId, id, token);
+    if (ok) load();
+  }
 
   useEffect(() => {
     load();
-  }, [load]);
+  }, [teamId]);
 
-  return {
-    staff,
-    loading,
-    reload: load,
-  };
-}
+  return { staff, loading, reloadStaff: load, removeStaff };
+};

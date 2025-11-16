@@ -49,7 +49,8 @@ CREATE TABLE user_teams (
   position VARCHAR(50),
   status VARCHAR(50) DEFAULT 'active',
   joined_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE(user_id, team_id)
 );
 
 CREATE TABLE athlete_profiles (
@@ -153,7 +154,8 @@ CREATE TABLE team_staff (
   status VARCHAR(50) DEFAULT 'active',
   notes VARCHAR(255),
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE (user_id, team_id)
 );
 
 -- CREATE INDEX IF NOT EXISTS idx_facilities_name ON facilities (name);

@@ -96,6 +96,7 @@ export class TeamController {
     res.status(204).send();
   }
   
+  
   static async removeAthlete(req: any, res: Response) {
     if (!isManagerOrAdmin(req))
       return res.status(403).send("Forbidden");

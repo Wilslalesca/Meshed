@@ -21,6 +21,7 @@ router.get("/:teamId/staff", TeamController.getStaff);
 router.post("/:teamId/staff", TeamController.addStaff);
 router.put("/staff/:staffId", TeamController.updateStaff);
 router.delete("/staff/:staffId", TeamController.deleteStaff);
+router.delete("/:teamId/athletes/:userId", TeamController.removeAthlete);
 
 
 export default router;

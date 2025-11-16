@@ -1,29 +1,32 @@
-import { useEffect, useState, useCallback } from "react";
-import { apiGetRoster } from "../api/teams";
+import { useEffect, useState } from "react";
+import { apiGetRoster, apiRemoveAthlete } from "../api/teams";
 import { useAuth } from "@/shared/hooks/useAuth";
-import type { Athlete } from "../types/roster";
 
 export function useRoster(teamId: string) {
   const { token } = useAuth();
-
-  const [roster, setRoster] = useState<Athlete[]>([]);
+  const [roster, setRoster] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const load = useCallback(async () => {
-    if (!token || !teamId) return;
+  async function load() {
+    if (!token) return;
     setLoading(true);
     const data = await apiGetRoster(teamId, token);
     setRoster(data);
     setLoading(false);
-  }, [teamId, token]);
+  }
+
+  async function removeAthlete(userId: string) {
+    if (!token) return false;
+
+    const ok = await apiRemoveAthlete(teamId, userId, token);
+    if (ok) load();
+
+    return ok;
+  }
 
   useEffect(() => {
     load();
-  }, [load]);
+  }, [teamId, token]);
 
-  return {
-    roster,
-    loading,
-    reload: load,
-  };
+  return { roster, loading, reloadRoster: load, removeAthlete };
 }

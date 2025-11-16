@@ -1,13 +1,6 @@
 export const API_BASE = import.meta.env.VITE_API_BASE_URL;
 import type { StaffMember } from "../types/staff";
 
-export async function apiGetStaff(teamId: string, token: string): Promise<StaffMember[]> {
-  const res = await fetch(`${API_BASE}/staff/${teamId}`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
-
-  return res.ok ? await res.json() : [];
-}
 
 export async function apiAddStaff(
   teamId: string,
@@ -45,8 +38,16 @@ export async function apiUpdateStaff(
   return res.ok ? await res.json() : null;
 }
 
-export async function apiRemoveStaff(staffId: string, token: string): Promise<boolean> {
-  const res = await fetch(`${API_BASE}/staff/remove/${staffId}`, {
+
+export async function apiGetStaff(teamId: string, token: string) {
+  const res = await fetch(`${API_BASE}/teams/${teamId}/staff`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return res.ok ? await res.json() : [];
+}
+
+export async function apiRemoveStaff(teamId: string, staffId: string, token: string) {
+  const res = await fetch(`${API_BASE}/teams/${teamId}/staff/${staffId}`, {
     method: "DELETE",
     headers: { Authorization: `Bearer ${token}` },
   });

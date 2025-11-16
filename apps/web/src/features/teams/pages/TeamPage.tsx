@@ -11,7 +11,7 @@ export const TeamsPage = () => {
     const navigate = useNavigate();
 
     const { teams, loading, reloadTeams } = useTeams();
-    const { sports } = useLookups();
+    const { sports, leagues } = useLookups();
 
     const [search, setSearch] = useState("");
     const [sportFilter, setSportFilter] = useState("all");
@@ -87,9 +87,8 @@ export const TeamsPage = () => {
                 onCreated={async (teamId: string) => {
                     await reloadTeams();
                     navigate(`/teams/${teamId}`);
-                }}
-                sports={sports}
-            />
+                } }
+                sports={sports} leagues={leagues}            />
         </div>
     );
 };

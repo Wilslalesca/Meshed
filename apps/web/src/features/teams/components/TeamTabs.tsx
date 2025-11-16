@@ -1,72 +1,141 @@
+import React from "react";
 import {
-  Tabs,
-  TabsList,
-  TabsTrigger,
-  TabsContent,
+    Tabs,
+    TabsList,
+    TabsTrigger,
+    TabsContent,
 } from "@/shared/components/ui/tabs";
 import { Button } from "@/shared/components/ui/button";
-import type { Team, SportLookup, League } from "../types/teams";
-import type { Athlete } from "../types/roster";
+import {
+    Users,
+    ClipboardList,
+    Calendar,
+    Settings,
+    UserPlus,
+} from "lucide-react";
 
-interface TeamTabsProps {
-  team: Team;
-  sport: SportLookup | null;
-  league: League | null;
-  roster: Athlete[];
-  viewMode: "cards" | "table";
-  onViewModeChange: (v: "cards" | "table") => void;
-  children: {
-    profile: React.ReactNode;
-    roster: React.ReactNode;
-    staff: React.ReactNode;
-    schedule: React.ReactNode;
-  };
+interface Props {
+    team: any;
+    sport: any;
+    league: any;
+    viewMode: "cards" | "table";
+    onViewModeChange: (v: "cards" | "table") => void;
+
+    onEdit: () => void;
+    onDelete: () => void;
+
+    onInviteAthlete: () => void;
+    onInviteStaff: () => void;
+
+    children: {
+        profile: React.ReactNode;
+        roster: React.ReactNode;
+        staff: React.ReactNode;
+        schedule: React.ReactNode;
+    };
 }
 
 export const TeamTabs = ({
-  team,
-  sport,
-  league,
-  roster,
-  viewMode,
-  onViewModeChange,
-  children,
-}: TeamTabsProps) => {
-  return (
-    <Tabs defaultValue="profile" className="w-full">
-      <TabsList className="grid grid-cols-4 max-w-md">
-        <TabsTrigger value="profile">Profile</TabsTrigger>
-        <TabsTrigger value="roster">Roster</TabsTrigger>
-        <TabsTrigger value="staff">Staff</TabsTrigger>
-        <TabsTrigger value="schedule">Schedule</TabsTrigger>
-      </TabsList>
+    team,
+    sport,
+    league,
+    viewMode,
+    onViewModeChange,
+    onEdit,
+    onDelete,
+    onInviteAthlete,
+    onInviteStaff,
+    children,
+}: Props) => {
+    return (
+        <div className="space-y-6">
+            {/* HEADER */}
+            <div className="flex flex-col gap-2">
+                <h1 className="text-3xl font-bold">{team.name}</h1>
 
-      {/* Profile */}
-      <TabsContent value="profile">{children.profile}</TabsContent>
+                <p className="text-muted-foreground">
+                    {sport?.sport_name ?? "—"} • {league?.league_name ?? "—"}
+                </p>
 
-      {/* Roster */}
-      <TabsContent value="roster">
-        <div className="flex justify-end mb-4">
-          <Button
-            variant={viewMode === "cards" ? "default" : "outline"}
-            onClick={() => onViewModeChange("cards")}
-            className="mr-2"
-          >
-            Cards
-          </Button>
-          <Button
-            variant={viewMode === "table" ? "default" : "outline"}
-            onClick={() => onViewModeChange("table")}
-          >
-            Table
-          </Button>
+                {/* QUICK ACTIONS */}
+                <div className="flex flex-wrap items-center gap-2 mt-2">
+                    <Button variant="outline" onClick={onEdit}>
+                        <Settings size={16} className="mr-2" /> Edit
+                    </Button>
+
+                    <Button variant="outline" onClick={onDelete}>
+                        Delete
+                    </Button>
+
+                    <Button variant="default" onClick={onInviteAthlete}>
+                        <UserPlus size={16} className="mr-2" /> Invite Athlete
+                    </Button>
+
+                    <Button variant="default" onClick={onInviteStaff}>
+                        <UserPlus size={16} className="mr-2" /> Invite Staff
+                    </Button>
+
+                    {/* ROSTER VIEW SWITCHER */}
+                    <div className="ml-auto flex gap-2">
+                        <Button
+                            variant={
+                                viewMode === "cards" ? "default" : "outline"
+                            }
+                            onClick={() => onViewModeChange("cards")}
+                            size="sm"
+                        >
+                            Cards
+                        </Button>
+                        <Button
+                            variant={
+                                viewMode === "table" ? "default" : "outline"
+                            }
+                            onClick={() => onViewModeChange("table")}
+                            size="sm"
+                        >
+                            Table
+                        </Button>
+                    </div>
+                </div>
+            </div>
+
+            {/* TABS */}
+            <Tabs defaultValue="profile" className="w-full">
+                <TabsList className="w-full">
+                    <TabsTrigger
+                        value="profile"
+                        className="flex items-center gap-1"
+                    >
+                        <ClipboardList size={16} /> Profile
+                    </TabsTrigger>
+
+                    <TabsTrigger
+                        value="roster"
+                        className="flex items-center gap-1"
+                    >
+                        <Users size={16} /> Roster
+                    </TabsTrigger>
+
+                    <TabsTrigger
+                        value="staff"
+                        className="flex items-center gap-1"
+                    >
+                        <Users size={16} /> Staff
+                    </TabsTrigger>
+
+                    <TabsTrigger
+                        value="schedule"
+                        className="flex items-center gap-1"
+                    >
+                        <Calendar size={16} /> Schedule
+                    </TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="profile">{children.profile}</TabsContent>
+                <TabsContent value="roster">{children.roster}</TabsContent>
+                <TabsContent value="staff">{children.staff}</TabsContent>
+                <TabsContent value="schedule">{children.schedule}</TabsContent>
+            </Tabs>
         </div>
-        {children.roster}
-      </TabsContent>
-
-      <TabsContent value="staff">{children.staff}</TabsContent>
-
-      <TabsContent value="schedule">{children.schedule}</TabsContent>
-    </Tabs>
-  );
+    );
 };

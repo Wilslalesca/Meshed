@@ -1,44 +1,43 @@
 import {
   Dialog,
   DialogContent,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
+  DialogFooter,
 } from "@/shared/components/ui/dialog";
 import { Button } from "@/shared/components/ui/button";
-import { apiDeleteTeam } from "../api/teams";
 import { useAuth } from "@/shared/hooks/useAuth";
+import { apiDeleteTeam } from "../api/teams";
+import { useNavigate } from "react-router-dom";
 
 interface Props {
   open: boolean;
   onOpenChange: (v: boolean) => void;
   teamId: string;
-  onDeleted: () => void;
 }
 
-export const DeleteTeamModal = ({
-  open,
-  onOpenChange,
-  teamId,
-  onDeleted,
-}: Props) => {
+export const DeleteTeamModal = ({ open, onOpenChange, teamId }: Props) => {
   const { token } = useAuth();
+  const navigate = useNavigate();
 
   async function handleDelete() {
     if (!token) return;
-    await apiDeleteTeam(teamId, token);
-    onDeleted();
+    const ok = await apiDeleteTeam(teamId, token);
+    if (ok) {
+      onOpenChange(false);
+      navigate("/teams");
+    }
   }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Delete Team?</DialogTitle>
+          <DialogTitle>Delete Team</DialogTitle>
         </DialogHeader>
 
-        <p className="text-muted-foreground">
-          This action cannot be undone. All athletes, staff, and associations will be removed.
+        <p className="text-sm text-muted-foreground">
+          Are you sure? This action cannot be undone.
         </p>
 
         <DialogFooter>

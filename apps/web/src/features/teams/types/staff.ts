@@ -4,6 +4,7 @@ export interface StaffMember {
   team_id?: string;
   role: string;
   status: string;
+  position: string | null;
   notes: string | null;
   first_name?: string;
   last_name?: string;

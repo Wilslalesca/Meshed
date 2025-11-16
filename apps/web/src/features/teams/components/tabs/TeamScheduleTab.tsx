@@ -1,7 +1,7 @@
 export const TeamScheduleTab = () => {
   return (
-    <div className="text-muted-foreground">
-      Schedule integration coming soon.
+    <div className="text-sm text-muted-foreground">
+      Team schedule integration coming soon.
     </div>
   );
 };
