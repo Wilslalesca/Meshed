@@ -1,11 +1,11 @@
-import { TeamsFeature } from "@/features/teams/TeamsFeature";
+// import { TeamsFeature } from "@/features/teams/TeamsFeature";
 
 
-export const Teams = () => {
+// export const Teams = () => {
 
 
-    return (
-        <TeamsFeature />
-    );
+//     return (
+//         <TeamsFeature />
+//     );
 
-};
+// };

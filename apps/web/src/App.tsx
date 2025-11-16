@@ -6,7 +6,7 @@ import { Register } from "./routes/auth/Register.tsx";
 import { Dashboard } from "./routes/dashboard";
 import { Admin } from "./screens/Admin";
 import { Profile } from "./screens/Profile";
-import { Teams } from "./routes/teams/teams.tsx";
+
 import { Upload } from "./features/upload/components/Upload.tsx";
 import { useAuth } from "./shared/hooks/useAuth";
 import ScheduleBackground from './screens/ScheduleBackground';
@@ -16,8 +16,10 @@ import { EditCourse } from "./routes/courses/EditCourse.tsx";
 import AthleteSchedulePage from "./routes/athlete/schedule";
 import { Toaster } from "@/shared/components/ui/sonner";
 import { ProtectedRoute } from "./shared/components/ProtectedRoute.tsx";
+import { TeamDetailsPage } from "./features/teams/pages/TeamDetailsPage.tsx";
 
-
+import { TeamsPage } from "@/features/teams/pages/TeamPage.tsx";
+import { AthleteDetailsPage } from "@/features/teams/pages/AthleteDetailsPage.tsx";
 
 const pageTitles: Record<string, string> = {
   "/": "Home",
@@ -65,7 +67,9 @@ export default function App() {
         <Route path="/" element={<Home />} />
         <Route path="/home" element={<Navigate to="/" replace />} />
         <Route path="/dashboard" element={ <ProtectedRoute> <Dashboard /> </ProtectedRoute> }/>
-        <Route path="/teams" element={ <ProtectedRoute> <Teams /> </ProtectedRoute> }/>
+        <Route path="/teams" element={ <ProtectedRoute> <TeamsPage /> </ProtectedRoute> }/>
+        <Route path="/teams/:teamId" element={<ProtectedRoute><TeamDetailsPage /></ProtectedRoute>} />
+        <Route path="/athletes/:athleteId" element={<ProtectedRoute><AthleteDetailsPage /></ProtectedRoute>} />
         <Route path="/admin" element={ <ProtectedRoute allowedRoles={["admin"]}><Admin /> </ProtectedRoute> }/>
         <Route path="/manager" element={ <ProtectedRoute allowedRoles={["admin", "manager"]}> <ScheduleBackground /> </ProtectedRoute> }/>
         <Route path="/upload" element={ <ProtectedRoute> <Upload /> </ProtectedRoute> }/>

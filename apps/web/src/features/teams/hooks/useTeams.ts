@@ -1,29 +1,29 @@
-import { useEffect, useState } from "react";
-import { useAuth } from "@/shared/hooks/useAuth";
+import { useEffect, useState, useCallback } from "react";
 import { apiGetMyTeams } from "../api/teams";
+import { useAuth } from "@/shared/hooks/useAuth";
 import type { Team } from "../types/teams";
 
 export function useTeams() {
-    const { token } = useAuth();
-    const [teams, setTeams] = useState<Team[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [selectedTeamId, setSelectedTeamId] = useState<string | null>(null);
+  const { token } = useAuth();
 
-    const loadTeams = async () => {
-        if (!token) return;
-        const data = await apiGetMyTeams(token);
-        setTeams(data);
+  const [teams, setTeams] = useState<Team[]>([]);
+  const [loading, setLoading] = useState(true);
 
-        if (data.length && !selectedTeamId) {
-            setSelectedTeamId(data[0].id);
-        }
+  const load = useCallback(async () => {
+    if (!token) return;
+    setLoading(true);
+    const data = await apiGetMyTeams(token);
+    setTeams(data);
+    setLoading(false);
+  }, [token]);
 
-        setLoading(false);
-    };
+  useEffect(() => {
+    load();
+  }, [load]);
 
-    useEffect(() => {
-        loadTeams();
-    }, [token]);
-
-    return { teams, loading, selectedTeamId, setSelectedTeamId, reloadTeams: loadTeams };
+  return {
+    teams,
+    loading,
+    reloadTeams: load,
+  };
 }

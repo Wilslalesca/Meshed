@@ -9,8 +9,18 @@ router.use(requireAuth);
 router.get("/mine", TeamController.getMyTeams);
 router.post("/", TeamController.createTeam);
 
+router.get("/:teamId", TeamController.getTeamById);
+router.put("/:teamId", TeamController.updateTeam);
+router.delete("/:teamId", TeamController.deleteTeam);
+
 router.get("/:teamId/athletes", TeamController.getTeamAthletes);
-router.post("/:teamId/athletes", TeamController.addAthleteToTeam);
-router.post("/:teamId/athletes/by-email", TeamController.addAthleteByEmail); // ← NEW
+router.post("/:teamId/athletes/by-email", TeamController.addAthleteByEmail);
+router.delete("/:teamId/athletes/:userId", TeamController.removeAthlete);
+
+router.get("/:teamId/staff", TeamController.getStaff);
+router.post("/:teamId/staff", TeamController.addStaff);
+router.put("/staff/:staffId", TeamController.updateStaff);
+router.delete("/staff/:staffId", TeamController.deleteStaff);
+
 
 export default router;

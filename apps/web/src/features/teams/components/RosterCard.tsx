@@ -1,5 +1,5 @@
 import { Card, CardHeader, CardTitle, CardContent } from "@/shared/components/ui/card";
-import type { Athlete } from "../types/teams";
+import type { Athlete } from "../types/roster";
 
 interface RosterCardProps {
   roster: Athlete[];

@@ -109,7 +109,7 @@ CREATE TABLE activity_log (
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE IF NOT EXISTS facilities (
+CREATE TABLE facilities (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   name VARCHAR(100) NOT NULL,
   address1 VARCHAR(100),
@@ -133,6 +133,28 @@ CREATE TABLE team_facilities (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE invites (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  team_id UUID REFERENCES teams(id) ON DELETE CASCADE,
+  email VARCHAR(255) NOT NULL,
+  token VARCHAR(255) NOT NULL,
+  role VARCHAR(50),
+  position VARCHAR(50),
+  status VARCHAR(50) DEFAULT 'pending',
+  sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  accepted_at TIMESTAMP
+);
 
-CREATE INDEX IF NOT EXISTS idx_facilities_name ON facilities (name);
+CREATE TABLE team_staff (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+  team_id UUID REFERENCES teams(id) ON DELETE CASCADE,
+  role VARCHAR(50),
+  status VARCHAR(50) DEFAULT 'active',
+  notes VARCHAR(255),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- CREATE INDEX IF NOT EXISTS idx_facilities_name ON facilities (name);
 
