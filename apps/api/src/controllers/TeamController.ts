@@ -39,7 +39,7 @@ export class TeamController {
     if (!name || name.trim().length < 2)
       return res.status(400).send("name required");
 
-    const team = await TeamModel.create({
+    const team = await TeamModel.createTeam({
       name: name.trim(),
       sport_id: sport_id || null,
       season: season || null,

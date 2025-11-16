@@ -23,9 +23,7 @@ interface Props {
 
     onEdit: () => void;
     onDelete: () => void;
-
-    onInviteAthlete: () => void;
-    onInviteStaff: () => void;
+    onAddUser: () => void;
 
     children: {
         profile: React.ReactNode;
@@ -43,13 +41,11 @@ export const TeamTabs = ({
     onViewModeChange,
     onEdit,
     onDelete,
-    onInviteAthlete,
-    onInviteStaff,
+    onAddUser,
     children,
 }: Props) => {
     return (
         <div className="space-y-6">
-            {/* HEADER */}
             <div className="flex flex-col gap-2">
                 <h1 className="text-3xl font-bold">{team.name}</h1>
 
@@ -57,7 +53,6 @@ export const TeamTabs = ({
                     {sport?.sport_name ?? "—"} • {league?.league_name ?? "—"}
                 </p>
 
-                {/* QUICK ACTIONS */}
                 <div className="flex flex-wrap items-center gap-2 mt-2">
                     <Button variant="outline" onClick={onEdit}>
                         <Settings size={16} className="mr-2" /> Edit
@@ -67,15 +62,10 @@ export const TeamTabs = ({
                         Delete
                     </Button>
 
-                    <Button variant="default" onClick={onInviteAthlete}>
-                        <UserPlus size={16} className="mr-2" /> Invite Athlete
+                    <Button variant="default" onClick={onAddUser}>
+                        <UserPlus size={16} className="mr-2" /> Add User
                     </Button>
 
-                    <Button variant="default" onClick={onInviteStaff}>
-                        <UserPlus size={16} className="mr-2" /> Invite Staff
-                    </Button>
-
-                    {/* ROSTER VIEW SWITCHER */}
                     <div className="ml-auto flex gap-2">
                         <Button
                             variant={
@@ -99,7 +89,6 @@ export const TeamTabs = ({
                 </div>
             </div>
 
-            {/* TABS */}
             <Tabs defaultValue="profile" className="w-full">
                 <TabsList className="w-full">
                     <TabsTrigger

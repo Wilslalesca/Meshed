@@ -14,7 +14,7 @@ import {
   SelectContent,
   SelectItem,
 } from "@/shared/components/ui/select";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { apiInviteToTeam } from "../api/invites";
 import { useAuth } from "@/shared/hooks/useAuth";
 
@@ -22,16 +22,24 @@ interface Props {
   open: boolean;
   onOpenChange: (v: boolean) => void;
   teamId: string;
+  defaultRole?: "athlete" | "staff" | "manager";
   onInvited: () => void;
 }
 
-export const InviteMemberModal = ({ open, onOpenChange, teamId, onInvited }: Props) => {
+export const InviteMemberModal = ({ open, onOpenChange, teamId, defaultRole = "athlete", onInvited }: Props) => {
   const { token } = useAuth();
-
   const [email, setEmail] = useState("");
-  const [role, setRole] = useState("athlete");
+  const [role, setRole] = useState(defaultRole);
   const [position, setPosition] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if(open) {
+      setRole(defaultRole);
+      setEmail("");
+      setPosition("");
+    }
+  }, [open, defaultRole]);
 
   async function handleInvite() {
     if (!token) return;
@@ -41,7 +49,7 @@ export const InviteMemberModal = ({ open, onOpenChange, teamId, onInvited }: Pro
     setLoading(false);
 
     onOpenChange(false);
-    onInvited();;
+    onInvited();
     setEmail("");
     setPosition("");
   }
@@ -60,7 +68,7 @@ export const InviteMemberModal = ({ open, onOpenChange, teamId, onInvited }: Pro
             onChange={(e) => setEmail(e.target.value)}
           />
 
-          <Select value={role} onValueChange={setRole}>
+          <Select value={role} onValueChange={(v) => setRole(v as "athlete" | "staff" | "manager")}>
             <SelectTrigger>
               <SelectValue placeholder="Role" />
             </SelectTrigger>

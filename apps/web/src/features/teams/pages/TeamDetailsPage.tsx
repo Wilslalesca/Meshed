@@ -34,6 +34,7 @@ export const TeamDetailsPage = () => {
     const [openEdit, setOpenEdit] = useState(false);
     const [openDelete, setOpenDelete] = useState(false);
     const [openInvite, setOpenInvite] = useState(false);
+    const [inviteRole, setInviteRole] = useState<"athlete" | "staff" | "manager">("athlete");
 
     if (loading || !team) return <p className="p-6">Loading...</p>;
 
@@ -59,8 +60,7 @@ export const TeamDetailsPage = () => {
                 onViewModeChange={setViewMode}
                 onEdit={() => setOpenEdit(true)}
                 onDelete={() => setOpenDelete(true)}
-                onInviteAthlete={() => setOpenInvite(true)}
-                onInviteStaff={() => setOpenInvite(true)}
+                onAddUser={() => { setOpenInvite(true); setInviteRole("athlete"); }}
             >
                 {{
                     profile: (
@@ -115,6 +115,7 @@ export const TeamDetailsPage = () => {
                 open={openInvite}
                 onOpenChange={setOpenInvite}
                 teamId={team.id}
+                defaultRole={inviteRole}
                 onInvited={() => {
                     reloadRoster();
                     reloadStaff();

@@ -23,23 +23,19 @@ export const TeamsPage = () => {
     const filteredTeams = useMemo(() => {
         let list = [...teams];
 
-        // Search
         if (search.trim()) {
             const q = search.toLowerCase();
             list = list.filter((t) => t.name.toLowerCase().includes(q));
         }
 
-        // Sport filter
         if (sportFilter !== "all") {
             list = list.filter((t) => t.sport_id === sportFilter);
         }
 
-        // Gender filter
         if (genderFilter !== "all") {
             list = list.filter((t) => t.gender === genderFilter);
         }
 
-        // Sort
         list.sort((a, b) => {
             if (sort === "alphabetical") return a.name.localeCompare(b.name);
             if (sort === "newest")

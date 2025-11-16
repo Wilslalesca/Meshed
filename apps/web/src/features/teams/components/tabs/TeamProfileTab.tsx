@@ -1,16 +1,13 @@
 import { Card, CardHeader, CardTitle, CardContent } from "@/shared/components/ui/card";
 import type { Team, SportLookup, League } from "../../types/teams";
-import { Button } from "@/shared/components/ui/button";
 
 interface Props {
   team: Team;
   sport: SportLookup | null;
   league: League | null;
-  onEdit?: () => void;
-  onDelete?: () => void;
 }
 
-export const TeamProfileTab = ({ team, sport, league, onEdit, onDelete }: Props) => {
+export const TeamProfileTab = ({ team, sport, league }: Props) => {
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
@@ -21,10 +18,6 @@ export const TeamProfileTab = ({ team, sport, league, onEdit, onDelete }: Props)
           </p>
         </div>
 
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={onEdit}>Edit</Button>
-          <Button variant="destructive" onClick={onDelete}>Delete</Button>
-        </div>
       </CardHeader>
 
       <CardContent className="text-sm space-y-3">
