@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { useState } from "react";
-
+import { use, useState } from "react";
+import { useUserRole } from "@/shared/hooks/useUserRole";
 import { useTeamById } from "../hooks/useTeamById";
 import { useRoster } from "../hooks/useRoster";
 import { useStaff } from "../hooks/useStaff";
@@ -23,7 +23,8 @@ import { InviteMemberModal } from "../modals/InviteMemberModal";
 export const TeamDetailsPage = () => {
     const { teamId } = useParams<{ teamId: string }>();
     const navigate = useNavigate();
-
+    const userRole = useUserRole();
+    const isManager = userRole.isManager;
     const [viewMode, setViewMode] = useState<"cards" | "table">("cards");
 
     const { team, loading, reload: reloadTeam } = useTeamById(teamId!);
@@ -34,7 +35,9 @@ export const TeamDetailsPage = () => {
     const [openEdit, setOpenEdit] = useState(false);
     const [openDelete, setOpenDelete] = useState(false);
     const [openInvite, setOpenInvite] = useState(false);
-    const [inviteRole, setInviteRole] = useState<"athlete" | "staff" | "manager">("athlete");
+    const [inviteRole, setInviteRole] = useState<
+        "athlete" | "staff" | "manager"
+    >("athlete");
 
     if (loading || !team) return <p className="p-6">Loading...</p>;
 
@@ -58,9 +61,18 @@ export const TeamDetailsPage = () => {
                 league={league}
                 viewMode={viewMode}
                 onViewModeChange={setViewMode}
-                onEdit={() => setOpenEdit(true)}
-                onDelete={() => setOpenDelete(true)}
-                onAddUser={() => { setOpenInvite(true); setInviteRole("athlete"); }}
+                onEdit={isManager ? () => setOpenEdit(true) : () => {}}
+                onDelete={
+                    isManager ? () => setOpenDelete(true) : () => {}
+                }
+                onAddUser={
+                    isManager
+                        ? () => {
+                              setOpenInvite(true);
+                              setInviteRole("athlete");
+                          }
+                        : () => {}
+                }
             >
                 {{
                     profile: (
@@ -96,31 +108,35 @@ export const TeamDetailsPage = () => {
                 }}
             </TeamTabs>
 
-            <EditTeamModal
-                open={openEdit}
-                onOpenChange={setOpenEdit}
-                team={team}
-                sports={sports}
-                leagues={leagues}
-                onUpdated={() => reloadTeam()}
-            />
-
-            <DeleteTeamModal
-                open={openDelete}
-                onOpenChange={setOpenDelete}
-                teamId={team.id}
-            />
-
-            <InviteMemberModal
-                open={openInvite}
-                onOpenChange={setOpenInvite}
-                teamId={team.id}
-                defaultRole={inviteRole}
-                onInvited={() => {
-                    reloadRoster();
-                    reloadStaff();
-                }}
-            />
+            {isManager && (
+                <EditTeamModal
+                    open={openEdit}
+                    onOpenChange={setOpenEdit}
+                    team={team}
+                    sports={sports}
+                    leagues={leagues}
+                    onUpdated={() => reloadTeam()}
+                />
+            )}
+            {isManager && (
+                <DeleteTeamModal
+                    open={openDelete}
+                    onOpenChange={setOpenDelete}
+                    teamId={team.id}
+                />
+            )}
+            {isManager && (
+                <InviteMemberModal
+                    open={openInvite}
+                    onOpenChange={setOpenInvite}
+                    teamId={team.id}
+                    defaultRole={inviteRole}
+                    onInvited={() => {
+                        reloadRoster();
+                        reloadStaff();
+                    }}
+                />
+            )}
         </div>
     );
 };
