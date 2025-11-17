@@ -13,7 +13,7 @@ import {
     Settings,
     UserPlus,
 } from "lucide-react";
-
+import { useUserRole } from "@/shared/hooks/useUserRole";
 interface Props {
     team: any;
     sport: any;
@@ -44,6 +44,8 @@ export const TeamTabs = ({
     onAddUser,
     children,
 }: Props) => {
+    const userRole = useUserRole();
+    const isManager = userRole.isManager;
     return (
         <div className="space-y-6">
             <div className="flex flex-col gap-2">
@@ -54,18 +56,23 @@ export const TeamTabs = ({
                 </p>
 
                 <div className="flex flex-wrap items-center gap-2 mt-2">
+                    {isManager && (
                     <Button variant="outline" onClick={onEdit}>
                         <Settings size={16} className="mr-2" /> Edit
                     </Button>
+                    )}
 
+                    {isManager && (
                     <Button variant="outline" onClick={onDelete}>
                         Delete
                     </Button>
+                    )}
 
+                    {isManager && (
                     <Button variant="default" onClick={onAddUser}>
                         <UserPlus size={16} className="mr-2" /> Add User
                     </Button>
-
+                    )}
                     <div className="ml-auto flex gap-2">
                         <Button
                             variant={

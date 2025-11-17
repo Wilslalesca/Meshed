@@ -3,7 +3,7 @@ import { Avatar, AvatarFallback } from "@/shared/components/ui/avatar";
 import { Button } from "@/shared/components/ui/button";
 import { Trash } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-
+import { useUserRole } from "@/shared/hooks/useUserRole";
 interface Props {
   roster: any[];
   onRemoved?: () => void;
@@ -12,7 +12,8 @@ interface Props {
 
 export const RosterCardView = ({ roster, onRemoveAthlete }: Props) => {
   const navigate = useNavigate();
-
+  const userRole = useUserRole();
+  const isManager = userRole.isManager;
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
       {roster.map((athlete) => {
@@ -46,7 +47,7 @@ export const RosterCardView = ({ roster, onRemoveAthlete }: Props) => {
                 <strong>Joined:</strong> {athlete.joined_at}
               </div>
             </CardContent>
-
+            {isManager && (
             <Button
               variant="ghost"
               size="icon"
@@ -58,6 +59,7 @@ export const RosterCardView = ({ roster, onRemoveAthlete }: Props) => {
             >
               <Trash size={18} className="text-red-500" />
             </Button>
+            )}
           </Card>
         );
       })}

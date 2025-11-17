@@ -9,7 +9,7 @@ import {
 } from "@/shared/components/ui/select";
 import { Search, Filter, Plus } from "lucide-react";
 import type { SportLookup } from "../types/teams";
-
+import { useUserRole } from "@/shared/hooks/useUserRole";
 interface Props {
   search: string;
   onSearchChange: (v: string) => void;
@@ -39,9 +39,10 @@ export const TeamManagementToolbar = ({
   sports,
   onAddTeam,
 }: Props) => {
+  const userRole = useUserRole();
+  const isManager = userRole.isManager;
   return (
     <div className="w-full flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-      {/* LEFT */}
       <div className="flex items-center gap-3">
         <div className="relative">
           <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -60,9 +61,7 @@ export const TeamManagementToolbar = ({
         </Button>
       </div>
 
-      {/* RIGHT FILTERS */}
       <div className="flex items-center gap-3 ml-auto">
-        {/* Sport */}
         <Select value={sportFilter} onValueChange={onSportFilterChange}>
           <SelectTrigger className="h-9 w-[150px]">
             <SelectValue placeholder="Sport" />
@@ -77,7 +76,6 @@ export const TeamManagementToolbar = ({
           </SelectContent>
         </Select>
 
-        {/* Gender */}
         <Select value={genderFilter} onValueChange={onGenderFilterChange}>
           <SelectTrigger className="h-9 w-[140px]">
             <SelectValue placeholder="Gender" />
@@ -90,7 +88,6 @@ export const TeamManagementToolbar = ({
           </SelectContent>
         </Select>
 
-        {/* Sort */}
         <Select value={sort} onValueChange={onSortChange}>
           <SelectTrigger className="h-9 w-[150px]">
             <SelectValue placeholder="Sort" />
@@ -102,10 +99,12 @@ export const TeamManagementToolbar = ({
           </SelectContent>
         </Select>
 
+        {isManager && (
         <Button onClick={onAddTeam} className="gap-1">
           <Plus className="h-4 w-4" />
           Add Team
         </Button>
+        )}
       </div>
     </div>
   );

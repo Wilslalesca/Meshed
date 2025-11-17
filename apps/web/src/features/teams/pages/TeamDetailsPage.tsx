@@ -15,7 +15,6 @@ import { RosterCardView } from "../components/RosterCardView";
 import { RosterTableView } from "../components/RosterTableView";
 import { TeamScheduleTab } from "../components/tabs/TeamScheduleTab";
 import { TeamStaffTab } from "../components/tabs/TeamStaffTab";
-
 import { EditTeamModal } from "../modals/EditTeamModal";
 import { DeleteTeamModal } from "../modals/DeleteTeamModal";
 import { InviteMemberModal } from "../modals/InviteMemberModal";
@@ -25,6 +24,7 @@ export const TeamDetailsPage = () => {
     const navigate = useNavigate();
     const userRole = useUserRole();
     const isManager = userRole.isManager;
+    const isUser = userRole.isUser;
     const [viewMode, setViewMode] = useState<"cards" | "table">("cards");
 
     const { team, loading, reload: reloadTeam } = useTeamById(teamId!);
