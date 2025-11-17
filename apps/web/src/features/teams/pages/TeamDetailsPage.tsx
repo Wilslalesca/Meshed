@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { use, useState } from "react";
+import { useState } from "react";
 import { useUserRole } from "@/shared/hooks/useUserRole";
 import { useTeamById } from "../hooks/useTeamById";
 import { useRoster } from "../hooks/useRoster";
@@ -24,7 +24,6 @@ export const TeamDetailsPage = () => {
     const navigate = useNavigate();
     const userRole = useUserRole();
     const isManager = userRole.isManager;
-    const isUser = userRole.isUser;
     const [viewMode, setViewMode] = useState<"cards" | "table">("cards");
 
     const { team, loading, reload: reloadTeam } = useTeamById(teamId!);
