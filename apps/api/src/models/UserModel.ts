@@ -12,6 +12,7 @@ export interface NewUserInput {
 }
 
 export const UserModel = {
+
     async findByEmail(email: string): Promise<User | null> {
         const res = await pool.query(
             `SELECT id, first_name AS "firstName", last_name AS "lastName", email, phone, role,
@@ -106,6 +107,7 @@ export const UserModel = {
 
         return rows[0];
     },
+
     async activateUser(userId: string) {
         await pool.query(
             `UPDATE users
@@ -116,6 +118,7 @@ export const UserModel = {
             [userId]
         );
     },
+    
     async setPassword(userId: string, password: string) {
         const hash = bcrypt.hashSync(password, 10);
         await pool.query(

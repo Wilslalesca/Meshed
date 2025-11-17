@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { TeamController } from "../controllers/TeamController";
+import { StaffController } from "../controllers/StaffController";
 import { requireAuth } from "../middleware/authMiddleware";
 
 const router = Router();
@@ -14,14 +15,14 @@ router.put("/:teamId", TeamController.updateTeam);
 router.delete("/:teamId", TeamController.deleteTeam);
 
 router.get("/:teamId/athletes", TeamController.getTeamAthletes);
+router.delete("/:teamId/athletes/:userId", TeamController.removeAthlete);
+router.put("/:teamId/athletes/:userId", TeamController.updateAthlete);
 router.post("/:teamId/athletes/by-email", TeamController.addAthleteByEmail);
-router.delete("/:teamId/athletes/:userId", TeamController.removeAthlete);
 
-router.get("/:teamId/staff", TeamController.getStaff);
-router.post("/:teamId/staff", TeamController.addStaff);
-router.put("/staff/:staffId", TeamController.updateStaff);
-router.delete("/staff/:staffId", TeamController.deleteStaff);
-router.delete("/:teamId/athletes/:userId", TeamController.removeAthlete);
+router.get("/:teamId/staff", StaffController.getStaff);
+router.post("/:teamId/staff", StaffController.addStaff);
+router.put("/staff/:staffId", StaffController.updateStaff);
+router.delete("/staff/:staffId", StaffController.removeStaff);
 
 
 export default router;

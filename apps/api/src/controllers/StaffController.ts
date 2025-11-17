@@ -34,9 +34,6 @@ export class StaffController {
     }
 
     const added = await TeamStaffModel.addStaff(teamId, user.id, role, notes);
-
-    await TeamModel.addUserToTeam(teamId, user.id, role, null, "pending");
-
     return res.json(added);
   }
 

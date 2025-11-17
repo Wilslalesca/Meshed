@@ -7,7 +7,8 @@ const router = Router();
 router.use(requireAuth);
 router.get("/:teamId", StaffController.getStaff);
 router.post("/:teamId", StaffController.addStaff);
-router.put("/update/:staffId", StaffController.updateStaff);
-router.delete("/remove/:staffId", StaffController.removeStaff);
+router.put("/:staffId", StaffController.updateStaff);
+router.delete("/:staffId", StaffController.removeStaff);
+
 
 export default router;

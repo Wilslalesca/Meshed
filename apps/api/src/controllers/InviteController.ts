@@ -1,8 +1,7 @@
-// apps/api/src/controllers/InviteController.ts
 import { Request, Response } from "express";
 import { InviteModel } from "../models/InviteModel";
 import { UserModel } from "../models/UserModel";
-import { TeamModel } from "../models/TeamModel";
+import { TeamRosterModel } from "../models/TeamRosterModel";
 import crypto from "crypto";
 
 export class InviteController {
@@ -25,7 +24,7 @@ export class InviteController {
       token
     );
 
-    await TeamModel.addUserToTeam(teamId, user.id, role, position, "pending");
+    await TeamRosterModel.addAthlete(teamId, user.id, position);
 
     return res.json({ success: true, invite, token });
   }
@@ -43,7 +42,7 @@ export class InviteController {
 
     await UserModel.activateUser(user.id);
 
-    await TeamModel.updateUserStatus(invite.team_id, user.id, "active");
+    await TeamRosterModel.updateAthlete(invite.team_id, user.id, { status: "active" });
 
     return res.json({ success: true });
   }

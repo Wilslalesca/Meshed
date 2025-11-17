@@ -1,20 +1,23 @@
 import { pool } from "../config/db";
 
 export class TeamStaffModel {
+
   static async getStaff(teamId: string) {
     const { rows } = await pool.query(
-      `SELECT ts.id,
-              ts.user_id,
-              ts.role,
-              ts.status,
-              ts.notes,
-              u.first_name,
-              u.last_name,
-              u.email
-         FROM team_staff ts
-         JOIN users u ON u.id = ts.user_id
-        WHERE ts.team_id = $1
-        ORDER BY u.last_name, u.first_name`,
+      `SELECT 
+          ts.id,
+          ts.user_id,
+          ts.role,
+          ts.status,
+          ts.notes,
+          ts.created_at,
+          u.first_name,
+          u.last_name,
+          u.email
+       FROM team_staff ts
+       JOIN users u ON u.id = ts.user_id
+       WHERE ts.team_id = $1
+       ORDER BY u.last_name, u.first_name`,
       [teamId]
     );
     return rows;
@@ -22,8 +25,8 @@ export class TeamStaffModel {
 
   static async addStaff(teamId: string, userId: string, role: string, notes: string | null) {
     const { rows } = await pool.query(
-      `INSERT INTO team_staff (team_id, user_id, role, notes)
-       VALUES ($1, $2, $3, $4)
+      `INSERT INTO team_staff (team_id, user_id, role, notes, status, created_at, updated_at)
+       VALUES ($1, $2, $3, $4, 'pending', NOW(), NOW())
        RETURNING *`,
       [teamId, userId, role, notes]
     );
@@ -35,10 +38,10 @@ export class TeamStaffModel {
 
     const { rows } = await pool.query(
       `UPDATE team_staff
-       SET role = COALESCE($1, role),
-           notes = COALESCE($2, notes),
-           status = COALESCE($3, status),
-           updated_at = NOW()
+         SET role   = COALESCE($1, role),
+             notes  = COALESCE($2, notes),
+             status = COALESCE($3, status),
+             updated_at = NOW()
        WHERE id = $4
        RETURNING *`,
       [role, notes, status, staffId]

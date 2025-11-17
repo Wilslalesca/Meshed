@@ -1,8 +1,8 @@
 import { pool } from "../config/db";
 
 export const AthleteModel = {
-    async getById(athleteId: string) {
-        const query = `
+  async getAthleteById(athleteId: string) {
+    const query = `
       SELECT 
         u.id,
         u.first_name,
@@ -22,7 +22,7 @@ export const AthleteModel = {
       LIMIT 1
     `;
 
-        const { rows } = await pool.query(query, [athleteId]);
-        return rows[0] ?? null;
-    },
+    const { rows } = await pool.query(query, [athleteId]);
+    return rows[0] ?? null;
+  },
 };
