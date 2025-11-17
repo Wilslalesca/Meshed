@@ -6,7 +6,7 @@ CREATE TABLE users (
   phone VARCHAR(20),
   role VARCHAR(20) NOT NULL DEFAULT 'user',
   password_hash TEXT NOT NULL,
-  active BOOLEAN DEFAULT TRUE,
+  active BOOLEAN DEFAULT FALSE,
   verified BOOLEAN DEFAULT FALSE,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -157,6 +157,16 @@ CREATE TABLE team_staff (
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   UNIQUE (user_id, team_id)
 );
+
+CREATE TABLE email_verification_codes (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+  code VARCHAR(6) NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  expires_at TIMESTAMP DEFAULT (CURRENT_TIMESTAMP + INTERVAL '10 minutes'),
+  used BOOLEAN DEFAULT FALSE
+);
+
 
 -- CREATE INDEX IF NOT EXISTS idx_facilities_name ON facilities (name);
 

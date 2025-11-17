@@ -27,7 +27,7 @@ export async function apiRegister(input: { firstName: string; lastName?: string;
     throw new Error((await res.json()).error || 'Register failed');
   }
 
-  return (await res.json()) as { token: string; user: any };
+  return (await res.json()) as { userId: string; message: string };
 }
 
 export async function apiRefresh() {
@@ -54,4 +54,36 @@ export async function apiMe(token: string) {
   }
 
   return await res.json();
+}
+
+
+export async function apiVerify(input: {userId: string, code: string}) {
+  const res = await fetch(`${API_BASE}/auth/verify`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(input),
+  });
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(data.error || "Resend failed");
+  }
+
+  return data;
+}
+
+export async function apiResend(input: { userId: string }) {
+  const res = await fetch(`${API_BASE}/auth/resend`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(input),
+  });
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(data.error || "Resend failed");
+  }
+
+  return data;
 }

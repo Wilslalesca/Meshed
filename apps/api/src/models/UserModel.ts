@@ -40,7 +40,7 @@ export const UserModel = {
             `INSERT INTO users (
           first_name, last_name, email, phone, role, password_hash,
           active, verified, created_at, updated_at
-       ) VALUES ($1, $2, $3, $4, $5, $6, true, false, NOW(), NOW())
+       ) VALUES ($1, $2, $3, $4, $5, $6, false, false, NOW(), NOW())
        RETURNING id, first_name AS "firstName", last_name AS "lastName",
                  email, phone, role, password_hash AS "passwordHash",
                  active, verified, created_at AS "createdAt", updated_at AS "updatedAt"`,

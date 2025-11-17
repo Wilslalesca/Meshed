@@ -1,8 +1,8 @@
 import React from "react";
 import { Routes, Route, Outlet, Navigate, useLocation } from "react-router-dom";
 import { Home } from "./screens/Home";
-import LoginPage from "./routes/auth/Login.tsx";
-import { Register } from "./routes/auth/Register.tsx";
+import LoginPage from "./features/auth/pages/Login.tsx";
+import { Register } from "./features/auth/pages/Register.tsx";
 import { Dashboard } from "./routes/dashboard";
 import { Admin } from "./screens/Admin";
 import { Profile } from "./screens/Profile";

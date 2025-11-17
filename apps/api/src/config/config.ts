@@ -10,6 +10,7 @@ export const config = {
     refreshTtl: process.env.REFRESH_TTL ?? '7d',
     cookieDomain: process.env.COOKIE_DOMAIN ?? 'localhost',
     nodeEnv: process.env.NODE_ENV ?? 'development',
+    resendApiKey: process.env.RESEND_API_KEY!
 };
 
 ["JWT_ACCESS_SECRET", "JWT_REFRESH_SECRET", "DATABASE_URL"].forEach((key) => {

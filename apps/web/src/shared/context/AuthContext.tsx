@@ -20,7 +20,7 @@ import { useNavigate } from "react-router-dom";
 
 interface AuthContextValue extends AuthState {
     login: (credentials: LoginCredentials) => Promise<void>;
-    register: (credentials: RegisterCredentials) => Promise<void>;
+    register: (credentials: RegisterCredentials) => Promise<{ userId: string }>;
     logout: () => void;
     isLoading: boolean;
     hasRole: (allowed: Role | Role[]) => boolean;
@@ -44,15 +44,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
     useEffect(() => {
         const token = storage.getToken();
+        
         const init = async () => {
             if (!token) {
-                setState({
-                    user: null,
-                    token: null,
-                    isAuthenticated: false,
+                setState((s) => ({
+                    ...s,
                     loading: false,
-                    error: null,
-                });
+                }));
                 return;
             }
             const user = await apiMe(token);
@@ -98,26 +96,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         });
     }, []);
 
-    const register = useCallback(async (credentials: RegisterCredentials) => {
-        const res: AuthResponse = await apiRegister(credentials);
-        storage.setToken(res.token);
-
-        const backendUser = await apiMe(res.token);
-        const user = backendUser ?? res.user;
-
-        storage.setUser(user);
-        setState({
-            user,
-            token: res.token,
-            isAuthenticated: true,
-            loading: false,
-            error: null,
-        });
-    }, []);
+    const register = useCallback(
+        async (credentials: RegisterCredentials): Promise<{ userId: string }> => {
+            const res = await apiRegister(credentials);
+            return res;
+        }, []
+    );
 
     const logout = useCallback(() => {
         storage.clearToken();
         storage.clearUser();
+
         setState({
             user: null,
             token: null,
@@ -131,14 +120,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     const hasRole = useCallback(
         (allowed: Role | Role[]) => {
             const roles = Array.isArray(allowed) ? allowed : [allowed];
-            const r = state.user?.role;
-            return r ? roles.includes(r) : false;
+            const userRole = state.user?.role;
+            return userRole ? roles.includes(userRole) : false;
         },
         [state.user]
     );
 
     const refreshUser = useCallback(async () => {
         if (!state.token) return;
+
         const user = await apiMe(state.token);
         if (user) {
             storage.setUser(user);
@@ -156,7 +146,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
             refreshUser,
             isLoading: state.loading,
         }),
-        [state, login, register, logout, hasRole]
+        [state, login, register, logout, hasRole, refreshUser]
     );
 
     return (

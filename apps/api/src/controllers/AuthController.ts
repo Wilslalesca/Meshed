@@ -5,6 +5,8 @@ import { UserModel } from "../models/UserModel";
 import { AthleteProfileModel } from "../models/AthleteProfileModel";
 import { signAccessToken, signRefreshToken, verifyRefresh } from "../utils/tokens";
 import { config } from "../config/config";
+import { sendEmail } from "../services/emailService";
+import { VerificationCodeModel } from "../models/VerificationCodeModel";
 
 const registerSchema = z.object({
   firstName: z.string().min(1),
@@ -42,22 +44,32 @@ export const AuthController = {
     if (existing) return res.status(409).json({ error: "Email already registered" });
 
     const passwordHash = await bcrypt.hash(password, 10);
+
+    
     const user = await UserModel.insert({ firstName, lastName, email, phone, role, passwordHash });
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    await VerificationCodeModel.create(user.id, code);
+    await sendEmail.sendVerificationEmail(email, code);
 
-    if (user.role === "user") {
-      try {
-        await AthleteProfileModel.create({ id: user.id });
-      } catch (err) {
-        console.error("Error creating athlete profile:", err);
-      }
-    }
+    return res.status(201).json({
+      message: "User registered successfully. Please verify your email.",
+      userId: user.id,
+    });
 
-    const accessToken = signAccessToken(user.id, user.role);
-    const refreshToken = signRefreshToken(user.id, user.role);
+    // if (user.role === "user") {
+    //   try {
+    //     await AthleteProfileModel.create({ id: user.id });
+    //   } catch (err) {
+    //     console.error("Error creating athlete profile:", err);
+    //   }
+    // }
 
-    res.cookie("refresh_token", refreshToken, { ...cookieOpts, maxAge: 7 * 24 * 60 * 60 * 1000 });
+    // const accessToken = signAccessToken(user.id, user.role);
+    // const refreshToken = signRefreshToken(user.id, user.role);
 
-    return res.status(201).json({ token: accessToken, user });
+    // res.cookie("refresh_token", refreshToken, { ...cookieOpts, maxAge: 7 * 24 * 60 * 60 * 1000 });
+
+    // return res.status(201).json({ token: accessToken, user });
   },
 
   async login(req: Request, res: Response) {
@@ -69,6 +81,9 @@ export const AuthController = {
     const { email, password } = parse.data;
     const user = await UserModel.findByEmail(email);
     if (!user) return res.status(401).json({ error: "Invalid email or password" });
+    if (!user.verified){
+      return res.status(403).json({ error: "Email not verified", needsVerification: true, userId: user.id });
+    }
 
     const ok = await bcrypt.compare(password, user.passwordHash);
     if (!ok) return res.status(401).json({ error: "Invalid email or password" });
@@ -104,4 +119,63 @@ export const AuthController = {
       return res.status(401).json({ error: "Invalid refresh token" });
     }
   },
+
+  async verify(req: Request, res: Response) {
+    const { userId, code } = req.body;
+    const record = await VerificationCodeModel.findValid(userId, code);
+
+    if (!record) {
+      return res.status(400).json({ error: "Invalid or expired verification code" });
+    }
+
+    const user = await UserModel.findById(userId);
+    
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    if (user.verified) {
+      return res.status(400).json({ error: "Email is already in use" });
+    }
+
+    await VerificationCodeModel.markUsed(record.id);
+
+    await UserModel.activateUser(userId);
+
+  
+    const newAccess = signAccessToken(userId, user.role);
+    const newRefresh = signRefreshToken(userId, user.role);
+    res.cookie("refresh_token", newRefresh, { ...cookieOpts, maxAge: 7 * 24 * 60 * 60 * 1000 });
+
+    return res.json({ message: "Email verified successfully", token: newAccess } );
+  },
+
+  async resendVerification(req: Request, res: Response) {
+    const { userId } = req.body;
+
+    if (!userId) {
+      return res.status(400).json({ error: "User ID is required" });
+    }
+
+    const user = await UserModel.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    if (user.verified) {
+      return res.status(400).json({ error: "Email is already verified" });
+    }
+
+    await VerificationCodeModel.invalidateAllForUser(userId);
+
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
+
+    await VerificationCodeModel.create(userId, code);
+
+    await sendEmail.sendVerificationEmail(user.email, code);
+
+    return res.json({ message: "Verification email resent successfully" });
+  },
+
+
 };
