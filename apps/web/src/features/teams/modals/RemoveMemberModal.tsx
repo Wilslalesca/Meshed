@@ -6,7 +6,7 @@ import {
   DialogFooter,
 } from "@/shared/components/ui/dialog";
 import { Button } from "@/shared/components/ui/button";
-import { apiRemoveUserFromTeam } from "../api/teams";
+import { apiRemoveAthlete } from "../api/teams";
 import { useAuth } from "@/shared/hooks/useAuth";
 
 interface Props {
@@ -29,7 +29,7 @@ export const RemoveMemberDialog = ({
   async function handleRemove() {
     if (!token) return;
 
-    await apiRemoveUserFromTeam(teamId, userId, token);
+    await apiRemoveAthlete(teamId, userId, token);
     onRemoved();
   }
 

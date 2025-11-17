@@ -18,23 +18,16 @@ export async function apiGetMyTeams(token: string): Promise<Team[]> {
         });
 
         return res.ok ? await res.json() : [];
-    } catch (err) {
-        console.error("Failed to load teams:", err);
+    } catch {
         return [];
     }
 }
 
-export async function apiGetTeamById(
-    teamId: string,
-    token: string
-): Promise<Team | null> {
+export async function apiGetTeamById(teamId: string, token: string) {
     try {
         const res = await fetch(`${API_BASE}/teams/${teamId}`, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
+            headers: { Authorization: `Bearer ${token}` },
         });
-
         return res.ok ? await res.json() : null;
     } catch {
         return null;
@@ -51,147 +44,74 @@ export async function apiGetLeagues(): Promise<League[]> {
     return res.ok ? await res.json() : [];
 }
 
-export async function apiGetRoster(
-    teamId: string,
-    token: string
-): Promise<Athlete[]> {
-    try {
-        const res = await fetch(`${API_BASE}/teams/${teamId}/athletes`, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
 
-        if (!res.ok) return [];
-        return await res.json();
-    } catch (err) {
-        console.error("Roster error:", err);
-        return [];
-    }
+export async function apiGetRoster(teamId: string, token: string) {
+    const res = await fetch(`${API_BASE}/teams/${teamId}/athletes`, {
+        headers: { Authorization: `Bearer ${token}` },
+    });
+    return res.ok ? await res.json() : [];
 }
 
 export async function apiCreateTeam(
     data: CreateTeamPayload,
     token: string
-): Promise<Team | undefined> {
-    try {
-        const res = await fetch(`${API_BASE}/teams`, {
-            method: "POST",
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(data),
-        });
+) {
+    const res = await fetch(`${API_BASE}/teams`, {
+        method: "POST",
+        headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+    });
 
-        if (!res.ok) throw new Error(await res.text());
-        return await res.json();
-    } catch (err) {
-        console.error("Create team error:", err);
-        return undefined;
-    }
+    return res.ok ? await res.json() : undefined;
 }
+
 
 export async function apiUpdateTeam(
     teamId: string,
     data: UpdateTeamPayload,
     token: string
-): Promise<Team | null> {
-    try {
-        const res = await fetch(`${API_BASE}/teams/${teamId}`, {
-            method: "PUT",
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(data),
-        });
+) {
+    const res = await fetch(`${API_BASE}/teams/${teamId}`, {
+        method: "PUT",
+        headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+    });
 
-        return res.ok ? await res.json() : null;
-    } catch (err) {
-        console.error("Update team failed:", err);
-        return null;
-    }
+    return res.ok ? await res.json() : null;
 }
 
 export async function apiDeleteTeam(teamId: string, token: string) {
     const res = await fetch(`${API_BASE}/teams/${teamId}`, {
         method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+    });
+    return res.ok;
+}
+
+export async function apiAddAthleteByEmail(teamId: string, email: string, token: string) {
+    const res = await fetch(`${API_BASE}/teams/${teamId}/athletes/by-email`, {
+        method: "POST",
         headers: {
             Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
         },
+        body: JSON.stringify({ email }),
     });
 
     return res.ok;
 }
 
-export async function apiRemoveUserFromTeam(
-    teamId: string,
-    userId: string,
-    token: string
-) {
-    try {
-        const res = await fetch(`${API_BASE}/teams/${teamId}/users/${userId}`, {
-            method: "DELETE",
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
+export async function apiRemoveAthlete(teamId: string, userId: string, token: string) {
+    const res = await fetch(`${API_BASE}/teams/${teamId}/athletes/${userId}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+    });
 
-        return res.ok;
-    } catch (err) {
-        console.error("Failed to remove user:", err);
-        return false;
-    }
-}
-export async function apiAddAthleteByEmail(
-    teamId: string,
-    email: string,
-    token: string
-) {
-    try {
-        const res = await fetch(
-            `${API_BASE}/teams/${teamId}/athletes/by-email`,
-            {
-                method: "POST",
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ email }),
-            }
-        );
-
-        if (!res.ok) {
-            return { success: false, message: await res.text() };
-        }
-
-        return { success: true };
-    } catch (err) {
-        console.error("Add athlete error:", err);
-        return {
-            success: false,
-            message: "Network error",
-        };
-    }
-}
-
-export async function apiRemoveAthlete(
-    teamId: string,
-    userId: string,
-    token: string
-) {
-    try {
-        const res = await fetch(`${API_BASE}/teams/${teamId}/users/${userId}`, {
-            method: "DELETE",
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
-
-        return res.ok;
-    } catch (err) {
-        console.error("Remove athlete error:", err);
-        return false;
-    }
+    return res.ok;
 }

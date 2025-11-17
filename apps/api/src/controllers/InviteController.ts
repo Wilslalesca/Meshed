@@ -24,7 +24,7 @@ export class InviteController {
       token
     );
 
-    await TeamRosterModel.addAthlete(teamId, user.id, position);
+    await TeamRosterModel.addToTeam(teamId, user.id, role, position);
 
     return res.json({ success: true, invite, token });
   }
