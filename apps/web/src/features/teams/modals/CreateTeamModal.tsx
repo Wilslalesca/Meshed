@@ -79,7 +79,6 @@ export const CreateTeamModal = ({
             onChange={(e) => setName(e.target.value)}
           />
 
-          {/* SPORT */}
           <Select value={sportId ?? ""} onValueChange={(v) => setSportId(v)}>
             <SelectTrigger>
               <SelectValue placeholder="Select sport" />
@@ -93,7 +92,6 @@ export const CreateTeamModal = ({
             </SelectContent>
           </Select>
 
-          {/* LEAGUE */}
           <Select value={leagueId ?? ""} onValueChange={(v) => setLeagueId(v)}>
             <SelectTrigger>
               <SelectValue placeholder="Select league" />

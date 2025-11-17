@@ -11,7 +11,7 @@ export const AddAthleteModal = ({ open, onOpenChange, teamId, onAdded }: any) =>
 
     const handleSubmit = async () => {
         const res = await apiAddAthleteByEmail(teamId, email, token!);
-        if (res?.success) {
+        if (res) {
             setEmail("");
             onAdded();
             onOpenChange(false);
