@@ -5,6 +5,7 @@ import { requireAuth } from "../middleware/authMiddleware";
 const router = Router();
 
 router.post("/:teamId", requireAuth, InviteController.invite);
-router.get("/accept/:token", InviteController.acceptInvite);
+router.post("/verify", InviteController.verify);
+router.get("/accept", InviteController.accept);
 
 export default router;

@@ -138,7 +138,7 @@ CREATE TABLE invites (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   team_id UUID REFERENCES teams(id) ON DELETE CASCADE,
   email VARCHAR(255) NOT NULL,
-  token VARCHAR(255) NOT NULL,
+  token VARCHAR(6) NOT NULL,
   role VARCHAR(50),
   position VARCHAR(50),
   status VARCHAR(50) DEFAULT 'pending',
@@ -157,6 +157,25 @@ CREATE TABLE team_staff (
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   UNIQUE (user_id, team_id)
 );
+
+CREATE TABLE email_verification_codes (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+    email TEXT NOT NULL,
+    code VARCHAR(6) NOT NULL,
+    expires_at TIMESTAMPTZ NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE password_reset_codes (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    email TEXT NOT NULL,
+    code VARCHAR(6) NOT NULL,
+    expires_at TIMESTAMPTZ NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+
 
 -- CREATE INDEX IF NOT EXISTS idx_facilities_name ON facilities (name);
 

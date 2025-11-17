@@ -50,6 +50,14 @@ export class TeamStaffModel {
     return rows[0] ?? null;
   }
 
+  static async findStaffEntry(teamId: string, userId: string) {
+    const { rows } = await pool.query(
+      `SELECT * FROM team_staff WHERE team_id = $1 AND user_id = $2 LIMIT 1`,
+      [teamId, userId]
+    );
+    return rows[0] ?? null;
+  }
+
   static async removeStaff(staffId: string) {
     await pool.query(`DELETE FROM team_staff WHERE id = $1`, [staffId]);
     return true;

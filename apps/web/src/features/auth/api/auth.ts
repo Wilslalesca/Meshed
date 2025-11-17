@@ -1,6 +1,7 @@
 export const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
 export async function apiLogin(input: { email: string; password: string; }) {
+
   const res = await fetch(`${API_BASE}/auth/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -16,6 +17,7 @@ export async function apiLogin(input: { email: string; password: string; }) {
 }
 
 export async function apiRegister(input: { firstName: string; lastName?: string; email: string; password: string; phone?: string; role?: 'admin'|'manager'|'user'; }) {
+
     const res = await fetch(`${API_BASE}/auth/register`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -31,6 +33,7 @@ export async function apiRegister(input: { firstName: string; lastName?: string;
 }
 
 export async function apiRefresh() {
+
   const res = await fetch(`${API_BASE}/auth/refresh`, {
     method: 'POST',
     credentials: 'include',
@@ -44,6 +47,7 @@ export async function apiRefresh() {
 }
 
 export async function apiMe(token: string) {
+  
   const res = await fetch(`${API_BASE}/users/me`, {
     headers: { Authorization: `Bearer ${token}` },
     credentials: 'include',

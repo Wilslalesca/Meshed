@@ -1,8 +1,8 @@
 import React from "react";
-import { Routes, Route, Outlet, Navigate, useLocation } from "react-router-dom";
+import { Routes, Route, Outlet, Navigate } from "react-router-dom";
 import { Home } from "./screens/Home";
-import LoginPage from "./routes/auth/Login.tsx";
-import { Register } from "./routes/auth/Register.tsx";
+import LoginPage from "./features/auth/pages/LoginPage.tsx";
+import { Register } from "./features/auth/pages/RegisterPage.tsx";
 import { Dashboard } from "./routes/dashboard";
 import { Admin } from "./screens/Admin";
 import { Profile } from "./screens/Profile";
@@ -20,6 +20,10 @@ import { TeamDetailsPage } from "./features/teams/pages/TeamDetailsPage.tsx";
 
 import { TeamsPage } from "@/features/teams/pages/TeamPage.tsx";
 import { AthleteDetailsPage } from "@/features/teams/pages/AthleteDetailsPage.tsx";
+import ResetPasswordPage  from "@/features/auth/pages/ResetPasswordPage.tsx";
+import ForgotPasswordPage from "@/features/auth/pages/ForgotPasswordPage.tsx";
+import InviteVerifyPage from "@/features/auth/pages/InviteVerifyPage.tsx";
+import VerifyEmailPage from "@/features/auth/pages/VerifyEmailPage";
 
 const pageTitles: Record<string, string> = {
   "/": "Home",
@@ -60,6 +64,11 @@ export default function App() {
       <Route element={<AuthLayout />}>
         <Route path="/login" element={ <GuestRoute> <LoginPage /> </GuestRoute> } />
         <Route path="/register" element={ <GuestRoute> <Register /> </GuestRoute> } />
+        {/* <Route path="/verify-email" element={<GuestRoute><VerifyEmailPage /></GuestRoute>} /> */}
+        <Route path="/invite" element={<GuestRoute><InviteVerifyPage /></GuestRoute>} />
+        <Route path="/forgot-password" element={<GuestRoute><ForgotPasswordPage /></GuestRoute>} />
+        <Route path="/reset-password" element={<GuestRoute><ResetPasswordPage /></GuestRoute>} />
+
       </Route>
 
       <Route element={<AppLayout />}>
