@@ -1,15 +1,21 @@
 import { Resend } from "resend";
-
+const BASE_URL = process.env.FRONTEND_ORIGIN!;
 const resend = new Resend(process.env.RESEND_API_KEY!);
 
 export const sendEmail = {
 
-    async sendEmailInvite(email: string, code: string, teamName: string) {
+    async sendEmailInvite(email: string, teamName: string, token: string) {
         await resend.emails.send({
             from: "UMA Team <onboarding@resend.dev>",
             to: email,
-            subject: `You're invited to join the team "${teamName}" on UMA`,
-            html: `<p>Use the following link to join the team:</p><a href="https://uma.com/join?code=${code}">Join ${teamName}</a>`,
+            subject: `Complete your UMA account to join ${teamName}`,
+            html: `
+            <p>You’ve been added to <strong>${teamName}</strong> on UMA.</p>
+            <p>Create your account to access the team:</p>
+            <p><a href="${BASE_URL}/register/invite?invite=${token}">
+                Complete Your Account
+            </a></p>
+            `
         });
     },
 
@@ -30,4 +36,18 @@ export const sendEmail = {
             html: `<p>Your password reset code is: <strong>${code}</strong></p>`,
         });
     },
+
+    async sendAddedToTeamEmail(email: string, teamName: string, role: string) {
+    await resend.emails.send({
+        from: "UMA Team <onboarding@resend.dev>",
+        to: email,
+        subject: `You've been added to ${teamName}`,
+        html: `
+            <p>You have been added to the team <strong>${teamName}</strong> on UMA.</p>
+            <p>Your role: <strong>${role}</strong></p>
+            <p>Log in to view your team: <a href="${BASE_URL}/login">UMA Login</a></p>
+        `,
+    });
+},
+
 }

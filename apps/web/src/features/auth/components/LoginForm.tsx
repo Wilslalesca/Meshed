@@ -29,7 +29,7 @@ export function LoginForm({
         setError(null);
         setPending(true);
         try {
-            await login({ email, password });
+            await login({ email: email.toLowerCase(), password });
             const next = location?.state?.from?.pathname ?? "/dashboard";
             nav(next, { replace: true });
 

@@ -2,6 +2,9 @@ import { Request, Response } from "express";
 import { TeamStaffModel } from "../models/TeamStaffModel";
 import { UserModel } from "../models/UserModel";
 import { TeamModel } from "../models/TeamModel";
+import { sendEmail } from "../services/emailService";
+import crypto from "crypto";
+import { InviteModel } from "../models/InviteModel";
 
 function isManagerOrAdmin(req: any) {
   const role = req.user?.role;
@@ -16,8 +19,8 @@ export class StaffController {
   }
 
   static async addStaff(req: any, res: Response) {
-    if (!isManagerOrAdmin(req))
-      return res.status(403).send("Forbidden");
+
+    if (!isManagerOrAdmin(req)) return res.status(403).send("Forbidden");
 
     const { teamId } = req.params;
     const { email, role, notes = null } = req.body || {};
@@ -25,8 +28,11 @@ export class StaffController {
     if (!email) return res.status(400).send("email required");
 
     let user = await UserModel.findByEmail(email);
-    if (!user || user.id === null) {
+    let isGhost = false;
+
+    if (!user) {
       user = await UserModel.createGhostUser(email);
+      isGhost = true;
     }
 
     if (!user || user.id === null) {
@@ -34,6 +40,21 @@ export class StaffController {
     }
 
     const added = await TeamStaffModel.addStaff(teamId, user.id, role, notes);
+    const team = await TeamModel.getTeam(teamId);
+
+    if (!team) return res.status(500).send("Team not found");
+
+    if (isGhost) {
+      const token = crypto.randomBytes(32).toString("hex");
+      await InviteModel.createInvite(teamId, email, role, null, token);
+      await sendEmail.sendEmailInvite(email, team.name, token);
+
+    }
+    else {
+      await sendEmail.sendAddedToTeamEmail(email, team.name, role);
+
+    }
+
     return res.json(added);
   }
 

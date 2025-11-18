@@ -29,50 +29,66 @@ const validateEmail = (email: string) => {
 };
 
 export function RegisterForm({
+    invitedEmail,
+    invitedRole,
+    invitedToken,
     className,
     ...props
-}: React.ComponentProps<"form">) {
+}: React.ComponentProps<"form"> & {
+    invitedEmail?: string;
+    invitedRole?: RegisterCredentials['role'];
+    invitedToken?: string;
+}) {
     const { register } = useAuth();
+    const nav = useNavigate();
+
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
-    const [email, setEmail] = useState("");
+
+    const [email, setEmail] = useState(invitedEmail ?? "");
+    const [role, setRole] = useState<RegisterCredentials['role']>(invitedRole ?? "user");
+    
     const [password, setPassword] = useState("");
     const [confirm, setConfirm] = useState("");
-    const [role, setRole] = useState<RegisterCredentials['role']>("user");
+
     const [error, setError] = useState<string | null>(null);
     const [pending, setPending] = useState(false);
 
     const [verifyOpen, setVerifyOpen] = useState(false);
     const [verifyUserId, setVerifyUserId] = useState<string | null>(null);
-    const nav = useNavigate();
 
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-    
-    
 
-    const passwordValidation = useMemo(
-        () => validatePassword(password),
-        [password]
-    );
+    const passwordValidation = useMemo(() => validatePassword(password), [password]);
     const passwordsMatch = password === confirm;
     const showPasswordMismatch = confirm.length > 0 && !passwordsMatch;
 
     const emailValidation = useMemo(() => validateEmail(email), [email]);
     const showEmailInvalid = email.length > 0 && !emailValidation;
 
+    React.useEffect(() => {
+        if (invitedEmail && invitedToken) {
+            setEmail(invitedEmail);
+        }
+    }, [invitedEmail, invitedToken]);
+    
     async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
         setError(null);
 
-        if (!emailValidation) return setError("Please enter a valid email address");        
-        if (!passwordValidation.isValid) return setError("Password must be at least 8 characters with 1 number and 1 special character");
+
+        if (!invitedToken && !emailValidation) return setError("Please enter a valid email address");        
+        if (!passwordValidation.isValid ) return setError("Password must be at least 8 characters with 1 number and 1 special character");
         if (password !== confirm) return setError("Passwords do not match");
         
         setPending(true);
 
         try {
-            const res = await register({ firstName, lastName, email, password, role });
+            if (invitedEmail && invitedToken) {
+                setEmail(invitedEmail);
+            }
+            const res = await register({ firstName, lastName, email: email.toLowerCase(), password, role, invitedToken: invitedToken || null });
             setVerifyUserId(res.userId);
             setVerifyOpen(true);
         
@@ -123,28 +139,28 @@ export function RegisterForm({
                             required
                         />
                     </div>
-                    <div className="grid gap-3">
-                        <Label htmlFor="email">Email</Label>
-                        <Input
-                            id="email"
-                            type="email"
-                            placeholder="test@gmail.com"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            autoComplete="email"
-                            required
-                            className={cn(
-                                email.length > 0 &&
-                                    !emailValidation &&
-                                    "border-destructive focus-visible:ring-destructive"
-                            )}
-                        />
-                        {showEmailInvalid && (
-                            <p className="text-xs text-destructive">
-                                Please enter a valid email address
-                            </p>
-                        )}
-                    </div>
+
+                    {!invitedEmail && (
+                        <div className="grid gap-3">
+                            <Label htmlFor="email">Email</Label>
+                            <Input
+                                id="email"
+                                type="email"
+                                placeholder="test@gmail.com"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                autoComplete="email"
+                                required
+                                className={cn(
+                                    email.length > 0 &&
+                                        !emailValidation &&
+                                        "border-destructive focus-visible:ring-destructive"
+                                )}
+                            />
+                        </div>
+                    )}
+
+                    
                     <div className="grid gap-3">
                         <Label htmlFor="password">Password</Label>
                         <div className="relative">
@@ -258,21 +274,24 @@ export function RegisterForm({
                             </p>
                         )}
                     </div>
-                    <div className="grid gap-3">
-                        <Label htmlFor="role">Role</Label>
-                        <select
-                            id="role"
-                            value={role}
-                            onChange={(e) => setRole(e.target.value as RegisterCredentials['role'])}
-                            className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
-                        >
-                            {roles.map((r) => (
-                                <option key={r} value={r}>
-                                    {r.charAt(0).toUpperCase() + r.slice(1)}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
+                    {!invitedEmail && (
+                        
+                        <div className="grid gap-3">
+                            <Label htmlFor="role">Role</Label>
+                            <select
+                                id="role"
+                                value={role}
+                                onChange={(e) => setRole(e.target.value as RegisterCredentials['role'])}
+                                className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
+                            >
+                                {roles.map((r) => (
+                                    <option key={r} value={r}>
+                                        {r.charAt(0).toUpperCase() + r.slice(1)}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    )}
                     {error && (
                         <p className="text-sm text-destructive -mt-2">{error}</p>
                     )}
@@ -280,12 +299,15 @@ export function RegisterForm({
                         {pending ? "Creating..." : "Create account"}
                     </Button>
                 </div>
-                <div className="text-center text-sm">
-                    Already have an account?{" "}
-                    <Link to="/login" className="underline underline-offset-4">
-                        Sign in
-                    </Link>
-                </div>
+                {!invitedEmail && (
+                    
+                    <div className="text-center text-sm">
+                        Already have an account?{" "}
+                        <Link to="/login" className="underline underline-offset-4">
+                            Sign in
+                        </Link>
+                    </div>
+                )}
             </form>
 
             <EmailVerificationModal

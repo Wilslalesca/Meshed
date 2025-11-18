@@ -20,6 +20,7 @@ import { TeamDetailsPage } from "./features/teams/pages/TeamDetailsPage.tsx";
 
 import { TeamsPage } from "@/features/teams/pages/TeamPage.tsx";
 import { AthleteDetailsPage } from "@/features/teams/pages/AthleteDetailsPage.tsx";
+import InviteRegisterPage from "./features/auth/pages/InviteRegisterPage.tsx";
 
 const pageTitles: Record<string, string> = {
   "/": "Home",
@@ -59,7 +60,10 @@ export default function App() {
     <Routes>
       <Route element={<AuthLayout />}>
         <Route path="/login" element={ <GuestRoute> <LoginPage /> </GuestRoute> } />
+        <Route path="/register/invite" element={<GuestRoute>< InviteRegisterPage /></GuestRoute>} />
         <Route path="/register" element={ <GuestRoute> <Register /> </GuestRoute> } />
+        
+
       </Route>
 
       <Route element={<AppLayout />}>

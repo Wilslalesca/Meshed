@@ -1,29 +1,41 @@
 import { useEffect, useState } from "react";
-import { apiGetStaff, apiRemoveStaff } from "../api/staff";
+import { apiGetStaff, apiRemoveStaff, apiUpdateStaff } from "../api/staff";
 import { useAuth } from "@/shared/hooks/useAuth";
 
-export const useStaff = (teamId: string) => {
-  const { token } = useAuth();
-  const [staff, setStaff] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+export function useStaff(teamId: string) {
+    const { token } = useAuth();
+    const [staff, setStaff] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-  async function load() {
-    if (!token) return;
-    setLoading(true);
-    const data = await apiGetStaff(teamId, token);
-    setStaff(data);
-    setLoading(false);
-  }
+    async function reloadStaff() {
+        if (!token) return;
+        setLoading(true);
+        const data = await apiGetStaff(teamId, token);
+        setStaff(data);
+        setLoading(false);
+    }
 
-  async function removeStaff(id: string) {
-    if (!token) return;
-    const ok = await apiRemoveStaff(teamId, id, token);
-    if (ok) load();
-  }
+    async function removeStaff(staffId: string) {
+        if (!token) return;
+        await apiRemoveStaff(teamId, staffId, token);
+        await reloadStaff();
+    }
 
-  useEffect(() => {
-    load();
-  }, [teamId]);
+    async function updateStaff(staffId: string, updates: any) {
+        if (!token) return;
+        await apiUpdateStaff(teamId, staffId, updates, token);
+        await reloadStaff();
+    }
 
-  return { staff, loading, reloadStaff: load, removeStaff };
-};
+    useEffect(() => {
+        reloadStaff();
+    }, [teamId]);
+
+    return {
+        staff,
+        loading,
+        reloadStaff,
+        removeStaff,
+        updateStaff,
+    };
+}

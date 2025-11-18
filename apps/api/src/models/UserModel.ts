@@ -90,10 +90,10 @@ export const UserModel = {
 
     async createGhostUser(email: string) {
         const { rows } = await pool.query(
-            `INSERT INTO users (first_name, last_name, email, password_hash, active, verified)
-        VALUES ('Pending', 'User', $1, '', false, false)
-        ON CONFLICT (email) DO NOTHING
-        RETURNING *`,
+            `INSERT INTO users (email, first_name, last_name, password_hash, active, verified)
+            VALUES ($1, 'Pending', 'User', '', false, false)
+            ON CONFLICT (email) DO NOTHING
+            RETURNING *;`,
             [email]
         );
 
@@ -107,6 +107,7 @@ export const UserModel = {
 
         return rows[0];
     },
+
 
     async activateUser(userId: string) {
         await pool.query(

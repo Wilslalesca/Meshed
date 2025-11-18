@@ -29,6 +29,7 @@ export type RegisterCredentials = {
     password: string;
     phone?: string;
     role?: 'admin' | 'manager' | 'user';
+    invitedToken?: string | null;
 };
 
 export interface LoginCredentials {

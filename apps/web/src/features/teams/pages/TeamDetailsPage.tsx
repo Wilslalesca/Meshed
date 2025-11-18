@@ -28,14 +28,14 @@ export const TeamDetailsPage = () => {
 
     const { team, loading, reload: reloadTeam } = useTeamById(teamId!);
     const { roster, removeAthlete, reloadRoster } = useRoster(teamId!);
-    const { staff, reloadStaff, removeStaff } = useStaff(teamId!);
+    const { staff, reloadStaff, removeStaff, updateStaff } = useStaff(teamId!);
     const { sports, leagues } = useLookups();
 
     const [openEdit, setOpenEdit] = useState(false);
     const [openDelete, setOpenDelete] = useState(false);
     const [openInvite, setOpenInvite] = useState(false);
     const [inviteRole, setInviteRole] = useState<
-        "athlete" | "staff" | "manager"
+        "athlete" | "manager"
     >("athlete");
 
     if (loading || !team) return <p className="p-6">Loading...</p>;

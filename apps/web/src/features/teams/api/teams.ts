@@ -6,7 +6,6 @@ import type {
     SportLookup,
     League,
 } from "../types/teams";
-import type { Athlete } from "../types/roster";
 
 export async function apiGetMyTeams(token: string): Promise<Team[]> {
     try {

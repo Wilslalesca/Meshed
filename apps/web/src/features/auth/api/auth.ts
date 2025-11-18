@@ -15,20 +15,31 @@ export async function apiLogin(input: { email: string; password: string; }) {
   return (await res.json()) as { token: string; user: any };
 }
 
-export async function apiRegister(input: { firstName: string; lastName?: string; email: string; password: string; phone?: string; role?: 'admin'|'manager'|'user'; }) {
-    const res = await fetch(`${API_BASE}/auth/register`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    credentials: 'include',
+export async function apiRegister(input: {
+  firstName: string;
+  lastName?: string;
+  email: string;
+  password: string;
+  phone?: string;
+  role?: 'admin' | 'manager' | 'user';
+  invitedToken?: string | null;
+}) {
+  const res = await fetch(`${API_BASE}/auth/register`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
     body: JSON.stringify(input),
   });
 
+  const data = await res.json();
+
   if (!res.ok) {
-    throw new Error((await res.json()).error || 'Register failed');
+    throw new Error(data.error || "Register failed");
   }
 
-  return (await res.json()) as { userId: string; message: string };
+  return data; 
 }
+
 
 export async function apiRefresh() {
   const res = await fetch(`${API_BASE}/auth/refresh`, {
