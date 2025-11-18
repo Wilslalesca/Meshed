@@ -1,5 +1,5 @@
 import React from "react";
-import { Routes, Route, Outlet, Navigate, useLocation } from "react-router-dom";
+import { Routes, Route, Outlet, Navigate } from "react-router-dom";
 import { Home } from "./screens/Home";
 import LoginPage from "./features/auth/pages/Login.tsx";
 import { Register } from "./features/auth/pages/Register.tsx";
@@ -22,16 +22,6 @@ import { TeamsPage } from "@/features/teams/pages/TeamPage.tsx";
 import { AthleteDetailsPage } from "@/features/teams/pages/AthleteDetailsPage.tsx";
 import InviteRegisterPage from "./features/auth/pages/InviteRegisterPage.tsx";
 
-const pageTitles: Record<string, string> = {
-  "/": "Home",
-  "/dashboard": "Dashboard",
-  "/admin": "Admin Panel",
-  "/teams": "Teams",
-  "/facilities": "Facilities",
-  "/manager": "Schedule Background Tasks",
-  "/mySchedule": "My Schedule",
-  "/profile": "Profile",
-};
 
 function AppLayout() {
     return (

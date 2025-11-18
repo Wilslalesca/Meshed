@@ -70,15 +70,15 @@ export function RegisterForm({
     const [verifyOpen, setVerifyOpen] = useState(false);
     const [verifyUserId, setVerifyUserId] = useState<string | null>(null);
 
-    const [showPassword, setShowPassword] = useState(false);
-    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const [showPassword] = useState(false);
+    const [showConfirmPassword] = useState(false);
 
     const passwordValidation = useMemo(() => validatePassword(password), [password]);
     const passwordsMatch = password === confirm;
     const showPasswordMismatch = confirm.length > 0 && !passwordsMatch;
 
     const emailValidation = useMemo(() => validateEmail(email), [email]);
-    const showEmailInvalid = email.length > 0 && !emailValidation;
+    // const showEmailInvalid = email.length > 0 && !emailValidation;
 
     React.useEffect(() => {
         if (invitedEmail && invitedToken) {
