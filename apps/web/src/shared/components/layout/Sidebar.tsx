@@ -59,7 +59,6 @@ export const Sidebar = ({
 
     return (
         <>
-            {/* Mobile overlay */}
             {open && isMobile && (
                 <div
                     onClick={onClose}
@@ -67,7 +66,6 @@ export const Sidebar = ({
                 />
             )}
 
-            {/* Sidebar */}
             <aside
                 className={`fixed lg:static z-50 inset-y-0 left-0 flex flex-col bg-[#F9FAFB] border-r border-[#F9FAFB] transition-all duration-300
                   ${
@@ -81,13 +79,11 @@ export const Sidebar = ({
                   }
                 `}
             >
-                {/* Header */}
                 <div
                     className={`h-16 mt-2 flex items-center justify-between px-4 ${
                         collapsed ? "lg:px-2" : "lg:px-4"
                     }`}
                 >
-                    {/* Logo  */}
                     {!collapsed ? (
                         <div className="flex items-center gap-2">
                             <img
@@ -130,7 +126,6 @@ export const Sidebar = ({
                     )}
                 </div>
 
-                {/* Navigation */}
                 <nav className="flex-1 overflow-y-auto px-3 pt-2 space-y-1 text-sm">
                     {links.map(({ name, href, icon: Icon, subLinks }) => {
                         const isActive = location.pathname === href;
@@ -175,7 +170,6 @@ export const Sidebar = ({
                                         ))}
                                 </button>
 
-                                {/*SubMenu*/}
                                 {hasSub && isOpen && !collapsed && (
                                     <div className="ml-8 mt-1 space-y-1">
                                         {subLinks?.map((sub) => (
@@ -198,7 +192,6 @@ export const Sidebar = ({
                     })}
                 </nav>
 
-                {/* Account */}
                 <div className="mt-auto p-4 mb-2">
                     <DropdownMenu open={openMenu} onOpenChange={setOpenMenu}>
                         <DropdownMenuTrigger asChild>

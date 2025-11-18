@@ -40,10 +40,10 @@ export class InviteController {
 
     await InviteModel.markAccepted(invite.id);
 
-    await UserModel.updateUser(user.id, { active: true });
+    // await UserModel.updateUser(user.id, { active: true });
     
     await TeamRosterModel.updateAthlete(invite.team_id, user.id, {
-      status: "active",
+      status: "pending",
       position: invite.position ?? null
     });
 

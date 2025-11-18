@@ -63,7 +63,7 @@ export class StaffController {
       return res.status(403).send("Forbidden");
 
     const { staffId } = req.params;
-    const updated = await TeamStaffModel.updateStaff(staffId, req.body);
+    const updated = await TeamStaffModel.updateStaffById(staffId, req.body);
     if (!updated) return res.status(404).send("not found");
 
     return res.json(updated);

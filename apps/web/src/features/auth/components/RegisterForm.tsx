@@ -5,10 +5,23 @@ import { Input } from "@/shared/components//ui/input";
 import { Label } from "@/shared/components//ui/label";
 import { useAuth } from "@/shared/hooks/useAuth";
 import { Link, useNavigate } from "react-router-dom";
-import type { Role, RegisterCredentials } from "../types/auth";
+import type { RegisterCredentials } from "../types/auth";
 import { EmailVerificationModal } from "../modal/EmailVerificationModal";
 
-const roles: Role[] = ["user", "manager", "admin"];
+const roleOptions: { label: string; value: RegisterCredentials['role'] }[] = [
+    { label: "Athlete", value: "user" },
+    { label: "Manager", value: "manager" },
+    { label: "Admin", value: "admin" },
+];
+
+const normalizeRole = (
+    role?: string | null
+): RegisterCredentials['role'] => {
+    if (role === "manager" || role === "admin") {
+        return role;
+    }
+    return "user";
+};
 
 const validatePassword = (password: string) => {
     const minLength = password.length >= 8;
@@ -46,7 +59,7 @@ export function RegisterForm({
     const [lastName, setLastName] = useState("");
 
     const [email, setEmail] = useState(invitedEmail ?? "");
-    const [role, setRole] = useState<RegisterCredentials['role']>(invitedRole ?? "user");
+    const [role, setRole] = useState<RegisterCredentials['role']>(normalizeRole(invitedRole));
     
     const [password, setPassword] = useState("");
     const [confirm, setConfirm] = useState("");
@@ -72,6 +85,10 @@ export function RegisterForm({
             setEmail(invitedEmail);
         }
     }, [invitedEmail, invitedToken]);
+
+    React.useEffect(() => {
+        setRole(normalizeRole(invitedRole));
+    }, [invitedRole]);
     
     async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
@@ -284,9 +301,9 @@ export function RegisterForm({
                                 onChange={(e) => setRole(e.target.value as RegisterCredentials['role'])}
                                 className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
                             >
-                                {roles.map((r) => (
-                                    <option key={r} value={r}>
-                                        {r.charAt(0).toUpperCase() + r.slice(1)}
+                                {roleOptions.map((opt) => (
+                                    <option key={opt.value} value={opt.value}>
+                                        {opt.label}
                                     </option>
                                 ))}
                             </select>

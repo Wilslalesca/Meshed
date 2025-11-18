@@ -9,7 +9,6 @@ import { VerificationCodeModel } from "../models/VerificationCodeModel";
 import { InviteModel } from "../models/InviteModel";
 import { TeamStaffModel } from "../models/TeamStaffModel";
 import { TeamRosterModel } from "../models/TeamRosterModel";
-import { stat } from "fs";
 
 const registerSchema = z.object({
   firstName: z.string().min(1),
@@ -38,7 +37,7 @@ export const AuthController = {
 
   async register(req: Request, res: Response) {
     const parse = registerSchema.safeParse(req.body);
-
+    console.log("Register request body:", req.body);
     if (!parse.success) {
       return res.status(400).json({
         error: "Validation error",
@@ -90,7 +89,6 @@ export const AuthController = {
       return res.status(500).json({ error: "User creation failed" });
     }
 
- 
     if (invitedToken) {
       const invite = await InviteModel.findByToken(invitedToken);
 
@@ -98,15 +96,22 @@ export const AuthController = {
 
         if (invite.role === "manager") {
           const staff = await TeamStaffModel.findStaffRecord(invite.team_id, user.id);
+
           if (staff) {
-            await TeamStaffModel.updateStaff(staff.id, user.id, { role: invite.role, status: "active" });
+            await TeamStaffModel.updateStaffById(staff.id, { role: invite.role, status: "pending" });
+          
           } else {
-            await TeamRosterModel.updateAthlete(invite.team_id, user.id, { status: "active", position: invite.position ?? null});
+            await TeamRosterModel.updateAthlete(invite.team_id, user.id, { status: "pending", position: invite.position ?? null});
+          
           }
-        await InviteModel.markAccepted(invite.id);
+        } else {
+          await TeamRosterModel.updateAthlete(invite.team_id, user.id, { status: "pending", position: invite.position ?? null});
         }
+        await InviteModel.markAccepted(invite.id);
       }
     }
+ 
+   
 
     const code = Math.floor(100000 + Math.random() * 900000).toString();
     await VerificationCodeModel.create(user.id, code);

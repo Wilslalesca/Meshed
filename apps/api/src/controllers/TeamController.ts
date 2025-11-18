@@ -25,8 +25,13 @@ function isManagerOrAdmin(req: any): boolean {
 export class TeamController {
     static async getMyTeams(req: Request, res: Response) {
         const uid = getUserId(req);
+        console.log("Getting Teams" );
+        console.log("User ID:", uid);
+
+
         if (!uid) return res.json([]);
         const teams = await TeamModel.findForUser(uid);
+        console.log("Found Teams:", teams.length);
         res.json(teams);
     }
 
@@ -43,6 +48,7 @@ export class TeamController {
         if (!name || name.trim().length < 2)
             return res.status(400).send("name required");
 
+
         const team = await TeamModel.createTeam({
             name: name.trim(),
             sport_id: sport_id || null,
@@ -51,8 +57,9 @@ export class TeamController {
             gender: gender || null,
         });
 
-        const uid = getUserId(req);
+        console.log("Created team:", team);
 
+        const uid = getUserId(req);
         if (uid) {
             await TeamStaffModel.addStaff(team.id, uid, "manager", null);
         }

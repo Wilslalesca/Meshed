@@ -11,10 +11,9 @@ import { ArrowLeft } from "lucide-react";
 
 import { TeamTabs } from "../components/TeamTabs";
 import { TeamProfileTab } from "../components/tabs/TeamProfileTab";
-import { RosterCardView } from "../components/RosterCardView";
-import { RosterTableView } from "../components/RosterTableView";
 import { TeamScheduleTab } from "../components/tabs/TeamScheduleTab";
 import { TeamStaffTab } from "../components/tabs/TeamStaffTab";
+import { TeamRosterTab } from "../components/tabs/TeamRosterTab";
 import { EditTeamModal } from "../modals/EditTeamModal";
 import { DeleteTeamModal } from "../modals/DeleteTeamModal";
 import { InviteMemberModal } from "../modals/InviteMemberModal";
@@ -82,24 +81,20 @@ export const TeamDetailsPage = () => {
                         />
                     ),
 
-                    roster:
-                        viewMode === "cards" ? (
-                            <RosterCardView
-                                roster={roster}
-                                onRemoveAthlete={(id) => removeAthlete(id)}
-                            />
-                        ) : (
-                            <RosterTableView
-                                roster={roster}
-                                onRemoveAthlete={(id) => removeAthlete(id)}
-                            />
-                        ),
+                    roster: (
+                        <TeamRosterTab
+                            roster={roster}
+                            viewMode={viewMode}
+                            onRemoveAthlete={(id) => removeAthlete(id)}
+                        />
+                    ),
 
                     staff: (
                         <TeamStaffTab
                             staff={staff}
                             onUpdated={reloadStaff}
                             onRemoved={(id) => removeStaff(id)}
+                            viewMode={viewMode}
                         />
                     ),
 

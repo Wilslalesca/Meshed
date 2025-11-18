@@ -63,13 +63,22 @@ export class TeamModel {
 
     static async findForUser(userId: string) {
         const { rows } = await pool.query(
-            `SELECT t.*
-            FROM user_teams ut
-            JOIN teams t ON t.id = ut.team_id
-            WHERE ut.user_id = $1
+            `SELECT DISTINCT t.*
+                FROM teams t
+                WHERE t.id IN (
+                    SELECT team_id FROM user_teams WHERE user_id = $1
+                    UNION
+                    SELECT team_id FROM team_staff WHERE user_id = $1
+                )
             ORDER BY t.created_at DESC`,
             [userId]
         );
+
+        return rows;
+    }
+
+    static async findall() {
+        const { rows } = await pool.query(`SELECT * FROM user_teams`);
         return rows;
     }
 }

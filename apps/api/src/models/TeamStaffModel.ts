@@ -40,6 +40,22 @@ export class TeamStaffModel {
     return rows[0];
   }
 
+  static async updateStaffById(staffId: string, fields: { role?: string; notes?: string; status?: string }) {
+    const { role = null, notes = null, status = null } = fields;
+
+    const { rows } = await pool.query(
+      `UPDATE team_staff
+          SET role = COALESCE($1, role),
+              notes = COALESCE($2, notes),
+              status = COALESCE($3, status),
+              updated_at = NOW()
+      WHERE id = $4
+      RETURNING *`,
+      [role, notes, status, staffId]
+    );
+    return rows[0] ?? null;
+  }
+
   static async updateStaff(teamId: string, userId: string, fields: { role?: string; notes?: string; status?: string }) {
     const { role = null, notes = null, status = null } = fields;
 
@@ -49,13 +65,13 @@ export class TeamStaffModel {
               notes = COALESCE($2, notes),
               status = COALESCE($3, status),
               updated_at = NOW()
-        WHERE team_id = $4 AND user_id = $5
-        RETURNING *`,
+      WHERE team_id = $4 AND user_id = $5
+      RETURNING *`,
       [role, notes, status, teamId, userId]
     );
-
     return rows[0] ?? null;
   }
+
 
   static async removeStaff(staffId: string) {
     await pool.query(`DELETE FROM team_staff WHERE id = $1`, [staffId]);

@@ -28,7 +28,7 @@ export type RegisterCredentials = {
     email: string;
     password: string;
     phone?: string;
-    role?: 'admin' | 'manager' | 'user';
+    role?: 'admin' | 'manager' | 'user' | 'facility_manager';
     invitedToken?: string | null;
 };
 

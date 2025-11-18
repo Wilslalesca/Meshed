@@ -1,4 +1,6 @@
 import { Button } from "@/shared/components/ui/button";
+import { useUserRole } from "@/shared/hooks/useUserRole";
+import { Calendar, MessageCircle, Trash } from "lucide-react";
 
 interface Props {
   staff: any[];
@@ -6,37 +8,62 @@ interface Props {
 }
 
 export const StaffTableView = ({ staff, onRemove }: Props) => {
-  return (
-    <div className="rounded-md border">
-      <table className="w-full text-sm">
-        <thead>
-          <tr className="border-b bg-muted/30">
-            <th className="p-3 text-left">Name</th>
-            <th className="p-3 text-left">Role</th>
-            <th className="p-3"></th>
-          </tr>
-        </thead>
+  const role = useUserRole();
+  const isManager = role.isManager;
 
-        <tbody>
-          {staff.map((s) => (
-            <tr key={s.id} className="border-b">
-              <td className="p-3">
-                {s.first_name} {s.last_name}
-              </td>
-              <td className="p-3">{s.role}</td>
-              <td className="p-3 text-right">
+  return (
+    <table className="w-full text-sm">
+      <thead>
+        <tr className="border-b">
+          <th className="text-left p-2">Name</th>
+          <th className="text-left p-2">Email</th>
+          <th className="text-left p-2">Status</th>
+          <th className="text-right p-2">Actions</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {staff.map((member) => (
+          <tr key={member.id} className="border-b hover:bg-muted">
+            <td className="p-2">
+              {member.first_name} {member.last_name}
+            </td>
+            <td className="p-2">{member.email ?? "—"}</td>
+            <td className="p-2">{member.status ?? "pending"}</td>
+            <td className="p-2">
+              <div className="flex items-center justify-end gap-2">
                 <Button
-                  variant="destructive"
-                  size="sm"
-                  onClick={() => onRemove(s.id)}
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="text-muted-foreground hover:bg-muted"
+                  aria-label="View schedule"
                 >
-                  Remove
+                  <Calendar size={16} />
                 </Button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="text-muted-foreground hover:bg-muted"
+                  aria-label="Message staff"
+                >
+                  <MessageCircle size={16} />
+                </Button>
+                {isManager && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => onRemove(member.id)}
+                  >
+                    <Trash className="text-red-500" size={18} />
+                  </Button>
+                )}
+              </div>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
   );
 };

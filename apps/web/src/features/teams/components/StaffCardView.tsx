@@ -2,50 +2,51 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/shared/components/ui
 import { Avatar, AvatarFallback } from "@/shared/components/ui/avatar";
 import { Button } from "@/shared/components/ui/button";
 import { Calendar, MessageCircle, Trash } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 import { useUserRole } from "@/shared/hooks/useUserRole";
-import type { Athlete } from "../types/roster";
+import type { StaffMember } from "../types/staff";
 
 interface Props {
-  roster: Athlete[];
-  onRemoveAthlete?: (id: string) => void;
+  staff: StaffMember[];
+  onRemove?: (id: string) => void;
 }
 
-export const RosterCardView = ({ roster, onRemoveAthlete }: Props) => {
-  const navigate = useNavigate();
+export const StaffCardView = ({ staff, onRemove }: Props) => {
   const role = useUserRole();
   const isManager = role.isManager;
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-      {roster.map((athlete) => {
-        const initials = `${athlete.first_name?.[0] ?? ""}${athlete.last_name?.[0] ?? ""}`.toUpperCase() || "A";
+      {staff.map((member) => {
+        const first = member.first_name ?? "";
+        const last = member.last_name ?? "";
+        const initials = `${first[0] ?? ""}${last[0] ?? ""}`.toUpperCase() || "S";
 
         return (
-          <Card key={athlete.id} className="relative">
-            <CardHeader
-              className="cursor-pointer"
-              onClick={() => navigate(`/athletes/${athlete.id}`)}
-            >
+          <Card key={member.id} className="relative">
+            <CardHeader>
               <div className="flex items-center gap-4">
                 <Avatar className="w-14 h-14 text-xl">
                   <AvatarFallback>{initials}</AvatarFallback>
                 </Avatar>
                 <div>
                   <CardTitle className="text-xl">
-                    {athlete.first_name} {athlete.last_name}
+                    {first} {last}
                   </CardTitle>
-                  <p className="text-muted-foreground text-sm">{athlete.email}</p>
+                  <p className="text-muted-foreground text-sm">
+                    {member.email ?? "no email"}
+                  </p>
                 </div>
               </div>
             </CardHeader>
-
             <CardContent className="space-y-3 text-sm">
               <div>
-                <strong>Status:</strong> {athlete.status}
+                <strong>Role:</strong> {member.role}
               </div>
               <div>
-                <strong>Joined:</strong> {athlete.joined_at ?? "—"}
+                <strong>Status:</strong> {member.status ?? "pending"}
+              </div>
+              <div>
+                <strong>Notes:</strong> {member.notes ?? "—"}
               </div>
               <div className="flex gap-2 pt-2">
                 <Button
@@ -68,16 +69,12 @@ export const RosterCardView = ({ roster, onRemoveAthlete }: Props) => {
                 </Button>
               </div>
             </CardContent>
-
             {isManager && (
               <Button
                 variant="ghost"
                 size="icon"
                 className="absolute top-2 right-2"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onRemoveAthlete?.(athlete.id);
-                }}
+                onClick={() => onRemove?.(member.id)}
               >
                 <Trash className="text-red-500" size={18} />
               </Button>
