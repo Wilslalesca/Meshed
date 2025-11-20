@@ -54,6 +54,7 @@ export const UploadController = {
             }
 
             if (count === 1) {
+              const d = new Date(course.start);
               parsedSchedule.push({
                 name: course.summary,
                 course_code: course.summary,
@@ -61,12 +62,18 @@ export const UploadController = {
                 start_time: format(toZonedTime(course.start, timeZone), "h:mm a"),
                 end_time: format(toZonedTime(course.end, timeZone), "h:mm a"),
                 location: course.location,
-                term: "FALL 2025",
+                term: d.getMonth() >= 8 && d.getMonth() <= 11
+                    ? "FALL"
+                    : d.getMonth() >= 0 && d.getMonth() <= 3
+                    ? "WINTER"
+                    : "SUMMER",
                 start_date: format(course.start, "yyyy-MM-dd"),
                 end_date: format(course.start, "yyyy-MM-dd"),
+                recurring: false,
               });
             } else {
               existingCourse.end_date = format(course.start, "yyyy-MM-dd");
+              existingCourse.recurring = true;
             }
           }
         }

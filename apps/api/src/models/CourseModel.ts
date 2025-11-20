@@ -11,6 +11,7 @@ export interface NewCourseTime {
   term?: string;
   start_date?: string;
   end_date?: string;
+  recurring?:boolean;
   created_at?: string;
   updated_at?: string;
 }
@@ -21,8 +22,8 @@ export const CourseModel = {
     const res = await c.query(
       `INSERT INTO course_times (
           name, course_code, location, day_of_week, start_time,
-          end_time, term, start_date, end_date, created_at, updated_at
-        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW(), NOW())
+          end_time, term, start_date, end_date, recurring, created_at, updated_at
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, NOW(), NOW())
         RETURNING *`,
       [
         data.name,
@@ -34,6 +35,7 @@ export const CourseModel = {
         data.term,
         data.start_date,
         data.end_date,
+        data.recurring,
       ]
     );
     return res.rows[0];

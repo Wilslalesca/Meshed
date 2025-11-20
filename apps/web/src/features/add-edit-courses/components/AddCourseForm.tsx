@@ -68,6 +68,7 @@ export function AddCourseForm({
                     : "SUMMER",
             start_date: startDate,
             end_date: !endDate ? startDate : endDate,
+            recurring: (reoccurring == "Yes" ? true : false),
         };
 
         try {

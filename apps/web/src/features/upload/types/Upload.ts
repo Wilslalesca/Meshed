@@ -11,6 +11,7 @@ export interface UploadResponse {
         term: string,
         start_date: string,
         end_date: string,
+        recurring: boolean,
     } [];
     schedule: boolean
 }
