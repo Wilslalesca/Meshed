@@ -10,6 +10,8 @@ import athleteCourseRoutes from "./athletecourse.routes";
 import facilitiesRoutes from "./facilities.routes";
 import teamsRoutes from "./teams.routes";
 import lookupsRoutes from "./lookup.routes";
+import inviteRoutes from "./invites.routes";
+import athleteRoutes from "./athletes.routes";
 
 const router = Router();
 
@@ -22,5 +24,7 @@ router.use("/athletecourse", athleteCourseRoutes);
 router.use("/facilities", facilitiesRoutes);
 router.use("/teams", teamsRoutes);
 router.use("/lookups", lookupsRoutes);
+router.use("/invites", inviteRoutes);
+router.use("/athletes", athleteRoutes);
 
 export default router;

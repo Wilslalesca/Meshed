@@ -1,10 +1,10 @@
 import React from 'react';
-import { RotatingHeader } from '@/components/layout/RotatingHeader';
-import { Hero } from "@/components/marketing/Hero";
-import { Features } from "@/components/marketing/Features";
-import { Stats } from "@/components/marketing/Stats";
-import { Testimonial } from "@/components/marketing/Testimonial";
-import { CTA } from "@/components/marketing/CTA";
+import { RotatingHeader } from '@/shared/components/layout/RotatingHeader';
+import { Hero } from "@/shared/components/marketing/Hero";
+import { Features } from "@/shared/components/marketing/Features";
+import { Stats } from "@/shared/components/marketing/Stats";
+import { Testimonial } from "@/shared/components/marketing/Testimonial";
+import { CTA } from "@/shared/components/marketing/CTA";
 
 export const Home: React.FC = () => (
   <div className="flex flex-col">

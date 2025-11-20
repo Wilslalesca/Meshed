@@ -1,7 +1,7 @@
-import { useAuth } from "@/hooks/useAuth";
-import { Button } from "@/components/ui/button";
+import { useAuth } from "@/shared/hooks/useAuth";
+import { Button } from "@/shared/components/ui/button";
 import { Link } from "react-router-dom";
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@/shared/components/ui/badge";
 
 export const Dashboard = () => {
   const { user, logout } = useAuth();

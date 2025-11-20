@@ -1,109 +1,154 @@
-// apps/api/src/controllers/TeamController.ts
 import { Request, Response } from "express";
 import { TeamModel } from "../models/TeamModel";
+import { TeamRosterModel } from "../models/TeamRosterModel";
+import { TeamStaffModel } from "../models/TeamStaffModel";
 import { UserModel } from "../models/UserModel";
-
+import { sendEmail } from "../services/emailService";
+import { InviteModel } from "../models/InviteModel";
+import crypto from "crypto";
 
 function getUserId(req: any): string | undefined {
-  return (
-    req?.user?.id ??
-    req?.userId ??
-    req?.auth?.id ??
-    req?.locals?.user?.id ??
-    req?.res?.locals?.user?.id
-  );
+    return (
+        req?.user?.id ??
+        req?.userId ??
+        req?.auth?.id ??
+        req?.locals?.user?.id ??
+        req?.res?.locals?.user?.id
+    );
 }
 
 function isManagerOrAdmin(req: any): boolean {
-  const role = req.user?.role;
-  return role === "manager" || role === "admin";
+    const role = req.user?.role;
+    return role === "manager" || role === "admin";
 }
 
 export class TeamController {
-  /** GET /teams/mine */
-  static async getMyTeams(req: Request, res: Response) {
-    const uid = getUserId(req);
-    if (!uid) {
-      // not logged in yet – empty list so UI can still render
-      return res.json([]);
+    static async getMyTeams(req: Request, res: Response) {
+        const uid = getUserId(req);
+        console.log("Getting Teams" );
+        console.log("User ID:", uid);
+
+
+        if (!uid) return res.json([]);
+        const teams = await TeamModel.findForUser(uid);
+        console.log("Found Teams:", teams.length);
+        res.json(teams);
     }
 
-    const teams = await TeamModel.findForUser(uid);
-    return res.json(teams);
-  }
-
-  /** POST /teams */
-  static async createTeam(req: Request, res: Response) {
-    const { name, sport_id, season, league_id } = req.body || {};
-
-    if (!name || String(name).trim().length < 2) {
-      return res.status(400).send("name required");
+    static async getTeamById(req: Request, res: Response) {
+        const { teamId } = req.params;
+        const team = await TeamModel.getTeam(teamId);
+        if (!team) return res.status(404).send("Team not found");
+        res.json(team);
     }
 
-    const team = await TeamModel.create({
-      name: String(name).trim(),
-      sport_id: sport_id || null,
-      season: season || null,
-      league_id: league_id || null,
-    });
+    static async createTeam(req: Request, res: Response) {
+        const { name, sport_id, season, league_id, gender } = req.body;
 
-    const uid = getUserId(req);
-    if (uid) {
-      await TeamModel.addManagerToTeam(uid, team.id);
+        if (!name || name.trim().length < 2)
+            return res.status(400).send("name required");
+
+
+        const team = await TeamModel.createTeam({
+            name: name.trim(),
+            sport_id: sport_id || null,
+            season: season || null,
+            league_id: league_id || null,
+            gender: gender || null,
+        });
+
+        console.log("Created team:", team);
+
+        const uid = getUserId(req);
+        if (uid) {
+            await TeamStaffModel.addStaff(team.id, uid, "manager", null);
+        }
+
+        res.status(201).json(team);
     }
 
-    return res.status(201).json(team);
-  }
+    static async updateTeam(req: Request, res: Response) {
+        const { teamId } = req.params;
+
+        const updated = await TeamModel.updateTeam(teamId, {
+            name: req.body.name,
+            sport_id: req.body.sport_id || null,
+            season: req.body.season || null,
+            league_id: req.body.league_id || null,
+            gender: req.body.gender || null,
+        });
+
+        if (!updated) return res.status(404).send("not found");
+        res.json(updated);
+    }
+
+    static async deleteTeam(req: Request, res: Response) {
+        await TeamModel.deleteTeam(req.params.teamId);
+        res.json({ success: true });
+    }
+
     static async getTeamAthletes(req: Request, res: Response) {
-    const { teamId } = req.params;
-    const athletes = await TeamModel.getAthletes(teamId);
-    return res.json(athletes);
-  }
-
-  /** POST /teams/:teamId/athletes { userId } */
-  static async addAthleteToTeam(req: any, res: Response) {
-    if (!isManagerOrAdmin(req)) {
-      return res.status(403).send("Forbidden");
+        const { teamId } = req.params;
+        const athletes = await TeamRosterModel.getAthletes(teamId);
+        res.json(athletes);
     }
 
-    const { teamId } = req.params;
-    const { userId } = req.body || {};
+    static async addAthleteByEmail(req: any, res: Response) {
+        if (!isManagerOrAdmin(req)) return res.status(403).send("Forbidden");
 
-    if (!userId) {
-      return res.status(400).send("userId required");
+        const { teamId } = req.params;
+        const { email } = req.body;
+
+        if (!email) return res.status(400).send("email required");
+
+        let user = await UserModel.findByEmail(email.trim());
+        let isGhost = false;
+
+        if (!user) {
+            user = await UserModel.createGhostUser(email.trim());
+            isGhost = true;
+        }
+
+        await TeamRosterModel.addToTeam(teamId, user!.id, "athlete", null);
+        
+        const team = await TeamModel.getTeam(teamId);
+        if (!team) return res.status(500).send("Team not found");
+
+        if (isGhost) {
+            const token = crypto.randomBytes(32).toString("hex");
+            await InviteModel.createInvite(teamId, email, "athlete", null, token);
+            await sendEmail.sendEmailInvite(email, team.name, token);
+
+        } 
+        else {
+            await sendEmail.sendAddedToTeamEmail(email, team!.name, "athlete");
+        }    
+
+        return res.status(204).send();
     }
 
-    try {
-      await TeamModel.addAthlete(teamId, userId);
-      return res.status(204).send(); // no content, success
-    } catch (err: any) {
-      return res.status(400).send(err.message ?? "Could not add athlete");
+    static async removeAthlete(req: any, res: Response) {
+        if (!isManagerOrAdmin(req)) return res.status(403).send("Forbidden");
+
+        const { teamId, userId } = req.params;
+        await TeamRosterModel.removeAthlete(teamId, userId);
+        return res.json({ success: true });
     }
-  }
-    /** POST /teams/:teamId/athletes/by-email { email } */
-  static async addAthleteByEmail(req: any, res: Response) {
-    if (!isManagerOrAdmin(req)) {
-      return res.status(403).send("Forbidden");
+    static async updateAthlete(req: any, res: Response) {
+        if (!isManagerOrAdmin(req)) return res.status(403).send("Forbidden");
+
+        const { teamId, userId } = req.params;
+        const { position, status } = req.body;
+
+        const updated = await TeamRosterModel.updateAthlete(teamId, userId, {
+            position: position ?? null,
+            status: status ?? null,
+        });
+
+        if (!updated) return res.status(404).send("Athlete not found");
+
+        return res.json(updated);
     }
 
-    const { teamId } = req.params;
-    const { email } = req.body || {};
-
-    if (!email || typeof email !== "string") {
-      return res.status(400).send("email required");
-    }
-
-    const user = await UserModel.findByEmail(email.trim());
-    if (!user) {
-      return res.status(404).send("User not found");
-    }
-
-    try {
-      await TeamModel.addAthlete(teamId, user.id);
-      return res.status(204).send();
-    } catch (err: any) {
-      return res.status(400).send(err.message ?? "Could not add athlete");
-    }
-  }
 
 }

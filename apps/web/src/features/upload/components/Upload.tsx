@@ -1,13 +1,13 @@
 import React, { useState, type JSX } from 'react';
-import { useAuth } from '@/hooks/useAuth';
-import { Button } from "@/components/ui/button"
+import { useAuth } from "@/shared/hooks/useAuth";
+import { Button } from "@/shared/components//ui/button";
 import { useNavigate } from 'react-router-dom';
 import { apiUploadCourses } from '@/features/upload/api/upload'
 import { apiAddCourseAndAthleteCourse } from '@/features/add-edit-courses/api/addcourse'
-import DropzoneField from "@/components/ui/dropzonefield";
-import { Dialog, DialogTrigger, DialogHeader, DialogTitle, DialogDescription, DialogContent } from "@/components/ui/dialog";
-
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/components//ui/card";
+import DropzoneField from "@/shared/components/ui/dropzonefield";
 import { toast } from "sonner"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/shared/components/ui/dialog';
 
 export function Upload(): JSX.Element {
     const { user } = useAuth();
@@ -25,24 +25,31 @@ export function Upload(): JSX.Element {
         }
 
         const fileData = new FormData();
-        files.forEach(file=>{
-            fileData.append("files",file);
+        files.forEach((file) => {
+            fileData.append("files", file);
         });
 
-        try{
-            const uploadResponse = await apiUploadCourses(fileData)
-            if(uploadResponse && uploadResponse.schedule && uploadResponse?.course_times ){
+        try {
+            const uploadResponse = await apiUploadCourses(fileData);
+            if (
+                uploadResponse &&
+                uploadResponse.schedule &&
+                uploadResponse?.course_times
+            ) {
                 const parsedSchedule = uploadResponse.course_times;
-                for(var i =0; i<parsedSchedule.length ; i++){
-                    const athleteCourseResponse = await apiAddCourseAndAthleteCourse(parsedSchedule[i], user?.id)
-                    if(!athleteCourseResponse.success){
+                for (var i = 0; i < parsedSchedule.length; i++) {
+                    const athleteCourseResponse =
+                        await apiAddCourseAndAthleteCourse(
+                            parsedSchedule[i],
+                            user?.id
+                        );
+                    if (!athleteCourseResponse.success) {
                         throw new Error(athleteCourseResponse.message);
                     }
                 }
             }
-            toast.success("Files Uploaded Successfully")
-        } 
-        catch (err) {
+            toast.success("Files Uploaded Successfully");
+        } catch (err) {
             console.error("Unknown error Adding Course:", err);
             return { success: false, message: String(err) };
         }

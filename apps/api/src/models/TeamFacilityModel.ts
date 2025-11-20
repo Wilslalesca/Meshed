@@ -1,4 +1,3 @@
-// apps/api/src/models/TeamFacilityModel.ts
 import { pool } from "../config/db";
 
 export class TeamFacilityModel {

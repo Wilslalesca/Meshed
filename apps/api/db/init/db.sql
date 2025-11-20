@@ -6,7 +6,7 @@ CREATE TABLE users (
   phone VARCHAR(20),
   role VARCHAR(20) NOT NULL DEFAULT 'user',
   password_hash TEXT NOT NULL,
-  active BOOLEAN DEFAULT TRUE,
+  active BOOLEAN DEFAULT FALSE,
   verified BOOLEAN DEFAULT FALSE,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -49,7 +49,8 @@ CREATE TABLE user_teams (
   position VARCHAR(50),
   status VARCHAR(50) DEFAULT 'active',
   joined_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE(user_id, team_id)
 );
 
 CREATE TABLE athlete_profiles (
@@ -109,7 +110,7 @@ CREATE TABLE activity_log (
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE IF NOT EXISTS facilities (
+CREATE TABLE facilities (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   name VARCHAR(100) NOT NULL,
   address1 VARCHAR(100),
@@ -133,6 +134,39 @@ CREATE TABLE team_facilities (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE invites (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  team_id UUID REFERENCES teams(id) ON DELETE CASCADE,
+  email VARCHAR(255) NOT NULL,
+  token VARCHAR(255) NOT NULL,
+  role VARCHAR(50),
+  position VARCHAR(50),
+  status VARCHAR(50) DEFAULT 'pending',
+  sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  accepted_at TIMESTAMP
+);
 
-CREATE INDEX IF NOT EXISTS idx_facilities_name ON facilities (name);
+CREATE TABLE team_staff (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+  team_id UUID REFERENCES teams(id) ON DELETE CASCADE,
+  role VARCHAR(50),
+  status VARCHAR(50) DEFAULT 'active',
+  notes VARCHAR(255),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE (user_id, team_id)
+);
+
+CREATE TABLE email_verification_codes (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+  code VARCHAR(6) NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  expires_at TIMESTAMP DEFAULT (CURRENT_TIMESTAMP + INTERVAL '10 minutes'),
+  used BOOLEAN DEFAULT FALSE
+);
+
+
+-- CREATE INDEX IF NOT EXISTS idx_facilities_name ON facilities (name);
 
