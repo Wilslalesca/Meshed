@@ -79,6 +79,7 @@ CREATE TABLE course_times (
   term VARCHAR(50),
   start_date VARCHAR(100),
   end_date VARCHAR(100),
+  recurring BOOLEAN DEFAULT FALSE,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

@@ -3,6 +3,7 @@ import { z } from "zod";
 import { CourseModel } from "../models/CourseModel";
 import { AthleteCourseModel } from "../models/AthleteCourseModel";
 import { pool } from "../config/db";
+import { parse } from "path";
 
 const courseTimeSchema = z.object({
   name: z.string().min(1).max(100),
@@ -18,6 +19,7 @@ const courseTimeSchema = z.object({
   term: z.string().min(1).max(50),
   start_date: z.string().min(1).max(100),
   end_date: z.string().min(1).max(100),
+  recurring: z.boolean().default(false),
   created_at: z.string().datetime().optional(),
   updated_at: z.string().datetime().optional(),
 });

@@ -39,6 +39,7 @@ export function AddCourseForm({
         "Saturday",
         "Sunday",
     ];
+    const [selectedDays, setSelectedDays] = React.useState<string[]>([]);
 
     const handleSubmit = async () => {
         if (!eventName || !location || !startTime || !endTime || !startDate) {
@@ -52,34 +53,60 @@ export function AddCourseForm({
             return;
         }
 
+        if (reoccurring === "Yes" && selectedDays.length === 0) {
+            toast.error("Select at least one day of the week");
+            return;
+        }
+
         const d = new Date(startDate);
-        const formSchedule = {
-            name: eventName,
-            course_code: eventName,
-            day_of_week: weekdays[d.getDay()],
-            start_time: formatTimeTo12Hour(startTime),
-            end_time: formatTimeTo12Hour(endTime),
-            location: location,
-            term:
-                d.getMonth() >= 8 && d.getMonth() <= 11
-                    ? "FALL"
-                    : d.getMonth() >= 0 && d.getMonth() <= 3
-                    ? "WINTER"
-                    : "SUMMER",
-            start_date: startDate,
-            end_date: !endDate ? startDate : endDate,
-        };
+        const schedulesToSubmit =
+            reoccurring === "Yes"
+                ? selectedDays.map((day) => ({
+                    name: eventName,
+                    course_code: eventName,
+                    day_of_week: day,
+                    start_time: formatTimeTo12Hour(startTime),
+                    end_time: formatTimeTo12Hour(endTime),
+                    location: location,
+                    term:
+                        d.getMonth() >= 8 && d.getMonth() <= 11
+                            ? "FALL"
+                            : d.getMonth() >= 0 && d.getMonth() <= 3
+                            ? "WINTER"
+                            : "SUMMER",
+                    start_date: startDate,
+                    end_date: !endDate ? startDate : endDate,
+                    recurring: (reoccurring == "Yes" ? true : false),
+                }))
+                :[{
+                    name: eventName,
+                    course_code: eventName,
+                    day_of_week: weekdays[d.getDay()],
+                    start_time: formatTimeTo12Hour(startTime),
+                    end_time: formatTimeTo12Hour(endTime),
+                    location: location,
+                    term:
+                        d.getMonth() >= 8 && d.getMonth() <= 11
+                            ? "FALL"
+                            : d.getMonth() >= 0 && d.getMonth() <= 3
+                            ? "WINTER"
+                            : "SUMMER",
+                    start_date: startDate,
+                    end_date: !endDate ? startDate : endDate,
+                    recurring: (reoccurring == "Yes" ? true : false),
+                },];
 
         try {
-            const data = await apiAddCourseAndAthleteCourse(
-                formSchedule,
-                user?.id
-            );
-            console.log("API response:", data);
-            if (data?.success) {
-                toast.success(`Course ${data.course.name} added successfully!`);
-            } else {
-                toast.error(`Error: ${data?.message}`);
+            for (const schedule of schedulesToSubmit) {
+                const data = await apiAddCourseAndAthleteCourse(
+                    schedule,
+                    user?.id
+                );
+                if (data?.success) {
+                    toast.success(`Course ${data.course.name} (${data.course.day_of_week}) added successfully!`);
+                } else {
+                    toast.error(`Error: ${data?.message}`);
+                }
             }
         } catch (err) {
             console.error("Error submitting course:", err);
@@ -147,7 +174,7 @@ export function AddCourseForm({
 
                     <div className="grid w-full items-center gap-3 py-2">
                         <Label htmlFor="reoccurring">
-                            Is the event reoccurring?
+                            Is the event recurring?
                         </Label>
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
@@ -173,6 +200,31 @@ export function AddCourseForm({
                             </DropdownMenuContent>
                         </DropdownMenu>
                     </div>
+
+                    {reoccurring === "Yes" && (
+                        <div className="grid w-full items-center gap-3 py-2">
+                            <Label>Day(s) of the Week</Label>
+                            <div className="columns-1 sm:columns-2 lg:columns-3 gap-6">
+                                {weekdays.map((day) => (
+                                <div className="flex items-center gap-3" key={day}>
+                                    <input
+                                    type="checkbox"
+                                    value={day}
+                                    name="recurringDay"
+                                    onChange={(e) => {
+                                        if (e.target.checked) {
+                                        setSelectedDays((s) => [...s, day]);
+                                        } else {
+                                        setSelectedDays((s) => s.filter((d) => d !== day));
+                                        }
+                                    }}
+                                    />
+                                    <Label>{day}</Label>
+                                </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
 
                     <div className="grid w-full items-center gap-3 py-2">
                         <Label htmlFor="start_date">
