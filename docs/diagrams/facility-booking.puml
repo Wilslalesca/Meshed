@@ -1,0 +1,19 @@
+@startuml
+actor Coach
+title Coach Request Facility
+participant "Web App" as WA
+participant "API Gateway" as API
+participant "App Server" as AS
+database "DB" as DB
+
+Coach -> WA: Selects facility & submits booking request
+WA -> API: Send booking request
+API -> AS: Forward request for processing
+AS -> DB: Read facility availability
+DB --> AS: Availability data
+AS -> DB: Write new booking
+DB --> AS: Confirmation
+AS --> API: Booking result
+API --> WA: Return success/failure
+WA --> Coach: Show booking confirmation
+@enduml

@@ -1,0 +1,17 @@
+@startuml
+title Coach Generate Optimal Schedule
+actor Coach
+participant "Web App" as WA
+participant "API Gateway" as API
+participant "App Server" as AS
+database "Database" as DB
+
+Coach -> WA: Generate schedule
+WA -> API: Send schedule generation request
+API -> AS: Process schedule generation request
+AS -> DB: Read team's schedule availability
+DB --> AS: Availability data
+AS --> API: Run optimization algorithm
+API --> WA: Return generated schedule
+WA --> Coach: Display schedule options
+@enduml

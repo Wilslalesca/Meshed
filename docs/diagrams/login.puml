@@ -1,0 +1,25 @@
+@startuml
+title User Authentication
+actor User
+participant "Web App" as WA
+participant "API Gateway" as API
+participant "App Server" as AS
+database "Database" as DB
+
+User -> WA: Login with credentials
+WA -> API: Send login request
+API -> AS: Authenticate user
+AS -> DB: Validate credentials
+DB --> AS: Return authentication status
+
+alt Credentials valid
+    AS --> API: Authentication success
+    API --> WA: Return login success
+    WA --> User: Show dashboard
+else Credentials invalid
+    AS --> API: Authentication failure
+    API --> WA: Return login failure
+    WA --> User: Show error message
+end
+
+@enduml

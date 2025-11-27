@@ -1,0 +1,24 @@
+@startuml
+title Facility Administrator View Conflict Report
+actor Admin
+participant "Web App" as WA
+participant "API Gateway" as API
+participant "App Server" as AS
+database "Database" as DB
+
+Admin -> WA: Login with credentials
+WA -> API: Send login request
+API -> AS: Authenticate admin
+AS -> DB: Validate credentials
+DB --> AS: Return authentication status
+AS --> API: Authentication result
+API --> WA: Return login success
+
+WA -> API: Request facility conflict reports
+API -> AS: Fetch conflict reports
+AS -> DB: Read facility bookings & detect conflicts
+DB --> AS: Return conflict report data
+AS --> API: Return conflict reports
+API --> WA: Display conflict reports
+WA --> Admin: Show facility conflict dashboard
+@enduml

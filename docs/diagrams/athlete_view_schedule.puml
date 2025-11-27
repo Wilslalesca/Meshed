@@ -1,0 +1,16 @@
+@startuml
+title Athlete View Schedule
+actor Athlete
+participant "Web App" as WA
+participant "API Gateway" as API
+participant "App Server" as AS
+database "Database" as DB
+
+Athlete -> WA: View schedule
+WA -> API: Send schedule data request
+API -> AS: Process schedule data request
+AS -> DB: Query schedule data for specific athlete
+AS --> API: Return schedule data
+API --> WA: Return schedule data
+WA --> Athlete: Display schedule
+@enduml

@@ -1,0 +1,16 @@
+@startuml
+title Athlete Upload Schedule
+actor Athlete
+participant "Web App" as WA
+participant "API Gateway" as API
+participant "App Server" as AS
+database "Database" as DB
+
+Athlete -> WA: Upload course schedule
+WA -> API: Send upload request
+API -> AS: Process upload request
+AS -> DB: Save course data
+AS --> API: Return success
+API --> WA: Return success
+WA --> Athlete: Display confirmation
+@enduml
