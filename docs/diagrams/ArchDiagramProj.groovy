@@ -9,8 +9,8 @@ workspace "Name" "Description" {
         facilitymng = person "Facility Administrator"
         
         //main system
-        uma = softwareSystem "UMA" "Optimized Facility and Practice Scheduling Software" {
-            tags "UMA"
+        meshed = softwareSystem "Meshed" "Optimized Facility and Practice Scheduling Software" {
+            tags "Meshed"
             //containers
             db = container "Database Schema" "PostgreSQL"{
                 tags "Database"
@@ -39,52 +39,52 @@ workspace "Name" "Description" {
         }
         
         //people
-        athlete -> uma "Uses"
-        athlete -> uma.wa "Visits"
-        coach -> uma "Uses"
-        coach -> uma.wa "Visits"
-        facilitymng -> uma "Uses"
-        facilitymng -> uma.wa "Visits"
+        athlete -> meshed "Uses"
+        athlete -> meshed.wa "Visits"
+        coach -> meshed "Uses"
+        coach -> meshed.wa "Visits"
+        facilitymng -> meshed "Uses"
+        facilitymng -> meshed.wa "Visits"
         
         //supporting software systems
-        uma -> notificationGateway "Send parking spot availability notifications"
+        meshed -> notificationGateway "Send athlete schedule update notifications"
         
         //containers
-        uma.wa -> uma.api "Communicates to"
-        uma.api -> uma.appServer "Sends logic to compute"
-        uma.wa -> uma.appServer "Sends authentication logic to"
-        uma.appServer -> uma.db "Reads from and writes to"
+        meshed.wa -> meshed.api "Communicates to"
+        meshed.api -> meshed.appServer "Sends logic to compute"
+        meshed.wa -> meshed.appServer "Sends authentication logic to"
+        meshed.appServer -> meshed.db "Reads from and writes to"
         
         //appserver comp
-        uma.wa -> uma.api.auth "Manages logins and authentication"
-        uma.wa -> uma.api.mng "Provides way to manage account settings"
-        uma.wa -> uma.api.courseUploadReq "Recieves requests for uploading course information"
-        uma.wa -> uma.api.facilityReq "Recieves requests for facility bookings"
-        uma.wa -> uma.api.optiReq "Recieves requests for optimization generation requests"
-        uma.wa -> uma.appServer.facility "Handles facility booking creation"
-        uma.wa -> uma.appServer.optimize "Handles schedule optimization Generation"
-        uma.wa -> uma.appServer.notif "Manages notifcations and authentication"
-        uma.wa -> uma.appServer.upload "Manages course saving"
+        meshed.wa -> meshed.api.auth "Manages logins and authentication"
+        meshed.wa -> meshed.api.mng "Provides way to manage account settings"
+        meshed.wa -> meshed.api.courseUploadReq "Recieves requests for uploading course information"
+        meshed.wa -> meshed.api.facilityReq "Recieves requests for facility bookings"
+        meshed.wa -> meshed.api.optiReq "Recieves requests for optimization generation requests"
+        meshed.wa -> meshed.appServer.facility "Handles facility booking creation"
+        meshed.wa -> meshed.appServer.optimize "Handles schedule optimization Generation"
+        meshed.wa -> meshed.appServer.notif "Manages notifcations and authentication"
+        meshed.wa -> meshed.appServer.upload "Manages course saving"
 
         
     }
 
     views {
-        systemContext uma "ContextDiagram" {
+        systemContext meshed "ContextDiagram" {
             include *
             autolayout lr
         }
         
-        container uma "ContainerDiagram" {
+        container meshed "ContainerDiagram" {
             include *
             autolayout lr
         }
         
-        component uma.appServer "ApplicationServerComponent" {
+        component meshed.appServer "ApplicationServerComponent" {
             include *
             autolayout lr
         }
-        component uma.api "APIComponent" {
+        component meshed.api "APIComponent" {
             include *
             autolayout lr
         }
@@ -111,7 +111,7 @@ workspace "Name" "Description" {
                 color #ffffff       
                 border dashed
             }
-            element "UMA" {
+            element "Meshed" {
                 background #900C3F
                 border solid
             }
