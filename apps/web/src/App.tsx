@@ -6,7 +6,7 @@ import { Register } from "./features/auth/pages/Register.tsx";
 import { Dashboard } from "./routes/dashboard";
 import { Admin } from "./screens/Admin";
 import { Profile } from "./screens/Profile";
-
+import { Facilities } from "./screens/Facilities.tsx";
 import { Upload } from "./features/upload/components/Upload.tsx";
 import { useAuth } from "./shared/hooks/useAuth";
 import ScheduleBackground from './screens/ScheduleBackground';
@@ -67,6 +67,7 @@ export default function App() {
         <Route path="/admin" element={ <ProtectedRoute allowedRoles={["admin"]}><Admin /> </ProtectedRoute> }/>
         <Route path="/manager" element={ <ProtectedRoute allowedRoles={["admin", "manager"]}> <ScheduleBackground /> </ProtectedRoute> }/>
         <Route path="/upload" element={ <ProtectedRoute> <Upload /> </ProtectedRoute> }/>
+        <Route path="/facilities" element={ <ProtectedRoute allowedRoles={["admin"]}> <Facilities /> </ProtectedRoute> }/>
         <Route path="/mySchedule" element={ <ProtectedRoute> <AthleteSchedulePage /> </ProtectedRoute> }/>
         <Route path="/profile" element={ <ProtectedRoute> <Profile /> </ProtectedRoute> }/>
         <Route path="/editcourse/:courseId" element={<ProtectedRoute><EditCourse /></ProtectedRoute>}/>

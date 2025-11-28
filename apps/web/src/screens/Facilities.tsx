@@ -1,9 +1,9 @@
 // apps/web/src/screens/Facilities.tsx (or wherever it lives)
 import React, { useEffect, useState } from "react";
-import { useAuth } from "@/hooks/useAuth";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { useAuth } from "@/shared/hooks/useAuth";
+import { Button } from "@/shared/components/ui/button";
+import { Input } from "@/shared/components/ui/input";
+import { Label } from "@/shared/components/ui/label";
 
 type NewFacility = {
   name: string;
