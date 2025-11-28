@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  FileUp,
   Calendar,
   MapPin,
   Contact2,
   Megaphone,
+  Users,
 } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
 import {
@@ -30,7 +30,7 @@ export const QuickActions = () => {
   };
 
   const actions = [
-    { id: "upload", label: "Upload Schedule", icon: FileUp, path: "/upload" },
+    { id: "team", label: "My Teams", icon: Users, path: "/teams" },
     { id: "contactCoach", label: "Contact Coach", icon: Contact2, path: "/profile" },
     { id: "schedule", label: "View Schedule", icon: Calendar, path: "/mySchedule" },
     { id: "facilities", label: "Book Facility", icon: MapPin, path: "/facilities" },
