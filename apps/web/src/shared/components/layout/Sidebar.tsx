@@ -20,9 +20,11 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/shared/components//ui/dropdown-menu";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/shared/hooks/useAuth";
+import { apiGetNotifications, apiMarkNotificationsRead } from "@/shared/services/notifications";
+import { toast } from "sonner";
 
 export const Sidebar = ({
     open,
@@ -37,7 +39,21 @@ export const Sidebar = ({
     onClose(): void;
     onToggleCollapse(): void;
 }) => {
-    const { user, logout } = useAuth();
+    const { user, token, logout } = useAuth() as any;
+        useEffect(() => {
+            async function checkNotifications() {
+                if (!token) return;
+                const items = await apiGetNotifications(token);
+                if ((items?.length ?? 0) > 0) {
+                    toast.info(`You have ${items.length} schedule update(s).`, {
+                        description: "Your practice/class schedule changed.",
+                    });
+                    await apiMarkNotificationsRead(token);
+                }
+            }
+            checkNotifications();
+            // run once on mount
+        }, [token]);
     const location = useLocation();
     // const accent = "#346E68";
     const [openMenu, setOpenMenu] = useState(false);

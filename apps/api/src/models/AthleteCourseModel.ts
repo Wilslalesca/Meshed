@@ -50,4 +50,12 @@ export const AthleteCourseModel = {
     );
     return (res.rowCount ?? 0) > 0;
   },
+
+  async getAthletesForClass(classId: string): Promise<string[]> {
+    const { rows } = await pool.query(
+      `SELECT athlete_id FROM athlete_course_times WHERE class_id = $1`,
+      [classId]
+    );
+    return rows.map((r: any) => r.athlete_id);
+  },
 };

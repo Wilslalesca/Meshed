@@ -67,4 +67,20 @@ export const sendEmail = {
     });
 },
 
+    async sendScheduleUpdatedEmail(email: string, courseName: string) {
+        if (!resend) {
+            console.warn("Email disabled: missing RESEND_API_KEY");
+            return;
+        }
+        await resend.emails.send({
+            from: "UMA Team <onboarding@resend.dev>",
+            to: email,
+            subject: `Schedule updated: ${courseName}`,
+            html: `
+                <p>Your schedule item <strong>${courseName}</strong> was updated.</p>
+                <p>Log in to view changes: <a href="${BASE_URL}/login">UMA Login</a></p>
+            `,
+        });
+    },
+
 }
