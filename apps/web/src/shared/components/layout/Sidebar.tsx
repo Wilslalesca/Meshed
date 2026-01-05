@@ -19,7 +19,7 @@ import {
     DropdownMenuLabel,
     DropdownMenuSeparator,
     DropdownMenuTrigger,
-} from "@/shared/components//ui/dropdown-menu";
+} from "@/shared/components/ui/dropdown-menu";
 import { useEffect, useState } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/shared/hooks/useAuth";
@@ -77,8 +77,9 @@ export const Sidebar = ({
         <>
             {open && isMobile && (
                 <div
-                    onClick={onClose}
                     className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 transition-opacity"
+                    onClick={onClose}
+                    aria-hidden="true"
                 />
             )}
 
@@ -208,7 +209,7 @@ export const Sidebar = ({
                     })}
                 </nav>
 
-                <div className="mt-auto p-4 mb-2">
+                <div className="mt-auto shrink-0 sticky bottom-0 p-4 bg-[#F9FAFB] border-t">
                     <DropdownMenu open={openMenu} onOpenChange={setOpenMenu}>
                         <DropdownMenuTrigger asChild>
                             <button

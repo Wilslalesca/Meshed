@@ -62,10 +62,9 @@ export const sendEmail = {
         html: `
             <p>You have been added to the team <strong>${teamName}</strong> on Meshed.</p>
             <p>Your role: <strong>${role}</strong></p>
-            <p>Log in to view your team: <a href="${BASE_URL}/login">Meshed Login</a></p>
-        `,
-    });
-},
+            <p>Log in to view your team: <a href="${BASE_URL}/login">Meshed Login</a></p>`,
+        });
+    },
 
     async sendScheduleUpdatedEmail(email: string, courseName: string) {
         if (!resend) {
