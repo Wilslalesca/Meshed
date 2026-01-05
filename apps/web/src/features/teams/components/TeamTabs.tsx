@@ -81,7 +81,7 @@ export const TeamTabs = ({
                             <UserPlus size={16} className="mr-2" /> Add User
                         </Button>
                         {typeof onBulkUpload === "function" && (
-                            <Button variant="outline" onClick={onBulkUpload}>
+                            <Button variant="default" onClick={onBulkUpload}>
                                 <Upload size={16} className="mr-2" /> Bulk Upload CSV
                             </Button>
                         )}

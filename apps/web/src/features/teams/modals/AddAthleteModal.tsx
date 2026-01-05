@@ -16,8 +16,10 @@ export const AddAthleteModal = ({ open, onOpenChange, teamId, onAdded }: any) =>
         const selectedFile = e.target.files?.[0];
         if (selectedFile) {
             // Validate file type
-            if (!selectedFile.name.endsWith('.csv')) {
-                toast.error("Please select a CSV file");
+            const lower = selectedFile.name.toLowerCase();
+            const allowed = lower.endsWith('.csv') || lower.endsWith('.xlsx') || lower.endsWith('.xls');
+            if (!allowed) {
+                toast.error("Please select a CSV or Excel (.xlsx/.xls) file");
                 return;
             }
             setFile(selectedFile);
@@ -93,7 +95,7 @@ export const AddAthleteModal = ({ open, onOpenChange, teamId, onAdded }: any) =>
                         <label className="text-sm font-medium mb-2 block">Upload CSV File</label>
                         <Input
                             type="file"
-                            accept=".csv"
+                            accept=".csv,.xlsx,.xls"
                             onChange={handleFileChange}
                             disabled={!!email}
                         />

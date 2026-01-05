@@ -81,13 +81,13 @@ export const InviteMemberModal = ({ open, onOpenChange, teamId, defaultRole = "a
             disabled={!!file}
           />
 
-          <Select value={role} onValueChange={(v) => setRole(v as "athlete" | "manager")}>
+          <Select value={role} onValueChange={(v) => setRole(v as "athlete" | "staff")}>
             <SelectTrigger>
               <SelectValue placeholder="Role" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="athlete">Athlete</SelectItem>
-              <SelectItem value="manager">Manager</SelectItem>
+              <SelectItem value="staff">Manager</SelectItem>
             </SelectContent>
           </Select>
 
@@ -97,11 +97,11 @@ export const InviteMemberModal = ({ open, onOpenChange, teamId, defaultRole = "a
             onChange={(e) => setPosition(e.target.value)}
           />
 
-          <div className="space-y-2">
-            <div className="text-xs text-muted-foreground">Or upload a CSV of athlete emails</div>
+          {/* <div className="space-y-2">
+            <div className="text-xs text-muted-foreground">Or upload a CSV/Excel of athlete emails</div>
             <Input
               type="file"
-              accept=".csv"
+              accept=".csv,.xlsx,.xls"
               onChange={(e) => {
                 const f = e.target.files?.[0] ?? null;
                 setFile(f);
@@ -112,7 +112,7 @@ export const InviteMemberModal = ({ open, onOpenChange, teamId, defaultRole = "a
               }}
               disabled={!!email}
             />
-          </div>
+          </div> */}
         </div>
 
         <DialogFooter>
