@@ -12,18 +12,23 @@ import {
     Calendar,
     Settings,
     UserPlus,
+    Upload,
 } from "lucide-react";
 import { useUserRole } from "@/shared/hooks/useUserRole";
+import type { Team, SportLookup, League } from "../types/teams";
+
 interface Props {
-    team: any;
-    sport: any;
-    league: any;
+    team: Team;
+    sport: SportLookup | null;
+    league: League | null;
     viewMode: "cards" | "table";
     onViewModeChange: (v: "cards" | "table") => void;
 
     onEdit: () => void;
     onDelete: () => void;
     onAddUser: () => void;
+    onBulkUpload?: () => void;
+    isManagerOverride?: boolean;
 
     children: {
         profile: React.ReactNode;
@@ -42,10 +47,12 @@ export const TeamTabs = ({
     onEdit,
     onDelete,
     onAddUser,
+    onBulkUpload,
     children,
+    isManagerOverride,
 }: Props) => {
     const userRole = useUserRole();
-    const isManager = userRole.isManager;
+    const isManager = (isManagerOverride ?? userRole.isManager);
     return (
         <div className="space-y-6">
             <div className="flex flex-col gap-2">
@@ -69,9 +76,16 @@ export const TeamTabs = ({
                     )}
 
                     {isManager && (
-                    <Button variant="default" onClick={onAddUser}>
-                        <UserPlus size={16} className="mr-2" /> Add User
-                    </Button>
+                    <>
+                        <Button variant="default" onClick={onAddUser}>
+                            <UserPlus size={16} className="mr-2" /> Add User
+                        </Button>
+                        {typeof onBulkUpload === "function" && (
+                            <Button variant="outline" onClick={onBulkUpload}>
+                                <Upload size={16} className="mr-2" /> Bulk Upload CSV
+                            </Button>
+                        )}
+                    </>
                     )}
                     <div className="ml-auto flex gap-2">
                         <Button

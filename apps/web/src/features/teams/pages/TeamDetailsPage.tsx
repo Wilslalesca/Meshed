@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { useUserRole } from "@/shared/hooks/useUserRole";
+import { useIsTeamManager } from "../hooks/useTeamManager";
 import { useTeamById } from "../hooks/useTeamById";
 import { useRoster } from "../hooks/useRoster";
 import { useStaff } from "../hooks/useStaff";
@@ -17,22 +17,23 @@ import { TeamRosterTab } from "../components/tabs/TeamRosterTab";
 import { EditTeamModal } from "../modals/EditTeamModal";
 import { DeleteTeamModal } from "../modals/DeleteTeamModal";
 import { InviteMemberModal } from "../modals/InviteMemberModal";
+import { AddAthleteModal } from "../modals/AddAthleteModal";
 
 export const TeamDetailsPage = () => {
     const { teamId } = useParams<{ teamId: string }>();
     const navigate = useNavigate();
-    const userRole = useUserRole();
-    const isManager = userRole.isManager;
+    const { isManager } = useIsTeamManager(teamId!);
     const [viewMode, setViewMode] = useState<"cards" | "table">("cards");
 
     const { team, loading, reload: reloadTeam } = useTeamById(teamId!);
     const { roster, removeAthlete, reloadRoster } = useRoster(teamId!);
-    const { staff, reloadStaff, removeStaff, updateStaff } = useStaff(teamId!);
+    const { staff, reloadStaff, removeStaff } = useStaff(teamId!);
     const { sports, leagues } = useLookups();
 
     const [openEdit, setOpenEdit] = useState(false);
     const [openDelete, setOpenDelete] = useState(false);
     const [openInvite, setOpenInvite] = useState(false);
+    const [openBulkAdd, setOpenBulkAdd] = useState(false);
     const [inviteRole, setInviteRole] = useState<
         "athlete" | "manager"
     >("athlete");
@@ -71,6 +72,10 @@ export const TeamDetailsPage = () => {
                           }
                         : () => {}
                 }
+                onBulkUpload={
+                    isManager ? () => setOpenBulkAdd(true) : undefined
+                }
+                isManagerOverride={isManager}
             >
                 {{
                     profile: (
@@ -128,6 +133,16 @@ export const TeamDetailsPage = () => {
                     onInvited={() => {
                         reloadRoster();
                         reloadStaff();
+                    }}
+                />
+            )}
+            {isManager && (
+                <AddAthleteModal
+                    open={openBulkAdd}
+                    onOpenChange={setOpenBulkAdd}
+                    teamId={team.id}
+                    onAdded={() => {
+                        reloadRoster();
                     }}
                 />
             )}

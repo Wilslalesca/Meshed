@@ -1,10 +1,15 @@
 import { Resend } from "resend";
-const BASE_URL = process.env.FRONTEND_ORIGIN!;
-const resend = new Resend(process.env.RESEND_API_KEY!);
+import { config } from "../config/config";
+const BASE_URL = config.frontendOrigin;
+const resend = config.resendApiKey ? new Resend(config.resendApiKey) : null;
 
 export const sendEmail = {
 
     async sendEmailInvite(email: string, teamName: string, token: string) {
+        if (!resend) {
+            console.warn("Email disabled: missing RESEND_API_KEY");
+            return;
+        }
         await resend.emails.send({
             from: "UMA Team <onboarding@resend.dev>",
             to: email,
@@ -20,6 +25,10 @@ export const sendEmail = {
     },
 
     async sendVerificationEmail(email: string , code: string) {
+        if (!resend) {
+            console.warn("Email disabled: missing RESEND_API_KEY");
+            return;
+        }
         await resend.emails.send({
             from: "UMA Team <onboarding@resend.dev>",
             to: email,
@@ -29,6 +38,10 @@ export const sendEmail = {
     },
 
     async sendPasswordResetEmail(email: string, code: string) {
+        if (!resend) {
+            console.warn("Email disabled: missing RESEND_API_KEY");
+            return;
+        }
         await resend.emails.send({
             from: "UMA Team <onboarding@resend.dev>",
             to: email,
@@ -38,6 +51,10 @@ export const sendEmail = {
     },
 
     async sendAddedToTeamEmail(email: string, teamName: string, role: string) {
+    if (!resend) {
+        console.warn("Email disabled: missing RESEND_API_KEY");
+        return;
+    }
     await resend.emails.send({
         from: "UMA Team <onboarding@resend.dev>",
         to: email,

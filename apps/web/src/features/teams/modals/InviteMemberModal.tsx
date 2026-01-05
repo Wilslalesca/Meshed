@@ -15,7 +15,7 @@ import {
   SelectItem,
 } from "@/shared/components/ui/select";
 import { useEffect, useState } from "react";
-import { apiAddAthleteByEmail } from "../api/teams";
+import { apiAddAthleteByEmail, apiBulkAddAthletesByCsv } from "../api/teams";
 import { apiAddStaff } from "../api/staff";
 import { useAuth } from "@/shared/hooks/useAuth";
 
@@ -33,12 +33,14 @@ export const InviteMemberModal = ({ open, onOpenChange, teamId, defaultRole = "a
   const [role, setRole] = useState(defaultRole);
   const [position, setPosition] = useState("");
   const [loading, setLoading] = useState(false);
+  const [file, setFile] = useState<File | null>(null);
 
   useEffect(() => {
     if(open) {
       setRole(defaultRole);
       setEmail("");
       setPosition("");
+      setFile(null);
     }
   }, [open, defaultRole]);
 
@@ -46,18 +48,22 @@ export const InviteMemberModal = ({ open, onOpenChange, teamId, defaultRole = "a
     if (!token) return;
     setLoading(true);
 
-    if (role === "athlete") {
-      await apiAddAthleteByEmail(teamId, email, token);
+    try {
+      if (file) {
+        await apiBulkAddAthletesByCsv(teamId, file, token);
+      } else if (role === "athlete") {
+        await apiAddAthleteByEmail(teamId, email, token);
+      } else {
+        await apiAddStaff(teamId, email, role, position, token);
+      }
+    } finally {
+      setLoading(false);
 
-    } else {
-      await apiAddStaff(teamId, email, role, position, token);
-
+      onOpenChange(false);
+      onInvited();
+      setPosition("");
+      setFile(null);
     }
-    setLoading(false);
-
-    onOpenChange(false);
-    onInvited();
-    setPosition("");
   }
 
   return (
@@ -71,7 +77,8 @@ export const InviteMemberModal = ({ open, onOpenChange, teamId, defaultRole = "a
           <Input
             placeholder="Email address"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => { setEmail(e.target.value); setFile(null); }}
+            disabled={!!file}
           />
 
           <Select value={role} onValueChange={(v) => setRole(v as "athlete" | "manager")}>
@@ -89,13 +96,30 @@ export const InviteMemberModal = ({ open, onOpenChange, teamId, defaultRole = "a
             value={position}
             onChange={(e) => setPosition(e.target.value)}
           />
+
+          <div className="space-y-2">
+            <div className="text-xs text-muted-foreground">Or upload a CSV of athlete emails</div>
+            <Input
+              type="file"
+              accept=".csv"
+              onChange={(e) => {
+                const f = e.target.files?.[0] ?? null;
+                setFile(f);
+                if (f) {
+                  setRole("athlete");
+                  setEmail("");
+                }
+              }}
+              disabled={!!email}
+            />
+          </div>
         </div>
 
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
-          <Button onClick={handleInvite} disabled={!email.trim() || loading}>
+          <Button onClick={handleInvite} disabled={(!email.trim() && !file) || loading}>
             Send Invite
           </Button>
         </DialogFooter>

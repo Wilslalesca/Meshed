@@ -1,4 +1,4 @@
-export const API_BASE = import.meta.env.VITE_API_BASE_URL;
+export const API_BASE = import.meta.env.VITE_API_URL;
 import type {
     Team,
     CreateTeamPayload,
@@ -104,6 +104,26 @@ export async function apiAddAthleteByEmail(teamId: string, email: string, token:
     });
 
     return res.ok;
+}
+
+export async function apiBulkAddAthletesByCsv(teamId: string, file: File, token: string) {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const res = await fetch(`${API_BASE}/teams/${teamId}/athletes/bulk-upload`, {
+        method: "POST",
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+    });
+
+    if (!res.ok) {
+        const errorData = await res.json().catch(() => ({ message: "Upload failed" }));
+        throw new Error(errorData.message || "Upload failed");
+    }
+
+    return await res.json();
 }
 
 export async function apiRemoveAthlete(teamId: string, userId: string, token: string) {
