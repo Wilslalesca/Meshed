@@ -5,7 +5,7 @@ export function Features() {
   return (
     <section id="features" className="py-16">
       <div className="mx-auto max-w-6xl px-6">
-        <h2 className="text-2xl font-bold">What you can run on UMA</h2>
+        <h2 className="text-2xl font-bold">What you can run Meshed</h2>
         <p className="mt-2 text-sm text-muted-foreground">
           Plug-and-play modules—swap the copy later.
         </p>

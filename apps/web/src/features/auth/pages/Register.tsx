@@ -1,7 +1,7 @@
 import React from "react";
 import { GalleryVerticalEnd } from "lucide-react";
 import { RegisterForm } from "@/features/auth/components/RegisterForm";
-import Logo from "@/assets/Logo.png";
+import Logo from "@/assets/Meshed_logo.png";
 
 export const Register: React.FC = () => (
     <div className="grid h-screen lg:grid-cols-2">
@@ -11,7 +11,7 @@ export const Register: React.FC = () => (
                     <div className="bg-primary text-primary-foreground flex size-6 items-center justify-center rounded-md">
                         <GalleryVerticalEnd className="size-4" />
                     </div>
-                    UMA
+                    Meshed
                 </a>
             </div>
             <div className="flex flex-1 items-center justify-center">
@@ -23,7 +23,7 @@ export const Register: React.FC = () => (
         <div className="relative hidden bg-muted lg:block">
             <img
                 src={Logo}
-                alt="UMA Logo"
+                alt="Meshed Logo"
                 className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
             />
         </div>

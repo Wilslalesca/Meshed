@@ -14,7 +14,7 @@ export default function Contact() {
       <div className="mx-auto max-w-4xl px-6 py-16">
         <h1 className="text-3xl font-bold">Contact us</h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          Have questions about UMA? Drop your info and we’ll reach out.
+          Have questions about Meshed? Drop your info and we’ll reach out.
         </p>
 
         <form className="mt-8 card p-6 space-y-4" onSubmit={onSubmit}>

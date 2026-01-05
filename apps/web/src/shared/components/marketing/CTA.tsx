@@ -13,7 +13,7 @@ export function CTA() {
                 "radial-gradient(500px 250px at 10% 0%, #00e5ff22 0%, transparent 60%), radial-gradient(500px 250px at 90% 100%, #ff8a4225 0%, transparent 60%)",
             }}
           />
-          <h3 className="text-2xl font-bold">Ready to try UMA?</h3>
+          <h3 className="text-2xl font-bold">Ready to try Meshed?</h3>
           <p className="mt-2 text-sm text-muted-foreground">
             Create a free account—bring your first team in minutes.
           </p>

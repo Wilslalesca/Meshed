@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { apiAcceptInvite } from "../api/invites";
 import { RegisterForm } from "../components/RegisterForm";
-import Logo from "@/assets/Logo.png";
+import Logo from "../../../assets/Meshed_logo.png";
 
 export default function InviteRegisterPage() {
   const [params] = useSearchParams();
@@ -40,7 +40,7 @@ export default function InviteRegisterPage() {
       <div className="flex flex-col gap-4 p-6 md:p-10">
         <div className="flex justify-center gap-2 md:justify-start">
           <a href="/" className="flex items-center gap-2 font-medium">
-            UMA
+            Meshed
           </a>
         </div>
 
@@ -58,7 +58,7 @@ export default function InviteRegisterPage() {
       <div className="relative hidden bg-muted lg:block">
         <img
           src={Logo}
-          alt="UMA Logo"
+          alt="Meshed Logo"
           className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
         />
       </div>

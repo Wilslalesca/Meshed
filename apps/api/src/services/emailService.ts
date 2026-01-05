@@ -11,11 +11,11 @@ export const sendEmail = {
             return;
         }
         await resend.emails.send({
-            from: "UMA Team <onboarding@resend.dev>",
+            from: "Meshed Team <onboarding@resend.dev>",
             to: email,
-            subject: `Complete your UMA account to join ${teamName}`,
+            subject: `Complete your Meshed account to join ${teamName}`,
             html: `
-            <p>You’ve been added to <strong>${teamName}</strong> on UMA.</p>
+            <p>You’ve been added to <strong>${teamName}</strong> on Meshed.</p>
             <p>Create your account to access the team:</p>
             <p><a href="${BASE_URL}/register/invite?invite=${token}">
                 Complete Your Account
@@ -30,9 +30,9 @@ export const sendEmail = {
             return;
         }
         await resend.emails.send({
-            from: "UMA Team <onboarding@resend.dev>",
+            from: "Meshed Team <onboarding@resend.dev>",
             to: email,
-            subject: "Verify your email for UMA",
+            subject: "Verify your email for Meshed",
             html: `<p>Your verification code is: <strong>${code}</strong></p>`,
         });
     },
@@ -43,9 +43,9 @@ export const sendEmail = {
             return;
         }
         await resend.emails.send({
-            from: "UMA Team <onboarding@resend.dev>",
+            from: "Meshed Team <onboarding@resend.dev>",
             to: email,
-            subject: "Reset your UMA password",
+            subject: "Reset your Meshed password",
             html: `<p>Your password reset code is: <strong>${code}</strong></p>`,
         });
     },
@@ -56,13 +56,13 @@ export const sendEmail = {
         return;
     }
     await resend.emails.send({
-        from: "UMA Team <onboarding@resend.dev>",
+        from: "Meshed Team <onboarding@resend.dev>",
         to: email,
         subject: `You've been added to ${teamName}`,
         html: `
-            <p>You have been added to the team <strong>${teamName}</strong> on UMA.</p>
+            <p>You have been added to the team <strong>${teamName}</strong> on Meshed.</p>
             <p>Your role: <strong>${role}</strong></p>
-            <p>Log in to view your team: <a href="${BASE_URL}/login">UMA Login</a></p>
+            <p>Log in to view your team: <a href="${BASE_URL}/login">Meshed Login</a></p>
         `,
     });
 },
@@ -73,12 +73,12 @@ export const sendEmail = {
             return;
         }
         await resend.emails.send({
-            from: "UMA Team <onboarding@resend.dev>",
+            from: "Meshed Team <onboarding@resend.dev>",
             to: email,
             subject: `Schedule updated: ${courseName}`,
             html: `
                 <p>Your schedule item <strong>${courseName}</strong> was updated.</p>
-                <p>Log in to view changes: <a href="${BASE_URL}/login">UMA Login</a></p>
+                <p>Log in to view changes: <a href="${BASE_URL}/login">Meshed Login</a></p>
             `,
         });
     },
