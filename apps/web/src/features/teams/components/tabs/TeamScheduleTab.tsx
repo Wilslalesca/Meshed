@@ -16,8 +16,10 @@ import { useParams } from "react-router-dom";
 import { TeamScheduleCalendar } from "../schedule/TeamScheduleCalendar";
 import { TeamScheduleToolbar } from "../schedule/TeamScheduleToolbar";
 import { useTeamSchedule } from "../../hooks/useTeamSchedule";
+import { useRoster } from "../../hooks/useRoster";
 
-import { TeamScheduleView } from "../../types/schedule";
+import { TeamScheduleView, TeamScheduleMode } from "../../types/schedule";
+
 
 
 function startOfWeekISO(d = new Date()) {
@@ -44,12 +46,16 @@ function endOfWeekISO(d = new Date()) {
 export const TeamScheduleTab = () => {
   const { teamId } = useParams<{ teamId: string }>();
   const [view, setView] = useState<TeamScheduleView>(TeamScheduleView.Week);
+  const [mode, setMode] = useState<TeamScheduleMode>(TeamScheduleMode.Calendar);
   const [search, setSearch] = useState<string>("");
-
   const fromISO = useMemo(() => startOfWeekISO(), []);
   const toISO = useMemo(() => endOfWeekISO(), []);
 
-  const { events, loading, error } = useTeamSchedule(teamId!, fromISO, toISO);
+  const { roster, loading: rosterLoading } = useRoster(teamId!);
+  const rosterCount = roster?.length ?? 0;
+
+  const { events, loading: eventsLoading, error } = useTeamSchedule(teamId!, fromISO, toISO);
+
 
   const filteredEvents = useMemo(() => {
       const query = search.trim().toLowerCase();
@@ -69,17 +75,23 @@ export const TeamScheduleTab = () => {
             setView={setView}
             search={search}
             setSearch={setSearch}
+            mode={mode}
+            setMode={setMode}
         />
-        { loading && (
+        { eventsLoading && (
           <div className="text-sm text-muted-foreground">Loading Schedules...</div>
         )}
         { error && (
           <div className="text-sm text-destructive">Something went wrong: {error}</div>
         )}
-        { !loading && !error && (
+        { !eventsLoading && !error && (
           <TeamScheduleCalendar
               view={view}
               events={filteredEvents}
+              mode={mode}
+              fromISO={fromISO}
+              toISO={toISO}
+              rosterCount={rosterCount}
           />
         )}
     </div>

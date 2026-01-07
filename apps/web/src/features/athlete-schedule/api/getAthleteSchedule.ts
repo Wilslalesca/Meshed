@@ -1,11 +1,11 @@
 import type { Schedule } from '../types/Schedule';
 export const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
-export async function getAthleteSchedule(athleteId: string): Promise<Schedule[]> {
+export async function getAthleteSchedule(athleteId: string, token: string): Promise<Schedule[]> {
 
     try {
         const response = await fetch(`${API_BASE}/schedule/athlete/${athleteId}`, {
-            credentials: 'include',
+            headers: { Authorization: `Bearer ${token}` },
         });
 
         if (!response.ok) {

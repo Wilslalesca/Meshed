@@ -2,49 +2,84 @@ import FullCalendar from '@fullcalendar/react';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
-import { useMemo, useRef, useEffect, use } from 'react';
+import { useMemo, useRef, useEffect } from 'react';
+import { buildHeatmapOverlayEvents } from './heatmapOverlay';
 
-import type { TeamScheduleEvent, TeamScheduleView } from '../../types/schedule';
+import { TeamScheduleMode, type TeamScheduleEvent, type TeamScheduleView } from '../../types/schedule';
+export function TeamScheduleCalendar({
+  view,
+  events,
+  mode,
+  rosterCount,
+  fromISO,
+  toISO,
+}: {
+  view: TeamScheduleView;
+  events: TeamScheduleEvent[];
+  mode: TeamScheduleMode;
+  rosterCount?: number;
+  fromISO: string;
+  toISO: string;
+  }) {
+  const calendarReference = useRef<FullCalendar | null>(null);
 
-export function TeamScheduleCalendar({view, events} : { view: TeamScheduleView; events: TeamScheduleEvent[] }) {
-    const calendarReference = useRef<FullCalendar | null>(null);
-    const calendarEvents = useMemo(() => {
-        return events.map((e) => ({
-            id: e.id,
-            title: `${e.athleteName}: ${e.title}`,
-            start: e.startTime,
-            end: e.endTime,
-            extendedProps: e,
-        }));
-    }, [events]);
+  const calendarEvents = useMemo(() => {
+    return events.map((e) => ({
+      id: e.id,
+      title: `${e.athleteName}: ${e.title}`,
+      start: e.startTime,
+      end: e.endTime,
+      extendedProps: e,
+    }));
+  }, [events]);
 
-    // i needed this work around. When clicking month day week it wont update the calendar
-    // this allowes us to trigger it when the view changes
-    useEffect(() => {
-        const api = calendarReference.current?.getApi();
-        if (!api) return;
+  const heatmapBackgroundEvents = useMemo(() => {
+    if (mode !== TeamScheduleMode.Heatmap) return [];
 
-        if (api.view.type !== view) {
-            api.changeView(view);
-        }
-        console.log(view)
-    }, [view]);
+    return buildHeatmapOverlayEvents({
+      events,
+      fromISO,
+      toISO,
+      rosterCount: rosterCount || 0,
+      slotMinutes: 30,
+      dayStartHour: 6,
+      dayEndHour: 23,
+    });
+  }, [events, fromISO, toISO, mode, rosterCount]);
 
+  const allEvents = useMemo(() => {
+    if (mode === TeamScheduleMode.Heatmap) {
+        return heatmapBackgroundEvents;
+    }
+    return calendarEvents;
+  }, [mode,heatmapBackgroundEvents, calendarEvents]);
 
-    return (
-        <div className='rounded-xl border bg-background p-3'>
-            <FullCalendar
-                ref={calendarReference}
-                plugins={[ timeGridPlugin, dayGridPlugin, interactionPlugin ]}
-                initialView={view}
-                headerToolbar={false}
-                height="auto"
-                nowIndicator
-                allDaySlot={false}
-                slotMinTime="06:00:00"
-                slotMaxTime="23:00:00"
-                events={calendarEvents ?? []}
-            />
-        </div>
-    );
+  useEffect(() => {
+    const api = calendarReference.current?.getApi();
+    if (!api) return;
+    if (api.view.type !== view) api.changeView(view);
+  }, [view]);
+
+  return (
+    <div className="rounded-xl border bg-background p-3">
+      <FullCalendar
+        key={`${view}-${mode}`}
+        ref={calendarReference}
+        plugins={[timeGridPlugin, dayGridPlugin, interactionPlugin]}
+        initialView={view}
+        headerToolbar={false}
+        height="auto"
+        nowIndicator
+        allDaySlot={false}
+        slotMinTime="06:00:00"
+        slotMaxTime="23:00:00"
+        events={allEvents}
+        eventDidMount={(info) => {
+          if (info.event.display === "background") {
+            info.el.style.borderRadius = "6px";
+          }
+        }}
+      />
+    </div>
+  );
 }

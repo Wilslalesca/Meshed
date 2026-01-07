@@ -38,7 +38,7 @@ export const useTeamSchedule = (teamId: string, fromISO: string, toISO: string) 
         return () => {
             cancelled = true;
         };
-    }, [teamId, token, toISO]);
+    }, [teamId, token, fromISO, toISO]);
 
     return { events, loading, error };
 };
