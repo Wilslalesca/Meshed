@@ -125,7 +125,7 @@ export const AddTeamEventModal = ({ open, onOpenChange, teamId, onAdded }: any) 
                     {reoccurring && (
                         <Select value={selectedReoccurrType} onValueChange={setSelectedReoccurrType}>
                             <SelectTrigger>
-                                <SelectValue placeholder="Event Type" />
+                                <SelectValue placeholder="Type of Reocurrance" />
                             </SelectTrigger>
                             <SelectContent>
                                 {reoccurrTypes.map((e) => (
