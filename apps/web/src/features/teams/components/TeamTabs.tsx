@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
     Tabs,
     TabsList,
@@ -46,6 +46,7 @@ export const TeamTabs = ({
 }: Props) => {
     const userRole = useUserRole();
     const isManager = userRole.isManager;
+    const [activeTab, setActiveTab] = useState<"profile" | "roster" | "staff" | "schedule">("profile");
     return (
         <div className="space-y-6">
             <div className="flex flex-col gap-2">
@@ -73,30 +74,33 @@ export const TeamTabs = ({
                         <UserPlus size={16} className="mr-2" /> Add User
                     </Button>
                     )}
-                    <div className="ml-auto flex gap-2">
-                        <Button
-                            variant={
-                                viewMode === "cards" ? "default" : "outline"
-                            }
-                            onClick={() => onViewModeChange("cards")}
-                            size="sm"
-                        >
-                            Cards
-                        </Button>
-                        <Button
-                            variant={
-                                viewMode === "table" ? "default" : "outline"
-                            }
-                            onClick={() => onViewModeChange("table")}
-                            size="sm"
-                        >
-                            Table
-                        </Button>
+                    <div
+                    className={`ml-auto flex gap-2 transition-opacity ${
+                        activeTab !== "profile" && activeTab !== "schedule"
+                        ? "opacity-100 visible"
+                        : "opacity-0 invisible"
+                    }`}
+                    >
+                    <Button
+                        variant={viewMode === "cards" ? "default" : "outline"}
+                        onClick={() => onViewModeChange("cards")}
+                        size="sm"
+                    >
+                        Cards
+                    </Button>
+                    <Button
+                        variant={viewMode === "table" ? "default" : "outline"}
+                        onClick={() => onViewModeChange("table")}
+                        size="sm"
+                    >
+                        Table
+                    </Button>
                     </div>
+
                 </div>
             </div>
 
-            <Tabs defaultValue="profile" className="w-full">
+            <Tabs defaultValue="profile" className="w-full" onValueChange={(v) => setActiveTab(v as typeof activeTab)}>
                 <TabsList className="w-full">
                     <TabsTrigger
                         value="profile"

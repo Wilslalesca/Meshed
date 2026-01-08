@@ -59,13 +59,36 @@ function buildISO(day: Date, time: string) {
 }
 
 
-async function apiGetAthleteScheduleRows(athleteId: string, token: string): Promise<CourseTimeRow[]> {
+// async function apiGetAthleteScheduleRows(athleteId: string, token: string): Promise<CourseTimeRow[]> {
+//   const res = await fetch(`${API_BASE}/schedule/athlete/${athleteId}`, {
+//     headers: { Authorization: `Bearer ${token}` },
+//   });
+
+//   return res.ok ? (await res.json()) as CourseTimeRow[] : [];
+// }
+
+async function apiGetAthleteScheduleRows(
+  athleteId: string,
+  token: string
+): Promise<CourseTimeRow[]> {
   const res = await fetch(`${API_BASE}/schedule/athlete/${athleteId}`, {
     headers: { Authorization: `Bearer ${token}` },
   });
 
-  return res.ok ? (await res.json()) as CourseTimeRow[] : [];
+  if (!res.ok) {
+    console.error("❌ Failed to fetch schedule rows for athlete:", athleteId);
+    return [];
+  }
+
+  const data = (await res.json()) as CourseTimeRow[];
+
+  console.group(`📦 Schedule rows for athlete ${athleteId}`);
+  console.table(data);
+  console.groupEnd();
+
+  return data;
 }
+
 
 
 export async function apiGetTeamSchedule( teamId: string, token: string, fromISO: string, toISO: string ) : Promise<TeamScheduleEvent[]> {
@@ -98,6 +121,32 @@ export async function apiGetTeamSchedule( teamId: string, token: string, fromISO
 
       const dayIndex = dayNameToIndex(row.day_of_week);
       if (dayIndex === null) continue;
+      if (!row.recurring) {
+        const firstMatch = days.find(
+          (d) =>
+            d.getDay() === dayIndex &&
+            withinOptionalDateWindow(d, row)
+        );
+
+        if (firstMatch) {
+          const startTime = buildISO(firstMatch, row.start_time);
+          const endTime = buildISO(firstMatch, row.end_time);
+
+          events.push({
+            id: `${s.athlete.id}:${row.id}:${startTime}`,
+            athleteId: s.athlete.id,
+            athleteName: s.athlete.name,
+            title: row.course_code || row.name || "Class",
+            location: row.location || undefined,
+            startTime,
+            endTime,
+            type: "class",
+            description: row.name || undefined,
+          });
+        }
+
+        continue;
+      }
 
       for (const d of days) {
         if (d.getDay() !== dayIndex) continue;
@@ -122,126 +171,3 @@ export async function apiGetTeamSchedule( teamId: string, token: string, fromISO
   }
   return events;
 }
-
-
-// return [
-//     {
-//       id: "evt-1",
-//       athleteId: "a1",
-//       athleteName: "Will Ross",
-//       title: "ECE3232",
-//       location: "Head Hall",
-//       startTime: "2026-01-06T13:00:00",
-//       endTime: "2026-01-06T14:30:00",
-//       type: "class",
-//     },
-//     {
-//       id: "evt-2",
-//       athleteId: "a1",
-//       athleteName: "Will Ross",
-//       title: "ECE3232",
-//       location: "Head Hall",
-//       startTime: "2026-01-08T13:00:00",
-//       endTime: "2026-01-08T14:30:00",
-//       type: "class",
-//     },
-//     {
-//       id: "evt-3",
-//       athleteId: "a1",
-//       athleteName: "Will Ross",
-//       title: "ENGG4002",
-//       location: "Head Hall",
-//       startTime: "2026-01-06T17:30:00",
-//       endTime: "2026-01-06T18:20:00",
-//       type: "class",
-//     },
-//     {
-//       id: "evt-4",
-//       athleteId: "a1",
-//       athleteName: "Will Ross",
-//       title: "TME4025",
-//       location: "Head Hall",
-//       startTime: "2026-01-08T17:30:00",
-//       endTime: "2026-01-08T18:20:00",
-//       type: "class",
-//     },
-//     {
-//       id: "evt-5",
-//       athleteId: "a2",
-//       athleteName: "Alex Cameron",
-//       title: "TME4025",
-//       location: "Head Hall",
-//       startTime: "2026-01-08T17:30:00",
-//       endTime: "2026-01-08T18:20:00",
-//       type: "class",
-//     },
-//     {
-//       id: "evt-6",
-//       athleteId: "a2",
-//       athleteName: "Alex Cameron",
-//       title: "ENGG4002",
-//       location: "Head Hall",
-//       startTime: "2026-01-06T17:30:00",
-//       endTime: "2026-01-06T18:20:00",
-//       type: "class",
-//     },
-//     {
-//       id: "evt-6",
-//       athleteId: "a3",
-//       athleteName: "Alex Cameron",
-//       title: "ENGG4002",
-//       location: "Head Hall",
-//       startTime: "2026-01-06T17:30:00",
-//       endTime: "2026-01-06T18:20:00",
-//       type: "class",
-//     },
-//     {
-//       id: "evt-6",
-//       athleteId: "a4",
-//       athleteName: "Alex Cameron",
-//       title: "ENGG4002",
-//       location: "Head Hall",
-//       startTime: "2026-01-06T17:30:00",
-//       endTime: "2026-01-06T18:20:00",
-//       type: "class",
-//     },
-//     {
-//       id: "evt-6",
-//       athleteId: "a5",
-//       athleteName: "Alex Cameron",
-//       title: "ENGG4002",
-//       location: "Head Hall",
-//       startTime: "2026-01-06T17:30:00",
-//       endTime: "2026-01-06T18:20:00",
-//       type: "class",
-//     },
-//     {
-//       id: "evt-6",
-//       athleteId: "a6",
-//       athleteName: "Alex Cameron",
-//       title: "ENGG4002",
-//       location: "Head Hall",
-//       startTime: "2026-01-06T17:30:00",
-//       endTime: "2026-01-06T18:20:00",
-//       type: "class",
-//     },
-//     {
-//       id: "evt-6",
-//       athleteId: "a7",
-//       athleteName: "Alex Cameron",
-//       title: "ENGG4002",
-//       location: "Head Hall",
-//       startTime: "2026-01-06T17:30:00",
-//       endTime: "2026-01-06T18:20:00",
-//       type: "class",
-//     },
-//     {
-//       id: "evt-6",
-//       athleteId: "a8",
-//       athleteName: "Alex Cameron",
-//       title: "ENGG4002",
-//       location: "Head Hall",
-//       startTime: "2026-01-06T17:30:00",
-//       endTime: "2026-01-06T18:20:00",
-//       type: "class",
-//     },

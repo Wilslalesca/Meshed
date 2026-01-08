@@ -2,7 +2,7 @@ import FullCalendar from '@fullcalendar/react';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
-import { useMemo, useRef, useEffect } from 'react';
+import { useMemo, useRef, useEffect, useState } from 'react';
 import { buildHeatmapOverlayEvents } from './heatmapOverlay';
 
 import { TeamScheduleMode, type TeamScheduleEvent, type TeamScheduleView } from '../../types/schedule';
@@ -26,7 +26,7 @@ export function TeamScheduleCalendar({
   const calendarEvents = useMemo(() => {
     return events.map((e) => ({
       id: e.id,
-      title: `${e.athleteName}: ${e.title}`,
+      title: e.athleteName,
       start: e.startTime,
       end: e.endTime,
       extendedProps: e,
