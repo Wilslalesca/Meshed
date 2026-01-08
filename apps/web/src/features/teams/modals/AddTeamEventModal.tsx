@@ -1,17 +1,11 @@
 import React, { useState, type JSX } from 'react';
 import { useAuth } from "@/shared/hooks/useAuth";
 import { Button } from "@/shared/components//ui/button";
-import { useNavigate } from 'react-router-dom';
-import { apiUploadCourses } from '@/features/upload/api/upload'
-import { apiAddCourseAndAthleteCourse } from '@/features/add-edit-courses/api/addcourse'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/components//ui/card";
-import DropzoneField from "@/shared/components/ui/dropzonefield";
-import { toast } from "sonner"
 import type { EventItem } from "@/features/dashboard/types/eventItem"
 import { Label } from "@/shared/components//ui/label";
 import { EventWidget } from "@/features/dashboard/components/EventWidget";
 import { Input } from "@/shared/components//ui/input";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/shared/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/shared/components/ui/dialog';
 import {
     Select,
     SelectTrigger,
@@ -19,6 +13,8 @@ import {
     SelectContent,
     SelectItem,
 } from "@/shared/components/ui/select";
+import { TeamEventFactoryRegistry } from '../types/factories/registry';
+import type { TeamEventType } from '../types/event';
 
 
 export const AddTeamEventModal = ({ open, onOpenChange, teamId, onAdded }: any) => {
@@ -45,7 +41,7 @@ export const AddTeamEventModal = ({ open, onOpenChange, teamId, onAdded }: any) 
 
     const teamEvents = ["Practice", "Game", "Lift", "Other"] //change to lookup like sportslookup
 
-    const [eventTypeID, setEventTypeID] = useState("");
+    const [eventTypeID, setEventTypeID] = useState<TeamEventType>();
     const [reoccurring, setReoccurring] = React.useState("");
     const [startTime, setStartTime] = React.useState("10:30:00");
     const [endTime, setEndTime] = React.useState("11:20:00");
@@ -65,8 +61,33 @@ export const AddTeamEventModal = ({ open, onOpenChange, teamId, onAdded }: any) 
     async function handleSubmit() {
         
         if (!token) return;
-        onAdded();
-        onOpenChange(false);
+
+        const baseInput = {
+            teamId,
+            startDate,
+            endDate,
+            startTime,
+            endTime,
+            reoccurring,
+            selectedReoccurrType,
+            daysOfWeek: selectedDays,
+        };
+
+        if (!eventTypeID) {
+            console.error("No event type selected!");
+            return;
+        }
+
+        const FactoryClass = TeamEventFactoryRegistry[eventTypeID];
+
+        const factory = new FactoryClass({
+            ...baseInput
+        });
+
+        //loop per date and send to DB
+        const event = factory.createEvent();
+        console.log(event)
+
     }
 
     return (
@@ -78,7 +99,7 @@ export const AddTeamEventModal = ({ open, onOpenChange, teamId, onAdded }: any) 
                 </DialogHeader>
                 <div>
                     <div className="grid w-full items-center gap-3 py-2">
-                        <Select value={eventTypeID} onValueChange={setEventTypeID}>
+                        <Select value={eventTypeID} onValueChange={(val: TeamEventType) => setEventTypeID(val as TeamEventType)}>
                             <SelectTrigger>
                                 <SelectValue placeholder="Event Type" />
                             </SelectTrigger>
