@@ -38,7 +38,7 @@ export const AddTeamEventModal = ({ open, onOpenChange, teamId, onAdded }: any) 
         "Bi-Weekly",
         "Monthly"
     ];
-    const [selectedReoccurrType, setSelectedReoccurrType] = React.useState<string[]>([]);
+    const [selectedReoccurrType, setSelectedReoccurrType] = React.useState<string>();
 
     const teamEvents = ["Practice", "Game", "Lift", "Other"] //change to lookup like sportslookup
 
@@ -46,8 +46,8 @@ export const AddTeamEventModal = ({ open, onOpenChange, teamId, onAdded }: any) 
     const [reoccurring, setReoccurring] = React.useState("");
     const [startTime, setStartTime] = React.useState("10:30:00");
     const [endTime, setEndTime] = React.useState("11:20:00");
-    const [startDate, setStartDate] = React.useState("");
-    const [endDate, setEndDate] = React.useState("");
+    const [startDate, setStartDate] = React.useState<Date | null>(null);
+    const [endDate, setEndDate] = React.useState<Date | null>(null);
     const [events, setEvents] = useState<EventItem[]>([]);
 
     const { addTeamEvent } = useAddTeamEvent();
@@ -65,6 +65,7 @@ export const AddTeamEventModal = ({ open, onOpenChange, teamId, onAdded }: any) 
         
         if (!token) return;
 
+        //loop per dow?
         const baseInput = {
             teamId,
             startDate,
@@ -73,7 +74,7 @@ export const AddTeamEventModal = ({ open, onOpenChange, teamId, onAdded }: any) 
             endTime,
             reoccurring,
             selectedReoccurrType,
-            daysOfWeek: selectedDays,
+            dayOfWeek: selectedDays[0],
         };
 
         if (!eventTypeID) {

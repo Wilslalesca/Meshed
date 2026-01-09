@@ -3,13 +3,13 @@ export type TeamEventType = "Practice" | "Game" | "Lift" | "Other";
 export interface BaseTeamEvent {
   teamId: string;
   type: TeamEventType;
-  startDate: string;
-  endDate?: string;
+  startDate: Date;
+  endDate?: Date;
   startTime: string;
   endTime: string;
   reoccurring: boolean;
   reoccurrType?: "Daily" | "Weekly" | "Bi-Weekly" | "Monthly";
-  daysOfWeek?: string[];
+  dayOfWeek?: string;
 }
 
 export interface PracticeEvent extends BaseTeamEvent {

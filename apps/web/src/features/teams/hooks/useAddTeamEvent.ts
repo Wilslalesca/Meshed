@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { useAuth } from "@/shared/hooks/useAuth";
 import { apiAddTeamEvent } from "../api/events";
 import type { TeamEvent } from "../types/event";

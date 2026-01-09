@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { TeamModel } from "../models/TeamModel";
+import { TeamEventModel } from "../models/TeamEventModel";
 import { TeamRosterModel } from "../models/TeamRosterModel";
 import { TeamStaffModel } from "../models/TeamStaffModel";
 import { UserModel } from "../models/UserModel";
@@ -151,12 +152,47 @@ export class TeamController {
     }
 
     static async addEvent(req: Request, res: Response) {
-        res.status(200).json({"message":"hello"})
-    }
+        console.log("RAW BODY:", JSON.stringify(req.body, null, 2));
 
-    static async getEvent(req: Request, res: Response) {
-        res.status(200).json({"message":"hello"})
-    }
+        const { 
+            team_id,
+            type,
+            startTime,
+            endTime,
+            startDate,
+            endDate,
+            reoccurring,
+            reoccurrType,
+            dayOfWeek,
+            opponent,
+            homeAway,
+            liftType,
+            notes,
+        }  = req.body;
 
+        /*if (!name || name.trim().length < 2)
+            return res.status(400).send("name required");*/
+
+
+        const team_event = await TeamEventModel.createTeamEvent({
+            team_id : team_id,
+            type : type,
+            start_time :startTime,
+            end_time :endTime,
+            start_date : startDate,
+            end_date :endDate,
+            reoccurring : reoccurring,
+            reoccurr_type :reoccurrType,
+            day_of_week :dayOfWeek,
+            opponent :opponent,
+            home_away :homeAway,
+            lift_type :liftType,
+            notes :notes,
+        });
+
+        console.log("Created team_event:", team_event);
+
+        res.status(201).json(team_event);
+    }
 
 }
