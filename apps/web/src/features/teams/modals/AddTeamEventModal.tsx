@@ -59,11 +59,10 @@ export const AddTeamEventModal = ({ open, onOpenChange, teamId, onAdded }: any) 
      * 
      */
 
-    //const navigate = useNavigate();
-
     async function handleSubmit() {
         
         if (!token) return;
+        //todo : check for form inputs
 
         //loop per dow?
         const baseInput = {
@@ -90,12 +89,11 @@ export const AddTeamEventModal = ({ open, onOpenChange, teamId, onAdded }: any) 
 
         //loop per date and send to DB
         const event = factory.createEvent();
-        console.log(event)
 
-        console.log("b4 hook")
         await addTeamEvent(event);
-        console.log("after hook")
 
+        onAdded();
+        onOpenChange(false);
     }
 
     return (
@@ -221,8 +219,8 @@ export const AddTeamEventModal = ({ open, onOpenChange, teamId, onAdded }: any) 
                                 id="start_date"
                                 min="2025-01-01"
                                 max="2035-12-31"
-                                value={startDate}
-                                onChange={(e) => setStartDate(e.target.value)}
+                                value={startDate ? startDate.toISOString().slice(0, 10) : ""}
+                                onChange={(e) => setStartDate(e.target.value ? new Date(e.target.value) : null)}
                                 required
                             />
                         </div>
@@ -235,8 +233,8 @@ export const AddTeamEventModal = ({ open, onOpenChange, teamId, onAdded }: any) 
                                     id="end_date"
                                     min="2025-01-01"
                                     max="2035-12-31"
-                                    value={endDate}
-                                    onChange={(e) => setEndDate(e.target.value)}
+                                    value={endDate ? endDate.toISOString().slice(0, 10) : ""}
+                                    onChange={(e) => setEndDate(e.target.value ? new Date(e.target.value) : null)}
                                 />
                             </div>
                         :   <div className="invisible">
