@@ -150,5 +150,13 @@ export class TeamController {
         return res.json(updated);
     }
 
+    static async addEvent(req: Request, res: Response) {
+        res.status(200).json({"message":"hello"})
+    }
+
+    static async getEvent(req: Request, res: Response) {
+        res.status(200).json({"message":"hello"})
+    }
+
 
 }

@@ -15,6 +15,7 @@ import {
 } from "@/shared/components/ui/select";
 import { TeamEventFactoryRegistry } from '../types/factories/registry';
 import type { TeamEventType } from '../types/event';
+import { useAddTeamEvent } from '../hooks/useAddTeamEvent';
 
 
 export const AddTeamEventModal = ({ open, onOpenChange, teamId, onAdded }: any) => {
@@ -48,6 +49,8 @@ export const AddTeamEventModal = ({ open, onOpenChange, teamId, onAdded }: any) 
     const [startDate, setStartDate] = React.useState("");
     const [endDate, setEndDate] = React.useState("");
     const [events, setEvents] = useState<EventItem[]>([]);
+
+    const { addTeamEvent } = useAddTeamEvent();
     
     /**
      * Going to need to make to add multiple practices at once? I.e. they can make monday,
@@ -88,11 +91,15 @@ export const AddTeamEventModal = ({ open, onOpenChange, teamId, onAdded }: any) 
         const event = factory.createEvent();
         console.log(event)
 
+        console.log("b4 hook")
+        await addTeamEvent(event);
+        console.log("after hook")
+
     }
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="max-w-md max-h-150 overflow-y-auto">
+            <DialogContent className="max-w-md max-h-150 overflow-y-auto">
                 <DialogHeader>
                     <DialogTitle>Add a Team Event</DialogTitle>
                     <DialogDescription>Create a single or reocurring event for you and your team.</DialogDescription>
@@ -246,7 +253,7 @@ export const AddTeamEventModal = ({ open, onOpenChange, teamId, onAdded }: any) 
                 <div className="flex flex-col p-4 items-center">
                     <Button type="submit" onClick={handleSubmit} className="w-full gap-3">Submit</Button>
                 </div>
-        </DialogContent>
+            </DialogContent>
         </Dialog>
     );
 };

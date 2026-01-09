@@ -17,7 +17,7 @@ export interface GameEventInput extends BaseEventInput {
 }
 
 export interface PracticeEventInput extends BaseEventInput {
-    notes?: string;
+  notes?: string;
 }
 
 export interface LiftEventInput extends BaseEventInput {
