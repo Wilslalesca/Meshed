@@ -152,7 +152,6 @@ export class TeamController {
     }
 
     static async addEvent(req: Request, res: Response) {
-        console.log("RAW BODY:", JSON.stringify(req.body, null, 2));
 
         const { 
             team_id,
@@ -162,17 +161,13 @@ export class TeamController {
             startDate,
             endDate,
             reoccurring,
-            reoccurrType,
+            selectedReoccurrType,
             dayOfWeek,
             opponent,
             homeAway,
             liftType,
             notes,
         }  = req.body;
-
-        /*if (!name || name.trim().length < 2)
-            return res.status(400).send("name required");*/
-
 
         const team_event = await TeamEventModel.createTeamEvent({
             team_id : team_id,
@@ -182,7 +177,7 @@ export class TeamController {
             start_date : startDate,
             end_date :endDate,
             reoccurring : reoccurring,
-            reoccurr_type :reoccurrType,
+            reoccurr_type :selectedReoccurrType,
             day_of_week :dayOfWeek,
             opponent :opponent,
             home_away :homeAway,

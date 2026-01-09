@@ -92,7 +92,6 @@ export const AddTeamEventModal = ({ open, onOpenChange, teamId, onAdded }: any) 
 
         await addTeamEvent(event);
 
-        onAdded();
         onOpenChange(false);
     }
 
