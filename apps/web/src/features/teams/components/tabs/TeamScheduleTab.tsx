@@ -17,7 +17,6 @@ import { TeamScheduleCalendar } from "../schedule/TeamScheduleCalendar";
 import { TeamScheduleToolbar } from "../schedule/TeamScheduleToolbar";
 import { useTeamSchedule } from "../../hooks/useTeamSchedule";
 import { useRoster } from "../../hooks/useRoster";
-import type { CalendarApi } from "@fullcalendar/core";
 
 import { TeamScheduleView, TeamScheduleMode } from "../../types/schedule";
 
@@ -53,11 +52,10 @@ export const TeamScheduleTab = () => {
   const toISO = useMemo(() => endOfWeekISO(), []);
   const [range, setRange] = useState<{ fromISO: string; toISO: string }>({ fromISO, toISO });
 
-  const { roster, loading: rosterLoading } = useRoster(teamId!);
+  const { roster } = useRoster(teamId!);
   const rosterCount = roster?.length ?? 0;
 
   const { events, loading: eventsLoading, error } = useTeamSchedule(teamId!, range.fromISO, range.toISO);
-  const [calendarApi, setCalendarApi] = useState<CalendarApi | null>(null);
 
   const filteredEvents = useMemo(() => {
       const query = search.trim().toLowerCase();
@@ -80,13 +78,11 @@ export const TeamScheduleTab = () => {
             mode={mode}
             setMode={setMode}
         />
-        { eventsLoading && (
-          <div className="text-sm text-muted-foreground">Loading Schedules...</div>
-        )}
+        
         { error && (
           <div className="text-sm text-destructive">Something went wrong: {error}</div>
         )}
-        { !eventsLoading && !error && (
+        <div className="relative">
           <TeamScheduleCalendar
               view={view}
               events={filteredEvents}
@@ -95,9 +91,16 @@ export const TeamScheduleTab = () => {
               toISO={range.toISO}
               rosterCount={rosterCount}
               onRangeChange={(fromISO, toISO) => setRange({ fromISO, toISO })}
-              onApiReady={(api) => setCalendarApi(api)}
           />
-        )}
+
+          {/* {eventsLoading && (
+            <div className="absolute inset-0 flex items-start justify-end p-3 pointer-events-none">
+              <div className="rounded-md bg-background/90 border px-3 py-1 text-xs text-muted-foreground">
+                Loading…
+              </div>
+            </div>
+          )} */}
+        </div>
     </div>
   );
 };

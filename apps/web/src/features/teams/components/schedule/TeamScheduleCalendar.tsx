@@ -1,13 +1,17 @@
+// calendar packages 
 import FullCalendar from '@fullcalendar/react';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
+import type { CalendarApi } from '@fullcalendar/core';
+
 import { useMemo, useRef, useEffect, useState } from 'react';
+import { Button } from '@/shared/components/ui/button';
 import { buildHeatmapOverlayEvents } from './heatmapOverlay';
 
 import { TeamScheduleMode, type TeamScheduleEvent, type TeamScheduleView } from '../../types/schedule';
-import type { CalendarApi } from '@fullcalendar/core';
-import { Button } from '@/shared/components/ui/button';
+
+
 
 export function TeamScheduleCalendar({
   view,
@@ -17,7 +21,6 @@ export function TeamScheduleCalendar({
   fromISO,
   toISO,
   onRangeChange,
-  onApiReady,
 }: {
   view: TeamScheduleView;
   events: TeamScheduleEvent[];
@@ -26,12 +29,13 @@ export function TeamScheduleCalendar({
   fromISO: string;
   toISO: string;
   onRangeChange?: (fromISO: string, toISO: string) => void;
-  onApiReady?: (api: CalendarApi) => void;
   }) {
+
   const calendarReference = useRef<FullCalendar | null>(null);
   const [api, setApi] = useState<CalendarApi | null>(null);
   const [title, setTitle] = useState<string>("");
-  
+
+
   const calendarEvents = useMemo(() => {
     return events.map((e) => ({
       id: e.id,
@@ -68,19 +72,17 @@ export function TeamScheduleCalendar({
     if(!calApi) return;
 
     setApi(calApi);
-    onApiReady?.(calApi);
     setTitle(calApi.view.title);
 
-  }, [onApiReady]);
+  }, []);
 
 
   useEffect(() => {
     if (!api) return;
     if (api.view.type !== view) api.changeView(view);
     setTitle(api.view.title);
-    // onApiReady?.(api);
 
-  }, [onApiReady, view]);
+  }, [api, view]);
 
   return (
     <div className="rounded-xl border bg-background p-3">
@@ -94,7 +96,6 @@ export function TeamScheduleCalendar({
 
       </div>
       <FullCalendar
-        key={`${view}-${mode}`}
         ref={calendarReference}
         plugins={[timeGridPlugin, dayGridPlugin, interactionPlugin]}
         initialView={view}

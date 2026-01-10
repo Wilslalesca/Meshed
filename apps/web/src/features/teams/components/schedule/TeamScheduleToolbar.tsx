@@ -11,7 +11,6 @@ export function TeamScheduleToolbar(
         mode: TeamScheduleMode; setMode: (m: TeamScheduleMode) => void;
     }
 ) {
-    console.log("view:", view);
     return ( 
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex gap-2">
