@@ -59,4 +59,12 @@ export class TeamEventModel {
 
         return rows[0];
     }
+
+    static async getByTeamId(teamId: string) {
+        const { rows } = await pool.query(
+            `SELECT * FROM team_events WHERE team_id = $1 ORDER BY start_date ASC, start_time ASC`,
+            [teamId]
+        );
+        return rows;
+    }
 }

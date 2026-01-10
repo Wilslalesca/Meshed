@@ -190,4 +190,10 @@ export class TeamController {
         res.status(201).json(team_event);
     }
 
+    static async getEvents(req: Request, res: Response) { 
+        const { teamId } = req.params;
+        const events = await TeamEventModel.getByTeamId(teamId);
+        res.json(events);
+    }
+
 }

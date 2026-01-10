@@ -17,6 +17,7 @@ import { TeamScheduleCalendar } from "../schedule/TeamScheduleCalendar";
 import { TeamScheduleToolbar } from "../schedule/TeamScheduleToolbar";
 import { useTeamSchedule } from "../../hooks/useTeamSchedule";
 import { useRoster } from "../../hooks/useRoster";
+import type { CalendarApi } from "@fullcalendar/core";
 
 import { TeamScheduleView, TeamScheduleMode } from "../../types/schedule";
 
@@ -50,12 +51,13 @@ export const TeamScheduleTab = () => {
   const [search, setSearch] = useState<string>("");
   const fromISO = useMemo(() => startOfWeekISO(), []);
   const toISO = useMemo(() => endOfWeekISO(), []);
+  const [range, setRange] = useState<{ fromISO: string; toISO: string }>({ fromISO, toISO });
 
   const { roster, loading: rosterLoading } = useRoster(teamId!);
   const rosterCount = roster?.length ?? 0;
 
-  const { events, loading: eventsLoading, error } = useTeamSchedule(teamId!, fromISO, toISO);
-
+  const { events, loading: eventsLoading, error } = useTeamSchedule(teamId!, range.fromISO, range.toISO);
+  const [calendarApi, setCalendarApi] = useState<CalendarApi | null>(null);
 
   const filteredEvents = useMemo(() => {
       const query = search.trim().toLowerCase();
@@ -77,6 +79,9 @@ export const TeamScheduleTab = () => {
             setSearch={setSearch}
             mode={mode}
             setMode={setMode}
+            onPrev={() => calendarApi?.prev()}
+            onNext={() => calendarApi?.next()}
+            onToday={() => calendarApi?.today()}
         />
         { eventsLoading && (
           <div className="text-sm text-muted-foreground">Loading Schedules...</div>
@@ -89,9 +94,11 @@ export const TeamScheduleTab = () => {
               view={view}
               events={filteredEvents}
               mode={mode}
-              fromISO={fromISO}
-              toISO={toISO}
+              fromISO={range.fromISO}
+              toISO={range.toISO}
               rosterCount={rosterCount}
+              onRangeChange={(fromISO, toISO) => setRange({ fromISO, toISO })}
+              onApiReady={(api) => setCalendarApi(api)}
           />
         )}
     </div>

@@ -2,10 +2,12 @@ import FullCalendar from '@fullcalendar/react';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
-import { useMemo, useRef, useEffect, useState } from 'react';
+import { useMemo, useRef, useEffect } from 'react';
 import { buildHeatmapOverlayEvents } from './heatmapOverlay';
 
 import { TeamScheduleMode, type TeamScheduleEvent, type TeamScheduleView } from '../../types/schedule';
+import type { CalendarApi } from '@fullcalendar/core';
+
 export function TeamScheduleCalendar({
   view,
   events,
@@ -13,6 +15,8 @@ export function TeamScheduleCalendar({
   rosterCount,
   fromISO,
   toISO,
+  onRangeChange,
+  onApiReady,
 }: {
   view: TeamScheduleView;
   events: TeamScheduleEvent[];
@@ -20,6 +24,8 @@ export function TeamScheduleCalendar({
   rosterCount?: number;
   fromISO: string;
   toISO: string;
+  onRangeChange?: (fromISO: string, toISO: string) => void;
+  onApiReady?: (api: CalendarApi) => void;
   }) {
   const calendarReference = useRef<FullCalendar | null>(null);
 
@@ -57,8 +63,9 @@ export function TeamScheduleCalendar({
   useEffect(() => {
     const api = calendarReference.current?.getApi();
     if (!api) return;
+    onApiReady?.(api);
     if (api.view.type !== view) api.changeView(view);
-  }, [view]);
+  }, [onApiReady, view]);
 
   return (
     <div className="rounded-xl border bg-background p-3">
@@ -77,7 +84,23 @@ export function TeamScheduleCalendar({
         eventDidMount={(info) => {
           if (info.event.display === "background") {
             info.el.style.borderRadius = "6px";
+            return;
           }
+
+          const ext = info.event.extendedProps as any;
+          const type = ext?.type;
+
+          if (type === "team_event") {
+            info.el.style.backgroundColor = "rgb(14 116 144)"; 
+            info.el.style.borderColor = "white";
+          } else if (type === "class") {
+            info.el.style.backgroundColor = "rgb(29 78 216)"; 
+            info.el.style.borderColor = "rgb(29 78 216)";
+          }
+        }}
+
+        datesSet={(arg) => {
+          onRangeChange?.(arg.start.toISOString(), arg.end.toISOString());
         }}
       />
     </div>
