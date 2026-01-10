@@ -2,11 +2,12 @@ import FullCalendar from '@fullcalendar/react';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
-import { useMemo, useRef, useEffect } from 'react';
+import { useMemo, useRef, useEffect, useState } from 'react';
 import { buildHeatmapOverlayEvents } from './heatmapOverlay';
 
 import { TeamScheduleMode, type TeamScheduleEvent, type TeamScheduleView } from '../../types/schedule';
 import type { CalendarApi } from '@fullcalendar/core';
+import { Button } from '@/shared/components/ui/button';
 
 export function TeamScheduleCalendar({
   view,
@@ -28,7 +29,9 @@ export function TeamScheduleCalendar({
   onApiReady?: (api: CalendarApi) => void;
   }) {
   const calendarReference = useRef<FullCalendar | null>(null);
-
+  const [api, setApi] = useState<CalendarApi | null>(null);
+  const [title, setTitle] = useState<string>("");
+  
   const calendarEvents = useMemo(() => {
     return events.map((e) => ({
       id: e.id,
@@ -61,14 +64,35 @@ export function TeamScheduleCalendar({
   }, [mode,heatmapBackgroundEvents, calendarEvents]);
 
   useEffect(() => {
-    const api = calendarReference.current?.getApi();
+    const calApi = calendarReference.current?.getApi();
+    if(!calApi) return;
+
+    setApi(calApi);
+    onApiReady?.(calApi);
+    setTitle(calApi.view.title);
+
+  }, [onApiReady]);
+
+
+  useEffect(() => {
     if (!api) return;
-    onApiReady?.(api);
     if (api.view.type !== view) api.changeView(view);
+    setTitle(api.view.title);
+    // onApiReady?.(api);
+
   }, [onApiReady, view]);
 
   return (
     <div className="rounded-xl border bg-background p-3">
+      <div className='mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between'>
+        <div className="flex item-center gap-2">
+          <Button variant="outline" size="sm" onClick={() => api?.prev()}>Prev</Button>
+          <Button variant="outline" size="sm" onClick={() => api?.today()}>Today</Button>
+          <Button variant="outline" size="sm" onClick={() => api?.next()}>Next</Button>
+        </div>
+        <div className="text-sm font-semibold">{title}</div>
+
+      </div>
       <FullCalendar
         key={`${view}-${mode}`}
         ref={calendarReference}
@@ -100,6 +124,7 @@ export function TeamScheduleCalendar({
         }}
 
         datesSet={(arg) => {
+          setTitle(arg.view.title);
           onRangeChange?.(arg.start.toISOString(), arg.end.toISOString());
         }}
       />

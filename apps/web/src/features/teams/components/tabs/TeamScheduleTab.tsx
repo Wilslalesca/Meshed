@@ -79,9 +79,6 @@ export const TeamScheduleTab = () => {
             setSearch={setSearch}
             mode={mode}
             setMode={setMode}
-            onPrev={() => calendarApi?.prev()}
-            onNext={() => calendarApi?.next()}
-            onToday={() => calendarApi?.today()}
         />
         { eventsLoading && (
           <div className="text-sm text-muted-foreground">Loading Schedules...</div>

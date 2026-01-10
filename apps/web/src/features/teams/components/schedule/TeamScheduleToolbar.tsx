@@ -4,23 +4,17 @@ import { Input } from "@/shared/components/ui/input";
 import { TeamScheduleView, TeamScheduleMode } from "../../types/schedule";
 
 export function TeamScheduleToolbar(
-    { view, setView, search, setSearch, mode, setMode, onPrev, onNext, onToday }: 
+    { view, setView, search, setSearch, mode, setMode }: 
     { 
         view: TeamScheduleView; setView: (v: TeamScheduleView) => void;
         search: string; setSearch: (s: string) => void;
         mode: TeamScheduleMode; setMode: (m: TeamScheduleMode) => void;
-        onPrev: () => void;
-        onNext: () => void;
-        onToday: () => void;
     }
 ) {
     console.log("view:", view);
     return ( 
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex gap-2">
-                <Button variant="outline" onClick={onPrev}>Prev</Button>
-                <Button variant="outline" onClick={onToday}>Today</Button>
-                <Button variant="outline" onClick={onNext}>Next</Button>
                 <Button 
                     variant={view === TeamScheduleView.Month ? "default" : "outline"}
                     onClick={() => setView(TeamScheduleView.Month)}
