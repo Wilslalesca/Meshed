@@ -127,28 +127,6 @@ async function apiGetAtheletesSchedules(teamId: string, token: string): Promise<
 }
 
 
-// async function apiGetAthleteScheduleRows(
-//   athleteId: string,
-//   token: string
-// ): Promise<CourseTimeRow[]> {
-//   const res = await fetch(`${API_BASE}/schedule/athlete/${athleteId}`, {
-//     headers: { Authorization: `Bearer ${token}` },
-//   });
-
-//   if (!res.ok) {
-//     console.error("❌ Failed to fetch schedule rows for athlete:", athleteId);
-//     return [];
-//   }
-
-//   const data = (await res.json()) as CourseTimeRow[];
-
-//   console.group(`📦 Schedule rows for athlete ${athleteId}`);
-//   console.table(data);
-//   console.groupEnd();
-
-//   return data;
-// }
-
 
 
 export async function apiGetTeamSchedule( teamId: string, token: string, fromISO: string, toISO: string ) : Promise<TeamScheduleEvent[]> {
