@@ -15,6 +15,7 @@ import { TeamScheduleTab } from "../components/tabs/TeamScheduleTab";
 import { TeamStaffTab } from "../components/tabs/TeamStaffTab";
 import { TeamRosterTab } from "../components/tabs/TeamRosterTab";
 import { EditTeamModal } from "../modals/EditTeamModal";
+import { AddTeamEventModal } from "../modals/AddTeamEventModal";
 import { DeleteTeamModal } from "../modals/DeleteTeamModal";
 import { InviteMemberModal } from "../modals/InviteMemberModal";
 
@@ -31,6 +32,7 @@ export const TeamDetailsPage = () => {
     const { sports, leagues } = useLookups();
 
     const [openEdit, setOpenEdit] = useState(false);
+    const [openAddTeamEvent, setOpenAddTeamEvent] = useState(false);
     const [openDelete, setOpenDelete] = useState(false);
     const [openInvite, setOpenInvite] = useState(false);
     const [inviteRole, setInviteRole] = useState<
@@ -71,6 +73,7 @@ export const TeamDetailsPage = () => {
                           }
                         : () => {}
                 }
+                onAddTeamEvent = {isManager ? () => setOpenAddTeamEvent(true) : () => {}}
             >
                 {{
                     profile: (
@@ -129,6 +132,13 @@ export const TeamDetailsPage = () => {
                         reloadRoster();
                         reloadStaff();
                     }}
+                />
+            )}
+            {isManager && (
+                <AddTeamEventModal
+                    open={openAddTeamEvent}
+                    onOpenChange={setOpenAddTeamEvent}
+                    teamId={team.id}
                 />
             )}
         </div>

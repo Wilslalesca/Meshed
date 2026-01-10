@@ -3,13 +3,7 @@ import { ChevronRight } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Calendar } from "@/shared/components/ui/calendar";
 import { cn } from "@/shared/utils/utils";
-
-interface EventItem {
-    id: string;
-    title: string;
-    date: string;
-    time: string;
-}
+import type { EventItem } from "../types/eventItem";
     
 export const EventWidget = ({ events }: { events: EventItem[] }) => {
     const [selectedDate, setSelectedDate] = useState<Date | undefined>(

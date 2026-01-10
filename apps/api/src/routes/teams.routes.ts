@@ -24,4 +24,6 @@ router.get("/:teamId", TeamController.getTeamById);
 router.put("/:teamId", TeamController.updateTeam);
 router.delete("/:teamId", TeamController.deleteTeam);
 
+router.post("/:teamId/addEvent", TeamController.addEvent);
+
 export default router;

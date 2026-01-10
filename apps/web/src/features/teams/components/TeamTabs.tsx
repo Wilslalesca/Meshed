@@ -12,6 +12,7 @@ import {
     Calendar,
     Settings,
     UserPlus,
+    CalendarPlus,
 } from "lucide-react";
 import { useUserRole } from "@/shared/hooks/useUserRole";
 interface Props {
@@ -24,6 +25,7 @@ interface Props {
     onEdit: () => void;
     onDelete: () => void;
     onAddUser: () => void;
+    onAddTeamEvent: () => void;
 
     children: {
         profile: React.ReactNode;
@@ -42,6 +44,7 @@ export const TeamTabs = ({
     onEdit,
     onDelete,
     onAddUser,
+    onAddTeamEvent,
     children,
 }: Props) => {
     const userRole = useUserRole();
@@ -74,6 +77,12 @@ export const TeamTabs = ({
                         <UserPlus size={16} className="mr-2" /> Add User
                     </Button>
                     )}
+
+                    {isManager && (
+                    <Button variant="default" onClick={onAddTeamEvent}>
+                        <CalendarPlus size={16} className="mr-2" /> Add Event
+                    </Button>
+                    )}
                     <div
                     className={`ml-auto flex gap-2 transition-opacity ${
                         activeTab !== "profile" && activeTab !== "schedule"
@@ -95,6 +104,7 @@ export const TeamTabs = ({
                     >
                         Table
                     </Button>
+
                     </div>
 
                 </div>
