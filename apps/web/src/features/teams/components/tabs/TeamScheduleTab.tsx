@@ -2,7 +2,6 @@
 import { useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import { TeamScheduleCalendar } from "../schedule/TeamScheduleCalendar";
-import { TeamScheduleToolbar } from "../schedule/TeamScheduleToolbar";
 import { useTeamSchedule } from "../../hooks/useTeamSchedule";
 import { useRoster } from "../../hooks/useRoster";
 
@@ -58,14 +57,6 @@ export const TeamScheduleTab = () => {
 
   return (
     <div className="space-y-4">
-        <TeamScheduleToolbar
-            view={view}
-            setView={setView}
-            search={search}
-            setSearch={setSearch}
-            mode={mode}
-            setMode={setMode}
-        />
         
         { error && (
           <div className="text-sm text-destructive">Something went wrong: {error}</div>
@@ -75,19 +66,14 @@ export const TeamScheduleTab = () => {
               view={view}
               events={filteredEvents}
               mode={mode}
+              setMode={setMode}
+              search={search}
+              setSearch={setSearch}
               fromISO={range.fromISO}
               toISO={range.toISO}
               rosterCount={rosterCount}
               onRangeChange={(fromISO, toISO) => setRange({ fromISO, toISO })}
           />
-
-          {/* {eventsLoading && (
-            <div className="absolute inset-0 flex items-start justify-end p-3 pointer-events-none">
-              <div className="rounded-md bg-background/90 border px-3 py-1 text-xs text-muted-foreground">
-                Loading…
-              </div>
-            </div>
-          )} */}
         </div>
     </div>
   );
