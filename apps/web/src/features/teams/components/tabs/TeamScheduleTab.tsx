@@ -1,16 +1,4 @@
 
-
-// TODO pull all students in a team and show their schedules in a combined view
-// TODO call out to calendar API to pull in events
-
-// 1) Create basic calendar view
-// 2) add options for month view / week view / day view
-// 3) Filters 
-// 4) Heatmap view for busy times across team members
-// 5) Conglomerate View for seeing each persons name for time slots
-// 6) Pull data via backend
-
-
 import { useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import { TeamScheduleCalendar } from "../schedule/TeamScheduleCalendar";

@@ -42,6 +42,7 @@ export function TeamScheduleToolbar(
                     Calendar
                 </Button>
                 <Button
+                    disabled={view === TeamScheduleView.Month}
                     variant={mode === TeamScheduleMode.Heatmap ? "default" : "outline"}
                     onClick={() => setMode(TeamScheduleMode.Heatmap)}
                 >

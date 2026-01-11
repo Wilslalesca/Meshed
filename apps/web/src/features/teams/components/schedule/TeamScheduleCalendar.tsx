@@ -5,6 +5,8 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import type { CalendarApi } from '@fullcalendar/core';
 
+
+
 import { useMemo, useRef, useEffect, useState } from 'react';
 import { Button } from '@/shared/components/ui/button';
 import { buildHeatmapOverlayEvents } from './heatmapOverlay';
@@ -85,7 +87,7 @@ export function TeamScheduleCalendar({
   }, [api, view]);
 
   return (
-    <div className="rounded-xl border bg-background p-3">
+    <div className="team-calendar rounded-xl border bg-background p-3">
       <div className='mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between'>
         <div className="flex item-center gap-2">
           <Button variant="outline" size="sm" onClick={() => api?.prev()}>Prev</Button>
@@ -100,27 +102,22 @@ export function TeamScheduleCalendar({
         plugins={[timeGridPlugin, dayGridPlugin, interactionPlugin]}
         initialView={view}
         headerToolbar={false}
+        dayHeaderFormat={{ weekday: "short", month: "numeric", day: "numeric" }}
         height="auto"
         nowIndicator
         allDaySlot={false}
         slotMinTime="06:00:00"
         slotMaxTime="23:00:00"
         events={allEvents}
-        eventDidMount={(info) => {
+        eventClassNames={(arg) => {
+          const type = (arg.event.extendedProps as any)?.type;
+          if (type  === "team_event") return ["ev", "ev-team"];
+          if (type === "class") return ["ev", "ev-class"];
+          return ["ev"];
+        }}
+         eventDidMount={(info) => {
           if (info.event.display === "background") {
-            info.el.style.borderRadius = "6px";
-            return;
-          }
-
-          const ext = info.event.extendedProps as any;
-          const type = ext?.type;
-
-          if (type === "team_event") {
-            info.el.style.backgroundColor = "rgb(14 116 144)"; 
-            info.el.style.borderColor = "white";
-          } else if (type === "class") {
-            info.el.style.backgroundColor = "rgb(29 78 216)"; 
-            info.el.style.borderColor = "rgb(29 78 216)";
+            info.el.style.borderRadius = "10px";
           }
         }}
 
