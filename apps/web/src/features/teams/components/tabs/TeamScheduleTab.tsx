@@ -32,7 +32,7 @@ function endOfWeekISO(d = new Date()) {
 
 export const TeamScheduleTab = () => {
   const { teamId } = useParams<{ teamId: string }>();
-  const [view, setView] = useState<TeamScheduleView>(TeamScheduleView.Week);
+  const [view] = useState<TeamScheduleView>(TeamScheduleView.Week);
   const [mode, setMode] = useState<TeamScheduleMode>(TeamScheduleMode.Calendar);
   const [search, setSearch] = useState<string>("");
   const fromISO = useMemo(() => startOfWeekISO(), []);
@@ -42,7 +42,7 @@ export const TeamScheduleTab = () => {
   const { roster } = useRoster(teamId!);
   const rosterCount = roster?.length ?? 0;
 
-  const { events, loading: eventsLoading, error } = useTeamSchedule(teamId!, range.fromISO, range.toISO);
+  const { events, error } = useTeamSchedule(teamId!, range.fromISO, range.toISO);
 
   const filteredEvents = useMemo(() => {
       const query = search.trim().toLowerCase();
