@@ -5,9 +5,15 @@ import type { TeamEvent } from "../types/event";
 export const useAddTeamEvent = () => {
   const { token } = useAuth();
 
-  const addTeamEvent = async (data: TeamEvent) => {
+  const addTeamEvent = async (data: TeamEvent | TeamEvent[]) => {
     if (!token) return;
-    await apiAddTeamEvent(data, token);
+
+    const events = Array.isArray(data) ? data : [data];
+
+    await Promise.all(
+      events.map(event => apiAddTeamEvent(event, token))
+    );
+    
   };
 
   return { addTeamEvent };
