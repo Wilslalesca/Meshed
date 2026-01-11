@@ -33,6 +33,7 @@ function getMonthDayChip(api: CalendarApi | null) {
 
 export function TeamScheduleCalendar({
   view,
+  setView,
   events,
   mode,
   setMode,
@@ -44,6 +45,7 @@ export function TeamScheduleCalendar({
   onRangeChange,
 }: {
   view: TeamScheduleView;
+  setView: (v: TeamScheduleView) => void;
   events: TeamScheduleEvent[];
   mode: TeamScheduleMode;
   setMode: (m: TeamScheduleMode) => void;
@@ -108,6 +110,11 @@ export function TeamScheduleCalendar({
       requestAnimationFrame(() => searchRef.current?.focus());
     }
   }, [searchOpen]);
+  useEffect(() => {
+    if (view === TeamScheduleView.Month && mode === TeamScheduleMode.Heatmap) {
+      setMode(TeamScheduleMode.Calendar);
+    }
+  }, [view, mode, setMode]);
 
 
 
@@ -197,22 +204,23 @@ export function TeamScheduleCalendar({
               </div>
             </div>
 
-
-            <ButtonGroup>
-              <Button 
-                      variant={mode === TeamScheduleMode.Calendar ? "default" : "outline"}
-                      onClick={() => setMode(TeamScheduleMode.Calendar)}
+            {view !== TeamScheduleView.Month && (
+              <ButtonGroup>
+                <Button 
+                  variant={mode === TeamScheduleMode.Calendar ? "default" : "outline"}
+                  onClick={() => setMode(TeamScheduleMode.Calendar)}
                   >
-                      Calendar
-                  </Button>
-                  <Button
-                      disabled={view === TeamScheduleView.Month}
-                      variant={mode === TeamScheduleMode.Heatmap ? "default" : "outline"}
-                      onClick={() => setMode(TeamScheduleMode.Heatmap)}
-                  >
-                      Heatmap
-                  </Button>
+                    Calendar
+                </Button>
+                <Button
+                  variant={mode === TeamScheduleMode.Heatmap ? "default" : "outline"}
+                  onClick={() => setMode(TeamScheduleMode.Heatmap)}
+                >
+                  Heatmap
+                </Button>
             </ButtonGroup>
+              )}
+ 
             <ButtonGroup>
               <Button variant="outline" size="sm" onClick={() => api?.prev()}>
                 <ArrowLeft className="h-4 w-4" />
@@ -227,7 +235,15 @@ export function TeamScheduleCalendar({
 
             <Select
               value={api?.view.type ?? view}
-              onValueChange={(val) => api?.changeView(val)}
+              onValueChange={(val) => {
+                const nextView = val as TeamScheduleView;
+
+                if (nextView === TeamScheduleView.Month) {
+                  setMode(TeamScheduleMode.Calendar);
+                }
+                setView(nextView);
+                api?.changeView(val);
+              }}
             >
               <SelectTrigger className="w-[140px]">
                 <SelectValue placeholder="Select view" />

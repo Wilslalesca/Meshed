@@ -32,7 +32,7 @@ function endOfWeekISO(d = new Date()) {
 
 export const TeamScheduleTab = () => {
   const { teamId } = useParams<{ teamId: string }>();
-  const [view] = useState<TeamScheduleView>(TeamScheduleView.Week);
+  const [view, setView] = useState<TeamScheduleView>(TeamScheduleView.Week);
   const [mode, setMode] = useState<TeamScheduleMode>(TeamScheduleMode.Calendar);
   const [search, setSearch] = useState<string>("");
   const fromISO = useMemo(() => startOfWeekISO(), []);
@@ -64,6 +64,7 @@ export const TeamScheduleTab = () => {
         <div className="relative">
           <TeamScheduleCalendar
               view={view}
+              setView={setView}
               events={filteredEvents}
               mode={mode}
               setMode={setMode}
