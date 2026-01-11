@@ -154,7 +154,7 @@ export class TeamController {
     static async addEvent(req: Request, res: Response) {
 
         const { 
-            team_id,
+            teamId,
             type,
             startTime,
             endTime,
@@ -170,7 +170,7 @@ export class TeamController {
         }  = req.body;
 
         const team_event = await TeamEventModel.createTeamEvent({
-            team_id : team_id,
+            team_id : teamId,
             type : type,
             start_time :startTime,
             end_time :endTime,
