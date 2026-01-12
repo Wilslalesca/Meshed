@@ -1,20 +1,34 @@
-import type { TeamEventFactory } from "../factories/factory";
+import type { TeamEventFactory } from "./factory";
 import type { GameEvent } from "../event";
-import type { GameEventInput } from "./inputs";
+import type { BaseEventInput, FullEventInput, GameEventInput } from "./inputs";
 
 export class GameEventFactory implements TeamEventFactory {
-  private readonly input: GameEventInput;
+  protected readonly input: FullEventInput;
 
-  constructor(input: GameEventInput) {
+  constructor(input: FullEventInput) {
     this.input = input;
   }
 
+  private assertGameInput(): asserts this is { input: GameEventInput } {
+    if (!this.input.opponent || !this.input.homeAway) {
+      throw new Error("Invalid GameEventInput");
+    }
+  }
+
   createEvent(): GameEvent {
+    this.assertGameInput();
     return {
+      teamId: this.input.teamId,
       type: "Game",
-      ...this.input,
-      opponent: this.input.opponent,
-      homeAway: this.input.homeAway,
+      startDate: this.input.startDate,
+      endDate: this.input.endDate,
+      startTime: this.input.startTime,
+      endTime: this.input.endTime,
+      reoccurring: this.input.reoccurring,
+      reoccurrType: this.input.reoccurrType,
+      dayOfWeek: this.input.dayOfWeek,
+      opponent: this.input.opponent!,
+      homeAway: this.input.homeAway!,
     };
   }
 }
