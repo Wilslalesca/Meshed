@@ -1,11 +1,11 @@
 import type { TeamEventFactory } from "../factories/factory";
 import type { OtherEvent } from "../event";
-import type { OtherEventInput } from "./inputs";
+import type { FullEventInput } from "./inputs";
 
 export class OtherEventFactory implements TeamEventFactory {
-  private readonly input: OtherEventInput;
+  private readonly input: FullEventInput;
 
-  constructor(input: OtherEventInput) {
+  constructor(input: FullEventInput) {
     this.input = input;
   }
 

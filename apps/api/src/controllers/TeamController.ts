@@ -155,6 +155,7 @@ export class TeamController {
 
         const { 
             teamId,
+            name,
             type,
             startTime,
             endTime,
@@ -171,6 +172,7 @@ export class TeamController {
 
         const team_event = await TeamEventModel.createTeamEvent({
             team_id : teamId,
+            name:name,
             type : type,
             start_time :startTime,
             end_time :endTime,

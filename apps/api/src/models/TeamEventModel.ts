@@ -2,6 +2,7 @@ import { pool } from "../config/db";
 
 export type TeamEventInput = {
     team_id: string;
+    name?:string;
     type: string;
     start_time?: string;
     end_time?: string;
@@ -22,6 +23,7 @@ export class TeamEventModel {
     static async createTeamEvent(input: TeamEventInput) {
         const { 
             team_id,
+            name,
             type,
             start_time,
             end_time,
@@ -38,11 +40,12 @@ export class TeamEventModel {
         = input;
 
         const { rows } = await pool.query(
-            `INSERT INTO team_events (team_id, type, start_time, end_time, start_date, end_date, reoccurring,
+            `INSERT INTO team_events (team_id, name, type, start_time, end_time, start_date, end_date, reoccurring,
             reoccurr_type, day_of_week, opponent, home_away, lift_type, notes, created_at, updated_at)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, NOW(), NOW())
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14,NOW(), NOW())
        RETURNING *`,
             [team_id,
+            name,
             type,
             start_time,
             end_time,

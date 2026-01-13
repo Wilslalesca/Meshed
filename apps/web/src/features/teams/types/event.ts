@@ -2,6 +2,7 @@ export type TeamEventType = "Practice" | "Game" | "Lift" | "Other";
 
 export interface BaseTeamEvent {
   teamId: string;
+  name?: string;
   type: TeamEventType;
   startDate: Date;
   endDate?: Date;

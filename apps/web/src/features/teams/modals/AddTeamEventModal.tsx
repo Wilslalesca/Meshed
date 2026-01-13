@@ -114,6 +114,7 @@ export const AddTeamEventModal = ({
         for (const day of selectedDays) {
             const factory = new FactoryClass({
                 teamId,
+                name : eventName,
                 startDate,
                 endDate : endDate || undefined,
                 startTime,
@@ -129,7 +130,13 @@ export const AddTeamEventModal = ({
             console.log(factory)
 
             const event = factory.createEvent();
-            await addTeamEvent(event);
+
+            try{
+                await addTeamEvent(event);
+            }
+            catch(error){
+                toast.error(error instanceof Error ? error.message : "An error occurred");
+            }
         }
         resetForm();
         onOpenChange(false);

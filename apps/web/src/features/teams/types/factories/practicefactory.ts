@@ -1,25 +1,19 @@
 import type { TeamEventFactory } from "./factory";
 import type { PracticeEvent } from "../event";
-import type { BaseEventInput } from "./inputs";
+import type { FullEventInput } from "./inputs";
 
 export class PracticeEventFactory implements TeamEventFactory {
-  private readonly input: BaseEventInput;
+  private readonly input: FullEventInput;
 
-  constructor(input: BaseEventInput) {
+  constructor(input: FullEventInput) {
     this.input = input;
   }
 
   createEvent(): PracticeEvent {
     return {
-      teamId: this.input.teamId,
       type: "Practice",
-      startDate: this.input.startDate,
-      endDate: this.input.endDate,
-      startTime: this.input.startTime,
-      endTime: this.input.endTime,
-      reoccurring: this.input.reoccurring,
-      reoccurrType: this.input.reoccurrType,
-      notes: (this.input as any).notes, // or validate if needed
+      ...this.input,
+      notes: this.input.notes
     };
   }
 }
