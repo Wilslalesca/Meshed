@@ -57,7 +57,8 @@ export const AddTeamEventModal = ({
     const [endTime, setEndTime] = useState("11:20:00");
     const [startDate, setStartDate] = useState<Date | null>(null);
     const [endDate, setEndDate] = useState<Date | null>(null);
-    const [events, setEvents] = useState<EventItem[]>([]);
+    const [teamFacilityId, setTeamFacilityId] = useState<string>();
+    const [approved, setApproved] = useState<boolean>(false);
     const [opponent, setOpponent] = useState<string>();
     const [homeAway, setHomeAway] = useState<"Home" | "Away" | undefined>(undefined);
     const [liftType, setLiftType] = useState<string>();
@@ -87,7 +88,9 @@ export const AddTeamEventModal = ({
         setStartDate(null);
         setEndDate(null);
 
-        setEvents([]); 
+        setTeamFacilityId(undefined);
+        setApproved(false);
+
         setOpponent(undefined);
         setHomeAway(undefined);
         setLiftType(undefined);
@@ -115,6 +118,7 @@ export const AddTeamEventModal = ({
         for (const day of selectedDays) {
             const factory = new FactoryClass({
                 teamId,
+                teamFacilityId,
                 name : eventName,
                 startDate,
                 endDate : endDate || undefined,
@@ -123,6 +127,7 @@ export const AddTeamEventModal = ({
                 reoccurring,
                 reoccurrType: selectedReoccurrType,
                 dayOfWeek: day,
+                approved,
                 opponent,
                 homeAway,
                 notes,

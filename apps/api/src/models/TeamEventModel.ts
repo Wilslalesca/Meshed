@@ -2,6 +2,7 @@ import { pool } from "../config/db";
 
 export type TeamEventInput = {
     team_id: string;
+    team_facility_id?:string;
     name?:string;
     type: string;
     start_time?: string;
@@ -11,6 +12,7 @@ export type TeamEventInput = {
     reoccurring:boolean;
     reoccurr_type?:string;
     day_of_week?: string;
+    approved?:boolean;
     opponent?: string;
     home_away?: string;
     lift_type?: string;
@@ -23,6 +25,7 @@ export class TeamEventModel {
     static async createTeamEvent(input: TeamEventInput) {
         const { 
             team_id,
+            team_facility_id,
             name,
             type,
             start_time,
@@ -32,6 +35,7 @@ export class TeamEventModel {
             reoccurring,
             reoccurr_type,
             day_of_week,
+            approved,
             opponent,
             home_away,
             lift_type,
@@ -40,9 +44,9 @@ export class TeamEventModel {
         = input;
 
         const { rows } = await pool.query(
-            `INSERT INTO team_events (team_id, name, type, start_time, end_time, start_date, end_date, reoccurring,
-            reoccurr_type, day_of_week, opponent, home_away, lift_type, notes, created_at, updated_at)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14,NOW(), NOW())
+            `INSERT INTO team_events (team_id, team_facility_id, name, type, start_time, end_time, start_date, end_date, reoccurring,
+            reoccurr_type, day_of_week, approved, opponent, home_away, lift_type, notes, created_at, updated_at)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, NOW(), NOW())
        RETURNING *`,
             [team_id,
             name,
@@ -54,6 +58,8 @@ export class TeamEventModel {
             reoccurring,
             reoccurr_type,
             day_of_week,
+            team_facility_id,
+            approved,
             opponent,
             home_away,
             lift_type,

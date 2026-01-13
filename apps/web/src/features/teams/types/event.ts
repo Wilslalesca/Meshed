@@ -2,6 +2,7 @@ export type TeamEventType = "Practice" | "Game" | "Lift" | "Other";
 
 export interface BaseTeamEvent {
   teamId: string;
+  teamFacilityId?: string;//allow nulls?
   name?: string;
   type: TeamEventType;
   startDate: Date;
@@ -11,6 +12,7 @@ export interface BaseTeamEvent {
   reoccurring: boolean;
   reoccurrType?: "Daily" | "Weekly" | "Bi-Weekly" | "Monthly";
   dayOfWeek?: string;
+  approved?:boolean;
 }
 
 export interface PracticeEvent extends BaseTeamEvent {

@@ -155,6 +155,7 @@ export class TeamController {
 
         const { 
             teamId,
+            teamFacilityID,
             name,
             type,
             startTime,
@@ -164,6 +165,7 @@ export class TeamController {
             reoccurring,
             selectedReoccurrType,
             dayOfWeek,
+            approved,
             opponent,
             homeAway,
             liftType,
@@ -172,6 +174,7 @@ export class TeamController {
 
         const team_event = await TeamEventModel.createTeamEvent({
             team_id : teamId,
+            team_facility_id:teamFacilityID,
             name:name,
             type : type,
             start_time :startTime,
@@ -181,6 +184,7 @@ export class TeamController {
             reoccurring : reoccurring,
             reoccurr_type :selectedReoccurrType,
             day_of_week :dayOfWeek,
+            approved:approved,
             opponent :opponent,
             home_away :homeAway,
             lift_type :liftType,
