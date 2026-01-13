@@ -23,6 +23,7 @@ import { TeamEventFactoryRegistry } from "../types/factories/registry";
 import type { TeamEventType } from "../types/event";
 import { useAddTeamEvent } from "../hooks/useAddTeamEvent";
 import { toast } from "sonner";
+import { Textarea } from "@/shared/components/ui/textarea";
 //import { Textarea } from "@/components/ui/textarea"
 
 export const AddTeamEventModal = ({
@@ -390,6 +391,7 @@ export const AddTeamEventModal = ({
                             <Input
                                 type="text"
                                 id="liftType"
+                                placeholder="ex. Team Lift"
                                 value={liftType}
                                 onChange={(e) => setLiftType(e.target.value)}
                             />
@@ -401,17 +403,16 @@ export const AddTeamEventModal = ({
                             <Label htmlFor="notes">
                                 Notes
                             </Label>
+                            <Textarea
+                                id="notes"
+                                placeholder="ex. Cardio Training"
+                                value={notes}
+                                onChange={(e) => setNotes(e.target.value)}
+                            />
                             
                         </div>
                     )}
 
-                    {events ? (
-                        <div className="lg:col-span-1 flex flex-col gap-4">
-                            <EventWidget events={events} />
-                        </div>
-                    ) : (
-                        ""
-                    )}
                 </div>
                 <div className="flex flex-col p-4 items-center">
                     <Button
