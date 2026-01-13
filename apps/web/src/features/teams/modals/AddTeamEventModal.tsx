@@ -68,6 +68,31 @@ export const AddTeamEventModal = ({
         if (!reoccurring) setSelectedReoccurrType(undefined);
     }, [reoccurring]);
 
+    useEffect(() => {
+        if (!open) resetForm();
+    }, [open]);
+
+    function resetForm() {
+        setSelectedDays([]);
+        setSelectedReoccurrType(undefined);
+
+        setEventName(undefined);
+        setEventTypeID(undefined);
+
+        setReoccurring(false);
+        setStartTime("10:30:00");
+        setEndTime("11:20:00");
+
+        setStartDate(null);
+        setEndDate(null);
+
+        setEvents([]); 
+        setOpponent(undefined);
+        setHomeAway(undefined);
+        setLiftType(undefined);
+        setNotes(undefined);
+    }
+
     async function handleSubmit() {
         if (!token) return;
 
@@ -106,7 +131,7 @@ export const AddTeamEventModal = ({
             const event = factory.createEvent();
             await addTeamEvent(event);
         }
-
+        resetForm();
         onOpenChange(false);
     }
 
