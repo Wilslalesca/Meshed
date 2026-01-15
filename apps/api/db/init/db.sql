@@ -51,12 +51,13 @@ CREATE TABLE team_events (
   end_time TIME NOT NULL,
   reoccurring BOOLEAN NOT NULL,
   reoccurr_type VARCHAR,        
-  day_of_week VARCHAR(20),           
+  day_of_week VARCHAR(20),  
+  metadata JSON,         
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP                  
 );
 
-CREATE TABLE games (
+/* CREATE TABLE games (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   team_event_id UUID REFERENCES team_events(id) ON DELETE CASCADE,
   opponent VARCHAR,                
@@ -79,7 +80,7 @@ CREATE TABLE other (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   team_event_id UUID REFERENCES team_events(id) ON DELETE CASCADE,
   notes TEXT
-);
+);*/
 
 CREATE TABLE user_teams (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
