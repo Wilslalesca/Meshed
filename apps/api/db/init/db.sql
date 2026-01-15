@@ -52,12 +52,33 @@ CREATE TABLE team_events (
   reoccurring BOOLEAN NOT NULL,
   reoccurr_type VARCHAR,        
   day_of_week VARCHAR(20),           
-  opponent VARCHAR,                
-  home_away VARCHAR,               
-  lift_type VARCHAR,               
-  notes TEXT,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP                  
+);
+
+CREATE TABLE games (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  team_event_id UUID REFERENCES team_events(id) ON DELETE CASCADE,
+  opponent VARCHAR,                
+  home_away VARCHAR
+);
+
+CREATE TABLE practice (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  team_event_id UUID REFERENCES team_events(id) ON DELETE CASCADE,
+  notes TEXT
+);
+
+CREATE TABLE lift (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  team_event_id UUID REFERENCES team_events(id) ON DELETE CASCADE,
+  lift_type VARCHAR
+);
+
+CREATE TABLE other (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  team_event_id UUID REFERENCES team_events(id) ON DELETE CASCADE,
+  notes TEXT
 );
 
 CREATE TABLE user_teams (
