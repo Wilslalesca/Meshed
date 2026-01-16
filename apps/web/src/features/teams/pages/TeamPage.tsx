@@ -12,7 +12,7 @@ export const TeamsPage = () => {
 
     const { teams, loading, reloadTeams } = useTeams();
     const { sports, leagues } = useLookups();
-
+    
     const [search, setSearch] = useState("");
     const [sportFilter, setSportFilter] = useState("all");
     const [genderFilter, setGenderFilter] = useState("all");

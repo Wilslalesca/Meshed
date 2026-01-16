@@ -88,10 +88,12 @@ export const Sidebar = ({
                         <div className="flex items-center gap-2">
                             <img
                                 src="/Logo.png"
-                                alt="UMA"
+                                alt="Meshed"
                                 className="h-8 w-auto"
                             />
-                            <span className="font-semibold text-lg">UMA</span>
+                            <span className="font-semibold text-lg">
+                                Meshed
+                            </span>
                         </div>
                     ) : (
                         <div className="flex-1 flex items-center justify-center">

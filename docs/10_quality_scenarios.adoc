@@ -1,6 +1,6 @@
 
 == Quality Scenarios
-Quality scenarios define measurable criteria for assessing the performance, reliability, security, and maintainability of UMA. Each scenario follows the **SEI six-part format**, which includes:
+Quality scenarios define measurable criteria for assessing the performance, reliability, security, and maintainability of Meshed. Each scenario follows the **SEI six-part format**, which includes:
 
 === Security Scenarios
 ==== **Scenario 1: Unauthorized Access Attempt**
