@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { apiAcceptInvite } from "../api/invites";
 import { RegisterForm } from "../components/RegisterForm";
-import Logo from "@/assets/Logo.png";
+import Logo from "@/assets/Logo_Master.png";
 
 export default function InviteRegisterPage() {
     const [params] = useSearchParams();

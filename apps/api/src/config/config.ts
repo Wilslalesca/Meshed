@@ -10,12 +10,12 @@ export const config = {
     refreshTtl: process.env.REFRESH_TTL ?? '7d',
     cookieDomain: process.env.COOKIE_DOMAIN ?? 'localhost',
     nodeEnv: process.env.NODE_ENV ?? 'development',
-    gmailEmail: process.env.GMAIL_EMAIL!,
+    gmailEmail: process.env.GMAIL_APP_EMAIL!,
     gmailAppPassword: process.env.GMAIL_APP_PASSWORD!,
     
 };
 
-["JWT_ACCESS_SECRET", "JWT_REFRESH_SECRET", "DATABASE_URL", "GMAIL_EMAIL", "GMAIL_APP_PASSWORD"].forEach((key) => {
+["JWT_ACCESS_SECRET", "JWT_REFRESH_SECRET", "DATABASE_URL", "GMAIL_APP_EMAIL", "GMAIL_APP_PASSWORD"].forEach((key) => {
     if (!process.env[key]) {
         console.warn(`ERROR: Missing environment variable ${key}`);
         process.exit(1);
