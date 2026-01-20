@@ -23,7 +23,7 @@ import {
 import { useState } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/shared/hooks/useAuth";
-
+import Meshed_Icon from "@/assets/Icon.png";
 export const Sidebar = ({
     open,
     collapsed,
@@ -87,11 +87,13 @@ export const Sidebar = ({
                     {!collapsed ? (
                         <div className="flex items-center gap-2">
                             <img
-                                src="/Logo.png"
-                                alt="UMA"
-                                className="h-8 w-auto"
+                                src={Meshed_Icon}
+                                alt="Meshed"
+                                className="h-6 w-auto"
                             />
-                            <span className="font-semibold text-lg">UMA</span>
+                            <span className="font-semibold text-lg">
+                                Meshed
+                            </span>
                         </div>
                     ) : (
                         <div className="flex-1 flex items-center justify-center">

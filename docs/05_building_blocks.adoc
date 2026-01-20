@@ -1,11 +1,11 @@
 :imagesdir: diagrams
 == Building Block View
 
-UMA is structured into different building blocks that define its core functionalities. These building blocks are categorized into different levels as per the C4 model.
+Meshed is structured into different building blocks that define its core functionalities. These building blocks are categorized into different levels as per the C4 model.
 
 === Level 1: System Scope
 
-- The **UMA System** represents the entire platform providing optimized schedule services, facility booking requests, and schedule update notifications.
+- The **Meshed System** represents the entire platform providing optimized schedule services, facility booking requests, and schedule update notifications.
 
 === Level 2: Major Containers
 

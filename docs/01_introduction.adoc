@@ -1,14 +1,14 @@
 == Introduction
 
-Unite Match Align (UMA)  is a optimization scheduling system that generates practice schedules for coaches, and submit facility requests. It allows student-athletes to have a centralized academic and athletic schedule. Facility Administrators
+Unite Match Align (Meshed)  is a optimization scheduling system that generates practice schedules for coaches, and submit facility requests. It allows student-athletes to have a centralized academic and athletic schedule. Facility Administrators
 have the ability to view conflicting facility requests, as well as approve and deny requests.
 
-The purpose of this document is to provide a structured architecture description of UMA following the arc42 template. By utilizing the C4 model, this documentation aims to create a clear and standardized representation of the system architecture for developers, architects, and stakeholders.
+The purpose of this document is to provide a structured architecture description of Meshed following the arc42 template. By utilizing the C4 model, this documentation aims to create a clear and standardized representation of the system architecture for developers, architects, and stakeholders.
 
 ### Goals of the Documentation
 The primary goals of these documents are to:
 
-- Provide a structured and detailed overview of UMA's architecture.
+- Provide a structured and detailed overview of Meshed's architecture.
 - Ensure a clear understanding of system interactions, components, and deployment strategies.
 - Facilitate maintainability and scalability by documenting key architectural decisions.
 - Enhance security and compliance by outlining specific choices made by the team.
@@ -23,7 +23,7 @@ This document is intended for:
 - SWE Senior Design Advisors
 
 ### Scope
-The document covers the entire system architecture of UMA, including:
+The document covers the entire system architecture of Meshed, including:
 
 - System context and external dependencies.
 - High-level building blocks and components.

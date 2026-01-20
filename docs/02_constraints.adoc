@@ -2,7 +2,7 @@
 
 Constraints represent the limitations and restrictions that influence the design and implementation of the SmartSpot system. These constraints are essential to consider during the architectural decision-making process to ensure that the final solution aligns with the project requirements and constraints.
 
-The design of UMA must adhere to several prototype requirements, design patterns, quality attribute requirements, and assignment specific specifications.
+The design of Meshed must adhere to several prototype requirements, design patterns, quality attribute requirements, and assignment specific specifications.
 
 ### Prototype Requirements
 
