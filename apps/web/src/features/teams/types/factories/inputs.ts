@@ -11,7 +11,7 @@ export interface BaseEventInput {
   reoccurring: boolean;
   reoccurrType?: BaseTeamEvent["reoccurrType"];
   dayOfWeek?: string;
-  approved?:boolean;
+  status?:string;
 }
 
 export interface GameEventInput extends BaseEventInput {

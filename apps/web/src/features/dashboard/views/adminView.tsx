@@ -22,6 +22,8 @@ export const AdminDashboard = () => {
         const fetchEvents = async () => {
             const data = await getAllEvents(token!);
             setEvents(data);
+            console.log(data);
+            console.log(events);
         };
         
         if (token) {

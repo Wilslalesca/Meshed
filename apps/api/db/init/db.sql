@@ -147,7 +147,7 @@ CREATE TABLE team_events (
   reoccurring BOOLEAN NOT NULL,
   reoccurr_type VARCHAR,        
   day_of_week VARCHAR(20), 
-  approved BOOLEAN,         
+  status BOOLEAN,         
   opponent VARCHAR,                
   home_away VARCHAR,               
   lift_type VARCHAR,               

@@ -12,7 +12,7 @@ export interface BaseTeamEvent {
   reoccurring: boolean;
   reoccurrType?: "Daily" | "Weekly" | "Bi-Weekly" | "Monthly";
   dayOfWeek?: string;
-  approved?:boolean;
+  status?:string;
 }
 
 export interface PracticeEvent extends BaseTeamEvent {

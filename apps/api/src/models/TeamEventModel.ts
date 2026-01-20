@@ -12,7 +12,7 @@ export type TeamEventInput = {
     reoccurring:boolean;
     reoccurr_type?:string;
     day_of_week?: string;
-    approved?:boolean;
+    status?:boolean;
     opponent?: string;
     home_away?: string;
     lift_type?: string;
@@ -35,7 +35,7 @@ export class TeamEventModel {
             reoccurring,
             reoccurr_type,
             day_of_week,
-            approved,
+            status,
             opponent,
             home_away,
             lift_type,
@@ -45,7 +45,7 @@ export class TeamEventModel {
 
         const { rows } = await pool.query(
             `INSERT INTO team_events (team_id, team_facility_id, name, type, start_time, end_time, start_date, end_date, reoccurring,
-            reoccurr_type, day_of_week, approved, opponent, home_away, lift_type, notes, created_at, updated_at)
+            reoccurr_type, day_of_week, status, opponent, home_away, lift_type, notes, created_at, updated_at)
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, NOW(), NOW())
        RETURNING *`,
             [team_id,
@@ -59,7 +59,7 @@ export class TeamEventModel {
             reoccurr_type,
             day_of_week,
             team_facility_id,
-            approved,
+            status,
             opponent,
             home_away,
             lift_type,

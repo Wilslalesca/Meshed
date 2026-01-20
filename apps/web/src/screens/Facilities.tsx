@@ -4,30 +4,7 @@ import { useAuth } from "@/shared/hooks/useAuth";
 import { Button } from "@/shared/components/ui/button";
 import { Input } from "@/shared/components/ui/input";
 import { Label } from "@/shared/components/ui/label";
-
-type NewFacility = {
-  name: string;
-  address1?: string;
-  address2?: string;
-  city?: string;
-  province_state?: string;
-  postal_code?: string;
-  country?: string;
-  email?: string;
-  phone?: string;
-  notes?: string;
-};
-
-type Facility = {
-  id: string;
-  name: string;
-  city: string | null;
-  province_state: string | null;
-  country: string | null;
-  phone: string | null;
-  email: string | null;
-  created_at: string;
-};
+import type {NewFacility, Facility} from '../features/facilities/types/facilities'
 
 const provinces = [
   "Alberta",

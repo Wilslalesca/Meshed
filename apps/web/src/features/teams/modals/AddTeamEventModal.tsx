@@ -24,7 +24,8 @@ import type { TeamEventType } from "../types/event";
 import { useAddTeamEvent } from "../hooks/useAddTeamEvent";
 import { toast } from "sonner";
 import { Textarea } from "@/shared/components/ui/textarea";
-//import { Textarea } from "@/components/ui/textarea"
+import { apiGetEventFacilities } from "@/features/teams/api/events"
+import type { Facility } from "@/features/facilities/types/facilities";
 
 export const AddTeamEventModal = ({
     open,
@@ -58,13 +59,26 @@ export const AddTeamEventModal = ({
     const [startDate, setStartDate] = useState<Date | null>(null);
     const [endDate, setEndDate] = useState<Date | null>(null);
     const [teamFacilityId, setTeamFacilityId] = useState<string>();
-    const [approved, setApproved] = useState<boolean>(false);
+    const [status, setStatus] = useState<string>('pending');
     const [opponent, setOpponent] = useState<string>();
     const [homeAway, setHomeAway] = useState<"Home" | "Away" | undefined>(undefined);
     const [liftType, setLiftType] = useState<string>();
     const [notes, setNotes] = useState<string>();
 
+    const [allFacilities, setAllFacilities] = useState<Facility[]>([]);
+
     const { addTeamEvent } = useAddTeamEvent();
+
+    useEffect(() => {
+        const fetchFacilities = async () => {
+            const facilities = await apiGetEventFacilities(token!);
+            if (facilities) {
+                setAllFacilities(facilities);
+            }
+        };
+
+        fetchFacilities();
+    }, [token]);
 
     useEffect(() => {
         if (!reoccurring) setSelectedReoccurrType(undefined);
@@ -89,7 +103,7 @@ export const AddTeamEventModal = ({
         setEndDate(null);
 
         setTeamFacilityId(undefined);
-        setApproved(false);
+        setStatus('pending');
 
         setOpponent(undefined);
         setHomeAway(undefined);
@@ -127,7 +141,7 @@ export const AddTeamEventModal = ({
                 reoccurring,
                 reoccurrType: selectedReoccurrType,
                 dayOfWeek: day,
-                approved,
+                status:status,
                 opponent,
                 homeAway,
                 notes,
@@ -264,6 +278,22 @@ export const AddTeamEventModal = ({
                                 <SelectContent>
                                     <SelectItem value="false">No</SelectItem>
                                     <SelectItem value="true">Yes</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+
+                        <div className="grid w-full items-center gap-3 py-2">
+                            <Label htmlFor="facility">Facility</Label>
+                            <Select value={teamFacilityId} onValueChange={setTeamFacilityId}>
+                                <SelectTrigger id="facility">
+                                    <SelectValue placeholder="Select a facility" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {allFacilities.map((facility) => (
+                                        <SelectItem key={facility.id} value={facility.id}>
+                                            {facility.name}
+                                        </SelectItem>
+                                    ))}
                                 </SelectContent>
                             </Select>
                         </div>

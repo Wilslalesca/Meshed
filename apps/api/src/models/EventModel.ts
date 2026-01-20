@@ -12,7 +12,7 @@ export type TeamEventInput = {
     reoccurring:boolean;
     reoccurr_type?:string;
     day_of_week?: string;
-    approved?:boolean;
+    status?:boolean;
     opponent?: string;
     home_away?: string;
     lift_type?: string;
