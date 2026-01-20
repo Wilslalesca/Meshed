@@ -31,19 +31,50 @@ export const AdminDashboard = () => {
     }, [token]);
 
     return (
-        <div className="flex flex-col gap-6 p-4">
-            {events?
-                events.map((event) => (
-                    <div key={event.id} value={event.teamId}>
-                        {event.teamId}
-                        {event.name}
-                    </div>
-                ))
-            :
-                <div>No Pending Facility Requests</div>
-            }
-            
-        </div>
+        //change this to switch between different cards, one per facility, one per team
+        <Card>
+            <CardHeader>
+            <CardTitle>Facility Requests</CardTitle>
+            </CardHeader>
+            <CardContent>
+            <div className="overflow-x-auto">
+                <table className="w-full">
+                <thead>
+                    <tr className="border-b">
+                    <th className="text-left py-2 px-4">Team ID</th>
+                    <th className="text-left py-2 px-4">Event Name</th>
+                    <th className="text-left py-2 px-4">Facility</th>
+                    <th className="text-left py-2 px-4">Date</th>
+                    <th className="text-left py-2 px-4">Start Time</th>
+                    <th className="text-left py-2 px-4">End Time</th>
+                    <th className="text-left py-2 px-4">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {events.length > 0 ? (
+                    events.map((event) => (
+                        <tr key={event.id} className="border-b hover:bg-gray-50">
+                        <td className="py-2 px-4">{event.teamId}</td>
+                        <td className="py-2 px-4">{event.name}</td>
+                        <td className="py-2 px-4">{event.teamFacilityId}</td>
+                        <td className="py-2 px-4">{new Date(event.startDate).toLocaleDateString()}</td>
+                        <td className="py-2 px-4">{event.startTime}</td>
+                        <td className="py-2 px-4">{event.endTime}</td>
+                        <td className="py-2 px-4">{event.status}</td>
+                        </tr>
+                    ))
+                    ) : (
+                    <tr>
+                        <td colSpan={2} className="py-4 px-4 text-center text-gray-500">
+                        No Pending Facility Requests
+                        </td>
+                    </tr>
+                    )}
+                </tbody>
+                </table>
+            </div>
+            </CardContent>
+        </Card>
     );
 };
 
