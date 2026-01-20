@@ -49,6 +49,7 @@ export class TeamEventModel {
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, NOW(), NOW())
        RETURNING *`,
             [team_id,
+            team_facility_id,
             name,
             type,
             start_time,
@@ -58,7 +59,6 @@ export class TeamEventModel {
             reoccurring,
             reoccurr_type,
             day_of_week,
-            team_facility_id,
             status,
             opponent,
             home_away,
