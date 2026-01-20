@@ -1,80 +1,39 @@
-import {
-    Card,
-    CardContent,
-    CardHeader,
-    CardTitle,
-} from "@/shared/components/ui/card";
 import { QuickActions } from "../components/user/QuickActions";
 import { StatCard } from "../components/StatCard";
 import { TeamSchedule } from "../components/user/TeamSchedule";
 import { ActivityFeed } from "../components/user/ActivityFeed";
-import { apiGetAthleteScheduleRows, apiGetTeamEvents } from "@/features/teams/api/teamSchedule.API";
+import { apiGetTeamEvents } from "@/features/teams/api/teamSchedule.API";
 import { EventWidget } from "../components/EventWidget";
-import { getAllEvents } from "../api/dashboardApi";
+import { apiGetEventFacilities } from "@/features/teams/api/events"
+import type { Facility } from "@/features/facilities/types/facilities";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/shared/hooks/useAuth";
 import type { TeamEvent } from "@/features/teams/types/event";
+import { AllEventTable } from "../components/admin/AllEventTable";
 
 export const AdminDashboard = () => {
     const { token } = useAuth();
     const [events, setEvents] = useState<TeamEvent[]>([]);
 
+    const [allFacilities, setAllFacilities] = useState<Facility[]>([]);
+    
+    
     useEffect(() => {
-        const fetchEvents = async () => {
-            const data = await getAllEvents(token!);
-            setEvents(data);
+        const fetchFacilities = async () => {
+            const facilities = await apiGetEventFacilities(token!);
+            if (facilities) {
+                setAllFacilities(facilities);
+            }
         };
-        
-        if (token) {
-            fetchEvents();
-        }
+
+        fetchFacilities();
     }, [token]);
+    
 
     return (
         //change this to switch between different cards, one per facility, one per team
-        <Card>
-            <CardHeader>
-            <CardTitle>Facility Requests</CardTitle>
-            </CardHeader>
-            <CardContent>
-            <div className="overflow-x-auto">
-                <table className="w-full">
-                <thead>
-                    <tr className="border-b">
-                    <th className="text-left py-2 px-4">Team ID</th>
-                    <th className="text-left py-2 px-4">Event Name</th>
-                    <th className="text-left py-2 px-4">Facility</th>
-                    <th className="text-left py-2 px-4">Date</th>
-                    <th className="text-left py-2 px-4">Start Time</th>
-                    <th className="text-left py-2 px-4">End Time</th>
-                    <th className="text-left py-2 px-4">Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {events.length > 0 ? (
-                    events.map((event) => (
-                        <tr key={event.id} className="border-b hover:bg-gray-50">
-                        <td className="py-2 px-4">{event.teamId}</td>
-                        <td className="py-2 px-4">{event.name}</td>
-                        <td className="py-2 px-4">{event.teamFacilityId}</td>
-                        <td className="py-2 px-4">{new Date(event.startDate).toLocaleDateString()}</td>
-                        <td className="py-2 px-4">{event.startTime}</td>
-                        <td className="py-2 px-4">{event.endTime}</td>
-                        <td className="py-2 px-4">{event.status}</td>
-                        </tr>
-                    ))
-                    ) : (
-                    <tr>
-                        <td colSpan={2} className="py-4 px-4 text-center text-gray-500">
-                        No Pending Facility Requests
-                        </td>
-                    </tr>
-                    )}
-                </tbody>
-                </table>
-            </div>
-            </CardContent>
-        </Card>
+        //insert a selectitem here, and show all facility options plus 'ALL' whichever they click is what is displayed below
+        <AllEventTable/>
     );
 };
 

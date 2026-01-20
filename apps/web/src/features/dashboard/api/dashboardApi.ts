@@ -25,3 +25,14 @@ export async function getAllEvents(token: string) {
         return null;
     }
 }
+
+export async function getFacilityEvents( facilityId: string, token: string) {
+    try {
+        const res = await fetch(`${API_BASE}/events/${facilityId}`, {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+        return res.ok ? await res.json() : null;
+    } catch {
+        return null;
+    }
+}

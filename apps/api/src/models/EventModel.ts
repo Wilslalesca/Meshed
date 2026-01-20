@@ -28,4 +28,11 @@ export class EventModel {
         );
         return rows;
     }
+
+    static async getForFacility(facilityId: string) {
+        const { rows } = await pool.query(
+            `SELECT * FROM team_events WHERE team_facility_id = $1 ORDER BY start_date ASC, start_time ASC`, [facilityId]
+        );
+        return rows;
+    }
 }
