@@ -14,3 +14,14 @@ export async function getAthleteEvents(athleteId: string, token: string) {
         time: `${item.start_time} - ${item.end_time}`,
     }));
 }
+
+export async function getAllEvents(token: string) {
+    try {
+        const res = await fetch(`${API_BASE}/events`, {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+        return res.ok ? await res.json() : null;
+    } catch {
+        return null;
+    }
+}
