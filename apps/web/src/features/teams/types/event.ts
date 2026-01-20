@@ -1,6 +1,7 @@
 export type TeamEventType = "Practice" | "Game" | "Lift" | "Other";
 
 export interface BaseTeamEvent {
+  id?: string;
   teamId: string;
   teamFacilityId?: string;//allow nulls?
   name?: string;

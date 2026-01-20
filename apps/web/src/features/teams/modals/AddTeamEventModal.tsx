@@ -131,21 +131,21 @@ export const AddTeamEventModal = ({
 
         for (const day of selectedDays) {
             const factory = new FactoryClass({
-                teamId,
-                teamFacilityId,
+                teamId : teamId,
+                teamFacilityId : teamFacilityId,
                 name : eventName,
-                startDate,
+                startDate : startDate,
                 endDate : endDate || undefined,
-                startTime,
-                endTime,
-                reoccurring,
+                startTime :startTime,
+                endTime : endTime,
+                reoccurring : reoccurring,
                 reoccurrType: selectedReoccurrType,
                 dayOfWeek: day,
                 status:status,
-                opponent,
-                homeAway,
-                notes,
-                liftType,
+                opponent :opponent,
+                homeAway :homeAway,
+                notes :notes,
+                liftType : liftType,
             });
             console.log(factory)
 

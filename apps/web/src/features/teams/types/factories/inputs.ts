@@ -1,6 +1,7 @@
 import type { BaseTeamEvent } from "../event";
 
 export interface BaseEventInput {
+  id?: string;
   teamId: string;
   teamFacilityId?:string;
   name?:string;

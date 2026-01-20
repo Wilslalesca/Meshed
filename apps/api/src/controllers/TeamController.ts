@@ -155,7 +155,7 @@ export class TeamController {
 
         const { 
             teamId,
-            teamFacilityID,
+            teamFacilityId,
             name,
             type,
             startTime,
@@ -172,10 +172,10 @@ export class TeamController {
             notes,
         }  = req.body;
 
-        console.log("faciliyid" + teamFacilityID);
+        console.log("faciliyid" + teamFacilityId);
         const team_event = await TeamEventModel.createTeamEvent({
             team_id : teamId,
-            team_facility_id:teamFacilityID,
+            team_facility_id:teamFacilityId,
             name:name,
             type : type,
             start_time :startTime,
