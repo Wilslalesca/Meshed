@@ -26,6 +26,7 @@ import { useAuth } from "@/shared/hooks/useAuth";
 import { apiGetNotifications, apiMarkNotificationsRead } from "@/shared/services/notifications";
 import { toast } from "sonner";
 
+import Meshed_Icon from "@/assets/Icon.png";
 export const Sidebar = ({
     open,
     collapsed,
@@ -104,11 +105,13 @@ export const Sidebar = ({
                     {!collapsed ? (
                         <div className="flex items-center gap-2">
                             <img
-                                src="/Meshed_logo.png"
+                                src={Meshed_Icon}
                                 alt="Meshed"
-                                className="h-8 w-auto"
+                                className="h-6 w-auto"
                             />
-                            <span className="font-semibold text-lg">Meshed</span>
+                            <span className="font-semibold text-lg">
+                                Meshed
+                            </span>
                         </div>
                     ) : (
                         <div className="flex-1 flex items-center justify-center">

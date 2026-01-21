@@ -1,7 +1,7 @@
 
 == Architecture Decisions
 
-Architectural decisions document key design choices made during the development of UMA. These decisions are based on functional and non-functional requirements, technical constraints, and business needs.
+Architectural decisions document key design choices made during the development of Meshed. These decisions are based on functional and non-functional requirements, technical constraints, and business needs.
 
 === ADR 1: Use of MVC Architecture.
 **Decision**: 
@@ -33,4 +33,4 @@ Use PostgreSQL for all data storage and prototype database requirements.
 
 - Potentially higher storage costs affects scalability
 
-These decisions shape the architecture of UMA and contribute to its performance, development, and maintainability.
+These decisions shape the architecture of Meshed and contribute to its performance, development, and maintainability.

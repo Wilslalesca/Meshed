@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
     Tabs,
     TabsList,
@@ -8,11 +8,12 @@ import {
 import { Button } from "@/shared/components/ui/button";
 import {
     Users,
+    Upload,
     ClipboardList,
     Calendar,
     Settings,
     UserPlus,
-    Upload,
+    CalendarPlus,
 } from "lucide-react";
 import { useUserRole } from "@/shared/hooks/useUserRole";
 import type { Team, SportLookup, League } from "../types/teams";
@@ -29,6 +30,7 @@ interface Props {
     onAddUser: () => void;
     onBulkUpload?: () => void;
     isManagerOverride?: boolean;
+    onAddTeamEvent: () => void;
 
     children: {
         profile: React.ReactNode;
@@ -48,11 +50,13 @@ export const TeamTabs = ({
     onDelete,
     onAddUser,
     onBulkUpload,
+    onAddTeamEvent,
     children,
     isManagerOverride,
 }: Props) => {
     const userRole = useUserRole();
-    const isManager = (isManagerOverride ?? userRole.isManager);
+    const isManager = userRole.isManager;
+    const [activeTab, setActiveTab] = useState<"profile" | "roster" | "staff" | "schedule">("profile");
     return (
         <div className="space-y-6">
             <div className="flex flex-col gap-2">
@@ -87,30 +91,40 @@ export const TeamTabs = ({
                         )}
                     </>
                     )}
-                    <div className="ml-auto flex gap-2">
-                        <Button
-                            variant={
-                                viewMode === "cards" ? "default" : "outline"
-                            }
-                            onClick={() => onViewModeChange("cards")}
-                            size="sm"
-                        >
-                            Cards
-                        </Button>
-                        <Button
-                            variant={
-                                viewMode === "table" ? "default" : "outline"
-                            }
-                            onClick={() => onViewModeChange("table")}
-                            size="sm"
-                        >
-                            Table
-                        </Button>
+
+                    {isManager && (
+                    <Button variant="default" onClick={onAddTeamEvent}>
+                        <CalendarPlus size={16} className="mr-2" /> Add Event
+                    </Button>
+                    )}
+                    <div
+                    className={`ml-auto flex gap-2 transition-opacity ${
+                        activeTab !== "profile" && activeTab !== "schedule"
+                        ? "opacity-100 visible"
+                        : "opacity-0 invisible"
+                    }`}
+                    >
+                    <Button
+                        variant={viewMode === "cards" ? "default" : "outline"}
+                        onClick={() => onViewModeChange("cards")}
+                        size="sm"
+                    >
+                        Cards
+                    </Button>
+                    <Button
+                        variant={viewMode === "table" ? "default" : "outline"}
+                        onClick={() => onViewModeChange("table")}
+                        size="sm"
+                    >
+                        Table
+                    </Button>
+
                     </div>
+
                 </div>
             </div>
 
-            <Tabs defaultValue="profile" className="w-full">
+            <Tabs defaultValue="profile" className="w-full" onValueChange={(v) => setActiveTab(v as typeof activeTab)}>
                 <TabsList className="w-full">
                     <TabsTrigger
                         value="profile"

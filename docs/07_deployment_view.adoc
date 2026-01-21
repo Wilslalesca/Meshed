@@ -1,6 +1,6 @@
 == Deployment View
 
-The deployment view describes how UMA is deployed across the development environment.
+The deployment view describes how Meshed is deployed across the development environment.
 
 === Infrastructure Setup
 
