@@ -8,6 +8,7 @@ import {
 import { Button } from "@/shared/components/ui/button";
 import {
     Users,
+    Upload,
     ClipboardList,
     Calendar,
     Settings,
@@ -15,16 +16,20 @@ import {
     CalendarPlus,
 } from "lucide-react";
 import { useUserRole } from "@/shared/hooks/useUserRole";
+import type { Team, SportLookup, League } from "../types/teams";
+
 interface Props {
-    team: any;
-    sport: any;
-    league: any;
+    team: Team;
+    sport: SportLookup | null;
+    league: League | null;
     viewMode: "cards" | "table";
     onViewModeChange: (v: "cards" | "table") => void;
 
     onEdit: () => void;
     onDelete: () => void;
     onAddUser: () => void;
+    onBulkUpload?: () => void;
+    isManagerOverride?: boolean;
     onAddTeamEvent: () => void;
 
     children: {
@@ -44,8 +49,10 @@ export const TeamTabs = ({
     onEdit,
     onDelete,
     onAddUser,
+    onBulkUpload,
     onAddTeamEvent,
     children,
+    isManagerOverride,
 }: Props) => {
     const userRole = useUserRole();
     const isManager = userRole.isManager;
@@ -73,9 +80,16 @@ export const TeamTabs = ({
                     )}
 
                     {isManager && (
-                    <Button variant="default" onClick={onAddUser}>
-                        <UserPlus size={16} className="mr-2" /> Add User
-                    </Button>
+                    <>
+                        <Button variant="default" onClick={onAddUser}>
+                            <UserPlus size={16} className="mr-2" /> Add User
+                        </Button>
+                        {typeof onBulkUpload === "function" && (
+                            <Button variant="default" onClick={onBulkUpload}>
+                                <Upload size={16} className="mr-2" /> Bulk Upload CSV
+                            </Button>
+                        )}
+                    </>
                     )}
 
                     {isManager && (
