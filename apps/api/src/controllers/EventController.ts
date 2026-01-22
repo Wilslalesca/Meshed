@@ -70,7 +70,7 @@ export class EventController {
         res.json(formattedEvents);
     }
 
-    static async getPendingFacilityEvents(req: Request, res: Response){
+    static async getConflictingFacilityEvents(req: Request, res: Response){
         const {facilityId }= req.params;
         const events = await EventModel.getAllPendingFacilityRequests(facilityId);
         const toReturn = []
@@ -84,5 +84,11 @@ export class EventController {
                 
             });
         }
+    }
+
+    static async getPendingFacilityEvents(req: Request, res: Response){
+        const {facilityId }= req.params;
+        const events = await EventModel.getAllPendingFacilityRequests(facilityId);
+        
     }
 }
