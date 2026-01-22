@@ -11,7 +11,7 @@ export default function AthleteSchedulePage() {
     const athleteId = user?.id;
     const { schedule, loading } = useAthleteSchedule(athleteId);
     const navigate = useNavigate();
-     const addCourse = async () => {
+    const addCourse = async () => {
         navigate('/addcourse');
     }
 

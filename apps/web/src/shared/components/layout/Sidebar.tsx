@@ -19,11 +19,14 @@ import {
     DropdownMenuLabel,
     DropdownMenuSeparator,
     DropdownMenuTrigger,
-} from "@/shared/components//ui/dropdown-menu";
-import { useState } from "react";
+} from "@/shared/components/ui/dropdown-menu";
+import { useEffect, useState } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/shared/hooks/useAuth";
+import { apiGetNotifications, apiMarkNotificationsRead } from "@/shared/services/notifications";
+import { toast } from "sonner";
 
+import Meshed_Icon from "@/assets/Icon.png";
 export const Sidebar = ({
     open,
     collapsed,
@@ -37,7 +40,21 @@ export const Sidebar = ({
     onClose(): void;
     onToggleCollapse(): void;
 }) => {
-    const { user, logout } = useAuth();
+    const { user, token, logout } = useAuth() as any;
+        useEffect(() => {
+            async function checkNotifications() {
+                if (!token) return;
+                const items = await apiGetNotifications(token);
+                if ((items?.length ?? 0) > 0) {
+                    toast.info(`You have ${items.length} schedule update(s).`, {
+                        description: "Your practice/class schedule changed.",
+                    });
+                    await apiMarkNotificationsRead(token);
+                }
+            }
+            checkNotifications();
+            // run once on mount
+        }, [token]);
     const location = useLocation();
     // const accent = "#346E68";
     const [openMenu, setOpenMenu] = useState(false);
@@ -61,8 +78,9 @@ export const Sidebar = ({
         <>
             {open && isMobile && (
                 <div
-                    onClick={onClose}
                     className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 transition-opacity"
+                    onClick={onClose}
+                    aria-hidden="true"
                 />
             )}
 
@@ -87,11 +105,13 @@ export const Sidebar = ({
                     {!collapsed ? (
                         <div className="flex items-center gap-2">
                             <img
-                                src="/Logo.png"
-                                alt="UMA"
-                                className="h-8 w-auto"
+                                src={Meshed_Icon}
+                                alt="Meshed"
+                                className="h-6 w-auto"
                             />
-                            <span className="font-semibold text-lg">UMA</span>
+                            <span className="font-semibold text-lg">
+                                Meshed
+                            </span>
                         </div>
                     ) : (
                         <div className="flex-1 flex items-center justify-center">
@@ -192,7 +212,7 @@ export const Sidebar = ({
                     })}
                 </nav>
 
-                <div className="mt-auto p-4 mb-2">
+                <div className="mt-auto shrink-0 sticky bottom-0 p-4 bg-[#F9FAFB] border-t">
                     <DropdownMenu open={openMenu} onOpenChange={setOpenMenu}>
                         <DropdownMenuTrigger asChild>
                             <button

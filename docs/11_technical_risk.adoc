@@ -1,7 +1,7 @@
 
 == Technical Risks
 
-Identifying and mitigating technical risks is critical to ensuring the stability, security, and maintainability of UMA. Below are the key technical risks associated with the system, along with mitigation strategies that would be implemented when UMA goes past its prototype design.
+Identifying and mitigating technical risks is critical to ensuring the stability, security, and maintainability of Meshed. Below are the key technical risks associated with the system, along with mitigation strategies that would be implemented when Meshed goes past its prototype design.
 
 === Security Risks
 

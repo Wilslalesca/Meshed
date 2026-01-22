@@ -3,9 +3,9 @@ import { pool } from "../config/db";
 type TeamSeed = { team_name: string; league_name: string };
 
 const teams: TeamSeed[] = [
-    { team_name: "UMA Eagles", league_name: "AUS" },
-    { team_name: "UMA Hawks", league_name: "Co-Ed" },
-    { team_name: "UMA Tigers", league_name: "Intramural" },
+    { team_name: "Meshed Eagles", league_name: "AUS" },
+    { team_name: "Meshed Hawks", league_name: "Co-Ed" },
+    { team_name: "Meshed Tigers", league_name: "Intramural" },
 ];
 
 async function upsertTeam(t: TeamSeed): Promise<void> {

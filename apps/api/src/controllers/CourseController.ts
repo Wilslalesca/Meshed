@@ -109,6 +109,36 @@ export const CourseController = {
       const updated = await CourseModel.updateCourse(classId, parse.data);
       if (!updated) return res.status(404).json({ message: "Course not found" });
 
+      // Notify all athletes linked to this course about the update
+      try {
+        const athleteIds = await AthleteCourseModel.getAthletesForClass(classId);
+        for (const athleteId of athleteIds) {
+          // Fetch user account to get email
+          // athlete_profiles id equals users.id
+          const userRes = await pool.query(
+            `SELECT id, email, first_name, last_name FROM users WHERE id = $1 LIMIT 1`,
+            [athleteId]
+          );
+          const user = userRes.rows[0];
+          if (user?.email) {
+            // Create UI notification
+            const { NotificationModel } = await import("../models/NotificationModel");
+            await NotificationModel.create(
+              user.id,
+              "schedule_update",
+              `Your schedule item '${updated.name ?? updated.course_code ?? "Course"}' was updated.`,
+              { classId, updated }
+            );
+            // Send email notification
+            await import("../services/emailService").then(({ sendEmail }) =>
+              sendEmail.sendScheduleUpdatedEmail(user.email, updated.name ?? updated.course_code ?? "Course")
+            );
+          }
+        }
+      } catch (notifyErr) {
+        console.warn("Notification dispatch failed:", notifyErr);
+      }
+
       res.status(200).json({ message: "Course updated", course: updated, success: true });
     } catch (err) {
       console.error("Error updating course:", err);
