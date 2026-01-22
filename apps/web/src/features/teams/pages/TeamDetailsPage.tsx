@@ -140,6 +140,7 @@ export const TeamDetailsPage = () => {
                 />
             )}
             {isManager && (
+                <>
                 <AddAthleteModal
                     open={openBulkAdd}
                     onOpenChange={setOpenBulkAdd}
@@ -147,11 +148,13 @@ export const TeamDetailsPage = () => {
                     onAdded={() => {
                         reloadRoster();
                     }}
+                />
                 <AddTeamEventModal
                     open={openAddTeamEvent}
                     onOpenChange={setOpenAddTeamEvent}
                     teamId={team.id}
                 />
+                </>
             )}
         </div>
     );
