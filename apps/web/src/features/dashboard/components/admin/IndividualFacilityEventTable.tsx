@@ -19,7 +19,7 @@ export const IndividualFacilityEventTable = ({ facilityId, facilityName }: { fac
         };
 
         fetchFacilityEvents();
-    }, [token]);
+    }, [token, facilityId]);
     
 
     return (

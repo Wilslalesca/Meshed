@@ -35,4 +35,24 @@ export class EventModel {
         );
         return rows;
     }
+
+    static async getAllPendingFacilityRequests(facilityId: string) {
+        const { rows } = await pool.query(
+            `SELECT * FROM team_events WHERE team_facility_id = $1 AND status = 'pending' ORDER BY start_date ASC, start_time ASC`, [facilityId]
+        );
+        return rows;
+    }
+
+    static async checkConflicts(facilityId :string, startDate:Date, startTime:string , endTime:string, eventId: string) {
+        const { rows } = await pool.query(
+            `SELECT * 
+            FROM team_events as t
+            WHERE team_facility_id = $1 
+            AND start_date = $2
+            AND t.start_time <= $4 AND t.end_time >= $3
+            AND id NOT $5
+            `,[facilityId, startDate, startTime, endTime, eventId]
+        );
+        return rows;
+    }
 }

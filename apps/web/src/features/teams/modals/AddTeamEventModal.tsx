@@ -3,7 +3,6 @@ import { useAuth } from "@/shared/hooks/useAuth";
 import { Button } from "@/shared/components//ui/button";
 import type { EventItem } from "@/features/dashboard/types/eventItem";
 import { Label } from "@/shared/components//ui/label";
-import { EventWidget } from "@/features/dashboard/components/EventWidget";
 import { Input } from "@/shared/components//ui/input";
 import {
     Dialog,
