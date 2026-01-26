@@ -8,5 +8,7 @@ router.use(requireAuth);
 
 router.get("/", EventController.getAllEvents);
 router.get("/:facilityId", EventController.getFacilityEvents);
+router.get("/:facilityId/conflicts", EventController.getConflictingFacilityEvents);
+router.get("/:facilityId/pending", EventController.getPendingFacilityEvents);
 
 export default router;

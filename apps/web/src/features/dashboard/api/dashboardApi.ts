@@ -15,6 +15,7 @@ export async function getAthleteEvents(athleteId: string, token: string) {
     }));
 }
 
+//Gets all events for every team/facility
 export async function getAllEvents(token: string) {
     try {
         const res = await fetch(`${API_BASE}/events`, {
@@ -26,9 +27,34 @@ export async function getAllEvents(token: string) {
     }
 }
 
+//Gets all events for a single facility
 export async function getFacilityEvents( facilityId: string, token: string) {
     try {
         const res = await fetch(`${API_BASE}/events/${facilityId}`, {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+        return res.ok ? await res.json() : null;
+    } catch {
+        return null;
+    }
+}
+
+//Gets all conflicting events for a single facility
+export async function getConflictingFacilityEvents( facilityId: string, token: string) {
+    try {
+        const res = await fetch(`${API_BASE}/events/${facilityId}/conflicts`, {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+        return res.ok ? await res.json() : null;
+    } catch {
+        return null;
+    }
+}
+
+//Gets all pending events for a single facility
+export async function getPendingFacilityEvents( facilityId: string, token: string) {
+    try {
+        const res = await fetch(`${API_BASE}/events/${facilityId}/pending`, {
             headers: { Authorization: `Bearer ${token}` },
         });
         return res.ok ? await res.json() : null;

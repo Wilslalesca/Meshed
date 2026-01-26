@@ -50,7 +50,7 @@ export class EventModel {
             WHERE team_facility_id = $1 
             AND start_date = $2
             AND t.start_time <= $4 AND t.end_time >= $3
-            AND id NOT $5
+            AND id != $5
             `,[facilityId, startDate, startTime, endTime, eventId]
         );
         return rows;

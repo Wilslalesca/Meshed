@@ -3,7 +3,7 @@ import type { Facility } from "@/features/facilities/types/facilities";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/shared/hooks/useAuth";
 import type { TeamEvent } from "@/features/teams/types/event";
-import { getFacilityEvents } from "../../api/dashboardApi";
+import { getFacilityEvents, getPendingFacilityEvents, getConflictingFacilityEvents } from "../../api/dashboardApi";
 import { Card, CardHeader, CardTitle, CardContent } from "@/shared/components/ui/card";
 
 export const IndividualFacilityEventTable = ({ facilityId, facilityName }: { facilityId: string; facilityName: string }) => {
@@ -12,8 +12,10 @@ export const IndividualFacilityEventTable = ({ facilityId, facilityName }: { fac
     
     useEffect(() => {
         const fetchFacilityEvents = async () => {
-            const facilities = await getFacilityEvents(facilityId, token!);
+            const facilities = await getConflictingFacilityEvents(facilityId, token!);
+            console.log("aftercall")
             if (facilities) {
+                console.log("here")
                 setEvents(facilities);
             }
         };
