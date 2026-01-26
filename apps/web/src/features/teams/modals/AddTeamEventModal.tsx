@@ -171,8 +171,8 @@ export const AddTeamEventModal = ({
                         team.
                     </DialogDescription>
                 </DialogHeader>
-                <div>
-                    <div className="columns-1 sm:columns-2 gap-6">
+                <div className="flex items-center gap-6">
+                    <div className="flex-col p-4 items-center">
                         <div className="grid w-full items-center gap-3 py-2">
                             <Label htmlFor="event_name">Event Name</Label>
                             <Input value={eventName} 
@@ -205,40 +205,37 @@ export const AddTeamEventModal = ({
                                 </SelectContent>
                             </Select>
                         </div>
-                    </div>
-
-                    <div className="grid w-full items-center gap-3 py-2">
-                        <Label>Day(s) of the Week</Label>
-                        <div className="columns-1 sm:columns-2 lg:columns-3 gap-6">
-                            {weekdays.map((day) => (
-                                <div
-                                    className="flex items-center gap-3"
-                                    key={day}
-                                >
-                                    <input
-                                        type="checkbox"
-                                        value={day}
-                                        name="selectedDays"
-                                        onChange={(e) => {
-                                            if (e.target.checked) {
-                                                setSelectedDays((s) => [
-                                                    ...s,
-                                                    day,
-                                                ]);
-                                            } else {
-                                                setSelectedDays((s) =>
-                                                    s.filter((d) => d !== day)
-                                                );
-                                            }
-                                        }}
-                                    />
-                                    <Label>{day}</Label>
-                                </div>
-                            ))}
+                        <div className="grid w-full items-center gap-3 py-2">
+                            <Label>Day(s) of the Week</Label>
+                            <div className="columns-1 sm:columns-2 lg:columns-3 gap-6">
+                                {weekdays.map((day) => (
+                                    <div
+                                        className="flex items-center gap-3"
+                                        key={day}
+                                    >
+                                        <input
+                                            type="checkbox"
+                                            value={day}
+                                            name="selectedDays"
+                                            onChange={(e) => {
+                                                if (e.target.checked) {
+                                                    setSelectedDays((s) => [
+                                                        ...s,
+                                                        day,
+                                                    ]);
+                                                } else {
+                                                    setSelectedDays((s) =>
+                                                        s.filter((d) => d !== day)
+                                                    );
+                                                }
+                                            }}
+                                        />
+                                        <Label>{day}</Label>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
-                    </div>
 
-                    <div className="columns-1 sm:columns-2 gap-6">
                         <div className="grid w-full items-center gap-3 py-2">
                             <Label htmlFor="start_time">Start Time</Label>
                             <Input
@@ -260,9 +257,7 @@ export const AddTeamEventModal = ({
                                 required
                             />
                         </div>
-                    </div>
 
-                    <div className="columns-1 sm:columns-2 gap-6">
                         <div className="grid w-full items-center gap-3 py-2">
                             <Label htmlFor="reoccurring">
                                 Reocurring Event
@@ -297,37 +292,29 @@ export const AddTeamEventModal = ({
                             </Select>
                         </div>
 
-                        <div className="grid w-full items-center gap-3 py-2">
-                            {reoccurring ? (
-                                <>
-                                    <Label htmlFor="reoccurring">
-                                        Type of Reocurrance
-                                    </Label>
-                                    <Select
-                                        value={selectedReoccurrType}
-                                        onValueChange={setSelectedReoccurrType}
-                                    >
-                                        <SelectTrigger id="selectedReoccurrType">
-                                            <SelectValue placeholder="Reocurr" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {reoccurrTypes.map((e) => (
-                                                <SelectItem key={e} value={e}>
-                                                    {e}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                </>
-                            ) : (
-                                <div className="invisible">
-                                    <Label>Placeholder</Label>
-                                    <div className="h-10" />
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                    <div className="columns-1 sm:columns-2 gap-6">
+                        {reoccurring && (
+                            <div className = "grid w-full items-center gap-3 py-2">
+                                <Label htmlFor="reoccurring">
+                                    Type of Reocurrance
+                                </Label>
+                                <Select
+                                    value={selectedReoccurrType}
+                                    onValueChange={setSelectedReoccurrType}
+                                >
+                                    <SelectTrigger id="selectedReoccurrType">
+                                        <SelectValue placeholder="Reocurr" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {reoccurrTypes.map((e) => (
+                                            <SelectItem key={e} value={e}>
+                                                {e}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                        )}
+
                         <div className="grid w-full items-center gap-3 py-2">
                             <Label htmlFor="start_date">
                                 {reoccurring ? "Start Date" : "Date"}
@@ -353,7 +340,7 @@ export const AddTeamEventModal = ({
                             />
                         </div>
 
-                        {reoccurring ? (
+                        {reoccurring && (
                             <div className="grid w-full items-center gap-3 py-2">
                                 <Label htmlFor="end_date">End Date</Label>
                                 <Input
@@ -375,78 +362,73 @@ export const AddTeamEventModal = ({
                                     }
                                 />
                             </div>
-                        ) : (
-                            <div className="invisible">
-                                <Label>Placeholder</Label>
-                                <div className="h-10" />
+                        )}
+
+                    
+                        {eventTypeID === "Game" && (
+                            <div>
+                                <div className="grid w-full items-center gap-3 py-2">
+                                    <Label htmlFor="opponent">
+                                        Opponent
+                                    </Label>
+                                    <Input
+                                        type="text"
+                                        id="opponent"
+                                        placeholder="ex. Team A"
+                                        value={opponent}
+                                        onChange={(e) => setOpponent(e.target.value)}
+                                    />
+                                </div>
+                                
+                                <div className="grid w-full items-center gap-3 py-2">
+                                    <Label htmlFor="home_away">
+                                        Home or Away
+                                    </Label>
+                                    <Select
+                                        value={homeAway}
+                                        onValueChange={(value: "Home" | "Away") => setHomeAway(value)}                                >
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="ex. Home" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="Home">Home</SelectItem>
+                                            <SelectItem value="Away">Away</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            </div>
+                        )}
+
+                        {eventTypeID === "Lift" && (
+                            <div className="grid w-full items-center gap-3 py-2">
+                                <Label htmlFor="liftType">
+                                    Lift Type
+                                </Label>
+                                <Input
+                                    type="text"
+                                    id="liftType"
+                                    placeholder="ex. Team Lift"
+                                    value={liftType}
+                                    onChange={(e) => setLiftType(e.target.value)}
+                                />
+                            </div>
+                        )}
+
+                        {(eventTypeID === "Practice" || eventTypeID === "Other") && (
+                            <div className="grid w-full items-center gap-3 py-2">
+                                <Label htmlFor="notes">
+                                    Notes
+                                </Label>
+                                <Textarea
+                                    id="notes"
+                                    placeholder="ex. Cardio Training"
+                                    value={notes}
+                                    onChange={(e) => setNotes(e.target.value)}
+                                />
+                                
                             </div>
                         )}
                     </div>
-                    
-                    {eventTypeID === "Game" && (
-                    <div className="columns-1 sm:columns-2 gap-6">
-                        <div className="grid w-full items-center gap-3 py-2">
-                            <Label htmlFor="opponent">
-                                Opponent
-                            </Label>
-                            <Input
-                                type="text"
-                                id="opponent"
-                                placeholder="ex. Team A"
-                                value={opponent}
-                                onChange={(e) => setOpponent(e.target.value)}
-                            />
-                        </div>
-                        
-                        <div className="grid w-full items-center gap-3 py-2">
-                            <Label htmlFor="home_away">
-                                Home or Away
-                            </Label>
-                            <Select
-                                value={homeAway}
-                                onValueChange={(value: "Home" | "Away") => setHomeAway(value)}                                >
-                                <SelectTrigger>
-                                    <SelectValue placeholder="ex. Home" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="Home">Home</SelectItem>
-                                    <SelectItem value="Away">Away</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
-                    </div>
-                    )}
-
-                    {eventTypeID === "Lift" && (
-                         <div className="grid w-full items-center gap-3 py-2">
-                            <Label htmlFor="liftType">
-                                Lift Type
-                            </Label>
-                            <Input
-                                type="text"
-                                id="liftType"
-                                placeholder="ex. Team Lift"
-                                value={liftType}
-                                onChange={(e) => setLiftType(e.target.value)}
-                            />
-                        </div>
-                    )}
-
-                    {(eventTypeID === "Practice" || eventTypeID === "Other") && (
-                         <div className="grid w-full items-center gap-3 py-2">
-                            <Label htmlFor="notes">
-                                Notes
-                            </Label>
-                            <Textarea
-                                id="notes"
-                                placeholder="ex. Cardio Training"
-                                value={notes}
-                                onChange={(e) => setNotes(e.target.value)}
-                            />
-                            
-                        </div>
-                    )}
-
                 </div>
                 <div className="flex flex-col p-4 items-center">
                     <Button
