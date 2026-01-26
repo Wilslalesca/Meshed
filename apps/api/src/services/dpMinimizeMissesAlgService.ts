@@ -1,5 +1,5 @@
 
-function dpMinimizeMissesAlgService(daysIn) {
+export function dpMinimizeMissesAlgService(daysIn: any) {
     //Input: Array of days with practice options and athletes missing per option, identified by their athlete ID
     //Output: Schedule minimizing the maximum number of misses for any athlete
 
@@ -12,20 +12,20 @@ function dpMinimizeMissesAlgService(daysIn) {
     }
 
     //Helper function for later to find the maximum value in an array safely
-    function maxArrayValue (arr) {
+    function maxArrayValue (arr: any[]) {
         if (arr.length === 0) return 0;
         return Math.max(...arr);
     }
 
-    function sumMisses(missesObj) {
-        return Object.values(missesObj || {}).reduce((sum, val) => sum + val, 0);
+    function sumMisses(missesObj: any) {
+        return Object.values(missesObj || {}).reduce((sum: number, val: unknown) => sum + (val as number), 0);
     }
 
     //Initialize DP table
     const dp = Array(daysIn.length);
 
     //Base case: Fill in for the first day
-    dp[0] = daysIn[0].options.map(option => {
+    dp[0] = daysIn[0].options.map((option: { athletesMissing: any; }) => {
         // Each athlete missing a practice for this option
         const athleteMisses = { ...(option.athletesMissing || {}) };
         return {
@@ -57,7 +57,7 @@ function dpMinimizeMissesAlgService(daysIn) {
                 const currentMaxMisses = maxArrayValue(Object.values(combinedMisses));
 
                 //Check if this previous state gives a better max misses
-                if (currentMaxMisses < bestMaxMisses || (currentMaxMisses === bestMaxMisses && sumMisses(combinedMisses) < sumMisses(bestPrevState.athleteMisses))) {
+                if ( currentMaxMisses < bestMaxMisses || ( currentMaxMisses === bestMaxMisses && ( !bestPrevState || sumMisses(combinedMisses) < sumMisses(bestPrevState.athleteMisses)))) {
                     bestMaxMisses = currentMaxMisses;
                     bestPrevState = { //Best previous state for this option on this day
                         maxMisses: currentMaxMisses,
@@ -126,7 +126,7 @@ const result = dpMinimizeMissesAlgService(days);
 
 // --- Print Results ---
 console.log("Optimal Schedule:");
-result.schedule.forEach((option, index) => {
+result.schedule.forEach((option: { name: any; }, index: number) => {
   console.log(`Day ${index + 1} (${days[index].day}): ${option.name}`);
 });
 

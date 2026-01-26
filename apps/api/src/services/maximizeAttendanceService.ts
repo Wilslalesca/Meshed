@@ -1,4 +1,4 @@
-function maximizeAttendanceService(days) {
+export function maximizeAttendanceService(days: any) {
     //Alg to to maximize attendance by minimizing athletes missing each day
     //Input: Array of days with options and athletes missing
     //Note: Input is different from DP algorithm

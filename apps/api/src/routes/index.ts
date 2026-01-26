@@ -13,6 +13,7 @@ import lookupsRoutes from "./lookup.routes";
 import inviteRoutes from "./invites.routes";
 import athleteRoutes from "./athletes.routes";
 import notificationsRoutes from "./notifications.routes";
+import optimizationRoutes from "./optimization.routes";
 
 const router = Router();
 
@@ -28,5 +29,5 @@ router.use("/lookups", lookupsRoutes);
 router.use("/invites", inviteRoutes);
 router.use("/athletes", athleteRoutes);
 router.use("/notifications", notificationsRoutes);
-
+router.use("/optimization", optimizationRoutes);
 export default router;
