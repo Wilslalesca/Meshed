@@ -31,12 +31,6 @@ export class EventController {
             notes: event.notes,
         }));
 
-        
-
-        //GO in and loop through each day
-        //check if any overlapping times
-        //update the conflict boolean in JSON
-
         res.json(formattedEvents);
     }
 
@@ -89,39 +83,48 @@ export class EventController {
             liftType: any;
             notes: any;
         }> = []
+
         if(!events){
             return
-        }else{
+        } 
+        else{
             const conflictPromises = events.map(async event => {
-            const conflicts = await EventModel.checkConflicts(event.team_facility_id, event.start_date, event.start_time, event.end_time, event.id);
-            if (conflicts) {
-                return conflicts.map(conflict => ({
-                    id: conflict.id,
-                    teamId: conflict.team_id,
-                    teamFacilityId: conflict.team_facility_id,
-                    name: conflict.name,
-                    type: conflict.type,
-                    startTime: conflict.start_time,
-                    endTime: conflict.end_time,
-                    startDate: conflict.start_date,
-                    endDate: conflict.end_date,
-                    reoccurring: conflict.reoccurring,
-                    selectedReoccurrType: conflict.reoccurr_type,
-                    dayOfWeek: conflict.day_of_week,
-                    status: conflict.status,
-                    opponent: conflict.opponent,
-                    homeAway: conflict.home_away,
-                    liftType: conflict.lift_type,
-                    notes: conflict.notes,
-                }));
-            }
-            return [];
-        });
+                const conflicts = await EventModel.checkConflicts(event.team_facility_id, event.start_date, event.start_time, event.end_time, event.id);
+                if (conflicts) {
+                    return conflicts.map(conflict => ({
+                        id: conflict.id,
+                        teamId: conflict.team_id,
+                        teamFacilityId: conflict.team_facility_id,
+                        name: conflict.name,
+                        type: conflict.type,
+                        startTime: conflict.start_time,
+                        endTime: conflict.end_time,
+                        startDate: conflict.start_date,
+                        endDate: conflict.end_date,
+                        reoccurring: conflict.reoccurring,
+                        selectedReoccurrType: conflict.reoccurr_type,
+                        dayOfWeek: conflict.day_of_week,
+                        status: conflict.status,
+                        opponent: conflict.opponent,
+                        homeAway: conflict.home_away,
+                        liftType: conflict.lift_type,
+                        notes: conflict.notes,
+                    }));
+                }
+                return [];
+            });
 
-        const allConflicts = await Promise.all(conflictPromises);
-        toReturn.push(...allConflicts.flat());
+            const allConflicts = await Promise.all(conflictPromises);
+            const flattenedConflicts = allConflicts.flat();
+            
+
+            const uniqueConflicts = flattenedConflicts.filter((conflict, index, arr) => 
+                arr.findIndex(c => c.id === conflict.id) === index
+            );
+            
+            toReturn.push(...uniqueConflicts);
         }
-        console.log("final: " + JSON.stringify(toReturn));
+        
         res.json(toReturn)
     }
 

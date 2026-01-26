@@ -18,8 +18,7 @@ export const AdminDashboard = () => {
     const { token } = useAuth();
     const [allFacilities, setAllFacilities] = useState<Facility[]>([]);
     const [displayFacility, setDisplayFacility] = useState<string | undefined>("All");
-    const [displayStatus, setDisplayStatus] = useState<string | undefined>("All");
-    const allStatus = ["pending", "confirmed", "denied"];
+    const [filter, setFilter] = useState<string>("All");
     
     useEffect(() => {
         const fetchFacilities = async () => {
@@ -57,22 +56,26 @@ export const AdminDashboard = () => {
                     </Select>
                 </div>
                 <div className="gap-3 py-2">
-                    <Label htmlFor="status">Selected Status</Label>
+                    <Label htmlFor="filter">Filter</Label>
                 </div>
                 <div className="gap-3 py-2">
-                    <Select value={displayStatus} onValueChange={setDisplayStatus}>
-                        <SelectTrigger id="status">
-                            <SelectValue placeholder="Select a status" />
+                    <Select value={filter} onValueChange={setFilter}>
+                        <SelectTrigger id="filter">
+                            <SelectValue placeholder="Select a filter" />
                         </SelectTrigger>
                         <SelectContent>
                             <SelectItem key="all" value="All">
                                 All
                             </SelectItem>
-                            {allStatus.map((status) => (
-                                <SelectItem key={status} value={status}>
-                                    {status}
-                                </SelectItem>
-                            ))}
+                            <SelectItem key="pending" value="pending">
+                                Pending
+                            </SelectItem>
+                            <SelectItem key="conflicts" value="conflicts">
+                                Conflicts
+                            </SelectItem>
+                            <SelectItem key="confirmed" value="confirmed">
+                                Confirmed
+                            </SelectItem>
                         </SelectContent>
                     </Select>
                 </div>
@@ -81,7 +84,7 @@ export const AdminDashboard = () => {
                 (() => {
                     const selectedFacility = displayFacility === "All" ? null : allFacilities.find(f => f.id === displayFacility);
                     return selectedFacility ? (
-                        <IndividualFacilityEventTable facilityId={selectedFacility.id} facilityName={selectedFacility.name} />
+                        <IndividualFacilityEventTable facilityId={selectedFacility.id} facilityName={selectedFacility.name} filter={filter} />
                     ) : (
                         <AllEventTable />
                     );

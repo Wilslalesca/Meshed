@@ -6,22 +6,31 @@ import type { TeamEvent } from "@/features/teams/types/event";
 import { getFacilityEvents, getPendingFacilityEvents, getConflictingFacilityEvents } from "../../api/dashboardApi";
 import { Card, CardHeader, CardTitle, CardContent } from "@/shared/components/ui/card";
 
-export const IndividualFacilityEventTable = ({ facilityId, facilityName }: { facilityId: string; facilityName: string }) => {
+export const IndividualFacilityEventTable = ({ facilityId, facilityName, filter }: { facilityId: string; facilityName: string; filter:string }) => {
     const { token } = useAuth(); 
     const [events, setEvents] = useState<TeamEvent[]>([]);    
     
     useEffect(() => {
         const fetchFacilityEvents = async () => {
-            const facilities = await getConflictingFacilityEvents(facilityId, token!);
-            console.log("aftercall")
+            let facilities: TeamEvent[] = [];
+
+            if(filter == 'pending'){
+                facilities = await getPendingFacilityEvents(facilityId, token!);
+            }
+            else if(filter == 'conflicts'){
+                facilities = await getConflictingFacilityEvents(facilityId, token!);
+            }
+            else {
+                facilities = await getFacilityEvents(facilityId, token!);
+            }
+
             if (facilities) {
-                console.log("here")
                 setEvents(facilities);
             }
         };
 
         fetchFacilityEvents();
-    }, [token, facilityId]);
+    }, [token, facilityId, filter]);
     
 
     return (
@@ -57,7 +66,7 @@ export const IndividualFacilityEventTable = ({ facilityId, facilityName }: { fac
                     ) : (
                     <tr>
                         <td colSpan={2} className="py-4 px-4 text-center text-gray-500">
-                        No Pending Facility Requests for {facilityName}
+                        No {(filter == 'pending' || filter == 'conflicts' ? filter : '') } Facility Requests for {facilityName}
                         </td>
                     </tr>
                     )}
