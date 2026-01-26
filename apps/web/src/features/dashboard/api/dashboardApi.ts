@@ -52,9 +52,9 @@ export async function getConflictingFacilityEvents( facilityId: string, token: s
 }
 
 //Gets all pending events for a single facility
-export async function getPendingFacilityEvents( facilityId: string, token: string) {
+export async function getStatusFacilityEvents( facilityId: string, status:string, token: string) {
     try {
-        const res = await fetch(`${API_BASE}/events/${facilityId}/pending`, {
+        const res = await fetch(`${API_BASE}/events/${facilityId}/${status}`, {
             headers: { Authorization: `Bearer ${token}` },
         });
         return res.ok ? await res.json() : null;

@@ -63,7 +63,8 @@ export class EventController {
 
     static async getConflictingFacilityEvents(req: Request, res: Response){
         const {facilityId }= req.params;
-        const events = await EventModel.getAllPendingFacilityRequests(facilityId);
+        const status = 'pending'
+        const events = await EventModel.getAllStatusFacilityRequests(facilityId, status);
         const toReturn: Array<{
             id: any;
             teamId: any;
@@ -128,9 +129,9 @@ export class EventController {
         res.json(toReturn)
     }
 
-    static async getPendingFacilityEvents(req: Request, res: Response){
-        const {facilityId }= req.params;
-        const events = await EventModel.getAllPendingFacilityRequests(facilityId);
+    static async getStatusFacilityEvents(req: Request, res: Response){
+        const {facilityId, status }= req.params;
+        const events = await EventModel.getAllStatusFacilityRequests(facilityId, status);
         const formattedEvents = events.map(event => ({
             id: event.id,
             teamId: event.team_id,

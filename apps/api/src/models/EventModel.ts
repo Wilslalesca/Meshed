@@ -36,9 +36,9 @@ export class EventModel {
         return rows;
     }
 
-    static async getAllPendingFacilityRequests(facilityId: string) {
+    static async getAllStatusFacilityRequests(facilityId: string, status:string) {
         const { rows } = await pool.query(
-            `SELECT * FROM team_events WHERE team_facility_id = $1 AND status = 'pending' ORDER BY start_date ASC, start_time ASC`, [facilityId]
+            `SELECT * FROM team_events WHERE team_facility_id = $1 AND status = $2 ORDER BY start_date ASC, start_time ASC`, [facilityId, status]
         );
         return rows;
     }

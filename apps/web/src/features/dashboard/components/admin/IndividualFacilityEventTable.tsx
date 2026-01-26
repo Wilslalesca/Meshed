@@ -3,7 +3,7 @@ import type { Facility } from "@/features/facilities/types/facilities";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/shared/hooks/useAuth";
 import type { TeamEvent } from "@/features/teams/types/event";
-import { getFacilityEvents, getPendingFacilityEvents, getConflictingFacilityEvents } from "../../api/dashboardApi";
+import { getFacilityEvents, getStatusFacilityEvents, getConflictingFacilityEvents } from "../../api/dashboardApi";
 import { Card, CardHeader, CardTitle, CardContent } from "@/shared/components/ui/card";
 
 export const IndividualFacilityEventTable = ({ facilityId, facilityName, filter }: { facilityId: string; facilityName: string; filter:string }) => {
@@ -14,8 +14,8 @@ export const IndividualFacilityEventTable = ({ facilityId, facilityName, filter 
         const fetchFacilityEvents = async () => {
             let facilities: TeamEvent[] = [];
 
-            if(filter == 'pending'){
-                facilities = await getPendingFacilityEvents(facilityId, token!);
+            if(filter == 'pending' || filter == 'confirmed'){
+                facilities = await getStatusFacilityEvents(facilityId, filter, token!);
             }
             else if(filter == 'conflicts'){
                 facilities = await getConflictingFacilityEvents(facilityId, token!);
@@ -66,7 +66,7 @@ export const IndividualFacilityEventTable = ({ facilityId, facilityName, filter 
                     ) : (
                     <tr>
                         <td colSpan={2} className="py-4 px-4 text-center text-gray-500">
-                        No {(filter == 'pending' || filter == 'conflicts' ? filter : '') } Facility Requests for {facilityName}
+                        No {(filter != 'All' ? filter : '') } Facility Requests for {facilityName}
                         </td>
                     </tr>
                     )}
