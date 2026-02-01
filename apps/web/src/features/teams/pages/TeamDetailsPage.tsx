@@ -17,6 +17,7 @@ import { TeamRosterTab } from "../components/tabs/TeamRosterTab";
 import { EditTeamModal } from "../modals/EditTeamModal";
 import { DeleteTeamModal } from "../modals/DeleteTeamModal";
 import { InviteMemberModal } from "../modals/InviteMemberModal";
+import { OptimizePracticeModal } from "../modals/OptimizePracticeModal";
 
 export const TeamDetailsPage = () => {
     const { teamId } = useParams<{ teamId: string }>();
@@ -36,6 +37,7 @@ export const TeamDetailsPage = () => {
     const [inviteRole, setInviteRole] = useState<
         "athlete" | "manager"
     >("athlete");
+    const [openOptimize, setOpenOptimize] = useState(false);
 
     if (loading || !team) return <p className="p-6">Loading...</p>;
 
@@ -70,6 +72,9 @@ export const TeamDetailsPage = () => {
                               setInviteRole("athlete");
                           }
                         : () => {}
+                }
+                onOptimizeSchedule={
+                    isManager ? () => setOpenOptimize(true) : () => {}
                 }
             >
                 {{
@@ -129,6 +134,12 @@ export const TeamDetailsPage = () => {
                         reloadRoster();
                         reloadStaff();
                     }}
+                />
+            )}
+            {isManager && (
+                <OptimizePracticeModal
+                    open={openOptimize}
+                    onOpenChange={setOpenOptimize}
                 />
             )}
         </div>

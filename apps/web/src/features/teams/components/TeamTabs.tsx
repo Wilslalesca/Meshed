@@ -12,6 +12,7 @@ import {
     Calendar,
     Settings,
     UserPlus,
+    CalendarCheck
 } from "lucide-react";
 import { useUserRole } from "@/shared/hooks/useUserRole";
 interface Props {
@@ -24,6 +25,7 @@ interface Props {
     onEdit: () => void;
     onDelete: () => void;
     onAddUser: () => void;
+    onOptimizeSchedule: () => void;
 
     children: {
         profile: React.ReactNode;
@@ -42,6 +44,7 @@ export const TeamTabs = ({
     onEdit,
     onDelete,
     onAddUser,
+    onOptimizeSchedule,
     children,
 }: Props) => {
     const userRole = useUserRole();
@@ -73,6 +76,13 @@ export const TeamTabs = ({
                         <UserPlus size={16} className="mr-2" /> Add User
                     </Button>
                     )}
+
+                    {isManager && (
+                    <Button variant="default" onClick={onOptimizeSchedule}>
+                        <CalendarCheck size={16} className="mr-2" /> Optimize Schedule
+                    </Button>
+                    )}
+
                     <div className="ml-auto flex gap-2">
                         <Button
                             variant={
