@@ -99,17 +99,32 @@ CREATE TABLE course_times (
   start_date VARCHAR(100),
   end_date VARCHAR(100),
   recurring BOOLEAN DEFAULT FALSE,
+  meta JSONB DEFAULT '{}'::jsonb,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE athlete_course_times (
+-- user_course_times: Links any user to any course_time (many-to-many).
+-- Supports any user type (athletes, patients, customers, staff, etc.)
+CREATE TABLE IF NOT EXISTS user_course_times (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  athlete_id UUID REFERENCES athlete_profiles(id) ON DELETE CASCADE,
+  user_id UUID REFERENCES users(id) ON DELETE CASCADE,
   class_id UUID REFERENCES course_times(id) ON DELETE CASCADE,
+  meta JSONB DEFAULT '{}'::jsonb,  -- Sector-specific overrides (role context, notes, etc.)
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE (user_id, class_id)  -- Prevent duplicate links
 );
+
+-- Performance indexes for user_course_times
+-- Fast lookup by user ("show me my schedule")
+CREATE INDEX IF NOT EXISTS idx_user_course_times_user ON user_course_times(user_id);
+-- Fast lookup by course ("who is enrolled in this course")
+CREATE INDEX IF NOT EXISTS idx_user_course_times_class ON user_course_times(class_id);
+-- GIN index for flexible JSONB queries on course-level metadata (e.g., sector-specific fields)
+CREATE INDEX IF NOT EXISTS idx_course_times_meta_gin ON course_times USING GIN (meta);
+-- GIN index for link-level metadata queries (e.g., per-user overrides, role context)
+CREATE INDEX IF NOT EXISTS idx_user_course_times_meta_gin ON user_course_times USING GIN (meta);
 
 CREATE TABLE coach_athlete_visibility (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -186,9 +201,6 @@ CREATE TABLE email_verification_codes (
   expires_at TIMESTAMP DEFAULT (CURRENT_TIMESTAMP + INTERVAL '10 minutes'),
   used BOOLEAN DEFAULT FALSE
 );
-
-
--- CREATE INDEX IF NOT EXISTS idx_facilities_name ON facilities (name);
 
 -- Notifications for UI/email alerts
 CREATE TABLE notifications (

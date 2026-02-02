@@ -1,10 +1,12 @@
 import { Request, Response } from "express";
 import { z } from "zod";
 import { CourseModel } from "../models/CourseModel";
-import { AthleteCourseModel } from "../models/AthleteCourseModel";
+import { UserCourseModel } from "../models/UserCourseModel";
 import { pool } from "../config/db";
-import { parse } from "path";
 
+/**
+ * Validation schema for creating a course/schedule item.
+ */
 const courseTimeSchema = z.object({
   name: z.string().min(1).max(100),
   course_code: z.string().min(1).max(100).optional(),
@@ -20,20 +22,26 @@ const courseTimeSchema = z.object({
   start_date: z.string().min(1).max(100),
   end_date: z.string().min(1).max(100),
   recurring: z.boolean().default(false),
+  meta: z.record(z.any()).optional(), // Optional JSONB for sector-specific fields
   created_at: z.string().datetime().optional(),
   updated_at: z.string().datetime().optional(),
 });
 
-const athleteCourseTimeSchema = z.object({
-  athlete_id: z.string(),
-  class_id: z.string(),
-  created_at: z.string().datetime().optional(),
-  updated_at: z.string().datetime().optional(),
+/**
+ * Validation schema for linking a user to a course.
+ */
+const userCourseTimeSchema = z.object({
+  user_id: z.string().uuid("user_id must be a valid UUID"),
+  class_id: z.string().uuid("class_id must be a valid UUID"),
+  meta: z.record(z.any()).optional(), // Optional link-level metadata
 });
 
 const updateCourseSchema = courseTimeSchema.partial();
 
 export const CourseController = {
+  /**
+   * POST /course/coursetime — Create a new course/schedule item.
+   */
   async createCourse(req: Request, res: Response) {
     const parse = courseTimeSchema.safeParse(req.body);
     if (!parse.success) {
@@ -52,22 +60,39 @@ export const CourseController = {
     }
   },
 
-  async addAthleteCourse(req: Request, res: Response) {
-    const parse = athleteCourseTimeSchema.safeParse(req.body);
+  /**
+   * POST /course/usercoursetime — Link a user to an existing course.
+   * Works for any user type (athlete, patient, customer, etc.)
+   */
+  async addUserCourse(req: Request, res: Response) {
+    const parse = userCourseTimeSchema.safeParse(req.body);
     if (!parse.success) {
       return res.status(400).json({ error: "Validation error", details: parse.error.flatten() });
     }
     try {
-      await AthleteCourseModel.insert(parse.data);
-      return res.status(200).json({ message: "Connected Course to Athlete", success: true });
+      const link = await UserCourseModel.insert(parse.data);
+      return res.status(200).json({
+        message: "Linked user to course",
+        link,
+        success: true,
+      });
     } catch (err) {
-      console.error("Error adding course to athlete schedule:", err);
+      console.error("Error linking user to course:", err);
       return res.status(500).json({ message: "Internal server error", success: false });
     }
   },
 
-  async addCourseAndAthlete(req: Request, res: Response) {
-    const { user_id, coursetimedata } = req.body;
+  /**
+   * POST /course/addcourseanduser — Create a course AND link it to a user in one transaction.
+   * Replaces the old addCourseAndAthlete endpoint.
+   */
+  async addCourseAndUser(req: Request, res: Response) {
+    const { user_id, coursetimedata, link_meta } = req.body;
+    
+    if (!user_id) {
+      return res.status(400).json({ error: "user_id is required" });
+    }
+    
     const parseCourse = courseTimeSchema.safeParse(coursetimedata);
     if (!parseCourse.success) {
       return res.status(400).json({ error: "Validation error", details: parseCourse.error.flatten() });
@@ -77,26 +102,33 @@ export const CourseController = {
     try {
       await client.query("BEGIN");
       
+      // Create the course
       const course = await CourseModel.insertCourse(parseCourse.data, client);
-      await AthleteCourseModel.insert(
-        { athlete_id: user_id, class_id: course.id },
+      
+      // Link the user to the course
+      await UserCourseModel.insert(
+        { user_id, class_id: course.id, meta: link_meta },
         client
       );
+      
       await client.query("COMMIT");
       res.status(200).json({
         success: true,
-        message: "Added course and linked athlete",
+        message: "Added course and linked user",
         course,
       });
     } catch (err) {
       await client.query("ROLLBACK");
-      console.error("Error adding course and athlete:", err);
+      console.error("Error adding course and user:", err);
       res.status(500).json({ success: false, message: "Transaction failed" });
     } finally {
       client.release();
     }
   },
 
+  /**
+   * PATCH /course/:classId — Update a course. Notifies all linked users.
+   */
   async updateCourse(req: Request, res: Response) {
     const { classId } = req.params;
 
@@ -109,15 +141,13 @@ export const CourseController = {
       const updated = await CourseModel.updateCourse(classId, parse.data);
       if (!updated) return res.status(404).json({ message: "Course not found" });
 
-      // Notify all athletes linked to this course about the update
+      // Notify all users linked to this course about the update
       try {
-        const athleteIds = await AthleteCourseModel.getAthletesForClass(classId);
-        for (const athleteId of athleteIds) {
-          // Fetch user account to get email
-          // athlete_profiles id equals users.id
+        const userIds = await UserCourseModel.getUsersForClass(classId);
+        for (const userId of userIds) {
           const userRes = await pool.query(
             `SELECT id, email, first_name, last_name FROM users WHERE id = $1 LIMIT 1`,
-            [athleteId]
+            [userId]
           );
           const user = userRes.rows[0];
           if (user?.email) {
@@ -146,16 +176,19 @@ export const CourseController = {
     }
   },
 
+  /**
+   * DELETE /course/:classId — Delete a course (cascades to user links).
+   */
   async deleteCourse(req: Request, res: Response) {
     const { classId } = req.params;
     try {
       const deleted = await CourseModel.deleteCourseByID(classId);
       if (!deleted) {
-        return res.status(404).json({ message: "Course not found for athlete", success: false });
+        return res.status(404).json({ message: "Course not found", success: false });
       }
-      res.status(200).json({ message: "Course removed from athlete schedule", success: true });
+      res.status(200).json({ message: "Course deleted", success: true });
     } catch (err) {
-      console.error("Error deleting athlete course time:", err);
+      console.error("Error deleting course:", err);
       res.status(500).json({ message: "Internal server error", success: false });
     }
   },

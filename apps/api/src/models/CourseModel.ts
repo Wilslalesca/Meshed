@@ -51,11 +51,15 @@ export const CourseModel = {
 
   async updateCourse(classId: string, data: Partial<CourseTime>) {
     const fields = Object.keys(data);
-    const values = Object.values(data);
+    const values = Object.values(data).map((v, idx) =>
+      fields[idx] === "meta" && v !== null && v !== undefined ? JSON.stringify(v) : v
+    );
 
     if (fields.length === 0) return null;
 
-    const setClause = fields.map((field, i) => `"${field}" = $${i + 1}`).join(", ");
+    const setClause = fields
+      .map((field, i) => (field === "meta" ? `"${field}" = $${i + 1}::jsonb` : `"${field}" = $${i + 1}`))
+      .join(", ");
 
     const query = `
       UPDATE course_times

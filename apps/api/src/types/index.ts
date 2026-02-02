@@ -32,12 +32,25 @@ export interface CourseTime {
     start_date?: string;
     end_date?: string;
     recurring?: boolean;
+    meta?: Record<string, any>;
 }
 
-export interface AthleteCourseTime {
+/**
+ * UserCourseTime — Links any user to a course/schedule item.
+ * 
+ * This is the universal interface for schedule assignments, supporting
+ * any user type: athletes, patients, customers, staff, etc.
+ * Stored in the user_course_times table.
+ *
+ * @property user_id - References users(id); the person linked to this course
+ * @property class_id - References course_times(id); the schedule item
+ * @property meta - Optional JSONB for sector-specific data (role context, notes, overrides)
+ */
+export interface UserCourseTime {
     id: string;
-    athlete_id: string;
+    user_id: string;
     class_id: string;
+    meta?: Record<string, any>;
     created_at?: string;
     updated_at?: string;
 }

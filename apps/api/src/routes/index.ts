@@ -6,7 +6,7 @@ import userRoutes from "./user.routes";
 import uploadRoutes from "./upload.routes";
 import scheduleRoutes from "./schedule.routes";
 import courseRoutes from "./course.routes";
-import athleteCourseRoutes from "./athletecourse.routes";
+import userCourseRoutes from "./usercourse.routes"; // User-course linking (any user type)
 import facilitiesRoutes from "./facilities.routes";
 import teamsRoutes from "./teams.routes";
 import lookupsRoutes from "./lookup.routes";
@@ -21,7 +21,7 @@ router.use("/users", userRoutes);
 router.use("/upload", uploadRoutes);
 router.use("/schedule", scheduleRoutes);
 router.use("/course", courseRoutes);
-router.use("/athletecourse", athleteCourseRoutes);
+router.use("/usercourse", userCourseRoutes); // Links users to courses (replaces athlete-specific)
 router.use("/facilities", facilitiesRoutes);
 router.use("/teams", teamsRoutes);
 router.use("/lookups", lookupsRoutes);
