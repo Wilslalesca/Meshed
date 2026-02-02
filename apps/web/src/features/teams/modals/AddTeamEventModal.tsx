@@ -128,7 +128,7 @@ export const AddTeamEventModal = ({
 
         const FactoryClass = TeamEventFactoryRegistry[eventTypeID];
 
-        for (const day of selectedDays) {
+        for (const day of selectedDays) {//increment start date
             const factory = new FactoryClass({
                 teamId : teamId,
                 teamFacilityId : teamFacilityId,
