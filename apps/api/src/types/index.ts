@@ -22,6 +22,7 @@ export interface JWTPayload {
 
 export interface CourseTime {
     id: string;
+    user_id?: string;  // ? == optional since some courses may not be tied to a specific user
     name?: string;
     course_code?: string;
     location?: string;

@@ -2,6 +2,7 @@ import { pool } from "../config/db";
 import { CourseTime } from "../types/index";
 
 export interface NewCourseTime {
+  user_id?: string;  
   name?: string;
   course_code?: string;
   location?: string;
@@ -21,11 +22,12 @@ export const CourseModel = {
     const c = client || pool;
     const res = await c.query(
       `INSERT INTO course_times (
-          name, course_code, location, day_of_week, start_time,
+          user_id, name, course_code, location, day_of_week, start_time,
           end_time, term, start_date, end_date, recurring, created_at, updated_at
-        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, NOW(), NOW())
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, NOW(), NOW())
         RETURNING *`,
       [
+        data.user_id ?? null,
         data.name,
         data.course_code,
         data.location,

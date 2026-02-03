@@ -89,6 +89,7 @@ CREATE TABLE coach_profiles (
 
 CREATE TABLE course_times (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES users(id) ON DELETE SET NULL,  -- if a user is deleted it doesn't remove the course <- can remove this comment on review. did this so that if a user is deleted it doesn't remove the course for other users sharing it
   name VARCHAR(100),
   course_code VARCHAR(50),
   location VARCHAR(100),

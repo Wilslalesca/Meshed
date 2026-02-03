@@ -6,6 +6,7 @@ import { pool } from "../config/db";
 import { parse } from "path";
 
 const courseTimeSchema = z.object({
+  user_id: z.string().uuid().optional(),  // Owner/creator of the course
   name: z.string().min(1).max(100),
   course_code: z.string().min(1).max(100).optional(),
   location: z.string().min(1).max(100),
