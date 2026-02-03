@@ -1,5 +1,6 @@
 import { pool } from "../config/db";
 import { CourseTime } from "../types/index";
+import { AthleteCourseModel } from "./AthleteCourseModel";
 
 export interface NewCourseTime {
   user_id?: string;  
@@ -41,6 +42,22 @@ export const CourseModel = {
       ]
     );
     return res.rows[0];
+  },
+
+  async insertCourseAndLinkUser(data: NewCourseTime, userId: string): Promise<CourseTime> {
+    const client = await pool.connect();
+    try {
+      await client.query("BEGIN");
+      const course = await this.insertCourse(data, client);
+      await AthleteCourseModel.insert({ athlete_id: userId, class_id: course.id }, client);
+      await client.query("COMMIT");
+      return course;
+    } catch (err) {
+      await client.query("ROLLBACK");
+      throw err;
+    } finally {
+      client.release();
+    }
   },
 
   async deleteCourseByID(id: string) {
