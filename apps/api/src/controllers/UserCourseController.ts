@@ -20,7 +20,7 @@ const createLinkSchema = z.object({
   user_id: z.string().uuid("user_id must be a valid UUID"),
   class_id: z.string().uuid("class_id must be a valid UUID"),
   // Optional JSONB for sector-specific metadata (role context, notes, overrides)
-  meta: z.record(z.any()).optional(),
+  meta: z.record(z.string(), z.any()).optional(),
 });
 
 // Partial schema for updates

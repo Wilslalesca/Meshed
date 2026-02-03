@@ -69,4 +69,19 @@ export const sendEmail = {
       `
     );
   },
+
+  /**
+   * Notify a user that a schedule item they're linked to has been updated.
+   */
+  async sendScheduleUpdatedEmail(email: string, courseName: string) {
+    return mail.sendEmail(
+      email,
+      `Schedule Update: ${courseName}`,
+      `
+        <p>A schedule item you're enrolled in has been updated:</p>
+        <p><strong>${courseName}</strong></p>
+        <p>Log in to view the changes: <a href="${BASE_URL}/schedule">View Schedule</a></p>
+      `
+    );
+  },
 };

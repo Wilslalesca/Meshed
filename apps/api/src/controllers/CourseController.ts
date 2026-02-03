@@ -22,7 +22,7 @@ const courseTimeSchema = z.object({
   start_date: z.string().min(1).max(100),
   end_date: z.string().min(1).max(100),
   recurring: z.boolean().default(false),
-  meta: z.record(z.any()).optional(), // Optional JSONB for sector-specific fields
+  meta: z.record(z.string(), z.any()).optional(), // Optional JSONB for sector-specific fields
   created_at: z.string().datetime().optional(),
   updated_at: z.string().datetime().optional(),
 });
@@ -33,7 +33,7 @@ const courseTimeSchema = z.object({
 const userCourseTimeSchema = z.object({
   user_id: z.string().uuid("user_id must be a valid UUID"),
   class_id: z.string().uuid("class_id must be a valid UUID"),
-  meta: z.record(z.any()).optional(), // Optional link-level metadata
+  meta: z.record(z.string(), z.any()).optional(), // Optional link-level metadata
 });
 
 const updateCourseSchema = courseTimeSchema.partial();
