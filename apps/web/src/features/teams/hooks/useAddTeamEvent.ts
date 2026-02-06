@@ -17,16 +17,7 @@ const weekdays = [
 export const useAddTeamEvent = () => {
   const { token } = useAuth();
 
-  const addTeamEvent = async (data: TeamEvent) => {
-    if (!token) return;
-    await apiAddTeamEvent(data, token);
-  };
-
-  return { addTeamEvent };
-};
-
-export const useCalculateTeamEvents = (addTeamEvent: (data: TeamEvent) => Promise<void>) => {
-  const calculateTeamEvents = async (
+  const addTeamEvent = async (
     teamId: string,
     teamFacilityId: string | undefined,
     eventName: string | undefined,
@@ -106,12 +97,13 @@ export const useCalculateTeamEvents = (addTeamEvent: (data: TeamEvent) => Promis
 
           const event = factory.createEvent();
           try {
-            await addTeamEvent(event);
+            if (!token) return;
+            await apiAddTeamEvent(event, token);
           } 
           catch (error) {
               return(error instanceof Error ? error.message : "An error occurred");
           }
     }
   }
-  return {calculateTeamEvents}
+  return { addTeamEvent };
 };

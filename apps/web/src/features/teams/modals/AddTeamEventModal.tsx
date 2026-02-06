@@ -19,7 +19,7 @@ import {
 } from "@/shared/components/ui/select";
 import { TeamEventFactoryRegistry } from "../types/factories/registry";
 import type { TeamEventType } from "../types/event";
-import { useCalculateTeamEvents, useAddTeamEvent } from "../hooks/useAddTeamEvent";
+import { useAddTeamEvent } from "../hooks/useAddTeamEvent";
 import { toast } from "sonner";
 import { Textarea } from "@/shared/components/ui/textarea";
 import { apiGetEventFacilities } from "@/features/teams/api/events"
@@ -66,7 +66,6 @@ export const AddTeamEventModal = ({
     const [allFacilities, setAllFacilities] = useState<Facility[]>([]);
 
     const { addTeamEvent } = useAddTeamEvent();
-    const { calculateTeamEvents } = useCalculateTeamEvents(addTeamEvent);
 
     useEffect(() => {
         const fetchFacilities = async () => {
@@ -137,12 +136,12 @@ export const AddTeamEventModal = ({
         }
 
         try{
-            calculateTeamEvents(teamId, teamFacilityId, eventName,startDate,endDate, startTime, endTime, reoccurring, selectedReoccurrType,selectedDays,status,opponent,homeAway,notes,liftType,eventTypeID)
+            addTeamEvent(teamId, teamFacilityId, eventName,startDate,endDate, startTime, endTime, reoccurring, selectedReoccurrType,selectedDays,status,opponent,homeAway,notes,liftType,eventTypeID)
         }
         catch{
             toast.error(("An error occurred"))
         }
-        
+
         resetForm();
         onOpenChange(false);
     }
