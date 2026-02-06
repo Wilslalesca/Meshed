@@ -1,7 +1,6 @@
 import React, { useEffect, useState, type JSX } from "react";
 import { useAuth } from "@/shared/hooks/useAuth";
 import { Button } from "@/shared/components//ui/button";
-import type { EventItem } from "@/features/dashboard/types/eventItem";
 import { Label } from "@/shared/components//ui/label";
 import { Input } from "@/shared/components//ui/input";
 import {
@@ -20,7 +19,7 @@ import {
 } from "@/shared/components/ui/select";
 import { TeamEventFactoryRegistry } from "../types/factories/registry";
 import type { TeamEventType } from "../types/event";
-import { useAddTeamEvent } from "../hooks/useAddTeamEvent";
+import { useCalculateTeamEvents, useAddTeamEvent } from "../hooks/useAddTeamEvent";
 import { toast } from "sonner";
 import { Textarea } from "@/shared/components/ui/textarea";
 import { apiGetEventFacilities } from "@/features/teams/api/events"
@@ -59,7 +58,7 @@ export const AddTeamEventModal = ({
     const [endDate, setEndDate] = useState<Date | null>(null);
     const [teamFacilityId, setTeamFacilityId] = useState<string>();
     const [status, setStatus] = useState<string>('pending');
-    const [opponent, setOpponent] = useState<string>();
+    const [opponent, setOpponent] = useState<string | undefined>(undefined);
     const [homeAway, setHomeAway] = useState<"Home" | "Away" | undefined>(undefined);
     const [liftType, setLiftType] = useState<string>();
     const [notes, setNotes] = useState<string>();
@@ -67,6 +66,7 @@ export const AddTeamEventModal = ({
     const [allFacilities, setAllFacilities] = useState<Facility[]>([]);
 
     const { addTeamEvent } = useAddTeamEvent();
+    const { calculateTeamEvents } = useCalculateTeamEvents(addTeamEvent);
 
     useEffect(() => {
         const fetchFacilities = async () => {
@@ -126,37 +126,23 @@ export const AddTeamEventModal = ({
             return;
         }
 
-        const FactoryClass = TeamEventFactoryRegistry[eventTypeID];
-
-        for (const day of selectedDays) {//increment start date
-            const factory = new FactoryClass({
-                teamId : teamId,
-                teamFacilityId : teamFacilityId,
-                name : eventName,
-                startDate : startDate,
-                endDate : endDate || undefined,
-                startTime :startTime,
-                endTime : endTime,
-                reoccurring : reoccurring,
-                reoccurrType: selectedReoccurrType,
-                dayOfWeek: day,
-                status:status,
-                opponent :opponent,
-                homeAway :homeAway,
-                notes :notes,
-                liftType : liftType,
-            });
-            console.log(factory)
-
-            const event = factory.createEvent();
-
-            try{
-                await addTeamEvent(event);
-            }
-            catch(error){
-                toast.error(error instanceof Error ? error.message : "An error occurred");
-            }
+        if (reoccurring && !endDate) {
+            toast.error("End date is required for recurring events!");
+            return;
         }
+
+        if(reoccurring && endDate && (endDate < startDate)){
+            toast.error("End date cannot be earlier than start date!");
+            return;
+        }
+
+        try{
+            calculateTeamEvents(teamId, teamFacilityId, eventName,startDate,endDate, startTime, endTime, reoccurring, selectedReoccurrType,selectedDays,status,opponent,homeAway,notes,liftType,eventTypeID)
+        }
+        catch{
+            toast.error(("An error occurred"))
+        }
+        
         resetForm();
         onOpenChange(false);
     }
