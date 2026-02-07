@@ -33,6 +33,13 @@ export const AddTeamEventModal = ({
 }: any) => {
     const { token } = useAuth();
 
+    const formatLocalDate = (d: Date) => {
+        const yyyy = d.getFullYear();
+        const mm = String(d.getMonth() + 1).padStart(2, "0");
+        const dd = String(d.getDate()).padStart(2, "0");
+        return `${yyyy}-${mm}-${dd}`;
+    };
+
     const weekdays = [
         "Monday",
         "Tuesday",
@@ -364,7 +371,7 @@ export const AddTeamEventModal = ({
                                 max="2035-12-31"
                                 value={
                                     startDate
-                                        ? startDate.toISOString().slice(0, 10)
+                                        ? formatLocalDate(startDate)
                                         : ""
                                 }
                                 onChange={(e) => {
@@ -389,7 +396,7 @@ export const AddTeamEventModal = ({
                                     max="2035-12-31"
                                     value={
                                         endDate
-                                            ? endDate.toISOString().slice(0, 10)
+                                            ? formatLocalDate(endDate)
                                             : ""
                                     }
                                     onChange={(e) => {

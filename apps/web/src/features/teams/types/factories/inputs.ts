@@ -5,8 +5,8 @@ export interface BaseEventInput {
   teamId: string;
   teamFacilityId?:string;
   name?:string;
-  startDate: Date;
-  endDate?: Date;
+  startDate: string;
+  endDate?: string;
   startTime: string;
   endTime: string;
   reoccurring: boolean;
