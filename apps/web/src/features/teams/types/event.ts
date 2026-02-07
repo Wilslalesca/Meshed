@@ -1,4 +1,9 @@
-export type TeamEventType = "Practice" | "Game" | "Lift" | "Other";
+export const ReoccurrType = ["Daily", "Weekly", "Bi-Weekly", "Monthly"] as const;
+export type ReoccurrType = (typeof ReoccurrType)[number];
+
+export const TeamEventType = ["Game", "Practice", "Lift", "Class", "Team Event", "Other",] as const;
+export type TeamEventType = (typeof TeamEventType)[number];
+
 
 export interface BaseTeamEvent {
   id?: string;
@@ -8,10 +13,10 @@ export interface BaseTeamEvent {
   type: TeamEventType;
   startDate: Date;
   endDate?: Date;
-  startTime: string;
-  endTime: string;
+  startTime: Date;
+  endTime: Date;
   reoccurring: boolean;
-  reoccurrType?: "Daily" | "Weekly" | "Bi-Weekly" | "Monthly";
+  reoccurrType?: ReoccurrType;
   dayOfWeek?: string;
   status?:string;
   conflict?:boolean;
