@@ -1,4 +1,3 @@
-
 export function dpMinimizeMissesAlgService(daysIn: any) {
     //Input: Array of days with practice options and athletes missing per option, identified by their athlete ID
     //Output: Schedule minimizing the maximum number of misses for any athlete
@@ -7,31 +6,34 @@ export function dpMinimizeMissesAlgService(daysIn: any) {
         return {
             schedule: [],
             maxMisses: 0,
-            athleteMisses: {}
+            athleteMisses: {},
         };
     }
 
     //Helper function for later to find the maximum value in an array safely
-    function maxArrayValue (arr: any[]) {
+    function maxArrayValue(arr: any[]) {
         if (arr.length === 0) return 0;
         return Math.max(...arr);
     }
 
     function sumMisses(missesObj: any) {
-        return Object.values(missesObj || {}).reduce((sum: number, val: unknown) => sum + (val as number), 0);
+        return Object.values(missesObj || {}).reduce(
+            (sum: number, val: unknown) => sum + (val as number),
+            0,
+        );
     }
 
     //Initialize DP table
     const dp = Array(daysIn.length);
 
     //Base case: Fill in for the first day
-    dp[0] = daysIn[0].options.map((option: { athletesMissing: any; }) => {
+    dp[0] = daysIn[0].options.map((option: { athletesMissing: any }) => {
         // Each athlete missing a practice for this option
         const athleteMisses = { ...(option.athletesMissing || {}) };
         return {
             maxMisses: maxArrayValue(Object.values(athleteMisses)),
             athleteMisses,
-            currentSched: [option]
+            currentSched: [option],
         };
     });
 
@@ -50,29 +52,44 @@ export function dpMinimizeMissesAlgService(daysIn: any) {
                 const combinedMisses = { ...prevState.athleteMisses }; //Array copy of previous individual athlete misses
 
                 //Update combined misses with current option's misses
-                for (const [athleteId, misses] of Object.entries(currentOption.athletesMissing || {})) {
-                    combinedMisses[athleteId] = (combinedMisses[athleteId] || 0) + misses; //add this options misses to the athletes total or 0 if they haven't missed any yet 
+                for (const [athleteId, misses] of Object.entries(
+                    currentOption.athletesMissing || {},
+                )) {
+                    combinedMisses[athleteId] =
+                        (combinedMisses[athleteId] || 0) + misses; //add this options misses to the athletes total or 0 if they haven't missed any yet
                 }
 
-                const currentMaxMisses = maxArrayValue(Object.values(combinedMisses));
+                const currentMaxMisses = maxArrayValue(
+                    Object.values(combinedMisses),
+                );
 
                 //Check if this previous state gives a better max misses
-                if ( currentMaxMisses < bestMaxMisses || ( currentMaxMisses === bestMaxMisses && ( !bestPrevState || sumMisses(combinedMisses) < sumMisses(bestPrevState.athleteMisses)))) {
+                if (
+                    currentMaxMisses < bestMaxMisses ||
+                    (currentMaxMisses === bestMaxMisses &&
+                        (!bestPrevState ||
+                            sumMisses(combinedMisses) <
+                                sumMisses(bestPrevState.athleteMisses)))
+                ) {
                     bestMaxMisses = currentMaxMisses;
-                    bestPrevState = { //Best previous state for this option on this day
+                    bestPrevState = {
+                        //Best previous state for this option on this day
                         maxMisses: currentMaxMisses,
                         athleteMisses: combinedMisses,
-                        currentSched: prevState.currentSched.slice() //copy previous schedule so you don't get mutation stuff
+                        currentSched: prevState.currentSched.slice(), //copy previous schedule so you don't get mutation stuff
                     };
                 }
-
-            };
+            }
 
             //Store best found state for this option on this day
             dp[dayIndex].push({
                 maxMisses: bestMaxMisses,
-                athleteMisses: bestPrevState ? { ...bestPrevState.athleteMisses } : {},
-                currentSched: bestPrevState ? [...bestPrevState.currentSched, currentOption] : [currentOption]
+                athleteMisses: bestPrevState
+                    ? { ...bestPrevState.athleteMisses }
+                    : {},
+                currentSched: bestPrevState
+                    ? [...bestPrevState.currentSched, currentOption]
+                    : [currentOption],
             });
         }
     }
@@ -89,46 +106,6 @@ export function dpMinimizeMissesAlgService(daysIn: any) {
     return {
         schedule: bestOverall.currentSched,
         maxMisses: bestOverall.maxMisses,
-        athleteMisses: bestOverall.athleteMisses
+        athleteMisses: bestOverall.athleteMisses,
     };
 }
-
-//Sample Test data:
-// --- Test Data ---
-const athletes = ["a1", "a2", "a3", "a4"];
-
-const days = [
-  {
-    day: "Monday",
-    options: [
-      { id: 1, name: "Morning Practice", athletesMissing: { a1: 0, a2: 1, a3: 0 } },
-      { id: 2, name: "Evening Practice", athletesMissing: { a1: 0, a2: 0, a3: 0 } }
-    ]
-  },
-  {
-    day: "Tuesday",
-    options: [
-      { id: 3, name: "Morning Practice", athletesMissing: { a1: 1, a2: 0, a3: 1 } },
-      { id: 4, name: "Evening Practice", athletesMissing: { a1: 1, a2: 0, a3: 0  } }
-    ]
-  },
-  {
-    day: "Wednesday",
-    options: [
-      { id: 5, name: "Morning Practice", athletesMissing: { a1: 1, a2: 0, a3: 1 } },
-      { id: 6, name: "Evening Practice", athletesMissing: { a1: 0, a2: 0, a3: 1 } }
-    ]
-  }
-];
-
-// --- Run Algorithm ---
-const result = dpMinimizeMissesAlgService(days);
-
-// --- Print Results ---
-console.log("Optimal Schedule:");
-result.schedule.forEach((option: { name: any; }, index: number) => {
-  console.log(`Day ${index + 1} (${days[index].day}): ${option.name}`);
-});
-
-console.log("\nMaximum misses for any athlete:", result.maxMisses);
-console.log("Total misses per athlete:", result.athleteMisses);
