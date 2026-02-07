@@ -168,14 +168,12 @@ export const AddTeamEventModal = ({
                         <div className="grid w-full items-center gap-3 py-2">
                             <Label htmlFor="event_type">Event Type</Label>
                             <Select
-                                id = "event_type"
-                                placeholder="ex. Practice"
                                 value={eventTypeID}
                                 onValueChange={(val: TeamEventType) =>
                                     setEventTypeID(val as TeamEventType)
                                 }
                             >
-                                <SelectTrigger>
+                                <SelectTrigger id="event_type">
                                     <SelectValue placeholder="Event Type" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -271,7 +269,7 @@ export const AddTeamEventModal = ({
                                     </Label>
                                     <Select
                                         value={selectedReoccurrType}
-                                        onValueChange={setSelectedReoccurrType}
+                                        onValueChange={(val: string) => setSelectedReoccurrType(val as typeof reoccurrTypes[number])}
                                     >
                                         <SelectTrigger id="selectedReoccurrType">
                                             <SelectValue placeholder="Reocurr" />
