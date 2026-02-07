@@ -1,6 +1,12 @@
 import React from "react";
 import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/shared/components/ui/dialog";
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogFooter,
+} from "@/shared/components/ui/dialog";
 import { Input } from "@/shared/components/ui/input";
 import { Button } from "@/shared/components/ui/button";
 import { useAuth } from "@/shared/hooks/useAuth";
@@ -22,42 +28,42 @@ import { apiOptimizeSchedule } from "@/features/teams/api/optimize";
 export const OptimizePracticeModal = ({ open, onOpenChange, teamId }: any) => {
     const { token } = useAuth();
     const [OptimizationType, setOptimizationType] = React.useState(
-            "The highest attendance at each practice"
-        );
-        const [selectedDays, setSelectedDays] = React.useState<string[]>([]);
-        const [practiceChoices, setPracticeChoices] = React.useState<
-            Record<string, string>
-        >({});
-    
-        const PRACTICE_OPTIONS = {
-            SPECIFIC_TIMES: "specific",
-            INTERVAL: "interval",
-        } as const;
-    
-        type TimeOption = {
-            startTime: string;
-            endTime: string;
-        };
-    
-        const [specificTimes, setSpecificTimes] = React.useState<
-            Record<string, TimeOption[]>
-        >({});
+        "The highest attendance at each practice",
+    );
+    const [selectedDays, setSelectedDays] = React.useState<string[]>([]);
+    const [practiceChoices, setPracticeChoices] = React.useState<
+        Record<string, string>
+    >({});
 
-        const [intervalsInput, setIntervalsInput] = React.useState<
-                Record<
-                    string,
-                    { startTime: string; endTime: string; durationMinutes: number }
-                >
-            >({});
-        
-        //----------------Helpers-------------------
-        const setPracticeChoiceForDay = (day: string, value: string) => {
-        setPracticeChoices(prev => ({
+    const PRACTICE_OPTIONS = {
+        SPECIFIC_TIMES: "specific",
+        INTERVAL: "interval",
+    } as const;
+
+    type TimeOption = {
+        startTime: string;
+        endTime: string;
+    };
+
+    const [specificTimes, setSpecificTimes] = React.useState<
+        Record<string, TimeOption[]>
+    >({});
+
+    const [intervalsInput, setIntervalsInput] = React.useState<
+        Record<
+            string,
+            { startTime: string; endTime: string; durationMinutes: number }
+        >
+    >({});
+
+    //----------------Helpers-------------------
+    const setPracticeChoiceForDay = (day: string, value: string) => {
+        setPracticeChoices((prev) => ({
             ...prev,
             [day]: value,
         }));
         if (value === PRACTICE_OPTIONS.SPECIFIC_TIMES) {
-            setSpecificTimes(prev => ({
+            setSpecificTimes((prev) => ({
                 ...prev,
                 [day]: prev[day] || [{ startTime: "", endTime: "" }],
             }));
@@ -65,15 +71,13 @@ export const OptimizePracticeModal = ({ open, onOpenChange, teamId }: any) => {
     };
 
     const toggleDay = (day: string) => {
-        setSelectedDays(prev =>
-            prev.includes(day)
-                ? prev.filter(d => d !== day)
-                : [...prev, day]
+        setSelectedDays((prev) =>
+            prev.includes(day) ? prev.filter((d) => d !== day) : [...prev, day],
         );
     };
 
     const addTimeOption = (day: string) => {
-        setSpecificTimes(prev => ({
+        setSpecificTimes((prev) => ({
             ...prev,
             [day]: [...(prev[day] || []), { startTime: "", endTime: "" }],
         }));
@@ -83,12 +87,12 @@ export const OptimizePracticeModal = ({ open, onOpenChange, teamId }: any) => {
         day: string,
         index: number,
         field: "startTime" | "endTime",
-        value: string
+        value: string,
     ) => {
-        setSpecificTimes(prev => ({
+        setSpecificTimes((prev) => ({
             ...prev,
             [day]: (prev[day] ?? []).map((opt, i) =>
-                i === index ? { ...opt, [field]: value } : opt
+                i === index ? { ...opt, [field]: value } : opt,
             ),
         }));
     };
@@ -104,50 +108,50 @@ export const OptimizePracticeModal = ({ open, onOpenChange, teamId }: any) => {
     ];
 
     const submitOptimization = async () => {
-            const payload = {
-                optimizationType:
-                    OptimizationType ===
-                    "The highest attendance at each practice"
+        const payload = {
+            optimizationType:
+                OptimizationType === "The highest attendance at each practice"
                     ? "MAX_ATTENDANCE"
                     : "MIN_MISSES",
-                days: selectedDays.map(day => {
-                    if(practiceChoices[day] === PRACTICE_OPTIONS.SPECIFIC_TIMES) {
-                        return {
-                            day,
-                            options: (specificTimes[day] || []).map(option => ({
-                                start: option.startTime,
-                                end: option.endTime,
-                            })),
-                        };
-                    } else if(practiceChoices[day] === PRACTICE_OPTIONS.INTERVAL) {
-                        const intervalInput = intervalsInput[day];
-    
-                        //check if proper error handling
-                        if (!intervalInput) {
-                            return { day, options: [] };
-                        }
-    
-                        return {
-                            day,
-                            options: generateIntervalOptions(
-                                intervalInput.startTime,
-                                intervalInput.endTime,
-                                intervalInput.durationMinutes
-                            ),
-                        };
+            days: selectedDays.map((day) => {
+                if (practiceChoices[day] === PRACTICE_OPTIONS.SPECIFIC_TIMES) {
+                    return {
+                        day,
+                        options: (specificTimes[day] || []).map((option) => ({
+                            start: option.startTime,
+                            end: option.endTime,
+                        })),
+                    };
+                } else if (practiceChoices[day] === PRACTICE_OPTIONS.INTERVAL) {
+                    const intervalInput = intervalsInput[day];
+
+                    //check if proper error handling
+                    if (!intervalInput) {
+                        return { day, options: [] };
                     }
-                    return { day, options: [] };
-                }),
-            };
-            if (!token || !teamId) return;
-            const result = await apiOptimizeSchedule(teamId, payload as any, token);
-            console.log("Optimization payload:", payload);
-            console.log("Optimization result:", result);
 
-            onOpenChange(false);
+                    return {
+                        day,
+                        options: generateIntervalOptions(
+                            intervalInput.startTime,
+                            intervalInput.endTime,
+                            intervalInput.durationMinutes,
+                        ),
+                    };
+                }
+                return { day, options: [] };
+            }),
         };
+        if (!token || !teamId) return;
+        // @ISLA = here is the results of the optimize
+        const result = await apiOptimizeSchedule(teamId, payload as any, token);
+        console.log("Optimization payload:", payload);
+        console.log("Optimization result:", result);
 
-            return (
+        onOpenChange(false);
+    };
+
+    return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
@@ -229,9 +233,7 @@ export const OptimizePracticeModal = ({ open, onOpenChange, teamId }: any) => {
                                     }
                                 >
                                     <DropdownMenuRadioItem
-                                        value={
-                                            PRACTICE_OPTIONS.SPECIFIC_TIMES
-                                        }
+                                        value={PRACTICE_OPTIONS.SPECIFIC_TIMES}
                                     >
                                         Select specific practice time options
                                     </DropdownMenuRadioItem>
@@ -245,10 +247,11 @@ export const OptimizePracticeModal = ({ open, onOpenChange, teamId }: any) => {
                         </DropdownMenu>
 
                         {/* Interval */}
-                        {practiceChoices[day] ===
-                            PRACTICE_OPTIONS.INTERVAL && (
+                        {practiceChoices[day] === PRACTICE_OPTIONS.INTERVAL && (
                             <div className="grid gap-2">
                                 <Input
+                                    type="time"
+                                    value={intervalsInput[day]?.startTime ?? ""}
                                     placeholder="Start time"
                                     onChange={(e) =>
                                         setIntervalsInput((prev) => ({
@@ -261,6 +264,8 @@ export const OptimizePracticeModal = ({ open, onOpenChange, teamId }: any) => {
                                     }
                                 />
                                 <Input
+                                    type="time"
+                                    value={intervalsInput[day]?.endTime ?? ""}
                                     placeholder="End time"
                                     onChange={(e) =>
                                         setIntervalsInput((prev) => ({
@@ -281,7 +286,7 @@ export const OptimizePracticeModal = ({ open, onOpenChange, teamId }: any) => {
                                             [day]: {
                                                 ...prev[day],
                                                 durationMinutes: Number(
-                                                    e.target.value
+                                                    e.target.value,
                                                 ),
                                             },
                                         }))
@@ -308,7 +313,7 @@ export const OptimizePracticeModal = ({ open, onOpenChange, teamId }: any) => {
                                                         day,
                                                         index,
                                                         "startTime",
-                                                        e.target.value
+                                                        e.target.value,
                                                     )
                                                 }
                                             />
@@ -321,12 +326,12 @@ export const OptimizePracticeModal = ({ open, onOpenChange, teamId }: any) => {
                                                         day,
                                                         index,
                                                         "endTime",
-                                                        e.target.value
+                                                        e.target.value,
                                                     )
                                                 }
                                             />
                                         </div>
-                                    )
+                                    ),
                                 )}
 
                                 <Button
