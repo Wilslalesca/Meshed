@@ -19,6 +19,7 @@ import { AddTeamEventModal } from "../modals/AddTeamEventModal";
 import { DeleteTeamModal } from "../modals/DeleteTeamModal";
 import { InviteMemberModal } from "../modals/InviteMemberModal";
 import { AddAthleteModal } from "../modals/AddAthleteModal";
+import { OptimizePracticeModal } from "../modals/OptimizePracticeModal";
 
 export const TeamDetailsPage = () => {
     const { teamId } = useParams<{ teamId: string }>();
@@ -39,6 +40,7 @@ export const TeamDetailsPage = () => {
     const [inviteRole, setInviteRole] = useState<
         "athlete" | "manager"
     >("athlete");
+    const [openOptimize, setOpenOptimize] = useState(false);
 
     if (loading || !team) return <p className="p-6">Loading...</p>;
 
@@ -79,6 +81,9 @@ export const TeamDetailsPage = () => {
                 }
                 isManagerOverride={isManager}
                 onAddTeamEvent = {isManager ? () => setOpenAddTeamEvent(true) : () => {}}
+                onOptimizeSchedule={
+                    isManager ? () => setOpenOptimize(true) : () => {}
+                }
             >
                 {{
                     profile: (
@@ -155,6 +160,10 @@ export const TeamDetailsPage = () => {
                     teamId={team.id}
                 />
                 </>
+                <OptimizePracticeModal
+                    open={openOptimize}
+                    onOpenChange={setOpenOptimize}
+                />
             )}
         </div>
     );
