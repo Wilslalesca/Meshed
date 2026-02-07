@@ -6,17 +6,17 @@ export async function apiOptimizeSchedule(
     data: OptimizationRequest,
     token: string
 ) {
-    const res = await fetch(
-        `${API_BASE}/teams/${teamId}/schedule/optimize`,
-        {
-            method: "POST",
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(data),
-        }
-    );
+    const res = await fetch(`${API_BASE}/optimization/run`, {
+        method: "POST",
+        headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            ...(data as unknown as Record<string, unknown>),
+            teamId,
+        }),
+    });
 
     if (!res.ok) {
         throw new Error("Optimization failed");
