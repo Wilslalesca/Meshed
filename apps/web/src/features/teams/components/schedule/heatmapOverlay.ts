@@ -140,17 +140,14 @@ export function buildHeatmapOverlayEvents({
                 continue;
             }
 
-            // continue same run ONLY if same count
             if (c > 0 && runStartSlotIdx !== null && c === runCount) {
                 continue;
             }
 
-            // end run when count changes or drops to 0
             if (runStartSlotIdx !== null) {
                 flushRun(si);
             }
 
-            // start new run if c>0
             if (c > 0) {
                 runStartSlotIdx = si;
                 runCount = c;

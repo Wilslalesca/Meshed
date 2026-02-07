@@ -192,3 +192,14 @@ CREATE TABLE email_verification_codes (
 
 -- CREATE INDEX IF NOT EXISTS idx_facilities_name ON facilities (name);
 
+-- Notifications for UI/email alerts
+CREATE TABLE notifications (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+  type VARCHAR(50) NOT NULL,
+  message TEXT NOT NULL,
+  meta JSONB,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  read_at TIMESTAMP
+);
+
