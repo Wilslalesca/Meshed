@@ -10,7 +10,9 @@ export function maximizeAttendanceService(days: any) {
         let minMissing = Infinity;
 
         for (let option of day.options) {
-            const tempMissing = option.athletesMissing?.length ?? 0;
+            const tempMissing = Array.isArray(option.athletesMissing)
+                ? option.athletesMissing.length
+                : Object.keys(option.athletesMissing || {}).length;
 
             if (tempMissing < minMissing) {
                 minMissing = tempMissing;
@@ -19,7 +21,7 @@ export function maximizeAttendanceService(days: any) {
         }
 
         schedule.push({
-            day: day.date,
+            day: day.date ?? day.day,
             option: bestOption
         });
     }
