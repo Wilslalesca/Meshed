@@ -77,15 +77,8 @@ export const useAddTeamEvent = () => {
         console.log("Date being recieved: " + start)
       } else {
           const start = new Date(startDate as Date);
-          for (const day of selectedDays) {
-              const targetIndex = weekdays.indexOf(day);
-              let curIndex = weekdayIndex(start);
-              const delta = (targetIndex - curIndex + 7) % 7;
-              const d = new Date(start.getTime() + delta * msPerDay);
-              eventDates.push(d);
-              console.log("Date being sent: " + d)
-              console.log("Date being recieved: " + start)
-          }
+          eventDates.push(start);
+          console.log("Date being sent: " + start)
       }
 
       for (const date of eventDates) {
