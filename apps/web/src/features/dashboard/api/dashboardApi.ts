@@ -1,9 +1,6 @@
 import { getAthleteSchedule } from '@/features/athlete-schedule/api/getAthleteSchedule';
 export const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
-
-
-
 export async function getAthleteEvents(athleteId: string, token: string) {
     const schedule = await getAthleteSchedule(athleteId, token);
 
@@ -26,6 +23,7 @@ export async function getAllEvents(token: string) {
         return null;
     }
 }
+
 
 //Gets all events for a single facility
 export async function getFacilityEvents( facilityId: string, token: string) {
@@ -51,7 +49,7 @@ export async function getConflictingFacilityEvents( facilityId: string, token: s
     }
 }
 
-//Gets all pending events for a single facility
+//Gets all events for a single facility with a particular status i.e. pending or confirmed
 export async function getStatusFacilityEvents( facilityId: string, status:string, token: string) {
     try {
         const res = await fetch(`${API_BASE}/events/${facilityId}/${status}`, {

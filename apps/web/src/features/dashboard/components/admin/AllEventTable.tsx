@@ -1,18 +1,35 @@
 import { Card, CardHeader, CardTitle, CardContent } from "@/shared/components/ui/card";
 import { apiGetEventFacilities } from "@/features/teams/api/events"
+import { apiGetTeamById } from "@/features/teams/api/teams"
 import type { Facility } from "@/features/facilities/types/facilities";
 import { getAllEvents } from "../../api/dashboardApi"
 import { useEffect, useState } from "react";
 import { useAuth } from "@/shared/hooks/useAuth";
 import type { TeamEvent } from "@/features/teams/types/event";
+import type { Team } from "@/features/teams/types/teams";
 
 export const AllEventTable = () => {
     const { token } = useAuth();
     const [events, setEvents] = useState<TeamEvent[]>([]);
+    const [allFacilities, setAllFacilities] = useState<Facility[]>([]);
+    const [allTeams, setAllTeams] = useState<Team[]>([]);
+
+    useEffect(() => {
+        const fetchFacilities = async () => {
+            if (!token) return;
+            const facilities = await apiGetEventFacilities(token);
+            if (facilities) {
+                setAllFacilities(facilities);
+            }
+        };
+
+        fetchFacilities();
+    }, [token]);
 
     useEffect(() => {
         const fetchEvents = async () => {
-            const data = await getAllEvents(token!);
+            if (!token) return;
+            const data = await getAllEvents(token);
             setEvents(data);
         };
         
@@ -20,6 +37,52 @@ export const AllEventTable = () => {
             fetchEvents();
         }
     }, [token]);
+
+    useEffect(() => {
+        const fetchTeamsWithEvents = async () => {
+            if (!token || events.length === 0) return;
+            const uniqueTeamIds = [...new Set(events.map(e => e.teamId))];
+            for (const teamId of uniqueTeamIds) {
+
+                if (!allTeams.find(t => t.id === teamId)) {
+                    const data = await apiGetTeamById(teamId, token);
+                    setAllTeams(prev => [...prev, data]);
+                }
+            }
+        };
+        fetchTeamsWithEvents();
+    })
+
+    function getFacilityName(facilityId: string | undefined){
+        try{
+           var facility = allFacilities.find(f => f.id === facilityId)
+            if(facility?.name == undefined){
+                return facilityId
+            }
+            else{
+                return facility.name
+            } 
+        }
+        catch{
+            return facilityId
+        }
+    }
+
+    function getTeamName(teamId: string){
+        try{
+           var team = allTeams.find(f => f.id === teamId)
+            if(team?.name == undefined){
+                return teamId
+            }
+            else{
+                return team.name
+            } 
+        }
+        catch{
+            return teamId
+        }
+    }
+
 
     return (
         <Card>
@@ -31,7 +94,7 @@ export const AllEventTable = () => {
                 <table className="w-full">
                 <thead>
                     <tr className="border-b">
-                    <th className="text-left py-2 px-4">Team ID</th>
+                    <th className="text-left py-2 px-4">Team</th>
                     <th className="text-left py-2 px-4">Event Name</th>
                     <th className="text-left py-2 px-4">Facility</th>
                     <th className="text-left py-2 px-4">Date</th>
@@ -44,9 +107,9 @@ export const AllEventTable = () => {
                     {events.length > 0 ? (
                     events.map((event) => (
                         <tr key={event.id} className="border-b hover:bg-gray-50">
-                        <td className="py-2 px-4">{event.teamId}</td>
+                        <td className="py-2 px-4">{getTeamName(event.teamId)}</td>
                         <td className="py-2 px-4">{event.name}</td>
-                        <td className="py-2 px-4">{event.teamFacilityId}</td>
+                        <td className="py-2 px-4">{getFacilityName(event.teamFacilityId)}</td>
                         <td className="py-2 px-4">{new Date(event.startDate).toLocaleDateString()}</td>
                         <td className="py-2 px-4">{event.startTime}</td>
                         <td className="py-2 px-4">{event.endTime}</td>
