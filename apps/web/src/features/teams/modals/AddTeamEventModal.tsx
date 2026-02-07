@@ -150,6 +150,7 @@ export const AddTeamEventModal = ({
         }
 
         try {
+            console.log(startDate)
             await addTeamEvent(
                 teamId,
                 teamFacilityId,
@@ -366,13 +367,14 @@ export const AddTeamEventModal = ({
                                         ? startDate.toISOString().slice(0, 10)
                                         : ""
                                 }
-                                onChange={(e) =>
-                                    setStartDate(
-                                        e.target.value
-                                            ? new Date(e.target.value)
-                                            : null,
-                                    )
-                                }
+                                onChange={(e) => {
+                                    if (e.target.value) {
+                                        const [year, month, day] = e.target.value.split('-');
+                                        setStartDate(new Date(Number(year), Number(month) - 1, Number(day)));
+                                    } else {
+                                        setStartDate(null);
+                                    }
+                                }}
                                 required
                             />
                         </div>
@@ -390,13 +392,14 @@ export const AddTeamEventModal = ({
                                             ? endDate.toISOString().slice(0, 10)
                                             : ""
                                     }
-                                    onChange={(e) =>
-                                        setEndDate(
-                                            e.target.value
-                                                ? new Date(e.target.value)
-                                                : null,
-                                        )
-                                    }
+                                    onChange={(e) => {
+                                        if (e.target.value) {
+                                            const [year, month, day] = e.target.value.split('-');
+                                            setEndDate(new Date(Number(year), Number(month) - 1, Number(day)));
+                                        } else {
+                                            setEndDate(null);
+                                        }
+                                    }}
                                 />
                             </div>
                         )}
