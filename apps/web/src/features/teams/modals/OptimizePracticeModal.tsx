@@ -17,9 +17,10 @@ import {
 import { Label } from "@/shared/components//ui/label";
 //import { OptimizationRequest } from "@/features/dashboard/types/OptimizationRequest";
 import { generateIntervalOptions } from "@/features/dashboard/utils/generateIntervalOptions";
-//Add proper API import
+import { apiOptimizeSchedule } from "@/features/teams/api/optimize";
 
 export const OptimizePracticeModal = ({ open, onOpenChange, teamId }: any) => {
+    const { token } = useAuth();
     const [OptimizationType, setOptimizationType] = React.useState(
             "The highest attendance at each practice"
         );
@@ -78,6 +79,20 @@ export const OptimizePracticeModal = ({ open, onOpenChange, teamId }: any) => {
         }));
     };
 
+    const updateSpecificTime = (
+        day: string,
+        index: number,
+        field: "startTime" | "endTime",
+        value: string
+    ) => {
+        setSpecificTimes(prev => ({
+            ...prev,
+            [day]: (prev[day] ?? []).map((opt, i) =>
+                i === index ? { ...opt, [field]: value } : opt
+            ),
+        }));
+    };
+
     const days = [
         "Monday",
         "Tuesday",
@@ -124,7 +139,10 @@ export const OptimizePracticeModal = ({ open, onOpenChange, teamId }: any) => {
                     return { day, options: [] };
                 }),
             };
+            if (!token || !teamId) return;
+            const result = await apiOptimizeSchedule(teamId, payload as any, token);
             console.log("Optimization payload:", payload);
+            console.log("Optimization result:", result);
 
             onOpenChange(false);
         };
@@ -277,14 +295,36 @@ export const OptimizePracticeModal = ({ open, onOpenChange, teamId }: any) => {
                             PRACTICE_OPTIONS.SPECIFIC_TIMES && (
                             <div className="space-y-3">
                                 {(specificTimes[day] || []).map(
-                                    (_, index) => (
+                                    (option, index) => (
                                         <div
                                             key={index}
                                             className="flex items-center gap-2"
                                         >
-                                            <Input type="time" />
+                                            <Input
+                                                type="time"
+                                                value={option.startTime}
+                                                onChange={(e) =>
+                                                    updateSpecificTime(
+                                                        day,
+                                                        index,
+                                                        "startTime",
+                                                        e.target.value
+                                                    )
+                                                }
+                                            />
                                             <span>to</span>
-                                            <Input type="time" />
+                                            <Input
+                                                type="time"
+                                                value={option.endTime}
+                                                onChange={(e) =>
+                                                    updateSpecificTime(
+                                                        day,
+                                                        index,
+                                                        "endTime",
+                                                        e.target.value
+                                                    )
+                                                }
+                                            />
                                         </div>
                                     )
                                 )}

@@ -1,6 +1,7 @@
 import { Button } from "@/shared/components/ui/button";
 import { Checkbox } from "@/shared/components/ui/checkbox";
 import React from "react";
+import { useSearchParams } from "react-router-dom";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -20,6 +21,8 @@ import { runOptimization } from "@/features/dashboard/api/optimizationAPI";
 
 export const OptimizePage: React.FC = () => {
     const { token } = useAuth();
+    const [searchParams] = useSearchParams();
+    const teamId = searchParams.get("teamId") ?? undefined;
 
     const [OptimizationType, setOptimizationType] = React.useState(
         "The highest attendance at each practice"
@@ -110,6 +113,7 @@ export const OptimizePage: React.FC = () => {
                 : "MIN_MISSES";
         
         const payload = {
+            teamId,
             optimizationType,
             days: selectedDays.map(day => {
                 if(practiceChoices[day] === PRACTICE_OPTIONS.SPECIFIC_TIMES) {
@@ -140,6 +144,11 @@ export const OptimizePage: React.FC = () => {
                 return { day, options: [] };
             }),
         };
+        if (!teamId) {
+            console.error("Missing teamId for optimization.");
+            return;
+        }
+
         try{
             const res = await runOptimization(payload, token!);
             console.log("Optimization Result:", res);
