@@ -146,24 +146,22 @@ export const TeamDetailsPage = () => {
             )}
             {isManager && (
                 <>
-                <AddAthleteModal
-                    open={openBulkAdd}
-                    onOpenChange={setOpenBulkAdd}
-                    teamId={team.id}
-                    onAdded={() => {
-                        reloadRoster();
-                    }}
-                />
-                <AddTeamEventModal
-                    open={openAddTeamEvent}
-                    onOpenChange={setOpenAddTeamEvent}
-                    teamId={team.id}
-                />
-                </>
+                    <AddAthleteModal
+                        open={openBulkAdd}
+                        onOpenChange={setOpenBulkAdd}
+                        teamId={team.id}
+                        onAdded={() => {
+                            reloadRoster();
+                        } } />
+                    <AddTeamEventModal
+                        open={openAddTeamEvent}
+                        onOpenChange={setOpenAddTeamEvent}
+                        teamId={team.id} />
                 <OptimizePracticeModal
-                    open={openOptimize}
-                    onOpenChange={setOpenOptimize}
-                />
+                        open={openOptimize}
+                        onOpenChange={setOpenOptimize}
+                        teamId={team.id} />
+                </>
             )}
         </div>
     );
