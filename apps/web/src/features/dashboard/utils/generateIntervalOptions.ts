@@ -24,8 +24,8 @@ export function generateIntervalOptions(
     let currentStart = toMinutes(startTime);
     const endMinutes = toMinutes(endTime);
 
-    while (start + durationMinutes <= endMinutes) {
-        results.push({
+    while (currentStart + durationMinutes <= endMinutes) {
+        options.push({
             start: timeString(currentStart),
             end: timeString(currentStart + durationMinutes),
         });

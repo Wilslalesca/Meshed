@@ -16,8 +16,11 @@ import { Label } from "@/shared/components//ui/label";
 //import { OptimizationRequest } from "@/features/dashboard/types/OptimizationRequest";
 import { generateIntervalOptions } from "@/features/dashboard/utils/generateIntervalOptions";
 //import { submitOptimizationRequest } from "@/features/dashboard/api/optimizationAPI";
+import { runOptimization } from "@/features/dashboard/api/optimizationAPI";
 
 export const OptimizePage: React.FC = () => {
+    const { token } = useAuth();
+
     const [OptimizationType, setOptimizationType] = React.useState(
         "The highest attendance at each practice"
     );
@@ -35,6 +38,7 @@ export const OptimizePage: React.FC = () => {
         startTime: string;
         endTime: string;
     };
+    
 
     const [specificTimes, setSpecificTimes] = React.useState<
         Record<string, TimeOption[]>
@@ -67,6 +71,19 @@ export const OptimizePage: React.FC = () => {
             [day]: [...(prev[day] || []), { startTime: "", endTime: "" }],
         }));
     };
+    const updateSpecificTime = (
+        day: string,
+        index: number,
+        field: "startTime" | "endTime",
+        value: string
+        ) => {
+        setSpecificTimes(prev => ({
+            ...prev,
+            [day]: (prev[day] ?? []).map((opt, i) =>
+            i === index ? { ...opt, [field]: value } : opt
+            ),
+        }));
+    };
 
     const days = [
         "Monday",
@@ -86,12 +103,14 @@ export const OptimizePage: React.FC = () => {
     >({});
 
     const submitOptimization = async () => {
-        const payload = {
-            optimizationType:
-                OptimizationType ===
-                "The highest attendance at each practice"
+        const optimizationType: "MAX_ATTENDANCE" | "MIN_MISSES" =
+            OptimizationType ===
+            "The highest attendance at each practice"
                 ? "MAX_ATTENDANCE"
-                : "MIN_MISSES",
+                : "MIN_MISSES";
+        
+        const payload = {
+            optimizationType,
             days: selectedDays.map(day => {
                 if(practiceChoices[day] === PRACTICE_OPTIONS.SPECIFIC_TIMES) {
                     return {
@@ -121,11 +140,12 @@ export const OptimizePage: React.FC = () => {
                 return { day, options: [] };
             }),
         };
-        // try{
-        //     const result = await submitOptimizationRequest(payload);
-        // } catch (error) {
-        //     console.error("Error submitting optimization request:", error);
-        // }
+        try{
+            const res = await runOptimization(payload, token!);
+            console.log("Optimization Result:", res);
+        } catch (error) {
+            console.error("Error submitting optimization request:", error);
+        }
     };
     
 
@@ -238,7 +258,13 @@ export const OptimizePage: React.FC = () => {
                                 </Label>
                                 <Input
                                     id={`${day}-start`}
-                                    placeholder="e.g. 3:00 PM"
+                                    value={intervalsInput[day]?.startTime ?? ""}
+                                    onChange={(e) =>
+                                        setIntervalsInput(prev => ({
+                                        ...prev,
+                                        [day]: { ...(prev[day] ?? { startTime:"", endTime:"", durationMinutes:60 }), startTime: e.target.value }
+                                        }))
+                                    }
                                 />
 
                                 <Label htmlFor={`${day}-end`}>
@@ -246,7 +272,16 @@ export const OptimizePage: React.FC = () => {
                                 </Label>
                                 <Input
                                     id={`${day}-end`}
-                                    placeholder="e.g. 8:00 PM"
+                                    value={intervalsInput[day]?.endTime ?? ""}
+                                    onChange={(e) =>
+                                        setIntervalsInput(prev => ({
+                                        ...prev,
+                                        [day]: {
+                                            ...(prev[day] ?? { startTime: "", endTime: "", durationMinutes: 60 }),
+                                            endTime: e.target.value,
+                                        },
+                                        }))
+                                    }
                                 />
 
                                 <Label htmlFor={`${day}-duration`}>
@@ -254,8 +289,17 @@ export const OptimizePage: React.FC = () => {
                                 </Label>
                                 <Input
                                     id={`${day}-duration`}
-                                    placeholder="e.g. 90"
                                     type="number"
+                                    value={intervalsInput[day]?.durationMinutes ?? 60}
+                                    onChange={(e) =>
+                                        setIntervalsInput(prev => ({
+                                        ...prev,
+                                        [day]: {
+                                            ...(prev[day] ?? { startTime: "", endTime: "", durationMinutes: 60 }),
+                                            durationMinutes: Number(e.target.value),
+                                        },
+                                        }))
+                                    }
                                 />
                             </div>
                         )}
@@ -269,9 +313,24 @@ export const OptimizePage: React.FC = () => {
                                             key={index}
                                             className="flex items-center gap-2"
                                         >
-                                            <Input type="time" />
+                                            <Input
+                                                type="time"
+                                                value={option.startTime}
+                                                onChange={(e) =>
+                                                    updateSpecificTime(day, index, "startTime", e.target.value)
+                                                }
+                                            />
+
                                             <span>to</span>
-                                            <Input type="time" />
+
+                                            <Input
+                                                type="time"
+                                                value={option.endTime}
+                                                onChange={(e) =>
+                                                    updateSpecificTime(day, index, "endTime", e.target.value)
+                                                }
+                                            />
+
                                         </div>
                                     )
                                 )}

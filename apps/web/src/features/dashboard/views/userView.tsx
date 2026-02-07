@@ -18,10 +18,10 @@ export const UserDashboard = () => {
         Array<{ id: string; title: string; date: string; time: string }>
     >([]);
     const { user } = useAuth();
-
+    const { token } = useAuth();
     useEffect(() => {
         if (user?.id) {
-            getAthleteEvents(user.id).then(setEvents);
+            getAthleteEvents(user.id, token!).then(setEvents);
         }
     }, [user?.id]);
 

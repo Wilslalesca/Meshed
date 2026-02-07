@@ -1,7 +1,7 @@
 
 == Crosscutting Concepts
 
-Crosscutting concepts represent essential non-functional requirements and design principles that apply throughout the system architecture of UMA. These aspects impact multiple components and ensure the system's quality, security, and maintainability.
+Crosscutting concepts represent essential non-functional requirements and design principles that apply throughout the system architecture of Meshed. These aspects impact multiple components and ensure the system's quality, security, and maintainability.
 
 === Security
 
@@ -49,4 +49,4 @@ Crosscutting concepts represent essential non-functional requirements and design
 === Diagram Representation
 The architecture consists of a React frontend hosted on Azure Static Web Apps, which communicates with a TypeScript backend via RESTful HTTPS API calls. Authentication and user data handling occur in the backend. The architecture separates frontend and backend concerns, enabling independent scaling and deployment.
 
-These crosscutting concerns ensure that UMA maintains high standards for security, performance, and maintainability across its entire architecture.
+These crosscutting concerns ensure that Meshed maintains high standards for security, performance, and maintainability across its entire architecture.

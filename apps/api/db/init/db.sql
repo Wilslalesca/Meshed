@@ -40,6 +40,25 @@ CREATE TABLE teams (
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE team_events (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  team_id UUID REFERENCES teams(id) ON DELETE CASCADE,
+  name VARCHAR,
+  type VARCHAR NOT NULL,          
+  start_date DATE NOT NULL,
+  end_date DATE,
+  start_time TIME NOT NULL,
+  end_time TIME NOT NULL,
+  reoccurring BOOLEAN NOT NULL,
+  reoccurr_type VARCHAR,        
+  day_of_week VARCHAR(20),           
+  opponent VARCHAR,                
+  home_away VARCHAR,               
+  lift_type VARCHAR,               
+  notes TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP                  
+);
 
 CREATE TABLE user_teams (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -170,4 +189,15 @@ CREATE TABLE email_verification_codes (
 
 
 -- CREATE INDEX IF NOT EXISTS idx_facilities_name ON facilities (name);
+
+-- Notifications for UI/email alerts
+CREATE TABLE notifications (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+  type VARCHAR(50) NOT NULL,
+  message TEXT NOT NULL,
+  meta JSONB,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  read_at TIMESTAMP
+);
 

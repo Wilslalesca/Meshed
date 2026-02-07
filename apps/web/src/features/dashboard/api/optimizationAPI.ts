@@ -1,15 +1,19 @@
-// import { OptimizationRequest } from "../types/OptimizationRequest";
-// export const API_BASE = import.meta.env.VITE_API_BASE_URL;
+import type { OptimizationRequest } from "../types/OptimizationRequest";
+export const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
-// export async function submitOptimizationRequest(
-//     payload: OptimizationRequest
-// ){
-//     const response = await fetch(`${API_BASE}/optimization/optimize`, { //DUMMY API CALL
-//         "/api/optimize",
-//         payload
-//     );
-//     return response.data;
-// }
+export async function runOptimization(payload: OptimizationRequest, token: string) {
+    const res = await fetch(`${API_BASE}/optimization/run`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+    });
 
+    if (!res.ok) {
+        throw new Error(`Optimization request failed with status ${res.status}`);
+    }
 
-//Not sure if this is correct
+    return res.json();
+}

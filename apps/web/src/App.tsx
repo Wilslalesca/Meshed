@@ -18,7 +18,6 @@ import AthleteSchedulePage from "./routes/athlete/schedule";
 import { Toaster } from "@/shared/components/ui/sonner";
 import { ProtectedRoute } from "./shared/components/ProtectedRoute.tsx";
 import { TeamDetailsPage } from "./features/teams/pages/TeamDetailsPage.tsx";
-
 import { TeamsPage } from "@/features/teams/pages/TeamPage.tsx";
 import { AthleteDetailsPage } from "@/features/teams/pages/AthleteDetailsPage.tsx";
 import InviteRegisterPage from "./features/auth/pages/InviteRegisterPage.tsx";

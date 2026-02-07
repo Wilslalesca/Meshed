@@ -2,7 +2,7 @@
 
 == Context View
 
-The context view provides an overview of the UMA system and its interactions with external entities. It focuses on the system's boundaries, external actors, and key dependencies.
+The context view provides an overview of the Meshed system and its interactions with external entities. It focuses on the system's boundaries, external actors, and key dependencies.
 
 The context diagram provides an overview of the system’s interaction with users and third-party services.
 
@@ -19,7 +19,7 @@ Our system is an optimised sports practice scheduler designed to organize practi
 
 === System Interaction
 
-- Student-Athletes, Coaches, and Facility Administrators interact with UMA through a web interface.
+- Student-Athletes, Coaches, and Facility Administrators interact with Meshed through a web interface.
 - Notifications are sent to external receivers like email or SMS.
 
 === Context Diagram
@@ -28,4 +28,4 @@ image::structurizr-ContextDiagram.png[Diagram]
 
 image::structurizr-ContextDiagram-key.png[Diagram]
 
-The context view helps in understanding the system's external dependencies and the overall ecosystem in which UMA operates. It provides a high-level perspective on the interactions between the platform and external entities.
+The context view helps in understanding the system's external dependencies and the overall ecosystem in which Meshed operates. It provides a high-level perspective on the interactions between the platform and external entities.
