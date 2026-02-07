@@ -95,61 +95,39 @@ export const TeamTabs = ({
                     </>
                     )}
 
-                    {isManager && (
-                    <Button variant="default" onClick={onAddTeamEvent}>
-                        <CalendarPlus size={16} className="mr-2" /> Add Event
-                    </Button>
-                    )}
-                    <div
-                    className={`ml-auto flex gap-2 transition-opacity ${
-                        activeTab !== "profile" && activeTab !== "schedule"
-                        ? "opacity-100 visible"
-                        : "opacity-0 invisible"
-                    }`}
-                    >
-                    <Button
-                        variant={viewMode === "cards" ? "default" : "outline"}
-                        onClick={() => onViewModeChange("cards")}
-                        size="sm"
-                    >
-                        Cards
-                    </Button>
-                    <Button
-                        variant={viewMode === "table" ? "default" : "outline"}
-                        onClick={() => onViewModeChange("table")}
-                        size="sm"
-                    >
-                        Table
-                    </Button>
+                {isManager && (
+                <Button variant="default" onClick={onAddTeamEvent}>
+                    <CalendarPlus size={16} className="mr-2" /> Add Event
+                </Button>
+                )}
 
+                {isManager && (
+                <Button variant="default" onClick={onOptimizeSchedule}>
+                    <CalendarCheck size={16} className="mr-2" /> Optimize Schedule
+                </Button>
+                )}
 
-                    {isManager && (
-                    <Button variant="default" onClick={onOptimizeSchedule}>
-                        <CalendarCheck size={16} className="mr-2" /> Optimize Schedule
-                    </Button>
-                    )}
-
-                    <div className="ml-auto flex gap-2">
-                        <Button
-                            variant={
-                                viewMode === "cards" ? "default" : "outline"
-                            }
-                            onClick={() => onViewModeChange("cards")}
-                            size="sm"
-                        >
-                            Cards
-                        </Button>
-                        <Button
-                            variant={
-                                viewMode === "table" ? "default" : "outline"
-                            }
-                            onClick={() => onViewModeChange("table")}
-                            size="sm"
-                        >
-                            Table
-                        </Button>
-                    </div>
-
+                <div
+                className={`ml-auto flex gap-2 transition-opacity ${
+                    activeTab !== "profile" && activeTab !== "schedule"
+                    ? "opacity-100 visible"
+                    : "opacity-0 invisible"
+                }`}
+                >
+                <Button
+                    variant={viewMode === "cards" ? "default" : "outline"}
+                    onClick={() => onViewModeChange("cards")}
+                    size="sm"
+                >
+                    Cards
+                </Button>
+                <Button
+                    variant={viewMode === "table" ? "default" : "outline"}
+                    onClick={() => onViewModeChange("table")}
+                    size="sm"
+                >
+                    Table
+                </Button>
                 </div>
             </div>
 
@@ -189,6 +167,7 @@ export const TeamTabs = ({
                 <TabsContent value="staff">{children.staff}</TabsContent>
                 <TabsContent value="schedule">{children.schedule}</TabsContent>
             </Tabs>
+        </div>
         </div>
     );
 };
