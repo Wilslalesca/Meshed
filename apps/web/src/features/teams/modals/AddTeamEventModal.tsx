@@ -297,6 +297,9 @@ export const AddTeamEventModal = ({
                                         ))}
                                     </SelectContent>
                                 </Select>
+                                {selectedReoccurrType == 'Daily' && 
+                                (<Label className="text-red-500">Warning: selected days of the week will be ignored if creating daily recurring events</Label>
+                                )}
                             </div>
                         )}
 

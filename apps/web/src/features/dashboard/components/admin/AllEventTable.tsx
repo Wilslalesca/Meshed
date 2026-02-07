@@ -7,6 +7,9 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/shared/hooks/useAuth";
 import type { TeamEvent } from "@/features/teams/types/event";
 import type { Team } from "@/features/teams/types/teams";
+import { getTeamName } from "@/features/dashboard/helpers/getTeamName"
+import { getFacilityName } from "@/features/dashboard/helpers/getFacilityName"
+
 
 export const AllEventTable = () => {
     const { token } = useAuth();
@@ -53,37 +56,6 @@ export const AllEventTable = () => {
         fetchTeamsWithEvents();
     })
 
-    function getFacilityName(facilityId: string | undefined){
-        try{
-           var facility = allFacilities.find(f => f.id === facilityId)
-            if(facility?.name == undefined){
-                return facilityId
-            }
-            else{
-                return facility.name
-            } 
-        }
-        catch{
-            return facilityId
-        }
-    }
-
-    function getTeamName(teamId: string){
-        try{
-           var team = allTeams.find(f => f.id === teamId)
-            if(team?.name == undefined){
-                return teamId
-            }
-            else{
-                return team.name
-            } 
-        }
-        catch{
-            return teamId
-        }
-    }
-
-
     return (
         <Card>
             <CardHeader>
@@ -107,9 +79,9 @@ export const AllEventTable = () => {
                     {events.length > 0 ? (
                     events.map((event) => (
                         <tr key={event.id} className="border-b hover:bg-gray-50">
-                        <td className="py-2 px-4">{getTeamName(event.teamId)}</td>
+                        <td className="py-2 px-4">{getTeamName(event.teamId, allTeams)}</td>
                         <td className="py-2 px-4">{event.name}</td>
-                        <td className="py-2 px-4">{getFacilityName(event.teamFacilityId)}</td>
+                        <td className="py-2 px-4">{getFacilityName(event.teamFacilityId, allFacilities)}</td>
                         <td className="py-2 px-4">{new Date(event.startDate).toLocaleDateString()}</td>
                         <td className="py-2 px-4">{event.startTime}</td>
                         <td className="py-2 px-4">{event.endTime}</td>

@@ -48,12 +48,11 @@ export const useAddTeamEvent = () => {
               const diffDays = Math.floor((d.getTime() - start.getTime()) / msPerDay);
               const wkName = weekdays[weekdayIndex(d)];
 
-              // If user selected specific weekdays, enforce them, otherwise accept every day
-              if (selectedDays.length && !selectedDays.includes(wkName)) continue;
-
               if (selectedReoccurrType === "Daily") {
                   eventDates.push(new Date(d));
               } else if (selectedReoccurrType === "Weekly" || selectedReoccurrType === "Bi-Weekly") {
+                  // If user selected specific weekdays, enforce them, otherwise accept every day
+                  if (selectedDays.length && !selectedDays.includes(wkName)) continue;
                   const intervalWeeks = selectedReoccurrType === "Weekly" ? 1 : 2;
                   const weekIndex = Math.floor(diffDays / 7);
                   if (weekIndex % intervalWeeks === 0) {

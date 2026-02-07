@@ -55,30 +55,34 @@ export const AdminDashboard = () => {
                         </SelectContent>
                     </Select>
                 </div>
-                <div className="gap-3 py-2">
-                    <Label htmlFor="filter">Filter</Label>
-                </div>
-                <div className="gap-3 py-2">
-                    <Select value={filter} onValueChange={setFilter}>
-                        <SelectTrigger id="filter">
-                            <SelectValue placeholder="Select a filter" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem key="all" value="All">
-                                All
-                            </SelectItem>
-                            <SelectItem key="pending" value="pending">
-                                Pending
-                            </SelectItem>
-                            <SelectItem key="conflicts" value="conflicts">
-                                Conflicts
-                            </SelectItem>
-                            <SelectItem key="confirmed" value="confirmed">
-                                Confirmed
-                            </SelectItem>
-                        </SelectContent>
-                    </Select>
-                </div>
+                { displayFacility != "All" && (
+                    <>
+                        <div className="gap-3 py-2">
+                            <Label htmlFor="filter">Filter</Label>
+                        </div>
+                        <div className="gap-3 py-2">
+                            <Select value={filter} onValueChange={setFilter}>
+                                <SelectTrigger id="filter">
+                                    <SelectValue placeholder="Select a filter" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem key="all" value="All">
+                                        All
+                                    </SelectItem>
+                                    <SelectItem key="pending" value="pending">
+                                        Pending
+                                    </SelectItem>
+                                    <SelectItem key="conflicts" value="conflicts">
+                                        Conflicts
+                                    </SelectItem>
+                                    <SelectItem key="confirmed" value="confirmed">
+                                        Confirmed
+                                    </SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                    </>
+                )}
             </div>
             {
                 (() => {
