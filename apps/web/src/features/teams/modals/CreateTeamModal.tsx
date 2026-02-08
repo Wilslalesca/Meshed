@@ -15,6 +15,7 @@ import {
   SelectItem,
 } from "@/shared/components/ui/select";
 import { useState } from "react";
+import { toast } from "sonner";
 import type { SportLookup, League } from "../types/teams";
 import { apiCreateTeam } from "../api/teams";
 import { useAuth } from "@/shared/hooks/useAuth";
@@ -47,12 +48,19 @@ export const CreateTeamModal = ({
   async function handleCreate() {
     if (!token) return;
     setLoading(true);
+    
+    if (!name.trim() || name.trim().length < 1) {
+      toast.error("Please enter a team name.");
+      setLoading(false);
+      return;
+    }
+    
 
     const body = {
-      name,
+      name: name.trim(),
       sport_id: sportId,
       league_id: leagueId,
-      season,
+      season: season.trim(),
       gender,
     };
 
@@ -62,6 +70,8 @@ export const CreateTeamModal = ({
     if (res?.id) {
       onOpenChange(false);
       onCreated(res.id);
+    } else {
+      toast.error("Failed to create team. Please try again.");
     }
   }
 
@@ -106,7 +116,7 @@ export const CreateTeamModal = ({
           </Select>
 
           <Input
-            placeholder="Season (e.g., 2025)"
+            placeholder="Season (e.g., 2026)"
             value={season}
             onChange={(e) => setSeason(e.target.value)}
           />
@@ -127,7 +137,7 @@ export const CreateTeamModal = ({
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
-          <Button onClick={handleCreate} disabled={loading || !name.trim()}>
+          <Button onClick={handleCreate} disabled={loading || !name.trim() }>
             Create
           </Button>
         </DialogFooter>
