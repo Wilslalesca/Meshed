@@ -20,6 +20,10 @@ function asLocalDate(value: unknown): Date {
     if (/^\d{4}-\d{2}-\d{2}$/.test(s)) {
       return parseDateOnlyLocal(s);
     }
+    if (/^\d{4}-\d{2}-\d{2}T/.test(s) && /(Z|[+-]\d{2}:?\d{2})$/.test(s)) {
+      const d = new Date(s);
+      return new Date(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate(), 0, 0, 0, 0);
+    }
     const d = new Date(s);
     return d;
   }
