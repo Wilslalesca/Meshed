@@ -56,7 +56,6 @@ export const Sidebar = ({
             // run once on mount
         }, [token]);
     const location = useLocation();
-    // const accent = "#346E68";
     const [openMenu, setOpenMenu] = useState(false);
     const [openSubMenu, setOpenSubMenu] = useState<string | null>(null);
     const navigate = useNavigate();

@@ -22,25 +22,15 @@ function addDays(d: Date, days: number) {
     return date;
 }
 
-function sameDay(day1: Date, day2: Date) {
-    return (
-        day1.getFullYear() === day2.getFullYear() &&
-        day1.getMonth() === day2.getMonth() &&
-        day1.getDate() === day2.getDate()
-    );
-}
 
-function clampDate(day: Date, min: Date, max: Date) {
-    return day < min ? min : day > max ? max : day;
-}
+
 
 export function TeamScheduleHeatmap({ events, fromISO, toISO, slotMinutes = 30, dayStartHour = 6, dayEndHour = 23 }: prop) {
     const { days, slots, counts, maxCount } = useMemo(() => {
-        const fromDate = startOfDay(new Date(fromISO));
-        const toDate = startOfDay(new Date(toISO));
+        const start = startOfDay(new Date(fromISO));
+        const toDate = new Date(toISO);
+        const end = startOfDay(new Date(toDate.getTime() - 1));
 
-        const start = startOfDay(fromDate);
-        const end = startOfDay(toDate);
 
         const days: Date[] = [];
         for (let i = new Date(start); i <= end; i = addDays(i, 1)) {
@@ -59,22 +49,27 @@ export function TeamScheduleHeatmap({ events, fromISO, toISO, slotMinutes = 30, 
             Array.from({ length: slots.length }, () => 0)
         );
 
+        const IsValid = (dt: Date) => !Number.isNaN(dt.getTime());
+
         for (const event of events) {
             const eventStart = new Date(event.startTime);
             const eventEnd = new Date(event.endTime);
 
-            if (!(eventStart instanceof Date) || !(eventEnd instanceof Date) || eventEnd <= eventStart) continue;
+            if (!IsValid(eventStart) || !IsValid(eventEnd) || eventEnd <= eventStart) continue;
 
-            const clampedStart = clampDate(eventStart, fromDate, toDate);
-            const clampedEnd = clampDate(eventEnd, fromDate, toDate);
+            const clampedStart = eventStart < start ? start : eventStart;
+            const clampedEnd = eventEnd > toDate ? toDate : eventEnd;
+     
 
             if (clampedEnd <= clampedStart) continue;
+
             for (let i = 0; i < days.length; i++) {
                 const day = days[i];
+
                 const dayStart = new Date(day);
                 dayStart.setHours(0, 0, 0, 0);
-                const dayEnd = new Date(day);
-                dayEnd.setHours(23, 59, 59, 999);
+
+                const dayEnd = addDays(dayStart, 1);
 
                 if (clampedEnd <= dayStart || clampedStart >= dayEnd) continue;
 

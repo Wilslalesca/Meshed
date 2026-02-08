@@ -13,5 +13,7 @@ export const TeamEventFactoryRegistry: {
   Game: GameEventFactory,
   Lift: LiftEventFactory,
   Other: OtherEventFactory,
+  Class: OtherEventFactory,
+  "Team Event": OtherEventFactory,
 } as const;
 

@@ -1,6 +1,7 @@
 import { useUserRole } from "@/shared/hooks/useUserRole";
 import { UserDashboard }  from "./views/userView";
 import { ManagerView } from "./views/managerView";
+import { AdminDashboard } from "./views/adminView";
 
 
 export const DashboardView = () => {
@@ -11,5 +12,8 @@ export const DashboardView = () => {
     }
     else if (role.isManager) {
         return ManagerView();
+    }
+    else if (role.isAdmin){
+        return AdminDashboard();
     }
 }

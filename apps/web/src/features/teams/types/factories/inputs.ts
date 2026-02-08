@@ -1,15 +1,18 @@
 import type { BaseTeamEvent } from "../event";
 
 export interface BaseEventInput {
+  id?: string;
   teamId: string;
+  teamFacilityId?:string;
   name?:string;
-  startDate: Date;
-  endDate?: Date;
+  startDate: string;
+  endDate?: string;
   startTime: string;
   endTime: string;
   reoccurring: boolean;
   reoccurrType?: BaseTeamEvent["reoccurrType"];
   dayOfWeek?: string;
+  status?:string;
 }
 
 export interface GameEventInput extends BaseEventInput {
