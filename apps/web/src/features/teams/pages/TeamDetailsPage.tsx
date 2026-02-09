@@ -19,6 +19,7 @@ import { AddTeamEventModal } from "../modals/AddTeamEventModal";
 import { DeleteTeamModal } from "../modals/DeleteTeamModal";
 import { InviteMemberModal } from "../modals/InviteMemberModal";
 import { AddAthleteModal } from "../modals/AddAthleteModal";
+import { useTeamSchedule } from "../hooks/useTeamSchedule";
 
 export const TeamDetailsPage = () => {
     const { teamId } = useParams<{ teamId: string }>();
@@ -29,6 +30,7 @@ export const TeamDetailsPage = () => {
     const { team, loading, reload: reloadTeam } = useTeamById(teamId!);
     const { roster, removeAthlete, reloadRoster } = useRoster(teamId!);
     const { staff, reloadStaff, removeStaff } = useStaff(teamId!);
+    const {events, reload: reloadSchedule} = useTeamSchedule(teamId,, )
     const { sports, leagues } = useLookups();
 
     const [openEdit, setOpenEdit] = useState(false);
@@ -153,6 +155,9 @@ export const TeamDetailsPage = () => {
                     open={openAddTeamEvent}
                     onOpenChange={setOpenAddTeamEvent}
                     teamId={team.id}
+                    onAdded={() => {
+                        reloadRoster();
+                    }}
                 />
                 </>
             )}

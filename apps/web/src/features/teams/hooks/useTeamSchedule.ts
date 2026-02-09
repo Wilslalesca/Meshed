@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useAuth } from "@/shared/hooks/useAuth";
 import { apiGetAthleteScheduleRows, apiGetTeamEvents } from "../api/teamSchedule.API";
 import { mapCourseRowsToScheduleEvents, mapTeamEventRowsToScheduleEvents } from "../Services/getTeamScheduleRange";
@@ -60,5 +60,13 @@ export const useTeamSchedule = (teamId: string, fromISO: string, toISO: string) 
         };
     }, [teamId, token, fromISO, toISO]);
 
-    return { events, loading, error };
+    const reloadSchedule = useCallback(() => {
+        fetchSchedule();
+    }, [teamId, token, fromISO, toISO]);
+
+    useEffect(() => {
+        reloadSchedule();
+    }, [reloadSchedule]);
+
+    return { events, loading, error, reload:reloadSchedule };
 };
