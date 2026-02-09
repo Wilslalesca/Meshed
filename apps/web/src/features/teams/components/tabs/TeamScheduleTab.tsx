@@ -30,6 +30,7 @@ function endOfWeekISO(d = new Date()) {
 type Props = {
   events: TeamScheduleEvent[];
   range: { fromISO: string; toISO: string };
+  error?:string | null;
   onRangeChange: (range: { fromISO: string; toISO: string }) => void;
   onReload: () => void;
 };
@@ -37,7 +38,9 @@ type Props = {
 export const TeamScheduleTab = ({
   events,
   range,
-  reload,
+  error,
+  onRangeChange,
+  onReload,
 }: Props) => {
   const { teamId } = useParams<{ teamId: string }>();
   const [view, setView] = useState<TeamScheduleView>(TeamScheduleView.Week);
@@ -45,12 +48,10 @@ export const TeamScheduleTab = ({
   const [search, setSearch] = useState<string>("");
   const fromISO = useMemo(() => startOfWeekISO(), []);
   const toISO = useMemo(() => endOfWeekISO(), []);
-  const [range, setRange] = useState<{ fromISO: string; toISO: string }>({ fromISO, toISO });
 
   const { roster } = useRoster(teamId!);
   const rosterCount = roster?.length ?? 0;
 
-  const { events, error } = useTeamSchedule(teamId!, range.fromISO, range.toISO);
 
   const filteredEvents = useMemo(() => {
       const query = search.trim().toLowerCase();
@@ -81,7 +82,7 @@ export const TeamScheduleTab = ({
               fromISO={range.fromISO}
               toISO={range.toISO}
               rosterCount={rosterCount}
-              onRangeChange={(fromISO, toISO) => setRange({ fromISO, toISO })}
+              onRangeChange={(fromISO, toISO) => onRangeChange({ fromISO, toISO })}
           />
         </div>
     </div>
