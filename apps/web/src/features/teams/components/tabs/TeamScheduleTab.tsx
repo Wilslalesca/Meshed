@@ -4,7 +4,7 @@ import { useParams } from "react-router-dom";
 import { TeamScheduleCalendar } from "../schedule/TeamScheduleCalendar";
 import { useTeamSchedule } from "../../hooks/useTeamSchedule";
 import { useRoster } from "../../hooks/useRoster";
-
+import type { TeamScheduleEvent } from "../../types/schedule";
 import { TeamScheduleView, TeamScheduleMode } from "../../types/schedule";
 
 
@@ -27,10 +27,18 @@ function endOfWeekISO(d = new Date()) {
     return weekEnd.toISOString();
 }
 
+type Props = {
+  events: TeamScheduleEvent[];
+  range: { fromISO: string; toISO: string };
+  onRangeChange: (range: { fromISO: string; toISO: string }) => void;
+  onReload: () => void;
+};
 
-
-
-export const TeamScheduleTab = () => {
+export const TeamScheduleTab = ({
+  events,
+  range,
+  reload,
+}: Props) => {
   const { teamId } = useParams<{ teamId: string }>();
   const [view, setView] = useState<TeamScheduleView>(TeamScheduleView.Week);
   const [mode, setMode] = useState<TeamScheduleMode>(TeamScheduleMode.Calendar);

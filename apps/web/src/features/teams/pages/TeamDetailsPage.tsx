@@ -108,7 +108,9 @@ export const TeamDetailsPage = () => {
                         />
                     ),
 
-                    schedule: <TeamScheduleTab />,
+                    schedule: <TeamScheduleTab
+                                events={events}
+                                reload={reloadSchedule} />,
                 }}
             </TeamTabs>
 

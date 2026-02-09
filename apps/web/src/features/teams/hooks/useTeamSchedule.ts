@@ -12,10 +12,9 @@ export const useTeamSchedule = (teamId: string, fromISO: string, toISO: string) 
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
-    useEffect(() => {
-        let cancelled = false;
+    let cancelled = false;
 
-        async function fetchSchedule() {
+    async function fetchSchedule() {
 
             if (!teamId || !token) return;
 
@@ -51,14 +50,7 @@ export const useTeamSchedule = (teamId: string, fromISO: string, toISO: string) 
                 if (!cancelled) setLoading(false);
 
             }
-        }
-
-        fetchSchedule();
-
-        return () => {
-            cancelled = true;
-        };
-    }, [teamId, token, fromISO, toISO]);
+    }[teamId, token, fromISO, toISO];
 
     const reloadSchedule = useCallback(() => {
         fetchSchedule();
