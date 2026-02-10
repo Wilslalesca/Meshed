@@ -28,6 +28,7 @@ import type { Facility } from "@/features/facilities/types/facilities";
 export const AddTeamEventModal = ({
     open,
     onOpenChange,
+    onCreated,
     teamId,
     onAdded,
 }: any) => {
@@ -180,6 +181,7 @@ export const AddTeamEventModal = ({
             onAdded?.();
             resetForm();
             onOpenChange(false);
+            onCreated(teamId);
         } catch (error) {
             throw (error instanceof Error ? error : new Error("An error occurred"));
         }

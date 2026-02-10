@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useAuth } from "@/shared/hooks/useAuth";
 import { apiGetAthleteScheduleRows, apiGetTeamEvents } from "../api/teamSchedule.API";
 import { mapCourseRowsToScheduleEvents, mapTeamEventRowsToScheduleEvents } from "../Services/getTeamScheduleRange";
@@ -12,10 +12,9 @@ export const useTeamSchedule = (teamId: string, fromISO: string, toISO: string) 
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
-    useEffect(() => {
-        let cancelled = false;
+    let cancelled = false;
 
-        async function fetchSchedule() {
+    async function fetchSchedule() {
 
             if (!teamId || !token) return;
 
@@ -51,14 +50,15 @@ export const useTeamSchedule = (teamId: string, fromISO: string, toISO: string) 
                 if (!cancelled) setLoading(false);
 
             }
-        }
+    }[teamId, token, fromISO, toISO];
 
+    const reloadSchedule = useCallback(() => {
         fetchSchedule();
-
-        return () => {
-            cancelled = true;
-        };
     }, [teamId, token, fromISO, toISO]);
 
-    return { events, loading, error };
+    useEffect(() => {
+        reloadSchedule();
+    }, [reloadSchedule]);
+
+    return { events, loading, error, reload:reloadSchedule };
 };
