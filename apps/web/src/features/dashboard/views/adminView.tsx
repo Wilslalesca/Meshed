@@ -75,8 +75,11 @@ export const AdminDashboard = () => {
                                     <SelectItem key="conflicts" value="conflicts">
                                         Conflicts
                                     </SelectItem>
-                                    <SelectItem key="confirmed" value="confirmed">
-                                        Confirmed
+                                    <SelectItem key="approved" value="approved">
+                                        Approved
+                                    </SelectItem>
+                                    <SelectItem key="denied" value="denied">
+                                        Denied
                                     </SelectItem>
                                 </SelectContent>
                             </Select>

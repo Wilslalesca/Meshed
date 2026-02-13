@@ -24,7 +24,7 @@ export const IndividualFacilityEventTable = ({ facilityId, facilityName, filter 
         const fetchFacilityEvents = async () => {
             let facilities: TeamEvent[] = [];
 
-            if(filter == 'pending' || filter == 'confirmed'){
+            if(filter == 'pending' || filter == 'approved' || filter == 'denied'){
                 facilities = await getStatusFacilityEvents(facilityId, filter, token!);
             }
             else if(filter == 'conflicts'){
