@@ -55,4 +55,14 @@ export class EventModel {
         );
         return rows;
     }
+
+    static async updateStatus(id:string, status:string){
+        const response = await pool.query(
+            `UPDATE team_events
+            SET status = $1, updated_at = NOW()
+            WHERE id = $2`,
+            [status, id]
+        );
+        return (response.rowCount ?? 0) > 0;
+    }
 }

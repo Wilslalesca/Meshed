@@ -1,3 +1,4 @@
+import { pool } from "../config/db";
 import { Request, Response } from "express";
 import { EventModel } from "../models/EventModel";
 import type { TeamEvent } from "../types/event";
@@ -153,5 +154,11 @@ export class EventController {
         }));
         
         res.json(formattedEvents);
+    }
+
+    static async updateEventStatus(req: Request, res: Response){
+        const {id, status }= req.params;
+        const event = await EventModel.updateStatus(id, status);
+        res.json(event)
     }
 }

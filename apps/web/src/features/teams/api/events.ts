@@ -32,3 +32,18 @@ export async function apiGetEventFacilities(
 
     return res.ok ? data : undefined;
 }
+
+export async function apiUpdateEventStatus(
+    data: {status:string, id:string},
+    token: string
+) {
+    const res = await fetch(`${API_BASE}/events/${data.id}/${data.status}`, {
+        method: "POST",
+        headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+        },
+    });
+
+    return res.ok ? data : undefined;
+}
