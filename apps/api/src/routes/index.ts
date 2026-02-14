@@ -13,8 +13,8 @@ import lookupsRoutes from "./lookup.routes";
 import inviteRoutes from "./invites.routes";
 import athleteRoutes from "./athletes.routes";
 import eventRoutes from "./event.routes";
-import notificationsRoutes from "./notifications.routes";
-
+// import notificationsRoutes from "./notifications.routes";
+import notificationsRoutes from "../features/notifications/notifications.route";
 
 const router = Router();
 
