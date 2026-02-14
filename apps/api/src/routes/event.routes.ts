@@ -10,5 +10,6 @@ router.get("/", EventController.getAllEvents);
 router.get("/:facilityId", EventController.getFacilityEvents);
 router.get("/:facilityId/conflicts", EventController.getConflictingFacilityEvents);
 router.get("/:facilityId/:status", EventController.getStatusFacilityEvents);
+router.post("/:id/:status", EventController.updateEventStatus);
 
 export default router;

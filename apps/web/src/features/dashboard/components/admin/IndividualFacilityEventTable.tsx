@@ -7,18 +7,24 @@ import { getFacilityEvents, getStatusFacilityEvents, getConflictingFacilityEvent
 import { Card, CardHeader, CardTitle, CardContent } from "@/shared/components/ui/card";
 import type { Team } from "@/features/teams/types/teams";
 import { getTeamName } from "@/features/dashboard/helpers/getTeamName"
+import { Button } from "@/shared/components/ui/button";
+import { StatusModal } from "./StatusModal";
 
 export const IndividualFacilityEventTable = ({ facilityId, facilityName, filter }: { facilityId: string; facilityName: string; filter:string }) => {
     const { token } = useAuth(); 
     const [events, setEvents] = useState<TeamEvent[]>([]);   
     const [allTeams, setAllTeams] = useState<Team[]>([]);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedEvent, setSelectedEvent] = useState<TeamEvent | null>(null);
+    const [selectedEventTeam, setSelectedEventTeam] = useState<string | null>(null);
+    const [refresh, setRefresh] = useState<number>(0)
+
      
-    
     useEffect(() => {
         const fetchFacilityEvents = async () => {
             let facilities: TeamEvent[] = [];
 
-            if(filter == 'pending' || filter == 'confirmed'){
+            if(filter == 'pending' || filter == 'approved' || filter == 'denied'){
                 facilities = await getStatusFacilityEvents(facilityId, filter, token!);
             }
             else if(filter == 'conflicts'){
@@ -34,7 +40,7 @@ export const IndividualFacilityEventTable = ({ facilityId, facilityName, filter 
         };
 
         fetchFacilityEvents();
-    }, [token, facilityId, filter]);
+    }, [token, facilityId, filter, refresh]);
     
     useEffect(() => {
         const fetchTeamsWithEvents = async () => {
@@ -73,12 +79,21 @@ export const IndividualFacilityEventTable = ({ facilityId, facilityName, filter 
                     {events.length > 0 ? (
                     events.map((event) => (
                         <tr key={event.id} className="border-b hover:bg-gray-50">
-                        <td className="py-2 px-4">{getTeamName(event.teamId, allTeams)}</td>
-                        <td className="py-2 px-4">{event.name}</td>
-                        <td className="py-2 px-4">{new Date(event.startDate).toLocaleDateString()}</td>
-                        <td className="py-2 px-4">{event.startTime}</td>
-                        <td className="py-2 px-4">{event.endTime}</td>
-                        <td className="py-2 px-4">{event.status}</td>
+                            <td className="py-2 px-4">{getTeamName(event.teamId, allTeams)}</td>
+                            <td className="py-2 px-4">{event.name}</td>
+                            <td className="py-2 px-4">{new Date(event.startDate).toLocaleDateString()}</td>
+                            <td className="py-2 px-4">{event.startTime}</td>
+                            <td className="py-2 px-4">{event.endTime}</td>
+                            <td className="py-2 px-4">
+                                <Button
+                                 onClick={() => {
+                                    setSelectedEvent(event);
+                                    setSelectedEventTeam(getTeamName(event.teamId, allTeams));
+                                    setIsModalOpen(true);
+                                }}>
+                                    {event.status}
+                                </Button>
+                            </td>
                         </tr>
                     ))
                     ) : (
@@ -92,7 +107,19 @@ export const IndividualFacilityEventTable = ({ facilityId, facilityName, filter 
                 </table>
             </div>
             </CardContent>
+            {selectedEvent && (
+                <StatusModal
+                    open={isModalOpen}
+                    onOpenChange={setIsModalOpen}
+                    eventInfo={selectedEvent}
+                    teamName={selectedEventTeam}
+                    onAdded={() => {
+                        setRefresh(refresh+1)
+                    }}
+                />
+            )}
         </Card>
+        
     );
 };
 
