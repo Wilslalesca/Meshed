@@ -7,6 +7,7 @@ import { Dashboard } from "./routes/dashboard";
 import { Admin } from "./screens/Admin";
 import { Profile } from "./screens/Profile";
 import { Facilities } from "./screens/Facilities.tsx";
+import { OptimizePage } from "./screens/OptimizePage.tsx";
 import { Upload } from "./features/upload/components/Upload.tsx";
 import { useAuth } from "./shared/hooks/useAuth";
 import ScheduleBackground from './screens/ScheduleBackground';
@@ -71,6 +72,7 @@ export default function App() {
         <Route path="/profile" element={ <ProtectedRoute> <Profile /> </ProtectedRoute> }/>
         <Route path="/editcourse/:courseId" element={<ProtectedRoute><EditCourse /></ProtectedRoute>}/>
         <Route path="/addcourse" element={ <ProtectedRoute><AddCourse /></ProtectedRoute>}/>
+        <Route path="/optimize" element={ <ProtectedRoute><OptimizePage /></ProtectedRoute>}/>
 
                 {/* Fallback */}
                 <Route path="*" element={<Navigate to="/" replace />} />

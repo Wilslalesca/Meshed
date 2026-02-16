@@ -1,4 +1,4 @@
-function maximizeAttendanceService(days) {
+export function maximizeAttendanceService(days: any) {
     //Alg to to maximize attendance by minimizing athletes missing each day
     //Input: Array of days with options and athletes missing
     //Note: Input is different from DP algorithm
@@ -10,7 +10,9 @@ function maximizeAttendanceService(days) {
         let minMissing = Infinity;
 
         for (let option of day.options) {
-            const tempMissing = option.athletesMissing?.length ?? 0;
+            const tempMissing = Array.isArray(option.athletesMissing)
+                ? option.athletesMissing.length
+                : Object.keys(option.athletesMissing || {}).length;
 
             if (tempMissing < minMissing) {
                 minMissing = tempMissing;
@@ -19,7 +21,7 @@ function maximizeAttendanceService(days) {
         }
 
         schedule.push({
-            day: day.date,
+            day: day.date ?? day.day,
             option: bestOption
         });
     }
