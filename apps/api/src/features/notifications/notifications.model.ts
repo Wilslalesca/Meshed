@@ -32,16 +32,18 @@ export async function list(
     return rows;
 }
 
-export async function markRead(userId: string, id: string): Promise<void> {
-    await pool.query(
-        `
+export async function markRead(userId: string, id: string): Promise<number> {
+  const { rowCount } = await pool.query(
+    `
     UPDATE notifications
     SET read_at = COALESCE(read_at, NOW())
     WHERE id = $1 AND user_id = $2
     `,
-        [id, userId],
-    );
+    [id, userId]
+  );
+  return rowCount ?? 0;
 }
+
 
 export async function markAllRead(userId: string): Promise<number> {
     const { rowCount } = await pool.query(

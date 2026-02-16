@@ -9,6 +9,6 @@ router.use(requireAuth);
 router.get("/unreadCount", controller.getUnreadCount);
 router.get("/", controller.list);
 router.post("/:id/read", controller.markAsRead);
-router.post("/:id/read", controller.markAsRead);
+router.post("/read", controller.markAllRead);
 
 export default router;

@@ -21,11 +21,11 @@ export async function create(req: Request, res: Response) {
 
 export async function list(req: Request, res: Response) {
     const { userId } = req.query;
-    
+
     const limit = parseInt(req.query.limit as string) || 20;
     const cursor = req.query.cursor as string | undefined;
 
-    const result = await service.list(userId as string, {limit, cursor});
+    const result = await service.list(userId as string, { limit, cursor });
     res.json(result);
 }
 
@@ -34,7 +34,6 @@ export async function getUnreadCount(req: Request, res: Response) {
     const count = await service.getUnreadCount(userId as string);
     res.json({ count });
 }
-
 
 export async function markAsRead(req: Request, res: Response) {
     const { userId } = req.query;
@@ -47,4 +46,3 @@ export async function markAllRead(req: Request, res: Response) {
     const updated = await service.markAllRead(userId as string);
     res.json({ updated });
 }
-
