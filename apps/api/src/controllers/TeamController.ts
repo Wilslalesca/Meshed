@@ -53,7 +53,7 @@ export class TeamController {
     static async createTeam(req: Request, res: Response) {
         const { name, sport_id, season, league_id, gender } = req.body;
 
-        if (!name || name.trim().length < 2)
+        if (!name || name.trim().length < 1)
             return res.status(400).send("name required");
 
 
@@ -270,6 +270,7 @@ export class TeamController {
 
         const { 
             teamId,
+            teamFacilityId,
             name,
             type,
             startTime,
@@ -279,6 +280,7 @@ export class TeamController {
             reoccurring,
             selectedReoccurrType,
             dayOfWeek,
+            status,
             opponent,
             homeAway,
             liftType,
@@ -287,6 +289,7 @@ export class TeamController {
 
         const team_event = await TeamEventModel.createTeamEvent({
             team_id : teamId,
+            team_facility_id:teamFacilityId,
             name:name,
             type : type,
             start_time :startTime,
@@ -296,6 +299,7 @@ export class TeamController {
             reoccurring : reoccurring,
             reoccurr_type :selectedReoccurrType,
             day_of_week :dayOfWeek,
+            status:status,
             opponent :opponent,
             home_away :homeAway,
             lift_type :liftType,
