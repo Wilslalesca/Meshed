@@ -15,6 +15,7 @@ import {
     UserPlus,
     CalendarPlus,
     Megaphone,
+    CalendarCheck
 } from "lucide-react";
 import { useUserRole } from "@/shared/hooks/useUserRole";
 import type { Team, SportLookup, League } from "../types/teams";
@@ -32,6 +33,7 @@ interface Props {
     isManagerOverride?: boolean;
     onAddTeamEvent: () => void;
     onCreateNotification: () => void;
+    onOptimizeSchedule: () => void;
 
     children: {
         profile: React.ReactNode;
@@ -53,6 +55,7 @@ export const TeamTabs = ({
     onBulkUpload,
     onAddTeamEvent,
     onCreateNotification,
+    onOptimizeSchedule,
     children,
     isManagerOverride,
 }: Props) => {
@@ -99,6 +102,12 @@ export const TeamTabs = ({
                         <CalendarPlus size={16} className="mr-2" /> Add Event
                     </Button>
                     )}
+        
+                    {isManager && (
+                      <Button variant="default" onClick={onOptimizeSchedule}>
+                        <CalendarCheck size={16} className="mr-2" /> Optimize Schedule
+                      </Button>
+                    )}
 
                     {isManager && (
                         <Button variant="default" onClick={onCreateNotification}>
@@ -129,6 +138,7 @@ export const TeamTabs = ({
                     </Button>
 
                     </div>
+
 
                 </div>
             </div>
@@ -169,6 +179,7 @@ export const TeamTabs = ({
                 <TabsContent value="staff">{children.staff}</TabsContent>
                 <TabsContent value="schedule">{children.schedule}</TabsContent>
             </Tabs>
+        </div>
         </div>
     );
 };

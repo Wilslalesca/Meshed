@@ -53,7 +53,7 @@ export class TeamController {
     static async createTeam(req: Request, res: Response) {
         const { name, sport_id, season, league_id, gender } = req.body;
 
-        if (!name || name.trim().length < 2)
+        if (!name || name.trim().length < 1)
             return res.status(400).send("name required");
 
 

@@ -9,6 +9,8 @@ import type { TeamEvent } from "@/features/teams/types/event";
 import type { Team } from "@/features/teams/types/teams";
 import { getTeamName } from "@/features/dashboard/helpers/getTeamName"
 import { getFacilityName } from "@/features/dashboard/helpers/getFacilityName"
+import { Button } from "@/shared/components/ui/button";
+import { StatusModal } from "./StatusModal";
 
 
 export const AllEventTable = () => {
@@ -16,6 +18,10 @@ export const AllEventTable = () => {
     const [events, setEvents] = useState<TeamEvent[]>([]);
     const [allFacilities, setAllFacilities] = useState<Facility[]>([]);
     const [allTeams, setAllTeams] = useState<Team[]>([]);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedEvent, setSelectedEvent] = useState<TeamEvent | null>(null);
+    const [selectedEventTeam, setSelectedEventTeam] = useState<string | null>(null);
+    const [refresh, setRefresh] = useState<number>(0)
 
     useEffect(() => {
         const fetchFacilities = async () => {
@@ -39,7 +45,7 @@ export const AllEventTable = () => {
         if (token) {
             fetchEvents();
         }
-    }, [token]);
+    }, [token, refresh]);
 
     useEffect(() => {
         const fetchTeamsWithEvents = async () => {
@@ -79,13 +85,22 @@ export const AllEventTable = () => {
                     {events.length > 0 ? (
                     events.map((event) => (
                         <tr key={event.id} className="border-b hover:bg-gray-50">
-                        <td className="py-2 px-4">{getTeamName(event.teamId, allTeams)}</td>
-                        <td className="py-2 px-4">{event.name}</td>
-                        <td className="py-2 px-4">{getFacilityName(event.teamFacilityId, allFacilities)}</td>
-                        <td className="py-2 px-4">{new Date(event.startDate).toLocaleDateString()}</td>
-                        <td className="py-2 px-4">{event.startTime}</td>
-                        <td className="py-2 px-4">{event.endTime}</td>
-                        <td className="py-2 px-4">{event.status}</td>
+                            <td className="py-2 px-4">{getTeamName(event.teamId, allTeams)}</td>
+                            <td className="py-2 px-4">{event.name}</td>
+                            <td className="py-2 px-4">{getFacilityName(event.teamFacilityId, allFacilities)}</td>
+                            <td className="py-2 px-4">{new Date(event.startDate).toLocaleDateString()}</td>
+                            <td className="py-2 px-4">{event.startTime}</td>
+                            <td className="py-2 px-4">{event.endTime}</td>
+                            <td className="py-2 px-4">
+                                <Button
+                                 onClick={() => {
+                                    setSelectedEvent(event);
+                                    setSelectedEventTeam(getTeamName(event.teamId, allTeams));
+                                    setIsModalOpen(true);
+                                }}>
+                                    {event.status}
+                                </Button>
+                            </td>
                         </tr>
                     ))
                     ) : (
@@ -99,6 +114,17 @@ export const AllEventTable = () => {
                 </table>
             </div>
             </CardContent>
+            {selectedEvent && (
+                <StatusModal
+                    open={isModalOpen}
+                    onOpenChange={setIsModalOpen}
+                    eventInfo={selectedEvent}
+                    teamName={selectedEventTeam}
+                    onAdded={() => {
+                        setRefresh(refresh+1)
+                    }}
+                />
+            )}
         </Card>
     );
 };

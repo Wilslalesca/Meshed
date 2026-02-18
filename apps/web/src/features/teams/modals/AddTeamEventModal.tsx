@@ -28,6 +28,7 @@ import type { Facility } from "@/features/facilities/types/facilities";
 export const AddTeamEventModal = ({
     open,
     onOpenChange,
+    onCreated,
     teamId,
     onAdded,
 }: any) => {
@@ -180,6 +181,7 @@ export const AddTeamEventModal = ({
             onAdded?.();
             resetForm();
             onOpenChange(false);
+            onCreated(teamId);
         } catch (error) {
             throw (error instanceof Error ? error : new Error("An error occurred"));
         }
@@ -218,7 +220,7 @@ export const AddTeamEventModal = ({
                                 }
                             >
                                 <SelectTrigger id="event_type">
-                                    <SelectValue placeholder="ex. Practice" />
+                                    <SelectValue placeholder="Event Type" />
                                 </SelectTrigger>
                                 <SelectContent>
                                     {teamEvents.map((e) => (
@@ -305,6 +307,33 @@ export const AddTeamEventModal = ({
                         </div>
 
                         <div className="grid w-full items-center gap-3 py-2">
+                            {reoccurring ? (
+                                <>
+                                    <Label htmlFor="reoccurring">
+                                        Type of Reocurrance
+                                    </Label>
+                                    <Select
+                                        value={selectedReoccurrType}
+                                        onValueChange={(val: string) => setSelectedReoccurrType(val as typeof reoccurrTypes[number])}
+                                    >
+                                        <SelectTrigger id="selectedReoccurrType">
+                                            <SelectValue placeholder="Reocurr" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {reoccurrTypes.map((e) => (
+                                                <SelectItem key={e} value={e}>
+                                                    {e}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </>
+                            ) : (
+                                <div className="invisible">
+                                    <Label>Placeholder</Label>
+                                    <div className="h-10" />
+                                </div>
+                            )}
                             <Label htmlFor="facility">Facility</Label>
                             <Select
                                 value={teamFacilityId}
