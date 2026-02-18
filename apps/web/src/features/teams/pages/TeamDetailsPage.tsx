@@ -19,6 +19,7 @@ import { AddTeamEventModal } from "../modals/AddTeamEventModal";
 import { DeleteTeamModal } from "../modals/DeleteTeamModal";
 import { InviteMemberModal } from "../modals/InviteMemberModal";
 import { AddAthleteModal } from "../modals/AddAthleteModal";
+import { CreateTeamNotificationModal } from "../modals/CreateTeamNotificationModal";
 
 export const TeamDetailsPage = () => {
     const { teamId } = useParams<{ teamId: string }>();
@@ -36,6 +37,7 @@ export const TeamDetailsPage = () => {
     const [openDelete, setOpenDelete] = useState(false);
     const [openInvite, setOpenInvite] = useState(false);
     const [openBulkAdd, setOpenBulkAdd] = useState(false);
+    const [openCreateNotification, setOpenCreateNotification] = useState(false);
     const [inviteRole, setInviteRole] = useState<
         "athlete" | "manager"
     >("athlete");
@@ -78,7 +80,8 @@ export const TeamDetailsPage = () => {
                     isManager ? () => setOpenBulkAdd(true) : undefined
                 }
                 isManagerOverride={isManager}
-                onAddTeamEvent = {isManager ? () => setOpenAddTeamEvent(true) : () => {}}
+                onCreateNotification={isManager ? () => setOpenCreateNotification(true) : () => {}}
+                onAddTeamEvent={isManager ? () => setOpenAddTeamEvent(true) : () => {}}
             >
                 {{
                     profile: (
@@ -140,7 +143,6 @@ export const TeamDetailsPage = () => {
                 />
             )}
             {isManager && (
-                <>
                 <AddAthleteModal
                     open={openBulkAdd}
                     onOpenChange={setOpenBulkAdd}
@@ -149,12 +151,21 @@ export const TeamDetailsPage = () => {
                         reloadRoster();
                     }}
                 />
+            )}
+            {isManager && (
                 <AddTeamEventModal
                     open={openAddTeamEvent}
                     onOpenChange={setOpenAddTeamEvent}
                     teamId={team.id}
                 />
-                </>
+            )}
+            {isManager && (
+                <CreateTeamNotificationModal
+                    open={openCreateNotification}
+                    onOpenChange={setOpenCreateNotification}
+                    teamId={team.id}
+                    teamName={team.name}
+                />
             )}
         </div>
     );

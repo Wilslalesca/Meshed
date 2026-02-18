@@ -14,10 +14,10 @@ import {
     Settings,
     UserPlus,
     CalendarPlus,
+    Megaphone,
 } from "lucide-react";
 import { useUserRole } from "@/shared/hooks/useUserRole";
 import type { Team, SportLookup, League } from "../types/teams";
-
 interface Props {
     team: Team;
     sport: SportLookup | null;
@@ -31,6 +31,7 @@ interface Props {
     onBulkUpload?: () => void;
     isManagerOverride?: boolean;
     onAddTeamEvent: () => void;
+    onCreateNotification: () => void;
 
     children: {
         profile: React.ReactNode;
@@ -51,6 +52,7 @@ export const TeamTabs = ({
     onAddUser,
     onBulkUpload,
     onAddTeamEvent,
+    onCreateNotification,
     children,
     isManagerOverride,
 }: Props) => {
@@ -97,6 +99,13 @@ export const TeamTabs = ({
                         <CalendarPlus size={16} className="mr-2" /> Add Event
                     </Button>
                     )}
+
+                    {isManager && (
+                        <Button variant="default" onClick={onCreateNotification}>
+                            <Megaphone size={16} className="mr-2" /> Create Notification
+                        </Button>
+                    )}
+                    
                     <div
                     className={`ml-auto flex gap-2 transition-opacity ${
                         activeTab !== "profile" && activeTab !== "schedule"

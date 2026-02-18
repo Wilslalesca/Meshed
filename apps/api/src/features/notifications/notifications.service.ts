@@ -1,9 +1,13 @@
 import * as model from "./notifications.model";
 
-
-export async function create(userId: string, type: string, message: string, meta: object | null) {
-  await model.create(userId, type, message, meta);
+export async function createForUser(userId: string, type: string, message: string, meta: object | null) {
+  return model.createForUser(userId, type, message, meta);
 }
+
+export async function createForTeam(teamId: string, type: string, message: string, meta: object | null) {
+  return model.createForTeam(teamId, type, message, meta);
+}
+
 
 export async function getUnreadCount(userId: string) {
   return model.getUnreadCount(userId);

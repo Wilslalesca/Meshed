@@ -57,17 +57,42 @@ export async function markAllRead(userId: string): Promise<number> {
     return rowCount ?? 0;
 }
 
-export async function create(
+export async function createForUser(
   userId: string,
   type: string,
   message: string,
   meta: object | null
 ) {
-  await pool.query(
+  const { rows } = await pool.query(
     `
     INSERT INTO notifications (user_id, type, message, meta)
     VALUES ($1, $2, $3, $4::jsonb)
+    RETURNING id
     `,
     [userId, type, message, meta ? JSON.stringify(meta) : null]
   );
+  return rows[0].id;
+  
+}
+
+export async function createForTeam(
+  teamId: string,
+  type: string,
+  message: string,
+  meta: object | null
+): Promise<number> {
+  const { rowCount } = await pool.query(
+    `
+    INSERT INTO notifications (user_id, type, message, meta)
+    SELECT ut.user_id, $2, $3, $4::jsonb
+    FROM user_teams ut
+    JOIN users u ON u.id = ut.user_id
+    WHERE ut.team_id = $1
+      AND ut.status = 'active'
+      AND u.active = TRUE
+    `,
+    [teamId, type, message, meta ? JSON.stringify(meta) : null]
+  );
+
+  return rowCount ?? 0;
 }

@@ -10,5 +10,7 @@ router.get("/unreadCount", controller.getUnreadCount);
 router.get("/", controller.list);
 router.post("/:id/read", controller.markAsRead);
 router.post("/read", controller.markAllRead);
+router.post("/team/:teamId", controller.createForTeam);
+router.post("/user/:userId", controller.createForUser);
 
 export default router;
