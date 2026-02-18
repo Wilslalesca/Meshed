@@ -1,10 +1,11 @@
 import { Request, Response } from "express";
 import { z } from "zod";
-import { AthleteCourseModel } from "../models/AthleteCourseModel";
+import { UserEventModel } from "../models/UserEventModel";
 
 const updateSchema = z
   .object({
-    athlete_id: z.string(),
+    user_id: z.string().uuid().optional(),
+    athlete_id: z.string().uuid().optional(),
     class_id: z.string(),
     created_at: z.string().datetime().optional(),
     updated_at: z.string().datetime().optional(),
@@ -19,7 +20,9 @@ export const AthleteCourseController = {
       if (!parse.success) {
         return res.status(400).json({ error: "Validation error", details: parse.error.flatten() });
       }
-      const updated = await AthleteCourseModel.updateAthleteCourseTime(courseId, athleteId, parse.data);
+      // The web client uses this endpoint primarily to ensure the link row exists.
+      // Treat PATCH as a "touch" that bumps updated_at.
+      const updated = await UserEventModel.updateUserEvent(courseId, athleteId, {});
       if (!updated) {
         return res.status(404).json({ message: "Athlete-course record not found" });
       }
@@ -33,7 +36,7 @@ export const AthleteCourseController = {
   async delete(req: Request, res: Response) {
     const { athleteId, classId } = req.params;
     try {
-      const deleted = await AthleteCourseModel.deleteAthleteCourseTime(classId, athleteId);
+      const deleted = await UserEventModel.deleteUserEvent(classId, athleteId);
       if (!deleted) {
         return res.status(404).json({ message: "Course not found for athlete", success: false });
       }
