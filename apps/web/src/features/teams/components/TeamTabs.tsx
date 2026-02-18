@@ -14,6 +14,7 @@ import {
     Settings,
     UserPlus,
     CalendarPlus,
+    CalendarCheck
 } from "lucide-react";
 import { useUserRole } from "@/shared/hooks/useUserRole";
 import type { Team, SportLookup, League } from "../types/teams";
@@ -31,6 +32,7 @@ interface Props {
     onBulkUpload?: () => void;
     isManagerOverride?: boolean;
     onAddTeamEvent: () => void;
+    onOptimizeSchedule: () => void;
 
     children: {
         profile: React.ReactNode;
@@ -51,6 +53,7 @@ export const TeamTabs = ({
     onAddUser,
     onBulkUpload,
     onAddTeamEvent,
+    onOptimizeSchedule,
     children,
     isManagerOverride,
 }: Props) => {
@@ -92,35 +95,39 @@ export const TeamTabs = ({
                     </>
                     )}
 
-                    {isManager && (
-                    <Button variant="default" onClick={onAddTeamEvent}>
-                        <CalendarPlus size={16} className="mr-2" /> Add Event
-                    </Button>
-                    )}
-                    <div
-                    className={`ml-auto flex gap-2 transition-opacity ${
-                        activeTab !== "profile" && activeTab !== "schedule"
-                        ? "opacity-100 visible"
-                        : "opacity-0 invisible"
-                    }`}
-                    >
-                    <Button
-                        variant={viewMode === "cards" ? "default" : "outline"}
-                        onClick={() => onViewModeChange("cards")}
-                        size="sm"
-                    >
-                        Cards
-                    </Button>
-                    <Button
-                        variant={viewMode === "table" ? "default" : "outline"}
-                        onClick={() => onViewModeChange("table")}
-                        size="sm"
-                    >
-                        Table
-                    </Button>
+                {isManager && (
+                <Button variant="default" onClick={onAddTeamEvent}>
+                    <CalendarPlus size={16} className="mr-2" /> Add Event
+                </Button>
+                )}
 
-                    </div>
+                {isManager && (
+                <Button variant="default" onClick={onOptimizeSchedule}>
+                    <CalendarCheck size={16} className="mr-2" /> Optimize Schedule
+                </Button>
+                )}
 
+                <div
+                className={`ml-auto flex gap-2 transition-opacity ${
+                    activeTab !== "profile" && activeTab !== "schedule"
+                    ? "opacity-100 visible"
+                    : "opacity-0 invisible"
+                }`}
+                >
+                <Button
+                    variant={viewMode === "cards" ? "default" : "outline"}
+                    onClick={() => onViewModeChange("cards")}
+                    size="sm"
+                >
+                    Cards
+                </Button>
+                <Button
+                    variant={viewMode === "table" ? "default" : "outline"}
+                    onClick={() => onViewModeChange("table")}
+                    size="sm"
+                >
+                    Table
+                </Button>
                 </div>
             </div>
 
@@ -160,6 +167,7 @@ export const TeamTabs = ({
                 <TabsContent value="staff">{children.staff}</TabsContent>
                 <TabsContent value="schedule">{children.schedule}</TabsContent>
             </Tabs>
+        </div>
         </div>
     );
 };

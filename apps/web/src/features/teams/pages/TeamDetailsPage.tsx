@@ -19,6 +19,9 @@ import { AddTeamEventModal } from "../modals/AddTeamEventModal";
 import { DeleteTeamModal } from "../modals/DeleteTeamModal";
 import { InviteMemberModal } from "../modals/InviteMemberModal";
 import { AddAthleteModal } from "../modals/AddAthleteModal";
+import { OptimizePracticeModal } from "../modals/OptimizePracticeModal";
+import { useTeamSchedule } from "../hooks/useTeamSchedule";
+import { startOfWeekISO, endOfWeekISO } from "../Services/isoRange";
 
 export const TeamDetailsPage = () => {
     const { teamId } = useParams<{ teamId: string }>();
@@ -29,6 +32,11 @@ export const TeamDetailsPage = () => {
     const { team, loading, reload: reloadTeam } = useTeamById(teamId!);
     const { roster, removeAthlete, reloadRoster } = useRoster(teamId!);
     const { staff, reloadStaff, removeStaff } = useStaff(teamId!);
+    const [range, setRange] = useState({
+        fromISO: startOfWeekISO(),
+        toISO: endOfWeekISO(),
+    });
+    const {events, reload: reloadSchedule} = useTeamSchedule(teamId!,range.fromISO,range.toISO )
     const { sports, leagues } = useLookups();
 
     const [openEdit, setOpenEdit] = useState(false);
@@ -39,6 +47,7 @@ export const TeamDetailsPage = () => {
     const [inviteRole, setInviteRole] = useState<
         "athlete" | "manager"
     >("athlete");
+    const [openOptimize, setOpenOptimize] = useState(false);
 
     if (loading || !team) return <p className="p-6">Loading...</p>;
 
@@ -79,6 +88,9 @@ export const TeamDetailsPage = () => {
                 }
                 isManagerOverride={isManager}
                 onAddTeamEvent = {isManager ? () => setOpenAddTeamEvent(true) : () => {}}
+                onOptimizeSchedule={
+                    isManager ? () => setOpenOptimize(true) : () => {}
+                }
             >
                 {{
                     profile: (
@@ -106,7 +118,12 @@ export const TeamDetailsPage = () => {
                         />
                     ),
 
-                    schedule: <TeamScheduleTab />,
+                    schedule: <TeamScheduleTab
+                                events={events}
+                                range={range}
+                                onRangeChange={setRange}
+                                onReload={reloadSchedule}
+                            />,
                 }}
             </TeamTabs>
 
@@ -141,6 +158,12 @@ export const TeamDetailsPage = () => {
             )}
             {isManager && (
                 <>
+                   
+                <OptimizePracticeModal
+                        open={openOptimize}
+                        onOpenChange={setOpenOptimize}
+                        teamId={team.id} />
+
                 <AddAthleteModal
                     open={openBulkAdd}
                     onOpenChange={setOpenBulkAdd}
@@ -153,6 +176,9 @@ export const TeamDetailsPage = () => {
                     open={openAddTeamEvent}
                     onOpenChange={setOpenAddTeamEvent}
                     teamId={team.id}
+                    onAdded={() => {
+                        reloadSchedule();
+                    }}
                 />
                 </>
             )}

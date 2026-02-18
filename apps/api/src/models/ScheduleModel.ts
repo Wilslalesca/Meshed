@@ -13,4 +13,23 @@ export const ScheduleModel = {
     );
     return res.rows;
   },
+
+  async getTeamAthleteSchedules(teamId: string) {
+    const res = await pool.query(
+      `SELECT 
+          act.athlete_id,
+          ct.day_of_week,
+          ct.start_time,
+          ct.end_time
+       FROM user_teams ut
+       JOIN athlete_course_times act ON act.athlete_id = ut.user_id
+       JOIN course_times ct ON ct.id = act.class_id
+       WHERE ut.team_id = $1
+         AND ut.role = 'athlete'
+         AND ut.status = 'active'`,
+      [teamId]
+    );
+
+    return res.rows;
+  },
 };

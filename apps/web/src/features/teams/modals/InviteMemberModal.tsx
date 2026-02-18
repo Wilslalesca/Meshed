@@ -81,13 +81,13 @@ export const InviteMemberModal = ({ open, onOpenChange, teamId, defaultRole = "a
             disabled={!!file}
           />
 
-          <Select value={role} onValueChange={(v) => setRole(v as "athlete" | "staff")}>
+          <Select value={role} onValueChange={(v) => setRole(v as "athlete" | "manager")}>
             <SelectTrigger>
               <SelectValue placeholder="Role" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="athlete">Athlete</SelectItem>
-              <SelectItem value="staff">Manager</SelectItem>
+              <SelectItem value="manager">Manager</SelectItem>
             </SelectContent>
           </Select>
 

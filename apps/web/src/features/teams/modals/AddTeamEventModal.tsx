@@ -1,9 +1,7 @@
 import React, { useEffect, useState, type JSX } from "react";
 import { useAuth } from "@/shared/hooks/useAuth";
 import { Button } from "@/shared/components//ui/button";
-import type { EventItem } from "@/features/dashboard/types/eventItem";
 import { Label } from "@/shared/components//ui/label";
-import { EventWidget } from "@/features/dashboard/components/EventWidget";
 import { Input } from "@/shared/components//ui/input";
 import {
     Dialog,
@@ -20,19 +18,28 @@ import {
     SelectItem,
 } from "@/shared/components/ui/select";
 import { TeamEventFactoryRegistry } from "../types/factories/registry";
-import type { TeamEventType } from "../types/event";
+import { ReoccurrType, TeamEventType } from "../types/event";
 import { useAddTeamEvent } from "../hooks/useAddTeamEvent";
 import { toast } from "sonner";
 import { Textarea } from "@/shared/components/ui/textarea";
-//import { Textarea } from "@/components/ui/textarea"
+import { apiGetEventFacilities } from "@/features/teams/api/events";
+import type { Facility } from "@/features/facilities/types/facilities";
 
 export const AddTeamEventModal = ({
     open,
     onOpenChange,
+    onCreated,
     teamId,
     onAdded,
 }: any) => {
     const { token } = useAuth();
+
+    const formatLocalDate = (d: Date) => {
+        const yyyy = d.getFullYear();
+        const mm = String(d.getMonth() + 1).padStart(2, "0");
+        const dd = String(d.getDate()).padStart(2, "0");
+        return `${yyyy}-${mm}-${dd}`;
+    };
 
     const weekdays = [
         "Monday",
@@ -45,10 +52,12 @@ export const AddTeamEventModal = ({
     ];
     const [selectedDays, setSelectedDays] = React.useState<string[]>([]);
 
-    const reoccurrTypes = ["Daily", "Weekly", "Bi-Weekly", "Monthly"] as const;
-    const [selectedReoccurrType, setSelectedReoccurrType] = useState<typeof reoccurrTypes[number] | undefined>();
+    const reoccurrTypes: readonly ReoccurrType[] = ReoccurrType;
+    const [selectedReoccurrType, setSelectedReoccurrType] = useState<
+        ReoccurrType | undefined
+    >();
 
-    const teamEvents = ["Practice", "Game", "Lift", "Other"]; //change to lookup like sportslookup
+    const teamEvents: readonly TeamEventType[] = TeamEventType;
 
     const [eventName, setEventName] = useState<string>();
     const [eventTypeID, setEventTypeID] = useState<TeamEventType>();
@@ -57,13 +66,29 @@ export const AddTeamEventModal = ({
     const [endTime, setEndTime] = useState("11:20:00");
     const [startDate, setStartDate] = useState<Date | null>(null);
     const [endDate, setEndDate] = useState<Date | null>(null);
-    const [events, setEvents] = useState<EventItem[]>([]);
-    const [opponent, setOpponent] = useState<string>();
-    const [homeAway, setHomeAway] = useState<"Home" | "Away" | undefined>(undefined);
+    const [teamFacilityId, setTeamFacilityId] = useState<string>();
+    const [status, setStatus] = useState<string>("pending");
+    const [opponent, setOpponent] = useState<string | undefined>(undefined);
+    const [homeAway, setHomeAway] = useState<"Home" | "Away" | undefined>(
+        undefined,
+    );
     const [liftType, setLiftType] = useState<string>();
     const [notes, setNotes] = useState<string>();
 
+    const [allFacilities, setAllFacilities] = useState<Facility[]>([]);
+    
     const { addTeamEvent } = useAddTeamEvent();
+
+    useEffect(() => {
+        const fetchFacilities = async () => {
+            const facilities = await apiGetEventFacilities(token!);
+            if (facilities) {
+                setAllFacilities(facilities);
+            }
+        };
+
+        fetchFacilities();
+    }, [token]);
 
     useEffect(() => {
         if (!reoccurring) setSelectedReoccurrType(undefined);
@@ -87,7 +112,9 @@ export const AddTeamEventModal = ({
         setStartDate(null);
         setEndDate(null);
 
-        setEvents([]); 
+        setTeamFacilityId(undefined);
+        setStatus("pending");
+
         setOpponent(undefined);
         setHomeAway(undefined);
         setLiftType(undefined);
@@ -110,37 +137,55 @@ export const AddTeamEventModal = ({
             return;
         }
 
-        const FactoryClass = TeamEventFactoryRegistry[eventTypeID];
+        if (reoccurring && !endDate) {
+            toast.error("End date is required for recurring events!");
+            return;
+        }
 
-        for (const day of selectedDays) {
-            const factory = new FactoryClass({
+        if (reoccurring && endDate && endDate < startDate) {
+            toast.error("End date cannot be earlier than start date!");
+            return;
+        }
+        if (eventTypeID === "Game") {
+            if (!opponent?.trim()) {
+                toast.error("Opponent is required for a Game");
+                return;
+            }
+            if (!homeAway) {
+                toast.error("Home/Away is required for a Game");
+                return;
+            }
+        }
+
+        try {
+            console.log(startDate)
+            await addTeamEvent(
                 teamId,
-                name : eventName,
+                teamFacilityId,
+                eventName,
                 startDate,
-                endDate : endDate || undefined,
+                endDate,
                 startTime,
                 endTime,
                 reoccurring,
-                reoccurrType: selectedReoccurrType,
-                dayOfWeek: day,
+                selectedReoccurrType,
+                selectedDays,
+                status,
                 opponent,
                 homeAway,
                 notes,
                 liftType,
-            });
-            console.log(factory)
-
-            const event = factory.createEvent();
-
-            try{
-                await addTeamEvent(event);
-            }
-            catch(error){
-                toast.error(error instanceof Error ? error.message : "An error occurred");
-            }
+                eventTypeID,
+            );
+            toast.success("Event Created!");
+            onAdded?.();
+            resetForm();
+            onOpenChange(false);
+            onCreated(teamId);
+        } catch (error) {
+            throw (error instanceof Error ? error : new Error("An error occurred"));
         }
-        resetForm();
-        onOpenChange(false);
+
     }
 
     return (
@@ -153,14 +198,15 @@ export const AddTeamEventModal = ({
                         team.
                     </DialogDescription>
                 </DialogHeader>
-                <div>
-                    <div className="columns-1 sm:columns-2 gap-6">
+                <div className="flex items-center gap-6">
+                    <div className="flex-col p-4 items-center">
                         <div className="grid w-full items-center gap-3 py-2">
                             <Label htmlFor="event_name">Event Name</Label>
-                            <Input value={eventName} 
-                                onChange={(e) => setEventName(e.target.value)} 
-                                id = "event_name"
-                                type="text" 
+                            <Input
+                                value={eventName}
+                                onChange={(e) => setEventName(e.target.value)}
+                                id="event_name"
+                                type="text"
                                 placeholder="ex. Night Practice"
                                 required
                             ></Input>
@@ -168,14 +214,12 @@ export const AddTeamEventModal = ({
                         <div className="grid w-full items-center gap-3 py-2">
                             <Label htmlFor="event_type">Event Type</Label>
                             <Select
-                                id = "event_type"
-                                placeholder="ex. Practice"
                                 value={eventTypeID}
                                 onValueChange={(val: TeamEventType) =>
                                     setEventTypeID(val as TeamEventType)
                                 }
                             >
-                                <SelectTrigger>
+                                <SelectTrigger id="event_type">
                                     <SelectValue placeholder="Event Type" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -187,40 +231,39 @@ export const AddTeamEventModal = ({
                                 </SelectContent>
                             </Select>
                         </div>
-                    </div>
-
-                    <div className="grid w-full items-center gap-3 py-2">
-                        <Label>Day(s) of the Week</Label>
-                        <div className="columns-1 sm:columns-2 lg:columns-3 gap-6">
-                            {weekdays.map((day) => (
-                                <div
-                                    className="flex items-center gap-3"
-                                    key={day}
-                                >
-                                    <input
-                                        type="checkbox"
-                                        value={day}
-                                        name="selectedDays"
-                                        onChange={(e) => {
-                                            if (e.target.checked) {
-                                                setSelectedDays((s) => [
-                                                    ...s,
-                                                    day,
-                                                ]);
-                                            } else {
-                                                setSelectedDays((s) =>
-                                                    s.filter((d) => d !== day)
-                                                );
-                                            }
-                                        }}
-                                    />
-                                    <Label>{day}</Label>
-                                </div>
-                            ))}
+                        <div className="grid w-full items-center gap-3 py-2">
+                            <Label>Day(s) of the Week</Label>
+                            <div className="columns-1 sm:columns-2 lg:columns-3 gap-6">
+                                {weekdays.map((day) => (
+                                    <div
+                                        className="flex items-center gap-3"
+                                        key={day}
+                                    >
+                                        <input
+                                            type="checkbox"
+                                            value={day}
+                                            name="selectedDays"
+                                            onChange={(e) => {
+                                                if (e.target.checked) {
+                                                    setSelectedDays((s) => [
+                                                        ...s,
+                                                        day,
+                                                    ]);
+                                                } else {
+                                                    setSelectedDays((s) =>
+                                                        s.filter(
+                                                            (d) => d !== day,
+                                                        ),
+                                                    );
+                                                }
+                                            }}
+                                        />
+                                        <Label>{day}</Label>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
-                    </div>
 
-                    <div className="columns-1 sm:columns-2 gap-6">
                         <div className="grid w-full items-center gap-3 py-2">
                             <Label htmlFor="start_time">Start Time</Label>
                             <Input
@@ -242,17 +285,17 @@ export const AddTeamEventModal = ({
                                 required
                             />
                         </div>
-                    </div>
 
-                    <div className="columns-1 sm:columns-2 gap-6">
                         <div className="grid w-full items-center gap-3 py-2">
                             <Label htmlFor="reoccurring">
                                 Reocurring Event
                             </Label>
                             <Select
                                 value={reoccurring ? "true" : "false"}
-                                onValueChange={(v: string) => setReoccurring(v === "true")}
-                                >
+                                onValueChange={(v: string) =>
+                                    setReoccurring(v === "true")
+                                }
+                            >
                                 <SelectTrigger>
                                     <SelectValue placeholder="Yes/No" />
                                 </SelectTrigger>
@@ -271,7 +314,7 @@ export const AddTeamEventModal = ({
                                     </Label>
                                     <Select
                                         value={selectedReoccurrType}
-                                        onValueChange={setSelectedReoccurrType}
+                                        onValueChange={(val: string) => setSelectedReoccurrType(val as typeof reoccurrTypes[number])}
                                     >
                                         <SelectTrigger id="selectedReoccurrType">
                                             <SelectValue placeholder="Reocurr" />
@@ -291,9 +334,61 @@ export const AddTeamEventModal = ({
                                     <div className="h-10" />
                                 </div>
                             )}
+                            <Label htmlFor="facility">Facility</Label>
+                            <Select
+                                value={teamFacilityId}
+                                onValueChange={setTeamFacilityId}
+                            >
+                                <SelectTrigger id="facility">
+                                    <SelectValue placeholder="Select a facility" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {allFacilities.map((facility) => (
+                                        <SelectItem
+                                            key={facility.id}
+                                            value={facility.id}
+                                        >
+                                            {facility.name}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
                         </div>
-                    </div>
-                    <div className="columns-1 sm:columns-2 gap-6">
+
+                        {reoccurring && (
+                            <div className="grid w-full items-center gap-3 py-2">
+                                <Label htmlFor="reoccurring">
+                                    Type of Reocurrance
+                                </Label>
+                                <Select
+                                    value={selectedReoccurrType}
+                                    onValueChange={(val: string) =>
+                                        setSelectedReoccurrType(
+                                            val as (typeof reoccurrTypes)[number],
+                                        )
+                                    }
+                                >
+                                    <SelectTrigger id="selectedReoccurrType">
+                                        <SelectValue placeholder="Reocurr" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {reoccurrTypes.map((e) => (
+                                            <SelectItem key={e} value={e}>
+                                                {e}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                                {selectedReoccurrType == "Daily" && (
+                                    <Label className="text-red-500">
+                                        Warning: selected days of the week will
+                                        be ignored if creating daily recurring
+                                        events
+                                    </Label>
+                                )}
+                            </div>
+                        )}
+
                         <div className="grid w-full items-center gap-3 py-2">
                             <Label htmlFor="start_date">
                                 {reoccurring ? "Start Date" : "Date"}
@@ -305,21 +400,22 @@ export const AddTeamEventModal = ({
                                 max="2035-12-31"
                                 value={
                                     startDate
-                                        ? startDate.toISOString().slice(0, 10)
+                                        ? formatLocalDate(startDate)
                                         : ""
                                 }
-                                onChange={(e) =>
-                                    setStartDate(
-                                        e.target.value
-                                            ? new Date(e.target.value)
-                                            : null
-                                    )
-                                }
+                                onChange={(e) => {
+                                    if (e.target.value) {
+                                        const [year, month, day] = e.target.value.split('-');
+                                        setStartDate(new Date(Number(year), Number(month) - 1, Number(day)));
+                                    } else {
+                                        setStartDate(null);
+                                    }
+                                }}
                                 required
                             />
                         </div>
 
-                        {reoccurring ? (
+                        {reoccurring && (
                             <div className="grid w-full items-center gap-3 py-2">
                                 <Label htmlFor="end_date">End Date</Label>
                                 <Input
@@ -329,90 +425,90 @@ export const AddTeamEventModal = ({
                                     max="2035-12-31"
                                     value={
                                         endDate
-                                            ? endDate.toISOString().slice(0, 10)
+                                            ? formatLocalDate(endDate)
                                             : ""
                                     }
+                                    onChange={(e) => {
+                                        if (e.target.value) {
+                                            const [year, month, day] = e.target.value.split('-');
+                                            setEndDate(new Date(Number(year), Number(month) - 1, Number(day)));
+                                        } else {
+                                            setEndDate(null);
+                                        }
+                                    }}
+                                />
+                            </div>
+                        )}
+
+                        {eventTypeID === "Game" && (
+                            <div>
+                                <div className="grid w-full items-center gap-3 py-2">
+                                    <Label htmlFor="opponent">Opponent</Label>
+                                    <Input
+                                        type="text"
+                                        id="opponent"
+                                        placeholder="ex. Team A"
+                                        value={opponent}
+                                        onChange={(e) =>
+                                            setOpponent(e.target.value)
+                                        }
+                                    />
+                                </div>
+
+                                <div className="grid w-full items-center gap-3 py-2">
+                                    <Label htmlFor="home_away">
+                                        Home or Away
+                                    </Label>
+                                    <Select
+                                        value={homeAway}
+                                        onValueChange={(
+                                            value: "Home" | "Away",
+                                        ) => setHomeAway(value)}
+                                    >
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="ex. Home" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="Home">
+                                                Home
+                                            </SelectItem>
+                                            <SelectItem value="Away">
+                                                Away
+                                            </SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            </div>
+                        )}
+
+                        {eventTypeID === "Lift" && (
+                            <div className="grid w-full items-center gap-3 py-2">
+                                <Label htmlFor="liftType">Lift Type</Label>
+                                <Input
+                                    type="text"
+                                    id="liftType"
+                                    placeholder="ex. Team Lift"
+                                    value={liftType}
                                     onChange={(e) =>
-                                        setEndDate(
-                                            e.target.value
-                                                ? new Date(e.target.value)
-                                                : null
-                                        )
+                                        setLiftType(e.target.value)
                                     }
                                 />
                             </div>
-                        ) : (
-                            <div className="invisible">
-                                <Label>Placeholder</Label>
-                                <div className="h-10" />
+                        )}
+
+                        {(eventTypeID === "Practice" ||
+                            eventTypeID === "Other") && (
+                            <div className="grid w-full items-center gap-3 py-2">
+                                <Label htmlFor="notes">Notes</Label>
+                                <Textarea
+                                    id="notes"
+                                    placeholder="ex. Cardio Training"
+                                    value={notes}
+                                    onChange={(e) => setNotes(e.target.value)}
+                                />
                             </div>
                         )}
                     </div>
-                    
-                    {eventTypeID === "Game" && (
-                    <div className="columns-1 sm:columns-2 gap-6">
-                        <div className="grid w-full items-center gap-3 py-2">
-                            <Label htmlFor="opponent">
-                                Opponent
-                            </Label>
-                            <Input
-                                type="text"
-                                id="opponent"
-                                placeholder="ex. Team A"
-                                value={opponent}
-                                onChange={(e) => setOpponent(e.target.value)}
-                            />
-                        </div>
-                        
-                        <div className="grid w-full items-center gap-3 py-2">
-                            <Label htmlFor="home_away">
-                                Home or Away
-                            </Label>
-                            <Select
-                                value={homeAway}
-                                onValueChange={(value: "Home" | "Away") => setHomeAway(value)}                                >
-                                <SelectTrigger>
-                                    <SelectValue placeholder="ex. Home" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="Home">Home</SelectItem>
-                                    <SelectItem value="Away">Away</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
-                    </div>
-                    )}
-
-                    {eventTypeID === "Lift" && (
-                         <div className="grid w-full items-center gap-3 py-2">
-                            <Label htmlFor="liftType">
-                                Lift Type
-                            </Label>
-                            <Input
-                                type="text"
-                                id="liftType"
-                                placeholder="ex. Team Lift"
-                                value={liftType}
-                                onChange={(e) => setLiftType(e.target.value)}
-                            />
-                        </div>
-                    )}
-
-                    {(eventTypeID === "Practice" || eventTypeID === "Other") && (
-                         <div className="grid w-full items-center gap-3 py-2">
-                            <Label htmlFor="notes">
-                                Notes
-                            </Label>
-                            <Textarea
-                                id="notes"
-                                placeholder="ex. Cardio Training"
-                                value={notes}
-                                onChange={(e) => setNotes(e.target.value)}
-                            />
-                            
-                        </div>
-                    )}
-
                 </div>
                 <div className="flex flex-col p-4 items-center">
                     <Button
