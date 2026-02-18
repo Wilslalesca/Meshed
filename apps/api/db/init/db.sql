@@ -84,9 +84,11 @@ CREATE TABLE course_times (
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE athlete_course_times (
+-- Links a user (any role) to a course_time entry for personal scheduling.
+-- Replaces the old athlete_course_times table which required a row in athlete_profiles.
+CREATE TABLE user_events (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  athlete_id UUID REFERENCES athlete_profiles(id) ON DELETE CASCADE,
+  user_id UUID REFERENCES users(id) ON DELETE CASCADE,
   class_id UUID REFERENCES course_times(id) ON DELETE CASCADE,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP

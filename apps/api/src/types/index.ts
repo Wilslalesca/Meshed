@@ -35,9 +35,9 @@ export interface CourseTime {
     recurring?: boolean;
 }
 
-export interface AthleteCourseTime {
+export interface UserEvent {
     id: string;
-    athlete_id: string;
+    user_id: string;
     class_id: string;
     created_at?: string;
     updated_at?: string;

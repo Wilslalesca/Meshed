@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { z } from "zod";
 import { CourseModel } from "../models/CourseModel";
-import { AthleteCourseModel } from "../models/AthleteCourseModel";
+import { UserEventModel } from "../models/UserEventModel";
 
 const courseTimeSchema = z.object({
   user_id: z.string().uuid().optional(),  // Owner/creator of the course
@@ -23,12 +23,17 @@ const courseTimeSchema = z.object({
   updated_at: z.string().datetime().optional(),
 });
 
-const athleteCourseTimeSchema = z.object({
-  athlete_id: z.string(),
-  class_id: z.string(),
-  created_at: z.string().datetime().optional(),
-  updated_at: z.string().datetime().optional(),
-});
+const userEventSchema = z
+  .object({
+    user_id: z.string().uuid().optional(),
+    athlete_id: z.string().uuid().optional(),
+    class_id: z.string().uuid(),
+    created_at: z.string().datetime().optional(),
+    updated_at: z.string().datetime().optional(),
+  })
+  .refine((v) => Boolean(v.user_id || v.athlete_id), {
+    message: "user_id (or legacy athlete_id) is required",
+  });
 
 const updateCourseSchema = courseTimeSchema.partial();
 
@@ -52,12 +57,13 @@ export const CourseController = {
   },
 
   async addAthleteCourse(req: Request, res: Response) {
-    const parse = athleteCourseTimeSchema.safeParse(req.body);
+    const parse = userEventSchema.safeParse(req.body);
     if (!parse.success) {
       return res.status(400).json({ error: "Validation error", details: parse.error.flatten() });
     }
     try {
-      await AthleteCourseModel.insert(parse.data);
+      const userId = parse.data.user_id ?? parse.data.athlete_id;
+      await UserEventModel.insert({ user_id: userId, class_id: parse.data.class_id });
       return res.status(200).json({ message: "Connected Course to Athlete", success: true });
     } catch (err) {
       console.error("Error adding course to athlete schedule:", err);

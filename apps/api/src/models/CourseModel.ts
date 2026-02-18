@@ -1,6 +1,6 @@
 import { pool } from "../config/db";
 import { CourseTime } from "../types/index";
-import { AthleteCourseModel } from "./AthleteCourseModel";
+import { UserEventModel } from "./UserEventModel";
 
 export interface NewCourseTime {
   user_id?: string;  
@@ -49,7 +49,7 @@ export const CourseModel = {
     try {
       await client.query("BEGIN");
       const course = await this.insertCourse(data, client);
-      await AthleteCourseModel.insert({ athlete_id: userId, class_id: course.id }, client);
+      await UserEventModel.insert({ user_id: userId, class_id: course.id }, client);
       await client.query("COMMIT");
       return course;
     } catch (err) {
