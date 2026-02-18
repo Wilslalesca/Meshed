@@ -8,7 +8,7 @@ export const ScheduleController = {
 
   async getAthleteSchedule(req: Request, res: Response) {
     try {
-      const athleteId = req.params.athleteId;
+      const athleteId = Array.isArray(req.params.athleteId) ? req.params.athleteId[0] : req.params.athleteId;
       if (!athleteId) return res.status(400).json({ error: "Missing athlete ID" });
 
       const schedule = await ScheduleService.getScheduleForAthlete(athleteId);

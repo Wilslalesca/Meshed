@@ -98,7 +98,7 @@ export const CourseController = {
   },
 
   async updateCourse(req: Request, res: Response) {
-    const { classId } = req.params;
+    const classId = req.params.classId as string;
 
     const parse = updateCourseSchema.safeParse(req.body);
     if (!parse.success) {
@@ -147,7 +147,7 @@ export const CourseController = {
   },
 
   async deleteCourse(req: Request, res: Response) {
-    const { classId } = req.params;
+    const classId = req.params.classId as string;
     try {
       const deleted = await CourseModel.deleteCourseByID(classId);
       if (!deleted) {

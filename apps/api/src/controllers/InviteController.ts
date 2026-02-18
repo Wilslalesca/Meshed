@@ -32,7 +32,8 @@ export class InviteController {
   static async acceptInvite(req: Request, res: Response) {
     const { token } = req.params;
 
-    const invite = await InviteModel.findByToken(token);
+    const tokenStr = Array.isArray(token) ? token[0] : token;
+    const invite = await InviteModel.findByToken(tokenStr);
     if (!invite) return res.status(404).send("Invalid invite");
 
     const user = await UserModel.findByEmail(invite.email);

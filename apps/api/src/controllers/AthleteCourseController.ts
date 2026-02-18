@@ -14,7 +14,8 @@ const updateSchema = z
 export const AthleteCourseController = {
   async update(req: Request, res: Response) {
     try {
-      const { athleteId, courseId } = req.params;
+      const athleteId = Array.isArray(req.params.athleteId) ? req.params.athleteId[0] : req.params.athleteId;
+      const courseId = Array.isArray(req.params.courseId) ? req.params.courseId[0] : req.params.courseId;
       const parse = updateSchema.safeParse(req.body);
       if (!parse.success) {
         return res.status(400).json({ error: "Validation error", details: parse.error.flatten() });
@@ -31,7 +32,8 @@ export const AthleteCourseController = {
   },
 
   async delete(req: Request, res: Response) {
-    const { athleteId, classId } = req.params;
+    const athleteId = Array.isArray(req.params.athleteId) ? req.params.athleteId[0] : req.params.athleteId;
+    const classId = Array.isArray(req.params.classId) ? req.params.classId[0] : req.params.classId;
     try {
       const deleted = await AthleteCourseModel.deleteAthleteCourseTime(classId, athleteId);
       if (!deleted) {

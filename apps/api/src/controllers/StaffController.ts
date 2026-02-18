@@ -13,7 +13,7 @@ function isManagerOrAdmin(req: any) {
 
 export class StaffController {
   static async getStaff(req: Request, res: Response) {
-    const { teamId } = req.params;
+    const teamId = Array.isArray(req.params.teamId) ? req.params.teamId[0] : req.params.teamId;
     const staff = await TeamStaffModel.getStaff(teamId);
     return res.json(staff);
   }
@@ -22,7 +22,7 @@ export class StaffController {
 
     if (!isManagerOrAdmin(req)) return res.status(403).send("Forbidden");
 
-    const { teamId } = req.params;
+    const teamId = Array.isArray(req.params.teamId) ? req.params.teamId[0] : req.params.teamId;
     const { email, role, notes = null } = req.body || {};
 
     if (!email) return res.status(400).send("email required");

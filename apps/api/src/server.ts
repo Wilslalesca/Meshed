@@ -9,7 +9,7 @@ import {
 } from "./scripts/seedUsers";
 import { seedLeaguesAndSports } from "./scripts/seedLeagueAndSport";
 
-const port = config.port;
+const port = config.port || 4000;
 
 app.listen(port, async () => {
     console.log(`Backend running on http://localhost:${port}`);
@@ -19,5 +19,4 @@ app.listen(port, async () => {
     await testingAddingUserToath();
     await seedLeaguesAndSports();
     // await seedTeams(); // function for seeding teams
-    
 });

@@ -1,11 +1,10 @@
-# Starting from a base image that already has Node.js installed
-# node:21 indicates that we are using the latest release of Node.js 21
-FROM node:20-alpine
-WORKDIR /occ/app/api
+FROM node:20-bookworm-slim
+WORKDIR /app
+
 COPY package*.json ./
-RUN npm install
+RUN npm ci
 
 COPY . .
-EXPOSE 4000
-CMD ["npm", "run", "dev"]
 
+ENV NODE_ENV=production
+CMD ["npx", "tsx", "src/server.ts"]

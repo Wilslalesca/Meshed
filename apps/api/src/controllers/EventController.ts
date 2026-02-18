@@ -1,4 +1,3 @@
-import { pool } from "../config/db";
 import { Request, Response } from "express";
 import { EventModel } from "../models/EventModel";
 import type { TeamEvent } from "../types/event";
@@ -36,7 +35,7 @@ export class EventController {
     }
 
     static async getFacilityEvents(req: Request, res: Response) { 
-        const {facilityId }= req.params;
+        const facilityId = Array.isArray(req.params.facilityId) ? req.params.facilityId[0] : req.params.facilityId;
         const events = await EventModel.getForFacility(facilityId);
 
         const formattedEvents = events.map(event => ({
@@ -63,7 +62,7 @@ export class EventController {
     }
 
     static async getConflictingFacilityEvents(req: Request, res: Response){
-        const {facilityId }= req.params;
+        const facilityId = Array.isArray(req.params.facilityId) ? req.params.facilityId[0] : req.params.facilityId;
         const status = 'pending'
         const events = await EventModel.getAllStatusFacilityRequests(facilityId, status);
         const toReturn: Array<{
@@ -131,7 +130,8 @@ export class EventController {
     }
 
     static async getStatusFacilityEvents(req: Request, res: Response){
-        const {facilityId, status }= req.params;
+        const facilityId = Array.isArray(req.params.facilityId) ? req.params.facilityId[0] : req.params.facilityId;
+        const status = Array.isArray(req.params.status) ? req.params.status[0] : req.params.status;
         const events = await EventModel.getAllStatusFacilityRequests(facilityId, status);
         const formattedEvents = events.map(event => ({
             id: event.id,
@@ -157,7 +157,8 @@ export class EventController {
     }
 
     static async updateEventStatus(req: Request, res: Response){
-        const {id, status }= req.params;
+        const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+        const status = Array.isArray(req.params.status) ? req.params.status[0] : req.params.status;
         const event = await EventModel.updateStatus(id, status);
         res.json(event)
     }

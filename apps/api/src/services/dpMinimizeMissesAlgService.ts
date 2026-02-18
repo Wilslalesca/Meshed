@@ -44,7 +44,7 @@ export function dpMinimizeMissesAlgService(daysIn: any) {
 
         //Go through each practice option for the current day
         for (let currentOption of daysIn[dayIndex].options) {
-            let bestPrevState = null;
+            let bestPrevState: { maxMisses: number; athleteMisses: any; currentSched: any } | null = null;
             let bestMaxMisses = Infinity;
 
             //Compare with all previous day states
@@ -69,7 +69,7 @@ export function dpMinimizeMissesAlgService(daysIn: any) {
                     (currentMaxMisses === bestMaxMisses &&
                         (!bestPrevState ||
                             sumMisses(combinedMisses) <
-                                sumMisses(bestPrevState.athleteMisses)))
+                                sumMisses(bestPrevState.athleteMisses || {})))
                 ) {
                     bestMaxMisses = currentMaxMisses;
                     bestPrevState = {

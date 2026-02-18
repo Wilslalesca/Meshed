@@ -45,7 +45,8 @@ export class TeamController {
 
     static async getTeamById(req: Request, res: Response) {
         const { teamId } = req.params;
-        const team = await TeamModel.getTeam(teamId);
+        const teamIdStr = Array.isArray(teamId) ? teamId[0] : teamId;
+        const team = await TeamModel.getTeam(teamIdStr);
         if (!team) return res.status(404).send("Team not found");
         res.json(team);
     }
@@ -77,8 +78,9 @@ export class TeamController {
 
     static async updateTeam(req: Request, res: Response) {
         const { teamId } = req.params;
+        const teamIdStr = Array.isArray(teamId) ? teamId[0] : teamId;
 
-        const updated = await TeamModel.updateTeam(teamId, {
+        const updated = await TeamModel.updateTeam(teamIdStr, {
             name: req.body.name,
             sport_id: req.body.sport_id || null,
             season: req.body.season || null,
@@ -91,19 +93,23 @@ export class TeamController {
     }
 
     static async deleteTeam(req: Request, res: Response) {
-        await TeamModel.deleteTeam(req.params.teamId);
+        const { teamId } = req.params;
+        const teamIdStr = Array.isArray(teamId) ? teamId[0] : teamId;
+        await TeamModel.deleteTeam(teamIdStr);
         res.json({ success: true });
     }
 
     static async getTeamAthletes(req: Request, res: Response) {
         const { teamId } = req.params;
-        const athletes = await TeamRosterModel.getAthletes(teamId);
+        const teamIdStr = Array.isArray(teamId) ? teamId[0] : teamId;
+        const athletes = await TeamRosterModel.getAthletes(teamIdStr);
         res.json(athletes);
     }
 
     static async addAthleteByEmail(req: any, res: Response) {
         const { teamId } = req.params;
-        if (!(await isTeamManagerOrAdmin(req, teamId))) return res.status(403).send("Forbidden");
+        const teamIdStr = Array.isArray(teamId) ? teamId[0] : teamId;
+        if (!(await isTeamManagerOrAdmin(req, teamIdStr))) return res.status(403).send("Forbidden");
         const { email } = req.body;
 
         if (!email) return res.status(400).send("email required");
@@ -116,14 +122,14 @@ export class TeamController {
             isGhost = true;
         }
 
-        await TeamRosterModel.addToTeam(teamId, user!.id, "athlete", null);
+        await TeamRosterModel.addToTeam(teamIdStr, user!.id, "athlete", null);
         
-        const team = await TeamModel.getTeam(teamId);
+        const team = await TeamModel.getTeam(teamIdStr);
         if (!team) return res.status(500).send("Team not found");
 
         if (isGhost) {
             const token = crypto.randomBytes(32).toString("hex");
-            await InviteModel.createInvite(teamId, email, "athlete", null, token);
+            await InviteModel.createInvite(teamIdStr, email, "athlete", null, token);
             await sendEmail.sendEmailInvite(email, team.name, token);
 
         } 
@@ -136,12 +142,13 @@ export class TeamController {
 
     static async bulkAddAthletesByCsv(req: any, res: Response) {
         const { teamId } = req.params;
-        if (!(await isTeamManagerOrAdmin(req, teamId))) return res.status(403).send("Forbidden");
+        const teamIdStr = Array.isArray(teamId) ? teamId[0] : teamId;
+        if (!(await isTeamManagerOrAdmin(req, teamIdStr))) return res.status(403).send("Forbidden");
         const file = req.file as any;
 
         if (!file) return res.status(400).send("CSV file required");
 
-        const team = await TeamModel.getTeam(teamId);
+        const team = await TeamModel.getTeam(teamIdStr);
         if (!team) return res.status(404).send("Team not found");
 
         try {
@@ -213,7 +220,7 @@ export class TeamController {
                         continue;
                     }
 
-                    await TeamRosterModel.addToTeam(teamId, user.id, "athlete", null);
+                    await TeamRosterModel.addToTeam(teamIdStr, user.id, "athlete", null);
 
                     if (isGhost) {
                         const token = crypto.randomBytes(32).toString("hex");
@@ -247,16 +254,18 @@ export class TeamController {
 
     static async removeAthlete(req: any, res: Response) {
         const { teamId, userId } = req.params;
-        if (!(await isTeamManagerOrAdmin(req, teamId))) return res.status(403).send("Forbidden");
-        await TeamRosterModel.removeAthlete(teamId, userId);
+        const teamIdStr = Array.isArray(teamId) ? teamId[0] : teamId;
+        if (!(await isTeamManagerOrAdmin(req, teamIdStr))) return res.status(403).send("Forbidden");
+        await TeamRosterModel.removeAthlete(teamIdStr, userId);
         return res.json({ success: true });
     }
     static async updateAthlete(req: any, res: Response) {
         const { teamId, userId } = req.params;
-        if (!(await isTeamManagerOrAdmin(req, teamId))) return res.status(403).send("Forbidden");
+        const teamIdStr = Array.isArray(teamId) ? teamId[0] : teamId;
+        if (!(await isTeamManagerOrAdmin(req, teamIdStr))) return res.status(403).send("Forbidden");
         const { position, status } = req.body;
 
-        const updated = await TeamRosterModel.updateAthlete(teamId, userId, {
+        const updated = await TeamRosterModel.updateAthlete(teamIdStr, userId, {
             position: position ?? null,
             status: status ?? null,
         });
@@ -313,7 +322,8 @@ export class TeamController {
 
     static async getEvents(req: Request, res: Response) { 
         const { teamId } = req.params;
-        const events = await TeamEventModel.getByTeamId(teamId);
+        const teamIdStr = Array.isArray(teamId) ? teamId[0] : teamId;
+        const events = await TeamEventModel.getByTeamId(teamIdStr);
         res.json(events);
     }
 

@@ -69,4 +69,18 @@ export const sendEmail = {
       `
     );
   },
+  async sendScheduleUpdatedEmail(email: string, teamName: string) {
+    return mail.sendEmail(
+      email,
+      `Schedule updated for ${teamName}`,
+      `
+        <p>The schedule for <strong>${teamName}</strong> was updated.</p>
+        <p>Log in to review changes: <a href="${BASE_URL}/login">Meshed Login</a></p>
+      `
+    );
+  },
+
+  
 };
+
+
