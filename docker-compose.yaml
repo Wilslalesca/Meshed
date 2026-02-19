@@ -35,7 +35,6 @@ services:
       ACCESS_TTL: 15m
       REFRESH_TTL: 7d
       COOKIE_DOMAIN: localhost
-      RESEND_API_KEY: ${RESEND_API_KEY:-}
 
     volumes:
       - ./apps/api:/occ/app/api

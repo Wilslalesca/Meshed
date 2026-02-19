@@ -1,13 +1,6 @@
 import { Request, Response } from "express";
 import * as service from "./notifications.service";
 
-declare global {
-  namespace Express {
-    interface Request {
-      user?: { id: string };
-    }
-  }
-}
 
 export async function createForTeam(req: Request, res: Response) {
     const { teamId } = req.params;
