@@ -2,6 +2,8 @@ import { Request, Response } from "express";
 import { InviteModel } from "../models/InviteModel";
 import { UserModel } from "../models/UserModel";
 import { TeamRosterModel } from "../models/TeamRosterModel";
+import { TeamModel } from "../models/TeamModel";
+import { sendEmail } from "../services/emailService";
 import crypto from "crypto";
 
 export class InviteController {
@@ -12,19 +14,25 @@ export class InviteController {
 
     if (!email) return res.status(400).send("email required");
 
-    const user = await UserModel.createGhostUser(email.trim());
+    const team = await TeamModel.getTeam(teamId);
+    if (!team) return res.status(404).send("Team not found");
+
+    const normalizedEmail = email.trim().toLowerCase();
+
+    const user = await UserModel.createGhostUser(normalizedEmail);
 
     const token = crypto.randomBytes(32).toString("hex");
 
     const invite = await InviteModel.createInvite(
       teamId,
-      email,
+      normalizedEmail,
       role,
       position,
       token
     );
 
     await TeamRosterModel.addToTeam(teamId, user.id, role, position);
+    await sendEmail.sendEmailInvite(normalizedEmail, team.name, token);
 
     return res.json({ success: true, invite, token });
   }
