@@ -10,6 +10,7 @@ import { Button } from "@/shared/components/ui/button";
 import { Textarea } from "@/shared/components/ui/textarea";
 import { createTeamNotification } from "@/features/teams/api/notifications.api";
 import { useAuth } from "@/shared/hooks/useAuth";
+import { toast } from "sonner";
 
 export function CreateTeamNotificationModal({
     open,
@@ -37,8 +38,12 @@ export function CreateTeamNotificationModal({
                 token!,
             );
             onOpenChange(false);
+            toast.success("Notification sent to the team.");
             setMessage("");
-        } finally {
+        } catch (error) {
+            toast.error("Failed to send notification. Please try again.");
+        } 
+        finally {
             setLoading(false);
         }
     }
