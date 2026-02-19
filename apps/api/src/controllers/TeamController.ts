@@ -110,27 +110,29 @@ export class TeamController {
 
         if (!email) return res.status(400).send("email required");
 
-        let user = await UserModel.findByEmail(email.trim());
+        const team = await TeamModel.getTeam(teamId);
+        if (!team) return res.status(404).send("Team not found");
+
+        const normalizedEmail = email.trim().toLowerCase();
+
+        let user = await UserModel.findByEmail(normalizedEmail);
         let isGhost = false;
 
         if (!user) {
-            user = await UserModel.createGhostUser(email.trim());
+            user = await UserModel.createGhostUser(normalizedEmail);
             isGhost = true;
         }
 
         await TeamRosterModel.addToTeam(teamId, user!.id, "athlete", null);
-        
-        const team = await TeamModel.getTeam(teamId);
-        if (!team) return res.status(500).send("Team not found");
 
         if (isGhost) {
             const token = crypto.randomBytes(32).toString("hex");
-            await InviteModel.createInvite(teamId, email, "athlete", null, token);
-            await sendEmail.sendEmailInvite(email, team.name, token);
+            await InviteModel.createInvite(teamId, normalizedEmail, "athlete", null, token);
+            await sendEmail.sendEmailInvite(normalizedEmail, team.name, token);
 
         } 
         else {
-            await sendEmail.sendAddedToTeamEmail(email, team!.name, "athlete");
+            await sendEmail.sendAddedToTeamEmail(normalizedEmail, team.name, "athlete");
         }    
 
         return res.status(204).send();

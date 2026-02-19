@@ -7,74 +7,85 @@ import crypto from "crypto";
 import { InviteModel } from "../models/InviteModel";
 
 function isManagerOrAdmin(req: any) {
-  const role = req.user?.role;
-  return role === "manager" || role === "admin";
+    const role = req.user?.role;
+    return role === "manager" || role === "admin";
 }
 
 export class StaffController {
-  static async getStaff(req: Request, res: Response) {
-    const { teamId } = req.params;
-    const staff = await TeamStaffModel.getStaff(teamId);
-    return res.json(staff);
-  }
-
-  static async addStaff(req: any, res: Response) {
-
-    if (!isManagerOrAdmin(req)) return res.status(403).send("Forbidden");
-
-    const { teamId } = req.params;
-    const { email, role, notes = null } = req.body || {};
-
-    if (!email) return res.status(400).send("email required");
-
-    let user = await UserModel.findByEmail(email);
-    let isGhost = false;
-
-    if (!user) {
-      user = await UserModel.createGhostUser(email);
-      isGhost = true;
+    static async getStaff(req: Request, res: Response) {
+        const { teamId } = req.params;
+        const staff = await TeamStaffModel.getStaff(teamId);
+        return res.json(staff);
     }
 
-    if (!user || user.id === null) {
-      return res.status(500).send("Failed to find or create user");
+    static async addStaff(req: any, res: Response) {
+        if (!isManagerOrAdmin(req)) return res.status(403).send("Forbidden");
+
+        const { teamId } = req.params;
+        const { email, role, notes = null } = req.body || {};
+
+        if (!email) return res.status(400).send("email required");
+
+        const team = await TeamModel.getTeam(teamId);
+        if (!team) return res.status(404).send("Team not found");
+
+        const normalizedEmail = email.trim().toLowerCase();
+
+        let user = await UserModel.findByEmail(normalizedEmail);
+        let isGhost = false;
+
+        if (!user) {
+            user = await UserModel.createGhostUser(normalizedEmail);
+            isGhost = true;
+        }
+
+        if (!user || user.id === null) {
+            return res.status(500).send("Failed to find or create user");
+        }
+
+        const added = await TeamStaffModel.addStaff(
+            teamId,
+            user.id,
+            role,
+            notes,
+        );
+
+        if (isGhost) {
+            const token = crypto.randomBytes(32).toString("hex");
+            await InviteModel.createInvite(
+                teamId,
+                normalizedEmail,
+                role,
+                null,
+                token,
+            );
+            await sendEmail.sendEmailInvite(normalizedEmail, team.name, token);
+        } else {
+            await sendEmail.sendAddedToTeamEmail(
+                normalizedEmail,
+                team.name,
+                role,
+            );
+        }
+
+        return res.json(added);
     }
 
-    const added = await TeamStaffModel.addStaff(teamId, user.id, role, notes);
-    const team = await TeamModel.getTeam(teamId);
+    static async updateStaff(req: any, res: Response) {
+        if (!isManagerOrAdmin(req)) return res.status(403).send("Forbidden");
 
-    if (!team) return res.status(500).send("Team not found");
+        const { staffId } = req.params;
+        const updated = await TeamStaffModel.updateStaffById(staffId, req.body);
+        if (!updated) return res.status(404).send("not found");
 
-    if (isGhost) {
-      const token = crypto.randomBytes(32).toString("hex");
-      await InviteModel.createInvite(teamId, email, role, null, token);
-      await sendEmail.sendEmailInvite(email, team.name, token);
-
-    }
-    else {
-      await sendEmail.sendAddedToTeamEmail(email, team.name, role);
-
+        return res.json(updated);
     }
 
-    return res.json(added);
-  }
+    static async removeStaff(req: any, res: Response) {
+        if (!isManagerOrAdmin(req)) return res.status(403).send("Forbidden");
 
-  static async updateStaff(req: any, res: Response) {
-    if (!isManagerOrAdmin(req))
-      return res.status(403).send("Forbidden");
-
-    const { staffId } = req.params;
-    const updated = await TeamStaffModel.updateStaffById(staffId, req.body);
-    if (!updated) return res.status(404).send("not found");
-
-    return res.json(updated);
-  }
-
-  static async removeStaff(req: any, res: Response) {
-    if (!isManagerOrAdmin(req))
-      return res.status(403).send("Forbidden");
-
-    const { staffId } = req.params;
-    await TeamStaffModel.removeStaff(staffId);
-    return res.json({ success: true });
-  }
+        const { staffId } = req.params;
+        await TeamStaffModel.removeStaff(staffId);
+        return res.json({ success: true });
+    }
 }
