@@ -60,7 +60,7 @@ export const TeamTabs = ({
     isManagerOverride,
 }: Props) => {
     const userRole = useUserRole();
-    const isManager = userRole.isManager;
+    const isManager = isManagerOverride ?? userRole.isManager;
     const [activeTab, setActiveTab] = useState<"profile" | "roster" | "staff" | "schedule">("profile");
     return (
         <div className="space-y-6">
