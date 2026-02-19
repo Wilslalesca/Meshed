@@ -143,7 +143,7 @@ export const TeamTabs = ({
                 </div>
             </div>
 
-            <Tabs defaultValue="profile" className="w-full" onValueChange={(v) => setActiveTab(v as typeof activeTab)}>
+            <Tabs defaultValue="profile" className="w-full" onValueChange={(v: string) => setActiveTab(v as typeof activeTab)}>
                 <TabsList className="w-full">
                     <TabsTrigger
                         value="profile"
@@ -179,7 +179,6 @@ export const TeamTabs = ({
                 <TabsContent value="staff">{children.staff}</TabsContent>
                 <TabsContent value="schedule">{children.schedule}</TabsContent>
             </Tabs>
-        </div>
         </div>
     );
 };
