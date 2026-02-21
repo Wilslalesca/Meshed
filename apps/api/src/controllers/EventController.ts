@@ -7,7 +7,7 @@ export class EventController {
         return
     }
 
-    static async getAllEvents(req: Request, res: Response) { 
+    static async getAllEvents(res: Response) { 
         const events = await EventModel.getAll();
 
         const formattedEvents = events.map(event => ({
@@ -65,23 +65,23 @@ export class EventController {
         const status = 'pending'
         const events = await EventModel.getAllStatusFacilityRequests(facilityId, status);
         const toReturn: Array<{
-            id: any;
-            teamId: any;
-            teamFacilityId: any;
-            name: any;
-            type: any;
-            startTime: any;
-            endTime: any;
-            startDate: any;
-            endDate: any;
-            reoccurring: any;
-            selectedReoccurrType: any;
-            dayOfWeek: any;
-            status: any;
-            opponent: any;
-            homeAway: any;
-            liftType: any;
-            notes: any;
+            id: string;
+            teamId: string;
+            teamFacilityId: string;
+            name: string;
+            type: string;
+            startTime: string;
+            endTime: string;
+            startDate: Date;
+            endDate: Date;
+            reoccurring: boolean;
+            selectedReoccurrType: string;
+            dayOfWeek: string;
+            status: string;
+            opponent: string;
+            homeAway: string;
+            liftType: string;
+            notes: string;
         }> = []
 
         if(!events){
