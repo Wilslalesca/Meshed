@@ -6,8 +6,9 @@ const GMAIL_APP_EMAIL = process.env.GMAIL_APP_EMAIL!;
 
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
-  port: 465,
-  secure: true,
+  port: 587,
+  secure: false,
+  requireTLS: true,
   auth: {
     user: GMAIL_APP_EMAIL,
     pass: GMAIL_APP_PASSWORD,
