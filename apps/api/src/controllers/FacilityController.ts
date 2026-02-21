@@ -1,5 +1,5 @@
 // apps/api/src/controllers/FacilityController.ts
-import { Request, Response } from "express";
+import { Response } from "express";
 import { FacilityModel } from "../models/FacilityModel";
 
 function canManageFacilities(req: any): boolean {

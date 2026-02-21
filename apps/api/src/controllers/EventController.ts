@@ -1,7 +1,5 @@
-import { pool } from "../config/db";
 import { Request, Response } from "express";
 import { EventModel } from "../models/EventModel";
-import type { TeamEvent } from "../types/event";
 
 export class EventController {
 

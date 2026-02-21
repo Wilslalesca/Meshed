@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Response } from "express";
 import { NotificationModel } from "../models/NotificationModel";
 import { AuthedRequest } from "../middleware/authMiddleware";
 
