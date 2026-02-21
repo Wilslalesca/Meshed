@@ -12,7 +12,7 @@ export const useTeamSchedule = (teamId: string, fromISO: string, toISO: string) 
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
-    let cancelled = false;
+    const cancelled = false;
 
     async function fetchSchedule() {
 

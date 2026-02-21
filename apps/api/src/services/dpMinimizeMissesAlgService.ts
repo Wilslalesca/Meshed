@@ -43,12 +43,12 @@ export function dpMinimizeMissesAlgService(daysIn: any) {
         dp[dayIndex] = [];
 
         //Go through each practice option for the current day
-        for (let currentOption of daysIn[dayIndex].options) {
+        for (const currentOption of daysIn[dayIndex].options) {
             let bestPrevState = null;
             let bestMaxMisses = Infinity;
 
             //Compare with all previous day states
-            for (let prevState of dp[dayIndex - 1]) {
+            for (const prevState of dp[dayIndex - 1]) {
                 const combinedMisses = { ...prevState.athleteMisses }; //Array copy of previous individual athlete misses
 
                 //Update combined misses with current option's misses

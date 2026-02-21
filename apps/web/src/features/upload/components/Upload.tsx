@@ -37,7 +37,7 @@ export function Upload(): JSX.Element {
                 uploadResponse?.course_times
             ) {
                 const parsedSchedule = uploadResponse.course_times;
-                for (var i = 0; i < parsedSchedule.length; i++) {
+                for (let i = 0; i < parsedSchedule.length; i++) {
                     const athleteCourseResponse =
                         await apiAddCourseAndAthleteCourse(
                             parsedSchedule[i],

@@ -3,13 +3,13 @@ export function maximizeAttendanceService(days: any) {
     //Input: Array of days with options and athletes missing
     //Note: Input is different from DP algorithm
     //Output: Array of selected options for each day
-    let schedule = [];
+    const schedule = [];
 
-    for (let day of days) {
+    for (const day of days) {
         let bestOption = null;
         let minMissing = Infinity;
 
-        for (let option of day.options) {
+        for (const option of day.options) {
             const tempMissing = Array.isArray(option.athletesMissing)
                 ? option.athletesMissing.length
                 : Object.keys(option.athletesMissing || {}).length;
