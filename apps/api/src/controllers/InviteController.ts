@@ -6,7 +6,7 @@ import crypto from "crypto";
 
 export class InviteController {
 
-  static async invite(req: any, res: Response) {
+  static async invite(req: Request, res: Response) {
     const { teamId } = req.params;
     const { email, role = "athlete", position = null } = req.body;
 
