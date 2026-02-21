@@ -3,7 +3,6 @@ import { z } from "zod";
 import { CourseModel } from "../models/CourseModel";
 import { AthleteCourseModel } from "../models/AthleteCourseModel";
 import { pool } from "../config/db";
-import { parse } from "path";
 
 const courseTimeSchema = z.object({
   name: z.string().min(1).max(100),
