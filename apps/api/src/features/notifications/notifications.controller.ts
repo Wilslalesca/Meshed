@@ -1,13 +1,6 @@
 import { Request, Response } from "express";
 import * as service from "./notifications.service";
 
-declare global {
-  namespace Express {
-    interface Request {
-      user?: { id: string };
-    }
-  }
-}
 
 export async function createForTeam(req: Request, res: Response) {
     const { teamId } = req.params;
@@ -26,8 +19,7 @@ export async function createForUser(req: Request, res: Response) {
 
 
 export async function list(req: Request, res: Response) {
-    const userId = req.user!.id;
-
+    const { userId } = req.params;
     const limit = parseInt(req.query.limit as string) || 20;
     const cursor = req.query.cursor as string | undefined;
 
@@ -38,19 +30,19 @@ export async function list(req: Request, res: Response) {
 
 
 export async function getUnreadCount(req: Request, res: Response) {
-    const userId = req.user!.id;
+    const { userId } = req.params;
     const count = await service.getUnreadCount(userId);
     res.json({ count });
 }
 
 export async function markAsRead(req: Request, res: Response) {
-    const userId  = req.user!.id;
+    const { userId } = req.params;
     const updated = await service.markRead(userId, req.params.id as string);
     res.json({ updated });
 }
 
 export async function markAllRead(req: Request, res: Response) {
-  const userId = req.user!.id;
-  const updated = await service.markAllRead(userId);
-  res.json({ updated });
+    const { userId } = req.params;
+    const updated = await service.markAllRead(userId);
+    res.json({ updated });
 }
