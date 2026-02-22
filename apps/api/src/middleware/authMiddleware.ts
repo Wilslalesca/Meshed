@@ -1,47 +1,40 @@
-import { Request, Response, NextFunction, } from "express";
-import type { RequestHandler } from "express";
-import { verifyAccess } from "../utils/tokens";
-import { Role } from "../types/index";
+import { Request, Response, NextFunction } from 'express';
+import { verifyAccess } from '../utils/tokens';
+import { Role } from '../types/index';
 
-export interface AuthedRequest extends Request {
-    user?: { id: string; role: Role };
+export interface AuthedRequest extends Request { user?: { id: string; role: Role }; }
+
+export function requireAuth(req: AuthedRequest, res: Response, next: NextFunction) {
+    const header = req.header('Authorization');
+    
+    if (!header?.startsWith('Bearer ')) {
+        return res.status(401).json({ error: 'Missing token' });
+    }
+    const token = header.slice(7);
+
+    try {
+        const payload = verifyAccess(token);
+        req.user = { id: payload.userId, role: payload.role };
+        next();
+    } 
+    catch {
+        return res.status(401).json({ error: 'Invalid or expired token' });
+    }
 }
 
-
-
-export const requireAuth: RequestHandler = (req, res, next) => {
-  const header = req.header("Authorization");
-  if (!header?.startsWith("Bearer ")) {
-    res.status(401).json({ error: "Missing token" });
-    return;
-  }
-
-  try {
-    const payload = verifyAccess(header.slice(7));
-    (req as any).user = { id: payload.userId, role: payload.role };
-    next();
-  } catch {
-    res.status(401).json({ error: "Invalid or expired token" });
-    return;
-  }
-};
-
-
-
 export function requireRole(allowed: Role | Role[]) {
-  const roles = Array.isArray(allowed) ? allowed : [allowed];
+    const roles = Array.isArray(allowed) ? allowed : [allowed];
 
-  return function (req: AuthedRequest, res: Response, next: NextFunction): void {
-    if (!req.user) {
-      res.status(401).json({ error: "Unauthenticated" });
-      return;
-    }
+    return (req: AuthedRequest, res: Response, next: NextFunction) => {
 
-    if (!roles.includes(req.user.role)) {
-      res.status(403).json({ error: "Forbidden" });
-      return;
-    }
+        if (!req.user) {
+            return res.status(401).json({ error: 'Unauthenticated' });
+        }
 
-    next();
-  };
+        if (!roles.includes(req.user.role)) {
+            return res.status(403).json({ error: 'Forbidden' });
+        }
+
+        next();
+    };
 }

@@ -44,3 +44,35 @@ export async function seedTeams() {
         client.release();
     }
 }
+
+
+export async function addUsersToTeams() {
+    const client = await pool.connect();
+    try {
+        await client.query("BEGIN");
+
+        // Add all users to the first team
+        const teamRes = await client.query(`SELECT id FROM teams LIMIT 1`);
+        const teamId = teamRes.rows[0].id;
+
+        const userRes = await client.query(`SELECT id FROM users`);
+        for (const row of userRes.rows) {
+            const userId = row.id;
+            await client.query(
+                `INSERT INTO user_teams (user_id, team_id, joined_at)
+             VALUES ($1, $2, NOW())
+             ON CONFLICT DO NOTHING`,
+                [userId, teamId]
+            );
+        }
+
+        await client.query("COMMIT");
+        console.log("addUsersToTeams complete");
+    } catch (e) {
+        await client.query("ROLLBACK");
+        console.error("addUsersToTeams failed:", e);
+        throw e;
+    } finally {
+        client.release();
+    }
+}
