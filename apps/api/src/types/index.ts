@@ -22,6 +22,7 @@ export interface JWTPayload {
 
 export interface CourseTime {
     id: string;
+    user_id?: string;  // ? == optional since some courses may not be tied to a specific user
     name?: string;
     course_code?: string;
     location?: string;
@@ -34,9 +35,9 @@ export interface CourseTime {
     recurring?: boolean;
 }
 
-export interface AthleteCourseTime {
+export interface UserEvent {
     id: string;
-    athlete_id: string;
+    user_id: string;
     class_id: string;
     created_at?: string;
     updated_at?: string;

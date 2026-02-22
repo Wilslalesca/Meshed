@@ -51,28 +51,30 @@ export class TeamController {
     }
 
     static async createTeam(req: Request, res: Response) {
-        const { name, sport_id, season, league_id, gender } = req.body;
+        try {
+            const { name, sport_id, season, league_id, gender } = req.body;
 
-        if (!name || name.trim().length < 1)
-            return res.status(400).send("name required");
+            if (!name || name.trim().length < 1)
+                return res.status(400).send("name required");
 
+            const team = await TeamModel.createTeam({
+                name: name.trim(),
+                sport_id: sport_id || null,
+                season: season || null,
+                league_id: league_id || null,
+                gender: gender || null,
+            });
 
-        const team = await TeamModel.createTeam({
-            name: name.trim(),
-            sport_id: sport_id || null,
-            season: season || null,
-            league_id: league_id || null,
-            gender: gender || null,
-        });
+            const uid = getUserId(req);
+            if (uid) {
+                await TeamStaffModel.addStaff(team.id, uid, "manager", null);
+            }
 
-        console.log("Created team:", team);
-
-        const uid = getUserId(req);
-        if (uid) {
-            await TeamStaffModel.addStaff(team.id, uid, "manager", null);
+            res.status(201).json(team);
+        } catch (err: any) {
+            console.error("Error creating team:", err);
+            res.status(500).send(err?.message || "Failed to create team");
         }
-
-        res.status(201).json(team);
     }
 
     static async updateTeam(req: Request, res: Response) {

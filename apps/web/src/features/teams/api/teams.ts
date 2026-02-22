@@ -64,7 +64,12 @@ export async function apiCreateTeam(
         body: JSON.stringify(data),
     });
 
-    return res.ok ? await res.json() : undefined;
+    if (!res.ok) {
+        const msg = await res.text().catch(() => "");
+        throw new Error(msg || `Failed to create team (HTTP ${res.status})`);
+    }
+
+    return await res.json();
 }
 
 

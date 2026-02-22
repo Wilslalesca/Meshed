@@ -19,6 +19,7 @@ import { AddTeamEventModal } from "../modals/AddTeamEventModal";
 import { DeleteTeamModal } from "../modals/DeleteTeamModal";
 import { InviteMemberModal } from "../modals/InviteMemberModal";
 import { AddAthleteModal } from "../modals/AddAthleteModal";
+import { CreateTeamNotificationModal } from "../modals/CreateTeamNotificationModal";
 import { OptimizePracticeModal } from "../modals/OptimizePracticeModal";
 import { useTeamSchedule } from "../hooks/useTeamSchedule";
 import { startOfWeekISO, endOfWeekISO } from "../Services/isoRange";
@@ -44,6 +45,7 @@ export const TeamDetailsPage = () => {
     const [openDelete, setOpenDelete] = useState(false);
     const [openInvite, setOpenInvite] = useState(false);
     const [openBulkAdd, setOpenBulkAdd] = useState(false);
+    const [openCreateNotification, setOpenCreateNotification] = useState(false);
     const [inviteRole, setInviteRole] = useState<
         "athlete" | "manager"
     >("athlete");
@@ -87,6 +89,7 @@ export const TeamDetailsPage = () => {
                     isManager ? () => setOpenBulkAdd(true) : undefined
                 }
                 isManagerOverride={isManager}
+                onCreateNotification={isManager ? () => setOpenCreateNotification(true) : () => {}}
                 onAddTeamEvent = {isManager ? () => setOpenAddTeamEvent(true) : () => {}}
                 onOptimizeSchedule={
                     isManager ? () => setOpenOptimize(true) : () => {}
@@ -157,13 +160,14 @@ export const TeamDetailsPage = () => {
                 />
             )}
             {isManager && (
-                <>
-                   
-                <OptimizePracticeModal
-                        open={openOptimize}
-                        onOpenChange={setOpenOptimize}
-                        teamId={team.id} />
 
+              <OptimizePracticeModal
+                      open={openOptimize}
+                      onOpenChange={setOpenOptimize}
+                      teamId={team.id} />
+            )}
+
+            {isManager && (
                 <AddAthleteModal
                     open={openBulkAdd}
                     onOpenChange={setOpenBulkAdd}
@@ -172,6 +176,8 @@ export const TeamDetailsPage = () => {
                         reloadRoster();
                     }}
                 />
+            )}
+            {isManager && (
                 <AddTeamEventModal
                     open={openAddTeamEvent}
                     onOpenChange={setOpenAddTeamEvent}
@@ -180,7 +186,14 @@ export const TeamDetailsPage = () => {
                         reloadSchedule();
                     }}
                 />
-                </>
+            )}
+            {isManager && (
+                <CreateTeamNotificationModal
+                    open={openCreateNotification}
+                    onOpenChange={setOpenCreateNotification}
+                    teamId={team.id}
+                    teamName={team.name}
+                />
             )}
         </div>
     );

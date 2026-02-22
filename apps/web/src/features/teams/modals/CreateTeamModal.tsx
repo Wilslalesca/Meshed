@@ -64,14 +64,18 @@ export const CreateTeamModal = ({
       gender,
     };
 
-    const res = await apiCreateTeam(body, token);
-    setLoading(false);
-
-    if (res?.id) {
-      onOpenChange(false);
-      onCreated(res.id);
-    } else {
-      toast.error("Failed to create team. Please try again.");
+    try {
+      const res = await apiCreateTeam(body, token);
+      if (res?.id) {
+        onOpenChange(false);
+        onCreated(res.id);
+      } else {
+        toast.error("Failed to create team.");
+      }
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to create team.");
+    } finally {
+      setLoading(false);
     }
   }
 
