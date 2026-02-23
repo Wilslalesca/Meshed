@@ -1,15 +1,24 @@
 // apps/api/src/controllers/FacilityController.ts
-import { Response } from "express";
+import { Response, Request } from "express";
 import { FacilityModel } from "../models/FacilityModel";
+import { User } from "../types";
+import { UserModel } from "../models/UserModel";
 
-function canManageFacilities(req: any): boolean {
-  const role = req.user?.role;
+function canManageFacilities(req: User): boolean {
+  const role = req.role;
   return role === "admin" || role === "manager";
 }
 
 export class FacilityController {
-  static async list(req: any, res: Response) {
-    if (!canManageFacilities(req)) {
+  static async list(req: Request, res: Response) {
+    const { userId } = req.params;
+
+    const user = await UserModel.findById(userId);
+    if (!user) {
+      return res.status(404).send("User not found");
+    }
+
+    if (!canManageFacilities(user)) {
       return res.status(403).send("Forbidden");
     }
 
@@ -17,8 +26,14 @@ export class FacilityController {
     return res.json(facilities);
   }
 
-  static async create(req: any, res: Response) {
-    if (!canManageFacilities(req)) {
+  static async create(req: Request, res: Response) {
+    const { userId } = req.params;
+
+    const user = await UserModel.findById(userId);
+    if (!user) {
+      return res.status(404).send("User not found");
+    }
+    if (!canManageFacilities(user)) {
       return res.status(403).send("Forbidden");
     }
 
