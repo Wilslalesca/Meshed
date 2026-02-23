@@ -103,7 +103,7 @@ export class TeamController {
         res.json(athletes);
     }
 
-    static async addAthleteByEmail(req: any, res: Response) {
+    static async addAthleteByEmail(req: Request, res: Response) {
         const { teamId } = req.params;
         if (!(await isTeamManagerOrAdmin(req, teamId))) return res.status(403).send("Forbidden");
         const { email } = req.body;
@@ -136,7 +136,7 @@ export class TeamController {
         return res.status(204).send();
     }
 
-    static async bulkAddAthletesByCsv(req: any, res: Response) {
+    static async bulkAddAthletesByCsv(req: Request, res: Response) {
         const { teamId } = req.params;
         if (!(await isTeamManagerOrAdmin(req, teamId))) return res.status(403).send("Forbidden");
         const file = req.file as any;
@@ -247,13 +247,13 @@ export class TeamController {
         }
     }
 
-    static async removeAthlete(req: any, res: Response) {
+    static async removeAthlete(req: Request, res: Response) {
         const { teamId, userId } = req.params;
         if (!(await isTeamManagerOrAdmin(req, teamId))) return res.status(403).send("Forbidden");
         await TeamRosterModel.removeAthlete(teamId, userId);
         return res.json({ success: true });
     }
-    static async updateAthlete(req: any, res: Response) {
+    static async updateAthlete(req: Request, res: Response) {
         const { teamId, userId } = req.params;
         if (!(await isTeamManagerOrAdmin(req, teamId))) return res.status(403).send("Forbidden");
         const { position, status } = req.body;
