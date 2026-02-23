@@ -2,12 +2,14 @@ import type { Request , Response } from 'express';
 import { maximizeAttendanceService } from '../services/maximizeAttendanceService';
 import { dpMinimizeMissesAlgService } from '../services/dpMinimizeMissesAlgService';
 import { buildDaysWithAthleteMisses } from '../services/optimizationService';
+import type { OptimizationDay } from '../types/optimization';
+
 
 export async function optimizeScheduleController(req: Request, res: Response) {
     try {
         const { optimizationType, days, teamId } = req.body as {
             optimizationType: 'MAX_ATTENDANCE' | 'MIN_MISSES',
-            days: any;
+            days: OptimizationDay[];
             teamId?: string;
         };
 
