@@ -24,12 +24,10 @@ export const AthleteCourseModel = {
   async updateAthleteCourseTime(
     classId: string,
     athleteId: string
-    // data: Partial<NewAthleteCourseTime>
   ): Promise<boolean> {
-    // Legacy behavior: treat an update as a touch.
     const res = await pool.query(
       `UPDATE user_events
-       SET updated_at = NOW()
+       SET class_id = $1, user_id = $2, updated_at = NOW()
        WHERE class_id = $1 AND user_id = $2`,
       [classId, athleteId]
     );
