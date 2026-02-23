@@ -9,10 +9,9 @@ export interface NewUserEvent {
 }
 
 export const UserEventModel = {
-  async insert(data: NewUserEvent, client?: any): Promise<UserEvent> {
-    const c = client || pool;
+  async insert(data: NewUserEvent): Promise<UserEvent> {
 
-    const res = await c.query(
+    const res = await pool.query(
       `INSERT INTO user_events (
           user_id, class_id, created_at, updated_at
        ) VALUES ($1, $2, NOW(), NOW())
@@ -65,6 +64,6 @@ export const UserEventModel = {
       `SELECT user_id FROM user_events WHERE class_id = $1`,
       [classId]
     );
-    return rows.map((r: any) => r.user_id);
+    return rows.map((r: UserEvent) => r.user_id);
   },
 };

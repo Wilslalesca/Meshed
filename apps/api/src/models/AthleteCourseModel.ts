@@ -48,6 +48,6 @@ export const AthleteCourseModel = {
       `SELECT user_id FROM user_events WHERE class_id = $1`,
       [classId]
     );
-    return rows.map((r: CourseTime) => r.user_id as string);
+    return rows.map((r: UserEvent) => r.user_id);
   },
 };

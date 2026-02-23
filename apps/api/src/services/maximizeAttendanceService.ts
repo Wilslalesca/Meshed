@@ -1,9 +1,27 @@
-export function maximizeAttendanceService(days: any) {
+type AthletesMissing = string[] | Record<string, unknown>;
+
+export interface AttendanceOption {
+    athletesMissing?: AthletesMissing;
+    [key: string]: unknown;
+}
+
+export interface AttendanceDay {
+    date?: string;
+    day?: string;
+    options: AttendanceOption[];
+}
+
+export interface AttendanceScheduleEntry {
+    day: string | undefined;
+    option: AttendanceOption | null;
+}
+
+export function maximizeAttendanceService(days: AttendanceDay[]): AttendanceScheduleEntry[] {
     //Alg to to maximize attendance by minimizing athletes missing each day
     //Input: Array of days with options and athletes missing
     //Note: Input is different from DP algorithm
     //Output: Array of selected options for each day
-    const schedule = [];
+    const schedule: AttendanceScheduleEntry[] = [];
 
     for (const day of days) {
         let bestOption = null;

@@ -1,4 +1,30 @@
-export function dpMinimizeMissesAlgService(daysIn: any) {
+type AthleteMissesMap = Record<string, number>;
+
+export interface DpPracticeOption {
+    athletesMissing?: AthleteMissesMap;
+    [key: string]: unknown;
+}
+
+export interface DpPracticeDay {
+    options: DpPracticeOption[];
+    [key: string]: unknown;
+}
+
+interface DpState {
+    maxMisses: number;
+    athleteMisses: AthleteMissesMap;
+    currentSched: DpPracticeOption[];
+}
+
+export interface DpMinimizeMissesResult {
+    schedule: DpPracticeOption[];
+    maxMisses: number;
+    athleteMisses: AthleteMissesMap;
+}
+
+export function dpMinimizeMissesAlgService(
+    daysIn: DpPracticeDay[],
+): DpMinimizeMissesResult {
     //Input: Array of days with practice options and athletes missing per option, identified by their athlete ID
     //Output: Schedule minimizing the maximum number of misses for any athlete
 
@@ -11,25 +37,27 @@ export function dpMinimizeMissesAlgService(daysIn: any) {
     }
 
     //Helper function for later to find the maximum value in an array safely
-    function maxArrayValue(arr: any[]) {
+    function maxArrayValue(arr: number[]) {
         if (arr.length === 0) return 0;
         return Math.max(...arr);
     }
 
-    function sumMisses(missesObj: any) {
-        return Object.values(missesObj || {}).reduce(
-            (sum: number, val: unknown) => sum + (val as number),
+    function sumMisses(missesObj: AthleteMissesMap) {
+        return Object.values(missesObj).reduce(
+            (sum: number, val: number) => sum + val,
             0,
         );
     }
 
     //Initialize DP table
-    const dp = Array(daysIn.length);
+    const dp: DpState[][] = Array(daysIn.length);
 
     //Base case: Fill in for the first day
-    dp[0] = daysIn[0].options.map((option: { athletesMissing: any }) => {
+    dp[0] = daysIn[0].options.map((option) => {
         // Each athlete missing a practice for this option
-        const athleteMisses = { ...(option.athletesMissing || {}) };
+        const athleteMisses: AthleteMissesMap = {
+            ...(option.athletesMissing || {}),
+        };
         return {
             maxMisses: maxArrayValue(Object.values(athleteMisses)),
             athleteMisses,
@@ -44,7 +72,7 @@ export function dpMinimizeMissesAlgService(daysIn: any) {
 
         //Go through each practice option for the current day
         for (const currentOption of daysIn[dayIndex].options) {
-            let bestPrevState = null;
+            let bestPrevState: DpState | null = null;
             let bestMaxMisses = Infinity;
 
             //Compare with all previous day states
@@ -52,8 +80,9 @@ export function dpMinimizeMissesAlgService(daysIn: any) {
                 const combinedMisses = { ...prevState.athleteMisses }; //Array copy of previous individual athlete misses
 
                 //Update combined misses with current option's misses
+                const optionMisses = currentOption.athletesMissing || {};
                 for (const [athleteId, misses] of Object.entries(
-                    currentOption.athletesMissing || {},
+                    optionMisses,
                 )) {
                     combinedMisses[athleteId] =
                         (combinedMisses[athleteId] || 0) + misses; //add this options misses to the athletes total or 0 if they haven't missed any yet
