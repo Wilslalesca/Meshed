@@ -5,9 +5,11 @@ import { TeamModel } from "../models/TeamModel";
 import { sendEmail } from "../services/emailService";
 import crypto from "crypto";
 import { InviteModel } from "../models/InviteModel";
+import { User } from "../types";
 
-function isManagerOrAdmin(req: any) {
-  const role = req.user?.role;
+
+function isManagerOrAdmin(req: User) {
+  const role = req.role;
   return role === "manager" || role === "admin";
 }
 
@@ -18,16 +20,19 @@ export class StaffController {
     return res.json(staff);
   }
 
-  static async addStaff(req: any, res: Response) {
-
-    if (!isManagerOrAdmin(req)) return res.status(403).send("Forbidden");
+  static async addStaff(req: Request, res: Response) {
+    const { userId } = req.params;
+    let user = await UserModel.findById(userId);
+    if (!user) return res.status(404).send("User not found");
+    
+    if (!isManagerOrAdmin(user)) return res.status(403).send("Forbidden");
 
     const { teamId } = req.params;
     const { email, role, notes = null } = req.body || {};
 
     if (!email) return res.status(400).send("email required");
 
-    let user = await UserModel.findByEmail(email);
+     user = await UserModel.findByEmail(email);
     let isGhost = false;
 
     if (!user) {
@@ -58,9 +63,11 @@ export class StaffController {
     return res.json(added);
   }
 
-  static async updateStaff(req: any, res: Response) {
-    if (!isManagerOrAdmin(req))
+  static async updateStaff(req: Request, res: Response) {
+    const user = await UserModel.findById(req.params.userId);
+    if (!user || !isManagerOrAdmin(user)) {
       return res.status(403).send("Forbidden");
+    }
 
     const { staffId } = req.params;
     const updated = await TeamStaffModel.updateStaffById(staffId, req.body);
@@ -69,9 +76,11 @@ export class StaffController {
     return res.json(updated);
   }
 
-  static async removeStaff(req: any, res: Response) {
-    if (!isManagerOrAdmin(req))
+  static async removeStaff(req: Request, res: Response) {
+    const user = await UserModel.findById(req.params.userId);
+    if (!user || !isManagerOrAdmin(user)) {
       return res.status(403).send("Forbidden");
+    }
 
     const { staffId } = req.params;
     await TeamStaffModel.removeStaff(staffId);
