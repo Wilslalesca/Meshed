@@ -1,4 +1,3 @@
-// apps/api/src/controllers/FacilityController.ts
 import { Response, Request } from "express";
 import { FacilityModel } from "../models/FacilityModel";
 import { User } from "../types";

@@ -1,5 +1,5 @@
 import { pool } from "../config/db";
-import type { UserEvent } from "../types/index";
+import type { CourseTime, UserEvent } from "../types/index";
 
 export interface NewAthleteCourseTime {
   athlete_id?: string;
@@ -9,10 +9,9 @@ export interface NewAthleteCourseTime {
 }
 
 export const AthleteCourseModel = {
-  async insert(data: NewAthleteCourseTime, client?: any): Promise<UserEvent> {
-    const c = client || pool;
+  async insert(data: NewAthleteCourseTime): Promise<UserEvent> {
 
-    const res = await c.query(
+    const res = await pool.query(
       `INSERT INTO user_events (
           user_id, class_id, created_at, updated_at
        ) VALUES ($1, $2, NOW(), NOW())
@@ -24,8 +23,8 @@ export const AthleteCourseModel = {
 
   async updateAthleteCourseTime(
     classId: string,
-    athleteId: string,
-    data: Partial<NewAthleteCourseTime>
+    athleteId: string
+    // data: Partial<NewAthleteCourseTime>
   ): Promise<boolean> {
     // Legacy behavior: treat an update as a touch.
     const res = await pool.query(
@@ -51,6 +50,6 @@ export const AthleteCourseModel = {
       `SELECT user_id FROM user_events WHERE class_id = $1`,
       [classId]
     );
-    return rows.map((r: any) => r.user_id);
+    return rows.map((r: CourseTime) => r.user_id as string);
   },
 };

@@ -19,12 +19,15 @@ function getUserId(req: any): string | undefined {
     );
 }
 
-async function isTeamManagerOrAdmin(req: any, teamId: string): Promise<boolean> {
-    const role = req.user?.role;
+async function isTeamManagerOrAdmin(req: Request, teamId: string): Promise<boolean> {
+    const { userId } = req.params;
+    const user = await UserModel.findById(userId);
+    if (!user) return false;
+    
     const uid = getUserId(req);
     if (!uid) return false;
 
-    if (role === "admin") return true;
+    if (user.role === "admin") return true;
 
     const staff = await TeamStaffModel.findStaffRecord(teamId, uid);
     return staff?.role === "manager";
