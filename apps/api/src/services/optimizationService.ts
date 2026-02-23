@@ -1,5 +1,5 @@
 import { ScheduleModel } from "../models/ScheduleModel";
-import type { OptimizationDay, TimeOption, TimeRange } from "../types/optimization";
+import type { OptimizationDay, TimeRange } from "../types/optimization";
 
 function toMinutes(time: string): number | null {
     const parts = time.split(":").map((p) => Number(p));

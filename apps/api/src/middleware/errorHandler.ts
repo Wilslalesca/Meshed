@@ -6,6 +6,7 @@ export const errorHandler = (err: Error, req: Request, res: Response, next: Next
     logger.error("Unhandled error:", err);
     console.error(err);
     res.status(500).send({ errors: [{ message: "Something went wrong" }] });
+    next();
 };
 
 
