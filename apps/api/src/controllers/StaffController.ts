@@ -1,31 +1,33 @@
-import { Request, Response } from "express";
+import { Response } from "express";
 import { TeamStaffModel } from "../models/TeamStaffModel";
 import { UserModel } from "../models/UserModel";
 import { TeamModel } from "../models/TeamModel";
 import { sendEmail } from "../services/emailService";
 import crypto from "crypto";
 import { InviteModel } from "../models/InviteModel";
-import { User } from "../types";
+import { Role } from "../types";
+import { AuthedRequest } from "../middleware/authMiddleware";
 
 
-function isManagerOrAdmin(req: User) {
-  const role = req.role;
+function isManagerOrAdmin(role: Role | undefined) {
   return role === "manager" || role === "admin";
 }
 
 export class StaffController {
-  static async getStaff(req: Request, res: Response) {
+  static async getStaff(req: AuthedRequest, res: Response) {
     const { teamId } = req.params;
     const staff = await TeamStaffModel.getStaff(teamId);
     return res.json(staff);
   }
 
-  static async addStaff(req: Request, res: Response) {
-    const { userId } = req.params;
+  static async addStaff(req: AuthedRequest, res: Response) {
+    const userId = req.user?.id;
+    if (!userId) return res.status(401).send("Unauthorized");
+
     let user = await UserModel.findById(userId);
     if (!user) return res.status(404).send("User not found");
     
-    if (!isManagerOrAdmin(user)) return res.status(403).send("Forbidden");
+    if (!isManagerOrAdmin(user.role)) return res.status(403).send("Forbidden");
 
     const { teamId } = req.params;
     const { email, role, notes = null } = req.body || {};
@@ -63,9 +65,12 @@ export class StaffController {
     return res.json(added);
   }
 
-  static async updateStaff(req: Request, res: Response) {
-    const user = await UserModel.findById(req.params.userId);
-    if (!user || !isManagerOrAdmin(user)) {
+  static async updateStaff(req: AuthedRequest, res: Response) {
+    const userId = req.user?.id;
+    if (!userId) return res.status(401).send("Unauthorized");
+
+    const user = await UserModel.findById(userId);
+    if (!user || !isManagerOrAdmin(user.role)) {
       return res.status(403).send("Forbidden");
     }
 
@@ -76,9 +81,12 @@ export class StaffController {
     return res.json(updated);
   }
 
-  static async removeStaff(req: Request, res: Response) {
-    const user = await UserModel.findById(req.params.userId);
-    if (!user || !isManagerOrAdmin(user)) {
+  static async removeStaff(req: AuthedRequest, res: Response) {
+    const userId = req.user?.id;
+    if (!userId) return res.status(401).send("Unauthorized");
+
+    const user = await UserModel.findById(userId);
+    if (!user || !isManagerOrAdmin(user.role)) {
       return res.status(403).send("Forbidden");
     }
 

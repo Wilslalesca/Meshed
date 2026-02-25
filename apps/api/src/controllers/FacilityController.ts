@@ -1,23 +1,24 @@
-import { Response, Request } from "express";
+import { Response } from "express";
 import { FacilityModel } from "../models/FacilityModel";
-import { User } from "../types";
+import { Role } from "../types";
 import { UserModel } from "../models/UserModel";
+import { AuthedRequest } from "../middleware/authMiddleware";
 
-function canManageFacilities(req: User): boolean {
-  const role = req.role;
+function canManageFacilities(role: Role | undefined): boolean {
   return role === "admin" || role === "manager";
 }
 
 export class FacilityController {
-  static async list(req: Request, res: Response) {
-    const { userId } = req.params;
+  static async list(req: AuthedRequest, res: Response) {
+    const userId = req.user?.id;
+    if (!userId) return res.status(401).send("Unauthorized");
 
     const user = await UserModel.findById(userId);
     if (!user) {
       return res.status(404).send("User not found");
     }
 
-    if (!canManageFacilities(user)) {
+    if (!canManageFacilities(user.role)) {
       return res.status(403).send("Forbidden");
     }
 
@@ -25,14 +26,15 @@ export class FacilityController {
     return res.json(facilities);
   }
 
-  static async create(req: Request, res: Response) {
-    const { userId } = req.params;
+  static async create(req: AuthedRequest, res: Response) {
+    const userId = req.user?.id;
+    if (!userId) return res.status(401).send("Unauthorized");
 
     const user = await UserModel.findById(userId);
     if (!user) {
       return res.status(404).send("User not found");
     }
-    if (!canManageFacilities(user)) {
+    if (!canManageFacilities(user.role)) {
       return res.status(403).send("Forbidden");
     }
 

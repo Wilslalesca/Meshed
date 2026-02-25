@@ -8,10 +8,11 @@ import { sendEmail } from "../services/emailService";
 import { InviteModel } from "../models/InviteModel";
 import crypto from "crypto";
 import * as xlsx from "xlsx";
+import { AuthedRequest } from "../middleware/authMiddleware";
 
 
-async function isTeamManagerOrAdmin(req: Request, teamId: string): Promise<boolean> {
-    const { userId } = req.params;
+async function isTeamManagerOrAdmin(req: AuthedRequest, teamId: string): Promise<boolean> {
+    const userId = req.user?.id;
     if (!userId) return false;
     const user = await UserModel.findById(userId);
     if (!user) return false;
@@ -23,8 +24,9 @@ async function isTeamManagerOrAdmin(req: Request, teamId: string): Promise<boole
 }
 
 export class TeamController {
-    static async getMyTeams(req: Request, res: Response) {
-        const { userId } = req.params;
+    static async getMyTeams(req: AuthedRequest, res: Response) {
+        const userId = req.user?.id;
+        console.log("Getting My Teams for userId:", userId);
         console.log("Getting Teams" );
         console.log("User ID:", userId);
 
@@ -42,7 +44,7 @@ export class TeamController {
         res.json(team);
     }
 
-    static async createTeam(req: Request, res: Response) {
+    static async createTeam(req: AuthedRequest, res: Response) {
         try {
             const { name, sport_id, season, league_id, gender } = req.body;
 
@@ -57,10 +59,9 @@ export class TeamController {
                 gender: gender || null,
             });
 
-            const { userId } = req.params;
-            if (userId) {
-                await TeamStaffModel.addStaff(team.id, userId, "manager", null);
-            }
+            const userId = req.user?.id;
+            if (!userId) return res.status(401).send("Unauthorized");
+            await TeamStaffModel.addStaff(team.id, userId, "manager", null);
 
             res.status(201).json(team);
         } catch {
@@ -94,7 +95,7 @@ export class TeamController {
         res.json(athletes);
     }
 
-    static async addAthleteByEmail(req: Request, res: Response) {
+    static async addAthleteByEmail(req: AuthedRequest, res: Response) {
         const { teamId } = req.params;
         if (!(await isTeamManagerOrAdmin(req, teamId))) return res.status(403).send("Forbidden");
         const { email } = req.body;
@@ -127,7 +128,7 @@ export class TeamController {
         return res.status(204).send();
     }
 
-    static async bulkAddAthletesByCsv(req: Request, res: Response) {
+    static async bulkAddAthletesByCsv(req: AuthedRequest, res: Response) {
         const { teamId } = req.params;
         if (!(await isTeamManagerOrAdmin(req, teamId))) return res.status(403).send("Forbidden");
         const file = req.file;
@@ -238,13 +239,13 @@ export class TeamController {
         }
     }
 
-    static async removeAthlete(req: Request, res: Response) {
+    static async removeAthlete(req: AuthedRequest, res: Response) {
         const { teamId, userId } = req.params;
         if (!(await isTeamManagerOrAdmin(req, teamId))) return res.status(403).send("Forbidden");
         await TeamRosterModel.removeAthlete(teamId, userId);
         return res.json({ success: true });
     }
-    static async updateAthlete(req: Request, res: Response) {
+    static async updateAthlete(req: AuthedRequest, res: Response) {
         const { teamId, userId } = req.params;
         if (!(await isTeamManagerOrAdmin(req, teamId))) return res.status(403).send("Forbidden");
         const { position, status } = req.body;
