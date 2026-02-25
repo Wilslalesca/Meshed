@@ -1,5 +1,4 @@
 import React from "react";
-import { GalleryVerticalEnd } from "lucide-react";
 import { RegisterForm } from "@/features/auth/components/RegisterForm";
 import Logo from "@/assets/Logo_Master.png";
 import Meshed_Icon from "@/assets/Icon.png";
