@@ -6,7 +6,6 @@ import { Label } from "@/shared/components//ui/label";
 import { useAuth } from "@/shared/hooks/useAuth";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { EmailVerificationModal } from "../modal/EmailVerificationModal";
-import { set } from "date-fns";
 
 export function LoginForm({
     className,
@@ -17,9 +16,9 @@ export function LoginForm({
     const [password, setPassword] = useState("");
     const [error, setError] = useState<string | null>(null);
     const [pending, setPending] = useState(false);
-    const [showPassword, setShowPassword] = useState(false);
+    const [showPassword] = useState(false);
     const nav = useNavigate();
-    const location = useLocation() as any;
+    const location = useLocation();
     const [verifyOpen, setVerifyOpen] = useState(false);
     const [verifyUserId, setVerifyUserId] = useState<string | null>(null);
 

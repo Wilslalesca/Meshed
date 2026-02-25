@@ -17,10 +17,7 @@ import {
 } from "@/shared/components//ui/dropdown-menu";
 import { toast } from "sonner";
 
-export function AddCourseForm({
-    className,
-    ...props
-}: React.ComponentProps<"form">) {
+export function AddCourseForm({}: React.ComponentProps<"form">) {
     const navigate = useNavigate();
     const { user } = useAuth();
     const [eventName, setEventName] = React.useState("");
