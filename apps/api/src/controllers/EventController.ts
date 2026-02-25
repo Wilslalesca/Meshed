@@ -125,7 +125,7 @@ export class EventController {
             toReturn.push(...uniqueConflicts);
         }
         
-        res.json(toReturn)
+        res.json({data:toReturn})
     }
 
     static async getStatusFacilityEvents(req: Request, res: Response){
@@ -151,12 +151,12 @@ export class EventController {
             notes: event.notes,
         }));
         
-        res.json(formattedEvents);
+        res.json({data : formattedEvents});
     }
 
     static async updateEventStatus(req: Request, res: Response){
         const {id, status }= req.params;
         const event = await EventModel.updateStatus(id, status);
-        res.json(event)
+        res.json({data : event})
     }
 }
