@@ -1,4 +1,4 @@
-import React, { useEffect, useState, type JSX } from "react";
+import React, { useEffect, useState } from "react";
 import { useAuth } from "@/shared/hooks/useAuth";
 import { Button } from "@/shared/components//ui/button";
 import { Label } from "@/shared/components//ui/label";
@@ -17,7 +17,6 @@ import {
     SelectContent,
     SelectItem,
 } from "@/shared/components/ui/select";
-import { TeamEventFactoryRegistry } from "../types/factories/registry";
 import { ReoccurrType, TeamEventType } from "../types/event";
 import { useAddTeamEvent } from "../hooks/useAddTeamEvent";
 import { toast } from "sonner";
@@ -305,56 +304,6 @@ export const AddTeamEventModal = ({
                                 </SelectContent>
                             </Select>
                         </div>
-
-                        <div className="grid w-full items-center gap-3 py-2">
-                            {reoccurring ? (
-                                <>
-                                    <Label htmlFor="reoccurring">
-                                        Type of Reocurrance
-                                    </Label>
-                                    <Select
-                                        value={selectedReoccurrType}
-                                        onValueChange={(val: string) => setSelectedReoccurrType(val as typeof reoccurrTypes[number])}
-                                    >
-                                        <SelectTrigger id="selectedReoccurrType">
-                                            <SelectValue placeholder="Reocurr" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {reoccurrTypes.map((e) => (
-                                                <SelectItem key={e} value={e}>
-                                                    {e}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                </>
-                            ) : (
-                                <div className="invisible">
-                                    <Label>Placeholder</Label>
-                                    <div className="h-10" />
-                                </div>
-                            )}
-                            <Label htmlFor="facility">Facility</Label>
-                            <Select
-                                value={teamFacilityId}
-                                onValueChange={setTeamFacilityId}
-                            >
-                                <SelectTrigger id="facility">
-                                    <SelectValue placeholder="Select a facility" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {allFacilities.map((facility) => (
-                                        <SelectItem
-                                            key={facility.id}
-                                            value={facility.id}
-                                        >
-                                            {facility.name}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                        </div>
-
                         {reoccurring && (
                             <div className="grid w-full items-center gap-3 py-2">
                                 <Label htmlFor="reoccurring">
@@ -388,6 +337,31 @@ export const AddTeamEventModal = ({
                                 )}
                             </div>
                         )}
+
+                        <div className="grid w-full items-center gap-3 py-2">
+                            
+                            <Label htmlFor="facility">Facility</Label>
+                            <Select
+                                value={teamFacilityId}
+                                onValueChange={setTeamFacilityId}
+                            >
+                                <SelectTrigger id="facility">
+                                    <SelectValue placeholder="Select a facility" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {allFacilities.map((facility) => (
+                                        <SelectItem
+                                            key={facility.id}
+                                            value={facility.id}
+                                        >
+                                            {facility.name}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+
+                        
 
                         <div className="grid w-full items-center gap-3 py-2">
                             <Label htmlFor="start_date">
