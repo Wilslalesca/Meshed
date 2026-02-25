@@ -63,7 +63,7 @@ export class TeamController {
             }
 
             res.status(201).json(team);
-        } catch (err) {
+        } catch {
             res.status(500).send("Failed to create team");
         }
     }
