@@ -1,4 +1,4 @@
-import React from "react";
+import { useState } from "react";
 import { Button } from "@/shared/components//ui/button";
 import { useAuth } from "@/shared/hooks/useAuth";
 import { Input } from "@/shared/components//ui/input";
@@ -17,16 +17,16 @@ import {
 } from "@/shared/components//ui/dropdown-menu";
 import { toast } from "sonner";
 
-export function AddCourseForm({}: React.ComponentProps<"form">) {
+export function AddCourseForm() {
     const navigate = useNavigate();
     const { user } = useAuth();
-    const [eventName, setEventName] = React.useState("");
-    const [location, setLocation] = React.useState("");
-    const [startTime, setStartTime] = React.useState("10:30:00");
-    const [endTime, setEndTime] = React.useState("11:20:00");
-    const [startDate, setStartDate] = React.useState("");
-    const [endDate, setEndDate] = React.useState("");
-    const [reoccurring, setReoccurring] = React.useState("");
+    const [eventName, setEventName] = useState("");
+    const [location, setLocation] = useState("");
+    const [startTime, setStartTime] = useState("10:30:00");
+    const [endTime, setEndTime] = useState("11:20:00");
+    const [startDate, setStartDate] = useState("");
+    const [endDate, setEndDate] = useState("");
+    const [reoccurring, setReoccurring] = useState("");
     const weekdays = [
         "Monday",
         "Tuesday",
@@ -36,7 +36,7 @@ export function AddCourseForm({}: React.ComponentProps<"form">) {
         "Saturday",
         "Sunday",
     ];
-    const [selectedDays, setSelectedDays] = React.useState<string[]>([]);
+    const [selectedDays, setSelectedDays] = useState<string[]>([]);
 
     const handleSubmit = async () => {
         if (!eventName || !location || !startTime || !endTime || !startDate) {
