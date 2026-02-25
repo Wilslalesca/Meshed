@@ -27,7 +27,7 @@ export const EventWidget = ({ events }: { events: EventItem[] }) => {
                         onSelect={setSelectedDate}
                         className="w-full"
                         components={{
-                            Day: ({ day, modifiers, ...props }) => {
+                            Day: ({ day, ...props }) => {
                                 const iso = day.date.toISOString().split("T")[0];
                                 const isSelected = selectedDate?.toISOString().split("T")[0] === iso;
                                 const hasEvent = events.some(
