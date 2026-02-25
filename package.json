@@ -19,6 +19,7 @@
     "eslint-plugin-react": "^7.37.5",
     "globals": "^17.3.0",
     "jiti": "^2.6.1",
+    "rollup": "^4.59.0",
     "ts-node": "^10.9.2",
     "tsx": "^4.21.0",
     "turbo": "^2.5.6",
