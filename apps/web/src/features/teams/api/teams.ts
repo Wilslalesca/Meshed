@@ -9,13 +9,14 @@ import type {
 
 export async function apiGetMyTeams(token: string): Promise<Team[]> {
     try {
+        console.log("Fetching my teams with token:", token);
         const res = await fetch(`${API_BASE}/teams/mine`, {
             headers: {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${token}`,
             },
         });
-
+        console.log("apiGetMyTeams response:", res);
         return res.ok ? await res.json() : [];
     } catch {
         return [];
