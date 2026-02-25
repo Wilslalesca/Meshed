@@ -72,7 +72,7 @@ export const TeamsPage = () => {
             {!loading && (
                 <TeamGrid
                     teams={filteredTeams}
-                    onSelect={(id: any) => navigate(`/teams/${id}`)}
+                    onSelect={(id: string) => navigate(`/teams/${id}`)}
                     rosterCounts={{}}
                 />
             )}
