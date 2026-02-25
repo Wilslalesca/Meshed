@@ -9,39 +9,28 @@ import { InviteModel } from "../models/InviteModel";
 import crypto from "crypto";
 import * as xlsx from "xlsx";
 
-function getUserId(req: any): string | undefined {
-    return (
-        req?.user?.id ??
-        req?.userId ??
-        req?.auth?.id ??
-        req?.locals?.user?.id ??
-        req?.res?.locals?.user?.id
-    );
-}
 
 async function isTeamManagerOrAdmin(req: Request, teamId: string): Promise<boolean> {
     const { userId } = req.params;
+    if (!userId) return false;
     const user = await UserModel.findById(userId);
     if (!user) return false;
-    
-    const uid = getUserId(req);
-    if (!uid) return false;
 
     if (user.role === "admin") return true;
 
-    const staff = await TeamStaffModel.findStaffRecord(teamId, uid);
+    const staff = await TeamStaffModel.findStaffRecord(teamId, userId);
     return staff?.role === "manager";
 }
 
 export class TeamController {
     static async getMyTeams(req: Request, res: Response) {
-        const uid = getUserId(req);
+        const { userId } = req.params;
         console.log("Getting Teams" );
-        console.log("User ID:", uid);
+        console.log("User ID:", userId);
 
 
-        if (!uid) return res.json([]);
-        const teams = await TeamModel.findForUser(uid);
+        if (!userId) return res.json([]);
+        const teams = await TeamModel.findForUser(userId);
         console.log("Found Teams:", teams.length);
         res.json(teams);
     }
@@ -68,15 +57,14 @@ export class TeamController {
                 gender: gender || null,
             });
 
-            const uid = getUserId(req);
-            if (uid) {
-                await TeamStaffModel.addStaff(team.id, uid, "manager", null);
+            const { userId } = req.params;
+            if (userId) {
+                await TeamStaffModel.addStaff(team.id, userId, "manager", null);
             }
 
             res.status(201).json(team);
-        } catch (err: any) {
-            console.error("Error creating team:", err);
-            res.status(500).send(err?.message || "Failed to create team");
+        } catch (err) {
+            res.status(500).send("Failed to create team");
         }
     }
 
@@ -142,7 +130,7 @@ export class TeamController {
     static async bulkAddAthletesByCsv(req: Request, res: Response) {
         const { teamId } = req.params;
         if (!(await isTeamManagerOrAdmin(req, teamId))) return res.status(403).send("Forbidden");
-        const file = req.file as any;
+        const file = req.file;
 
         if (!file) return res.status(400).send("CSV file required");
 
@@ -171,7 +159,7 @@ export class TeamController {
                 for (const sn of sheetNames) {
                     const ws = wb.Sheets[sn];
                     if (!ws) continue;
-                    const rows: any[] = xlsx.utils.sheet_to_json(ws, { header: 1 });
+                    const rows = xlsx.utils.sheet_to_json(ws, { header: 1 });
                     for (const row of rows) {
                         if (!Array.isArray(row)) continue;
                         for (const cell of row) {
