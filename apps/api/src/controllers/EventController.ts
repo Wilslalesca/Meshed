@@ -7,7 +7,7 @@ export class EventController {
         return
     }
 
-    static async getAllEvents(res: Response) { 
+    static async getAllEvents(_req: Request, res: Response) { 
         const events = await EventModel.getAll();
 
         const formattedEvents = events.map(event => ({
@@ -30,10 +30,15 @@ export class EventController {
             notes: event.notes,
         }));
 
-        res.json(formattedEvents);
+        if(!formattedEvents){
+            return []
+        }else{
+            res.json(formattedEvents);
+        }
     }
 
     static async getFacilityEvents(req: Request, res: Response) { 
+        console.log(req.params)
         const {facilityId }= req.params;
         const events = await EventModel.getForFacility(facilityId);
 
@@ -125,10 +130,11 @@ export class EventController {
             toReturn.push(...uniqueConflicts);
         }
         
-        res.json({data:toReturn})
+        res.json(toReturn)
     }
 
     static async getStatusFacilityEvents(req: Request, res: Response){
+        console.log(req.params)
         const {facilityId, status }= req.params;
         const events = await EventModel.getAllStatusFacilityRequests(facilityId, status);
         const formattedEvents = events.map(event => ({
@@ -151,12 +157,12 @@ export class EventController {
             notes: event.notes,
         }));
         
-        res.json({data : formattedEvents});
+        res.json(formattedEvents);
     }
 
     static async updateEventStatus(req: Request, res: Response){
         const {id, status }= req.params;
         const event = await EventModel.updateStatus(id, status);
-        res.json({data : event})
+        res.json(event)
     }
 }
