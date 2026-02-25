@@ -1,10 +1,8 @@
-import React, { useState, type JSX } from 'react';
+import { useState, type JSX } from 'react';
 import { useAuth } from "@/shared/hooks/useAuth";
 import { Button } from "@/shared/components//ui/button";
-import { useNavigate } from 'react-router-dom';
 import { apiUploadCourses } from '@/features/upload/api/upload'
 import { apiAddCourseAndAthleteCourse } from '@/features/add-edit-courses/api/addcourse'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/components//ui/card";
 import DropzoneField from "@/shared/components/ui/dropzonefield";
 import { toast } from "sonner"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/shared/components/ui/dialog';
@@ -12,7 +10,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 export function Upload(): JSX.Element {
     const { user } = useAuth();
     const [files, setFiles] = useState<File[] | undefined>();
-    const navigate = useNavigate();
 
     const handleDrop = (files: File[]) => {
         setFiles(files);
