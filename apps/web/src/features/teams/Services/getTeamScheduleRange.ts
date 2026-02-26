@@ -136,11 +136,7 @@ function withinWindow(day: Date, start?: unknown | null, end?: unknown | null) {
 }
 
 
-export function mapTeamEventRowsToScheduleEvents(
-  rows: TeamEventRow[],
-  _fromISO: string,
-  _toISO: string
-): TeamScheduleEvent[] {
+export function mapTeamEventRowsToScheduleEvents(rows: TeamEventRow[]): TeamScheduleEvent[] {
   const events: TeamScheduleEvent[] = [];
 
   for (const r of rows) {
