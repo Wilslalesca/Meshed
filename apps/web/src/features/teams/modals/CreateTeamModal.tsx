@@ -125,7 +125,7 @@ export const CreateTeamModal = ({
             onChange={(e) => setSeason(e.target.value)}
           />
 
-          <Select value={gender ?? ""} onValueChange={(v) => setGender(v as any)}>
+          <Select value={gender ?? ""} onValueChange={(v) => setGender(v as "male" | "female" | "coed" | null)}>
             <SelectTrigger>
               <SelectValue placeholder="Gender" />
             </SelectTrigger>

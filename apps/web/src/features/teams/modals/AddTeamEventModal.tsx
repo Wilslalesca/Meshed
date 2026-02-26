@@ -30,7 +30,7 @@ export const AddTeamEventModal = ({
     onCreated,
     teamId,
     onAdded,
-}: any) => {
+}: { open: boolean; onOpenChange: (open: boolean) => void; onCreated: () => void; teamId: string; onAdded: () => void }) => {
     const { token } = useAuth();
 
     const formatLocalDate = (d: Date) => {
@@ -180,7 +180,7 @@ export const AddTeamEventModal = ({
             onAdded?.();
             resetForm();
             onOpenChange(false);
-            onCreated(teamId);
+            onCreated();
         } catch (error) {
             throw (error instanceof Error ? error : new Error("An error occurred"));
         }

@@ -1,6 +1,5 @@
 import { useAuth } from "@/shared/hooks/useAuth";
 import { apiAddTeamEvent } from "../api/events";
-import type { TeamEvent } from "../types/event";
 import { TeamEventFactoryRegistry } from "../types/factories/registry";
 import type { TeamEventType } from "../types/event";
 

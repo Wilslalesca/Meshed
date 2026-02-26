@@ -5,6 +5,7 @@ import { mapCourseRowsToScheduleEvents, mapTeamEventRowsToScheduleEvents } from 
 
 import type { TeamScheduleEvent } from "../types/schedule";
 import { apiGetRoster } from "../api/teams";
+import type { Athlete } from "../types/roster";
 
 export const useTeamSchedule = (teamId: string, fromISO: string, toISO: string) => {
     const { token } = useAuth();
@@ -23,13 +24,13 @@ export const useTeamSchedule = (teamId: string, fromISO: string, toISO: string) 
 
             try {
                 const teamRows = await apiGetTeamEvents(teamId, token);
-                const mapped = mapTeamEventRowsToScheduleEvents(teamRows, fromISO, toISO);
+                const mapped = mapTeamEventRowsToScheduleEvents(teamRows);
 
                 const roster = await apiGetRoster(teamId, token);
-                const athletes = (roster ?? []).map((a: any) => ({
-                    id: a.id ?? a.user_id ??  a.athleteId ?? a.athlete_id,
-                    name: a.name ?? [a.first_name, a.last_name].filter(Boolean).join(" ") ?? a.email ?? "Unknown",
-                })).filter((x: any) => typeof x.id === "string" && x.id.length > 0);
+                const athletes = (roster ?? []).map((a: Athlete) => ({
+                    id: a.id,
+                    name: [a.first_name, a.last_name].filter(Boolean).join(" ") ?? a.email ?? "Unknown",
+                })).filter((x: { id: string }) => typeof x.id === "string" && x.id.length > 0);
 
                 const classEvents = await Promise.all(
                     athletes.map(async (athlete: { id: string; name: string; }) => {

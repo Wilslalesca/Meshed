@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { apiGetRoster, apiRemoveAthlete } from "../api/teams";
 import { useAuth } from "@/shared/hooks/useAuth";
+import type { Athlete } from "../types/roster";
 
 export function useRoster(teamId: string) {
   const { token } = useAuth();
-  const [roster, setRoster] = useState<any[]>([]);
+  const [roster, setRoster] = useState<Athlete[]>([]);
   const [loading, setLoading] = useState(true);
 
   async function load() {

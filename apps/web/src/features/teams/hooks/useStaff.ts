@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { apiGetStaff, apiRemoveStaff, apiUpdateStaff } from "../api/staff";
 import { useAuth } from "@/shared/hooks/useAuth";
+import type { StaffMember } from "../types/staff";
 
 export function useStaff(teamId: string) {
     const { token } = useAuth();
-    const [staff, setStaff] = useState([]);
+    const [staff, setStaff] = useState<StaffMember[]>([]);
     const [loading, setLoading] = useState(true);
 
     async function reloadStaff() {
@@ -21,7 +22,7 @@ export function useStaff(teamId: string) {
         await reloadStaff();
     }
 
-    async function updateStaff(staffId: string, updates: any) {
+    async function updateStaff(staffId: string, updates: StaffMember) {
         if (!token) return;
         await apiUpdateStaff(teamId, staffId, updates, token);
         await reloadStaff();
