@@ -57,7 +57,6 @@ export const TeamTabs = ({
     onCreateNotification,
     onOptimizeSchedule,
     children,
-    isManagerOverride,
 }: Props) => {
     const userRole = useUserRole();
     const isManager = userRole.isManager;
