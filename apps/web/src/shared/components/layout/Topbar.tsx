@@ -18,7 +18,6 @@ import {
     CommandSeparator,
 } from "@/shared/components/ui/command";
 import { useNotifications } from "@/features/notifications/hooks/useNotifications";
-import type { Notification } from "@/features/notifications/types/types";
 export const Topbar = ({
     onMenuClick,
     isMobile,
@@ -26,11 +25,9 @@ export const Topbar = ({
     onMenuClick(): void;
     isMobile: boolean;
 }) => {
-    const { notifications, unreadCount, markAsRead, markAllAsRead, refresh } =
+    const { notifications, unreadCount, markAsRead, refresh } =
         useNotifications();
     const [open, setOpen] = useState(false);
-    const [selected, setSelected] = useState<Notification | null>(null);
-    const [detailsOpen, setDetailsOpen] = useState(false);
 
     useEffect(() => {
         const down = (e: KeyboardEvent) => {
@@ -96,12 +93,10 @@ export const Topbar = ({
                                 No notifications at this time.
                             </div>
                         ) : (
-                            notifications.map((note, i) => (
+                            notifications.map((note) => (
                                 <DropdownMenuItem
                                     key={note.id}
                                     onSelect={() => {
-                                        setSelected(note);
-                                        setDetailsOpen(true);
                                         if (!note.read_at) {
                                             markAsRead(note.id);
                                         }

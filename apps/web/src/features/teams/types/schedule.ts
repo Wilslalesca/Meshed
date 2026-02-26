@@ -14,7 +14,7 @@ export type TeamScheduleMode = (typeof TeamScheduleMode)[keyof typeof TeamSchedu
 
 
 export type TeamScheduleEvent = {
-    [x: string]: any;
+    [x: string]: unknown;
     id: string;
     athleteId: string;
     athleteName: string;

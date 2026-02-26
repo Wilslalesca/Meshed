@@ -40,7 +40,7 @@ export const Sidebar = ({
     onClose(): void;
     onToggleCollapse(): void;
 }) => {
-    const { user, token, logout } = useAuth() as any;
+    const { user, token, logout } = useAuth() as { user: { firstName: string; email: string } | null; token: string | null; logout: () => void };
         useEffect(() => {
             async function checkNotifications() {
                 if (!token) return;

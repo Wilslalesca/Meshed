@@ -109,8 +109,9 @@ export function RegisterForm({
             setVerifyUserId(res.userId);
             setVerifyOpen(true);
         
-        } catch (err: any) {
-            setError(err?.message || "Registration failed");
+        } catch (err: unknown) {
+            const authErr = err as { message?: string };
+            setError(authErr.message || "Registration failed");
         } finally {
             setPending(false);
         }

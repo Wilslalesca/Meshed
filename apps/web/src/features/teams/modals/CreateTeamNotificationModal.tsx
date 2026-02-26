@@ -40,7 +40,7 @@ export function CreateTeamNotificationModal({
             onOpenChange(false);
             toast.success("Notification sent to the team.");
             setMessage("");
-        } catch (error) {
+        } catch  {
             toast.error("Failed to send notification. Please try again.");
         } 
         finally {

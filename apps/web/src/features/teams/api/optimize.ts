@@ -1,9 +1,9 @@
-import type { OptimizationRequest } from "../types/OptimizationRequest";
+import type { OptimizationRequestPayload } from "../types/OptimizationRequest";
 export const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
 export async function apiOptimizeSchedule(
     teamId: string,
-    data: OptimizationRequest,
+    data: OptimizationRequestPayload,
     token: string
 ) {
     const res = await fetch(`${API_BASE}/optimization/run`, {
@@ -13,7 +13,7 @@ export async function apiOptimizeSchedule(
             "Content-Type": "application/json",
         },
         body: JSON.stringify({
-            ...(data as unknown as Record<string, unknown>),
+            ...data,
             teamId,
         }),
     });

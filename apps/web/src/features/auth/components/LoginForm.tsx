@@ -7,6 +7,7 @@ import { useAuth } from "@/shared/hooks/useAuth";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { EmailVerificationModal } from "../modal/EmailVerificationModal";
 
+
 export function LoginForm({
     className,
     ...props
@@ -32,16 +33,22 @@ export function LoginForm({
             const next = location?.state?.from?.pathname ?? "/dashboard";
             nav(next, { replace: true });
 
-        } catch (err: any) {
-            if (err.message === "Email not verified" || err?.needsVerification) {
-                if (err.userId) setVerifyUserId(err.userId);
+        } catch (err: unknown) {
+            const authErr = err as {
+                message?: string;
+                needsVerification?: boolean;
+                userId?: string;
+            };
+
+            if (authErr.message === "Email not verified" || authErr.needsVerification) {
+                if (authErr.userId) setVerifyUserId(authErr.userId);
 
                 setVerifyOpen(true);
                 setPending(false);
                 return;
             }
 
-            setError(err?.message || "Login failed");
+            setError(authErr.message || "Login failed");
         } finally {
             setPending(false);
         }

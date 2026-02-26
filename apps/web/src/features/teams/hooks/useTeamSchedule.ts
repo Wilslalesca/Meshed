@@ -13,11 +13,11 @@ export const useTeamSchedule = (teamId: string, fromISO: string, toISO: string) 
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
-    const cancelled = false;
-
-    async function fetchSchedule() {
-
-            if (!teamId || !token) return;
+    const fetchSchedule = useCallback(async () => {
+            if (!teamId || !token) {
+                setLoading(false);
+                return;
+            }
 
             setLoading(true);
             setError(null);
@@ -40,22 +40,21 @@ export const useTeamSchedule = (teamId: string, fromISO: string, toISO: string) 
                 );
                 const classEventsFlat = classEvents.flat();
                 const merged = [...mapped, ...classEventsFlat].sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime());
-
-                if (!cancelled) setEvents(merged);
+                setEvents(merged);
 
             } catch (err) {
                 const msg = err instanceof Error ? err.message : String(err);
-                if (!cancelled) setError(msg);
+                setError(msg);
 
             } finally {
-                if (!cancelled) setLoading(false);
+                setLoading(false);
 
             }
-    }[teamId, token, fromISO, toISO];
+    }, [teamId, token, fromISO, toISO]);
 
     const reloadSchedule = useCallback(() => {
-        fetchSchedule();
-    }, [teamId, token, fromISO, toISO]);
+        void fetchSchedule();
+    }, [fetchSchedule]);
 
     useEffect(() => {
         reloadSchedule();

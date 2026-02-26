@@ -49,3 +49,9 @@ export interface Invite {
     token: string;
     expiresAt: string; 
 }
+
+export interface AuthError {
+    message?: string;
+    needsVerification?: boolean;
+    userId?: string;
+};
