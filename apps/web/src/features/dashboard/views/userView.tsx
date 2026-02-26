@@ -23,7 +23,7 @@ export const UserDashboard = () => {
         if (user?.id) {
             getAthleteEvents(user.id, token!).then(setEvents);
         }
-    }, [user?.id]);
+    }, [user?.id, token]);
 
     return (
         <div className="flex flex-col gap-6 p-4">
