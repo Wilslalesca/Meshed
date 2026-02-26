@@ -1,4 +1,4 @@
-import React, { useEffect, useState, type JSX } from "react";
+import { useState } from "react";
 import { useAuth } from "@/shared/hooks/useAuth";
 import {
     Dialog,
@@ -18,18 +18,17 @@ import {
 import { Button } from "@/shared/components/ui/button";
 import { apiUpdateEventStatus } from "@/features/teams/api/events";
 import { toast } from "sonner";
+import type { TeamEvent } from "@/features/teams/types/event";
 
-export const StatusModal = ({
-    open,
-    onOpenChange,
-    eventInfo,
-    teamName,
-    onAdded,
-}: any) => {
+export const StatusModal = ({open,onOpenChange,eventInfo,teamName,onAdded,}: {open: boolean, onOpenChange: (open: boolean) => void, eventInfo: TeamEvent, teamName?: string, onAdded?: () => void}) => {
     const { token } = useAuth();
     const [status, setStatus] = useState<string>("pending");
 
     async function handleSubmit() {
+        if (!eventInfo.id) {
+            toast.error("Event ID is missing!");
+            return;
+        }
         const data = {status:status, id:eventInfo.id}
         try{
             const res = await apiUpdateEventStatus(data, token!)
@@ -57,11 +56,10 @@ export const StatusModal = ({
                     </DialogDescription>
                 </DialogHeader>
                 <div className="flex flex-col p-4 items-center">
-                    <Select className="w-full gap-3"
-                            value={status}
+                    <Select value={status}
                             onValueChange={setStatus}
                     >
-                        <SelectTrigger id="status">
+                        <SelectTrigger id="status" className="w-full gap-3">
                             <SelectValue placeholder="ex. Pending" />
                         </SelectTrigger>
                         <SelectContent>
