@@ -2,7 +2,6 @@
 import { useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import { TeamScheduleCalendar } from "../schedule/TeamScheduleCalendar";
-import { useTeamSchedule } from "../../hooks/useTeamSchedule";
 import { useRoster } from "../../hooks/useRoster";
 import type { TeamScheduleEvent } from "../../types/schedule";
 import { TeamScheduleView, TeamScheduleMode } from "../../types/schedule";
@@ -40,14 +39,11 @@ export const TeamScheduleTab = ({
   range,
   error,
   onRangeChange,
-  onReload,
 }: Props) => {
   const { teamId } = useParams<{ teamId: string }>();
   const [view, setView] = useState<TeamScheduleView>(TeamScheduleView.Week);
   const [mode, setMode] = useState<TeamScheduleMode>(TeamScheduleMode.Calendar);
   const [search, setSearch] = useState<string>("");
-  const fromISO = useMemo(() => startOfWeekISO(), []);
-  const toISO = useMemo(() => endOfWeekISO(), []);
 
   const { roster } = useRoster(teamId!);
   const rosterCount = roster?.length ?? 0;
