@@ -13,7 +13,7 @@ export async function getNotifications(userId: string, limit = 20, token: string
             });
             const data: NotificationListResponse = await res.json();
             return data;
-    } catch (error) {
+    } catch {
         throw new Error("Failed to fetch notifications");
     }
 }
@@ -29,7 +29,7 @@ export async function getUnreadCount(userId: string, token: string) {
             });
             const data = await res.json();
             return data.count;
-    } catch (error) {
+    } catch  {
         throw new Error("Failed to fetch unread count");
     }
 }
@@ -45,7 +45,7 @@ export async function markAsRead(userId: string, notificationId: string, token: 
             });
             const data = await res.json();
             return data.updated;
-    } catch (error) {
+    } catch  {
         throw new Error("Failed to mark notification as read");
     }
 }
@@ -61,7 +61,7 @@ export async function markAllRead(userId: string, token: string) {
             });
             const data = await res.json();
             return data.updated;
-    } catch (error) {
+    } catch  {
         throw new Error("Failed to mark all notifications as read");
     }
 }

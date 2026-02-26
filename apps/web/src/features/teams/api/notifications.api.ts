@@ -15,7 +15,7 @@ export async function createTeamNotification(teamId: string, payload: { type: st
                 throw new Error("Failed to create team notification");
             }
             return await res.json();
-    } catch (error) {
+    } catch  {
         throw new Error("Failed to create team notification");
     }
 }
