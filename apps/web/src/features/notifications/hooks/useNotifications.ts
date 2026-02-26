@@ -24,7 +24,7 @@ export function useNotifications() {
             setNotifications(res.items);
             setUnreadCount(res.items.filter(n => !n.read_at).length);
         }
-        catch (err) {
+        catch {
             setError("Failed to load notifications");
         }
         finally {
