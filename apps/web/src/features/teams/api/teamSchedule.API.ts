@@ -3,7 +3,7 @@ import type { CourseTimeRow, TeamEventRow } from "../types/schedule";
 
 
 // get the full roster of a team
-export async function apiGetRoster(teamId: string, token: string): Promise<any[]> {
+export async function apiGetRoster(teamId: string, token: string) {
 
   const res = await fetch(`${API_BASE}/teams/${teamId}/athletes`, {
     headers: { Authorization: `Bearer ${token}` },
