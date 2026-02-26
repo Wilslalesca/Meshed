@@ -21,7 +21,7 @@ export type Notification = {
   type: NotificationType;
   message: string;
   meta: NotificationMeta | null;
-  created_at: string; // ISO
+  created_at: string;
   read_at: string | null;
 };
 

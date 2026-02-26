@@ -1,7 +1,7 @@
 export const API_BASE = import.meta.env.VITE_API_BASE_URL;
+import type { NotificationMeta } from "@/features/notifications/types/types";
 
-
-export async function createTeamNotification(teamId: string, payload: { type: string; message: string; meta?: any }, token: string) {
+export async function createTeamNotification(teamId: string, payload: { type: string; message: string; meta?:  NotificationMeta}, token: string) {
     try {
         const res = await fetch(`${API_BASE}/notifications/team/${teamId}`, {
                 method: "POST",
