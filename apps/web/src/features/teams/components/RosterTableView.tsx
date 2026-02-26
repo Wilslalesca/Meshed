@@ -2,9 +2,10 @@ import { Button } from "@/shared/components/ui/button";
 import { useUserRole } from "@/shared/hooks/useUserRole";
 import { Trash, Calendar, MessageCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import type { Athlete } from "../types/roster";
 
 interface Props {
-  roster: any[];
+  roster: Athlete[];
   onRemoveAthlete?: (id: string) => void;
 }
 
