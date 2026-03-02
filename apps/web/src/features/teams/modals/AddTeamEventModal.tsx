@@ -156,7 +156,6 @@ export const AddTeamEventModal = ({
         }
 
         try {
-            console.log(startDate)
             await addTeamEvent(
                 teamId,
                 teamFacilityId,
