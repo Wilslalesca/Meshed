@@ -63,21 +63,16 @@ export const useAddTeamEvent = () => {
                   const weekIndex = Math.floor(diffDays / 7);
                   if (weekIndex % intervalWeeks === 0) {
                       eventDates.push(new Date(d));
-                      console.log("Date being sent: " + d)
                   }
               } else if (selectedReoccurrType === "Monthly") {
                   if (d.getDate() === start.getDate()) {
                       eventDates.push(new Date(d));
-                      console.log("Date being sent: " + d)
                   }
               }
           }
-        
-        console.log("Date being recieved: " + start)
       } else {
           const start = new Date(startDate as Date);
           eventDates.push(start);
-          console.log("Date being sent: " + start)
       }
 
       for (const date of eventDates) {
