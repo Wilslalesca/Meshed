@@ -27,10 +27,9 @@ import type { Facility } from "@/features/facilities/types/facilities";
 export const AddTeamEventModal = ({
     open,
     onOpenChange,
-    onCreated,
     teamId,
     onAdded,
-}: { open: boolean; onOpenChange: (open: boolean) => void; onCreated: () => void; teamId: string; onAdded: () => void }) => {
+}: { open: boolean; onOpenChange: (open: boolean) => void; teamId: string; onAdded: () => void }) => {
     const { token } = useAuth();
 
     const formatLocalDate = (d: Date) => {
@@ -180,7 +179,6 @@ export const AddTeamEventModal = ({
             onAdded?.();
             resetForm();
             onOpenChange(false);
-            onCreated();
         } catch (error) {
             throw (error instanceof Error ? error : new Error("An error occurred"));
         }
