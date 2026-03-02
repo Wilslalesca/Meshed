@@ -1,11 +1,12 @@
 import { Request, Response, NextFunction } from "express";
 import { logger } from "../utils/logger";
 
-export const errorHandler = (err: any, _req: Request, res: Response, _next: NextFunction) => {
-    logger.error("Unhandled error:", err);
 
-    const status = err.status || 500;
-    res.status(status).json({
-        error: err.message || "Internal Server Error",
-    });
+export const errorHandler = (err: Error, req: Request, res: Response, next: NextFunction) => {
+    logger.error("Unhandled error:", err);
+    console.error(err);
+    res.status(500).send({ errors: [{ message: "Something went wrong" }] });
+    next();
 };
+
+

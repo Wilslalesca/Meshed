@@ -20,7 +20,7 @@ export const useAthleteById = (athleteId: string) => {
 
     load();
     return () => { cancel = true };
-  }, [athleteId]);
+  }, [athleteId, token]);
 
   return { athlete, loading };
 };

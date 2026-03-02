@@ -60,7 +60,7 @@ export function TeamScheduleCalendar({
   const calendarReference = useRef<FullCalendar | null>(null);
   const [api, setApi] = useState<CalendarApi | null>(null);
   const [title, setTitle] = useState<string>("");
-  const chip = useMemo(() => getMonthDayChip(api), [api, title]);
+  const chip = useMemo(() => getMonthDayChip(api), [api]);
   const [searchOpen, setSearchOpen] = useState(false);
   const searchRef = useRef<HTMLInputElement | null>(null);
 
@@ -272,9 +272,9 @@ export function TeamScheduleCalendar({
           slotMaxTime="23:00:00"
           events={allEvents}
           eventClassNames={(arg) => {
-            const type = (arg.event.extendedProps as any)?.type;
-            if (type  === "team_event") return ["ev", "ev-team"];
-            if (type === "class") return ["ev", "ev-class"];
+            const type = (arg.event.extendedProps as TeamScheduleEvent)?.type;
+            if (type === "Team Event") return ["ev", "ev-team"];
+            if (type === "Class") return ["ev", "ev-class"];
             return ["ev"];
           }}
           eventDidMount={(info) => {

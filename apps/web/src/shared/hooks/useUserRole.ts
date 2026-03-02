@@ -37,7 +37,7 @@ export const useUserRole = (): UseUserRoleResult => {
             default:
                 return 'guest';
         }
-    }, [user?.role]);
+    }, [isAuthenticated, user]);
 
     return {
         role,

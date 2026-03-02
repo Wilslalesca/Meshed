@@ -15,7 +15,6 @@ export async function apiGetMyTeams(token: string): Promise<Team[]> {
                 Authorization: `Bearer ${token}`,
             },
         });
-
         return res.ok ? await res.json() : [];
     } catch {
         return [];

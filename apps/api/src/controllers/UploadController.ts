@@ -2,6 +2,13 @@ import { Request, Response } from "express";
 import ical from "node-ical";
 import { format } from "date-fns";
 import { toZonedTime } from "date-fns-tz";
+import type { NewCourseTime } from "../models/CourseModel";
+
+export type TempCourse = {
+  day_of_week:string;
+  start_time: string;
+  name: string;
+}
 
 const timeZone = "America/Halifax";
 
@@ -13,7 +20,7 @@ export const UploadController = {
       return res.status(400).json({ message: "No files uploaded" });
     }
 
-    const parsedSchedule: any[] = [];
+    const parsedSchedule: NewCourseTime[] = [];
     const schedule = files[0];
 
     let filetype = "";
@@ -31,8 +38,8 @@ export const UploadController = {
 
         for (const key in parsedFile) {
           const course = parsedFile[key];
-          let existingCourse: any;
-
+          let existingCourse: NewCourseTime | undefined;
+          //let existingCourse:any
           if (course.type == "VEVENT") {
             if (!parsedSchedule || parsedSchedule.length === 0) {
               count = 1;
@@ -72,8 +79,8 @@ export const UploadController = {
                 recurring: false,
               });
             } else {
-              existingCourse.end_date = format(course.start, "yyyy-MM-dd");
-              existingCourse.recurring = true;
+              existingCourse!.end_date = format(course.start, "yyyy-MM-dd");
+              existingCourse!.recurring = true;
             }
           }
         }

@@ -1,14 +1,7 @@
-import { QuickActions } from "../components/user/QuickActions";
-import { StatCard } from "../components/StatCard";
-import { TeamSchedule } from "../components/user/TeamSchedule";
-import { ActivityFeed } from "../components/user/ActivityFeed";
-import { apiGetTeamEvents } from "@/features/teams/api/teamSchedule.API";
-import { EventWidget } from "../components/EventWidget";
 import { apiGetEventFacilities } from "@/features/teams/api/events"
 import type { Facility } from "@/features/facilities/types/facilities";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/shared/hooks/useAuth";
-import type { TeamEvent } from "@/features/teams/types/event";
 import { AllEventTable } from "../components/admin/AllEventTable";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/components/ui/select";
 import { Label } from "@/shared/components//ui/label";

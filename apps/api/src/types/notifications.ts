@@ -16,7 +16,6 @@ export type NotificationMetadata = {
     team_id?: string;
     event_id?: string;
 
-    [key: string]: any; // other stuff idk we could add more 
 };
 
 export type NotificationRow = {

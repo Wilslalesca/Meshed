@@ -1,9 +1,10 @@
 import { Button } from "@/shared/components/ui/button";
 import { useUserRole } from "@/shared/hooks/useUserRole";
 import { Calendar, MessageCircle, Trash } from "lucide-react";
+import type { StaffMember } from "../types/staff";
 
 interface Props {
-  staff: any[];
+  staff: StaffMember[];
   onRemove: (id: string) => void;
 }
 

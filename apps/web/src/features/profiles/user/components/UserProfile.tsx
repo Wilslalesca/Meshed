@@ -8,10 +8,11 @@ import { Pencil, Check } from "lucide-react";
 import {apiEditUser} from "../apis/editprofile"
 import { apiMe } from "@/features/auth/api/auth"
 import { toast } from "sonner";
+import type { User } from '../types';
 
 export function UserProfile() {
     const token = localStorage.getItem("auth_token") ?? "";
-    const [user, setUser] = useState<any>(null);
+    const [user, setUser] = useState<User | null>(null);
     const [firstname, setFirstName] = React.useState("");
     const [lastname, setLastName] = React.useState("");
     const [email, setEmail] = React.useState("");
@@ -36,10 +37,10 @@ export function UserProfile() {
 
     React.useEffect(() => {
         if (user) {
-            setFirstName(user?.firstName);
-            setLastName(user?.lastName);
-            setEmail(user?.email);
-            setPhone(user?.phone);
+            setFirstName(user?.first_name);
+            setLastName(user?.last_name);
+            setEmail(user?.email || "");
+            setPhone(user?.phone || "");
         }
     }, [user]);
 
@@ -57,10 +58,10 @@ export function UserProfile() {
             phone: phone ?? "",
             email: plainUser.email ?? "",
             role: plainUser.role,
-            password_hash: plainUser.passwordHash,
+            password_hash: plainUser.password_hash,
             active: plainUser.active,
             verified: plainUser.verified,
-        } as any;
+        } as User;
 
         const success = await apiEditUser(plainUser.id, userData);
         if(success){

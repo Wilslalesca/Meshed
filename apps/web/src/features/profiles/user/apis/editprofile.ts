@@ -13,7 +13,7 @@ export async function apiEditUser(user_id:unknown, profile:User): Promise<boolea
         }
         return true;
     }
-    catch(err){
+    catch {
         return false;
     }
 }

@@ -1,3 +1,5 @@
+import type { User } from "@/features/profiles/user/types";
+
 export const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
 export async function apiLogin(input: { email: string; password: string; }) {
@@ -12,7 +14,7 @@ export async function apiLogin(input: { email: string; password: string; }) {
     throw new Error((await res.json()).error || 'Login failed');
   }
 
-  return (await res.json()) as { token: string; user: any };
+  return (await res.json()) as { token: string; user: User };
 }
 
 export async function apiRegister(input: {
@@ -51,7 +53,7 @@ export async function apiRefresh() {
     throw new Error('Refresh failed');
   }
 
-  return (await res.json()) as { token: string; user: any };
+  return (await res.json()) as { token: string; user: User };
 }
 
 export async function apiMe(token: string) {
@@ -64,7 +66,7 @@ export async function apiMe(token: string) {
     return null;
   }
 
-  return await res.json();
+  return await res.json() as User;
 }
 
 

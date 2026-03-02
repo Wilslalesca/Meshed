@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { getNotifications, getUnreadCount, markAllRead, markAsRead } from "../api/notifications.api";
 import { useAuth } from "@/shared/hooks/useAuth";
 import type { Notification } from "../types/types";
@@ -11,12 +11,14 @@ export function useNotifications() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    async function refreshUnread() {
+    const refreshUnread = useCallback(async () => {
+        if (!user || !token) return;
         const count = await getUnreadCount(user!.id, token!);
         setUnreadCount(count);
-    }
+    }, [user, token]);
 
-    async function loadNotifications(limit = 20) {
+    const loadNotifications = useCallback(async (limit = 20) => {
+        if (!user || !token) return;
         setLoading(true);
         setError(null);
         try {
@@ -24,15 +26,16 @@ export function useNotifications() {
             setNotifications(res.items);
             setUnreadCount(res.items.filter(n => !n.read_at).length);
         }
-        catch (err) {
+        catch {
             setError("Failed to load notifications");
         }
         finally {
             setLoading(false);
         }
-    }
+    }, [user, token]);
 
-    async function markNotificationAsRead(id: string) {
+    const markNotificationAsRead = useCallback(async (id: string) => {
+        if (!user || !token) return;
         try {
             await markAsRead(user!.id, id, token!);
             setNotifications(prev => prev.map(n => n.id === id ? { ...n, read_at: new Date().toISOString() } : n));
@@ -41,9 +44,10 @@ export function useNotifications() {
         catch (err) {
             console.error("Failed to mark notification as read", err);
         }
-    }
+    }, [user, token]);
     
-    async function markAllNotificationsRead() {
+    const markAllNotificationsRead = useCallback(async () => {
+        if (!user || !token) return;
         try {
             await markAllRead(user!.id, token!);
             setNotifications(prev => prev.map(n => ({ ...n, read_at: new Date().toISOString() })));
@@ -52,7 +56,7 @@ export function useNotifications() {
         catch (err) {
             console.error("Failed to mark all notifications as read", err);
         }
-    }
+    }, [user, token]);
 
     useEffect(() => {
         if (user && token) {
@@ -60,7 +64,7 @@ export function useNotifications() {
             const time = setInterval(refreshUnread, 60000); 
             return () => clearInterval(time);
         }
-    }, [user, token]);
+    }, [user, token, refreshUnread]);
 
     return useMemo(() => ({
         unreadCount,
@@ -70,5 +74,13 @@ export function useNotifications() {
         refresh: loadNotifications,
         markAsRead: markNotificationAsRead,
         markAllAsRead: markAllNotificationsRead,
-    }), [unreadCount, notifications, loading, error]);
+    }), [
+        unreadCount,
+        notifications,
+        loading,
+        error,
+        loadNotifications,
+        markNotificationAsRead,
+        markAllNotificationsRead,
+    ]);
 }

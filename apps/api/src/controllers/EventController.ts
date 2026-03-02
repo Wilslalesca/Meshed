@@ -1,7 +1,5 @@
-import { pool } from "../config/db";
 import { Request, Response } from "express";
 import { EventModel } from "../models/EventModel";
-import type { TeamEvent } from "../types/event";
 
 export class EventController {
 
@@ -9,7 +7,7 @@ export class EventController {
         return
     }
 
-    static async getAllEvents(req: Request, res: Response) { 
+    static async getAllEvents(_req: Request, res: Response) { 
         const events = await EventModel.getAll();
 
         const formattedEvents = events.map(event => ({
@@ -32,10 +30,15 @@ export class EventController {
             notes: event.notes,
         }));
 
-        res.json(formattedEvents);
+        if(!formattedEvents){
+            return []
+        }else{
+            res.json(formattedEvents);
+        }
     }
 
     static async getFacilityEvents(req: Request, res: Response) { 
+        console.log(req.params)
         const {facilityId }= req.params;
         const events = await EventModel.getForFacility(facilityId);
 
@@ -67,23 +70,23 @@ export class EventController {
         const status = 'pending'
         const events = await EventModel.getAllStatusFacilityRequests(facilityId, status);
         const toReturn: Array<{
-            id: any;
-            teamId: any;
-            teamFacilityId: any;
-            name: any;
-            type: any;
-            startTime: any;
-            endTime: any;
-            startDate: any;
-            endDate: any;
-            reoccurring: any;
-            selectedReoccurrType: any;
-            dayOfWeek: any;
-            status: any;
-            opponent: any;
-            homeAway: any;
-            liftType: any;
-            notes: any;
+            id: string;
+            teamId: string;
+            teamFacilityId: string;
+            name: string;
+            type: string;
+            startTime: string;
+            endTime: string;
+            startDate: Date;
+            endDate: Date;
+            reoccurring: boolean;
+            selectedReoccurrType: string;
+            dayOfWeek: string;
+            status: string;
+            opponent: string;
+            homeAway: string;
+            liftType: string;
+            notes: string;
         }> = []
 
         if(!events){
@@ -131,6 +134,7 @@ export class EventController {
     }
 
     static async getStatusFacilityEvents(req: Request, res: Response){
+        console.log(req.params)
         const {facilityId, status }= req.params;
         const events = await EventModel.getAllStatusFacilityRequests(facilityId, status);
         const formattedEvents = events.map(event => ({

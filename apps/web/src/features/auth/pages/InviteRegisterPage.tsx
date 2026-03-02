@@ -4,10 +4,12 @@ import { apiAcceptInvite } from "../api/invites";
 import { RegisterForm } from "../components/RegisterForm";
 import Logo from "@/assets/Logo_Master.png";
 
+type InviteData = Awaited<ReturnType<typeof apiAcceptInvite>>;
+
 export default function InviteRegisterPage() {
     const [params] = useSearchParams();
     const token = params.get("invite");
-    const [invite, setInvite] = useState<any>(null);
+    const [invite, setInvite] = useState<InviteData>(null);
     const [loading, setLoading] = useState(true);
     const nav = useNavigate();
     useEffect(() => {

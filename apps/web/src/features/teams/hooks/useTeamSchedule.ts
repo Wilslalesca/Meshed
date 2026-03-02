@@ -5,6 +5,7 @@ import { mapCourseRowsToScheduleEvents, mapTeamEventRowsToScheduleEvents } from 
 
 import type { TeamScheduleEvent } from "../types/schedule";
 import { apiGetRoster } from "../api/teams";
+import type { Athlete } from "../types/roster";
 
 export const useTeamSchedule = (teamId: string, fromISO: string, toISO: string) => {
     const { token } = useAuth();
@@ -12,24 +13,24 @@ export const useTeamSchedule = (teamId: string, fromISO: string, toISO: string) 
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
-    let cancelled = false;
-
-    async function fetchSchedule() {
-
-            if (!teamId || !token) return;
+    const fetchSchedule = useCallback(async () => {
+            if (!teamId || !token) {
+                setLoading(false);
+                return;
+            }
 
             setLoading(true);
             setError(null);
 
             try {
                 const teamRows = await apiGetTeamEvents(teamId, token);
-                const mapped = mapTeamEventRowsToScheduleEvents(teamRows, fromISO, toISO);
+                const mapped = mapTeamEventRowsToScheduleEvents(teamRows);
 
                 const roster = await apiGetRoster(teamId, token);
-                const athletes = (roster ?? []).map((a: any) => ({
-                    id: a.id ?? a.user_id ??  a.athleteId ?? a.athlete_id,
-                    name: a.name ?? [a.first_name, a.last_name].filter(Boolean).join(" ") ?? a.email ?? "Unknown",
-                })).filter((x: any) => typeof x.id === "string" && x.id.length > 0);
+                const athletes = (roster ?? []).map((a: Athlete) => ({
+                    id: a.id,
+                    name: [a.first_name, a.last_name].filter(Boolean).join(" ") ?? a.email ?? "Unknown",
+                })).filter((x: { id: string }) => typeof x.id === "string" && x.id.length > 0);
 
                 const classEvents = await Promise.all(
                     athletes.map(async (athlete: { id: string; name: string; }) => {
@@ -39,22 +40,21 @@ export const useTeamSchedule = (teamId: string, fromISO: string, toISO: string) 
                 );
                 const classEventsFlat = classEvents.flat();
                 const merged = [...mapped, ...classEventsFlat].sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime());
-
-                if (!cancelled) setEvents(merged);
+                setEvents(merged);
 
             } catch (err) {
                 const msg = err instanceof Error ? err.message : String(err);
-                if (!cancelled) setError(msg);
+                setError(msg);
 
             } finally {
-                if (!cancelled) setLoading(false);
+                setLoading(false);
 
             }
-    }[teamId, token, fromISO, toISO];
+    }, [teamId, token, fromISO, toISO]);
 
     const reloadSchedule = useCallback(() => {
-        fetchSchedule();
-    }, [teamId, token, fromISO, toISO]);
+        void fetchSchedule();
+    }, [fetchSchedule]);
 
     useEffect(() => {
         reloadSchedule();

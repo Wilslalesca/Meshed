@@ -1,4 +1,3 @@
-import React from "react";
 import { useState } from "react";
 import {
     Dialog,
@@ -21,17 +20,17 @@ import {
     DropdownMenuTrigger,
 } from "@/shared/components//ui/dropdown-menu";
 import { Label } from "@/shared/components//ui/label";
-//import { OptimizationRequest } from "@/features/dashboard/types/OptimizationRequest";
 import { generateIntervalOptions } from "@/features/dashboard/utils/generateIntervalOptions";
 import { apiOptimizeSchedule } from "@/features/teams/api/optimize";
+import type { OptimizationRequestPayload } from "@/features/teams/types/OptimizationRequest";
 
-export const OptimizePracticeModal = ({ open, onOpenChange, teamId }: any) => {
+export const OptimizePracticeModal = ({ open, onOpenChange, teamId }: { open: boolean; onOpenChange: (open: boolean) => void; teamId: string }) => {
     const { token } = useAuth();
-    const [OptimizationType, setOptimizationType] = React.useState(
+    const [OptimizationType, setOptimizationType] = useState(
         "The highest attendance at each practice",
     );
-    const [selectedDays, setSelectedDays] = React.useState<string[]>([]);
-    const [practiceChoices, setPracticeChoices] = React.useState<
+    const [selectedDays, setSelectedDays] = useState<string[]>([]);
+    const [practiceChoices, setPracticeChoices] = useState<
         Record<string, string>
     >({});
 
@@ -45,11 +44,11 @@ export const OptimizePracticeModal = ({ open, onOpenChange, teamId }: any) => {
         endTime: string;
     };
 
-    const [specificTimes, setSpecificTimes] = React.useState<
+    const [specificTimes, setSpecificTimes] = useState<
         Record<string, TimeOption[]>
     >({});
 
-    const [intervalsInput, setIntervalsInput] = React.useState<
+    const [intervalsInput, setIntervalsInput] = useState<
         Record<
             string,
             { startTime: string; endTime: string; durationMinutes: number }
@@ -108,7 +107,7 @@ export const OptimizePracticeModal = ({ open, onOpenChange, teamId }: any) => {
     ];
 
     const submitOptimization = async () => {
-        const payload = {
+        const payload: OptimizationRequestPayload = {
             optimizationType:
                 OptimizationType === "The highest attendance at each practice"
                     ? "MAX_ATTENDANCE"
@@ -144,7 +143,7 @@ export const OptimizePracticeModal = ({ open, onOpenChange, teamId }: any) => {
         };
         if (!token || !teamId) return;
         // @ISLA = here is the results of the optimize
-        const result = await apiOptimizeSchedule(teamId, payload as any, token);
+        const result = await apiOptimizeSchedule(teamId, payload, token);
         console.log("Optimization payload:", payload);
         console.log("Optimization result:", result);
 

@@ -8,37 +8,32 @@ import { sendEmail } from "../services/emailService";
 import { InviteModel } from "../models/InviteModel";
 import crypto from "crypto";
 import * as xlsx from "xlsx";
+import { AuthedRequest } from "../middleware/authMiddleware";
 
-function getUserId(req: any): string | undefined {
-    return (
-        req?.user?.id ??
-        req?.userId ??
-        req?.auth?.id ??
-        req?.locals?.user?.id ??
-        req?.res?.locals?.user?.id
-    );
-}
+async function isTeamManagerOrAdmin(
+    req: AuthedRequest,
+    teamId: string,
+): Promise<boolean> {
+    const userId = req.user?.id;
+    if (!userId) return false;
+    const user = await UserModel.findById(userId);
+    if (!user) return false;
 
-async function isTeamManagerOrAdmin(req: any, teamId: string): Promise<boolean> {
-    const role = req.user?.role;
-    const uid = getUserId(req);
-    if (!uid) return false;
+    if (user.role === "admin") return true;
 
-    if (role === "admin") return true;
-
-    const staff = await TeamStaffModel.findStaffRecord(teamId, uid);
+    const staff = await TeamStaffModel.findStaffRecord(teamId, userId);
     return staff?.role === "manager";
 }
 
 export class TeamController {
-    static async getMyTeams(req: Request, res: Response) {
-        const uid = getUserId(req);
-        console.log("Getting Teams" );
-        console.log("User ID:", uid);
+    static async getMyTeams(req: AuthedRequest, res: Response) {
+        const userId = req.user?.id;
+        console.log("Getting My Teams for userId:", userId);
+        console.log("Getting Teams");
+        console.log("User ID:", userId);
 
-
-        if (!uid) return res.json([]);
-        const teams = await TeamModel.findForUser(uid);
+        if (!userId) return res.json([]);
+        const teams = await TeamModel.findForUser(userId);
         console.log("Found Teams:", teams.length);
         res.json(teams);
     }
@@ -50,7 +45,7 @@ export class TeamController {
         res.json(team);
     }
 
-    static async createTeam(req: Request, res: Response) {
+    static async createTeam(req: AuthedRequest, res: Response) {
         try {
             const { name, sport_id, season, league_id, gender } = req.body;
 
@@ -65,15 +60,13 @@ export class TeamController {
                 gender: gender || null,
             });
 
-            const uid = getUserId(req);
-            if (uid) {
-                await TeamStaffModel.addStaff(team.id, uid, "manager", null);
-            }
+            const userId = req.user?.id;
+            if (!userId) return res.status(401).send("Unauthorized");
+            await TeamStaffModel.addStaff(team.id, userId, "manager", null);
 
             res.status(201).json(team);
-        } catch (err: any) {
-            console.error("Error creating team:", err);
-            res.status(500).send(err?.message || "Failed to create team");
+        } catch {
+            res.status(500).send("Failed to create team");
         }
     }
 
@@ -103,9 +96,10 @@ export class TeamController {
         res.json(athletes);
     }
 
-    static async addAthleteByEmail(req: any, res: Response) {
+    static async addAthleteByEmail(req: AuthedRequest, res: Response) {
         const { teamId } = req.params;
-        if (!(await isTeamManagerOrAdmin(req, teamId))) return res.status(403).send("Forbidden");
+        if (!(await isTeamManagerOrAdmin(req, teamId)))
+            return res.status(403).send("Forbidden");
         const { email } = req.body;
 
         if (!email) return res.status(400).send("email required");
@@ -119,27 +113,32 @@ export class TeamController {
         }
 
         await TeamRosterModel.addToTeam(teamId, user!.id, "athlete", null);
-        
+
         const team = await TeamModel.getTeam(teamId);
         if (!team) return res.status(500).send("Team not found");
 
         if (isGhost) {
             const token = crypto.randomBytes(32).toString("hex");
-            await InviteModel.createInvite(teamId, email, "athlete", null, token);
+            await InviteModel.createInvite(
+                teamId,
+                email,
+                "athlete",
+                null,
+                token,
+            );
             await sendEmail.sendEmailInvite(email, team.name, token);
-
-        } 
-        else {
+        } else {
             await sendEmail.sendAddedToTeamEmail(email, team!.name, "athlete");
-        }    
+        }
 
         return res.status(204).send();
     }
 
-    static async bulkAddAthletesByCsv(req: any, res: Response) {
+    static async bulkAddAthletesByCsv(req: AuthedRequest, res: Response) {
         const { teamId } = req.params;
-        if (!(await isTeamManagerOrAdmin(req, teamId))) return res.status(403).send("Forbidden");
-        const file = req.file as any;
+        if (!(await isTeamManagerOrAdmin(req, teamId)))
+            return res.status(403).send("Forbidden");
+        const file = req.file;
 
         if (!file) return res.status(400).send("CSV file required");
 
@@ -152,12 +151,15 @@ export class TeamController {
             const isCsv = name.endsWith(".csv");
             const isXlsx = name.endsWith(".xlsx") || name.endsWith(".xls");
 
-            const emailRegex = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/g;
+            const emailRegex =
+                /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/g;
             const emails: string[] = [];
 
             if (isCsv) {
                 const csvContent: string = file.buffer.toString("utf-8");
-                const lines: string[] = csvContent.split(/\r?\n/).filter((line: string) => line.trim());
+                const lines: string[] = csvContent
+                    .split(/\r?\n/)
+                    .filter((line: string) => line.trim());
                 for (const line of lines) {
                     const matches = line.match(emailRegex) as string[] | null;
                     if (matches) emails.push(...matches);
@@ -168,29 +170,39 @@ export class TeamController {
                 for (const sn of sheetNames) {
                     const ws = wb.Sheets[sn];
                     if (!ws) continue;
-                    const rows: any[] = xlsx.utils.sheet_to_json(ws, { header: 1 });
+                    const rows = xlsx.utils.sheet_to_json(ws, { header: 1 });
                     for (const row of rows) {
                         if (!Array.isArray(row)) continue;
                         for (const cell of row) {
                             if (typeof cell !== "string") continue;
-                            const matches = cell.match(emailRegex) as string[] | null;
+                            const matches = cell.match(emailRegex) as
+                                | string[]
+                                | null;
                             if (matches) emails.push(...matches);
                         }
                     }
                 }
             } else {
-                return res.status(400).json({ success: false, message: "Unsupported file type. Use CSV or Excel (.xlsx/.xls)." });
+                return res
+                    .status(400)
+                    .json({
+                        success: false,
+                        message:
+                            "Unsupported file type. Use CSV or Excel (.xlsx/.xls).",
+                    });
             }
 
             if (emails.length === 0) {
-                return res.status(400).json({ 
-                    success: false, 
-                    message: "No valid email addresses found in file" 
+                return res.status(400).json({
+                    success: false,
+                    message: "No valid email addresses found in file",
                 });
             }
 
             // Remove duplicates
-            const uniqueEmails = [...new Set(emails.map(e => e.trim().toLowerCase()))];
+            const uniqueEmails = [
+                ...new Set(emails.map((e) => e.trim().toLowerCase())),
+            ];
 
             const results = {
                 success: 0,
@@ -215,20 +227,41 @@ export class TeamController {
                         continue;
                     }
 
-                    await TeamRosterModel.addToTeam(teamId, user.id, "athlete", null);
+                    await TeamRosterModel.addToTeam(
+                        teamId,
+                        user.id,
+                        "athlete",
+                        null,
+                    );
 
                     if (isGhost) {
                         const token = crypto.randomBytes(32).toString("hex");
-                        await InviteModel.createInvite(teamId, email, "athlete", null, token);
-                        await sendEmail.sendEmailInvite(email, team.name, token);
+                        await InviteModel.createInvite(
+                            teamId,
+                            email,
+                            "athlete",
+                            null,
+                            token,
+                        );
+                        await sendEmail.sendEmailInvite(
+                            email,
+                            team.name,
+                            token,
+                        );
                     } else {
-                        await sendEmail.sendAddedToTeamEmail(email, team.name, "athlete");
+                        await sendEmail.sendAddedToTeamEmail(
+                            email,
+                            team.name,
+                            "athlete",
+                        );
                     }
 
                     results.success++;
                 } catch (err) {
                     results.failed++;
-                    results.errors.push(`${email}: ${err instanceof Error ? err.message : "Unknown error"}`);
+                    results.errors.push(
+                        `${email}: ${err instanceof Error ? err.message : "Unknown error"}`,
+                    );
                 }
             }
 
@@ -237,25 +270,29 @@ export class TeamController {
                 message: `Added ${results.success} athletes. ${results.failed} failed.`,
                 details: results,
             });
-
         } catch (err) {
             console.error("Error processing CSV:", err);
-            return res.status(500).json({ 
-                success: false, 
-                message: err instanceof Error ? err.message : "Error processing CSV file" 
+            return res.status(500).json({
+                success: false,
+                message:
+                    err instanceof Error
+                        ? err.message
+                        : "Error processing CSV file",
             });
         }
     }
 
-    static async removeAthlete(req: any, res: Response) {
+    static async removeAthlete(req: AuthedRequest, res: Response) {
         const { teamId, userId } = req.params;
-        if (!(await isTeamManagerOrAdmin(req, teamId))) return res.status(403).send("Forbidden");
+        if (!(await isTeamManagerOrAdmin(req, teamId)))
+            return res.status(403).send("Forbidden");
         await TeamRosterModel.removeAthlete(teamId, userId);
         return res.json({ success: true });
     }
-    static async updateAthlete(req: any, res: Response) {
+    static async updateAthlete(req: AuthedRequest, res: Response) {
         const { teamId, userId } = req.params;
-        if (!(await isTeamManagerOrAdmin(req, teamId))) return res.status(403).send("Forbidden");
+        if (!(await isTeamManagerOrAdmin(req, teamId)))
+            return res.status(403).send("Forbidden");
         const { position, status } = req.body;
 
         const updated = await TeamRosterModel.updateAthlete(teamId, userId, {
@@ -269,8 +306,7 @@ export class TeamController {
     }
 
     static async addEvent(req: Request, res: Response) {
-
-        const { 
+        const {
             teamId,
             teamFacilityId,
             name,
@@ -287,25 +323,25 @@ export class TeamController {
             homeAway,
             liftType,
             notes,
-        }  = req.body;
+        } = req.body;
 
         const team_event = await TeamEventModel.createTeamEvent({
-            team_id : teamId,
-            team_facility_id:teamFacilityId,
-            name:name,
-            type : type,
-            start_time :startTime,
-            end_time :endTime,
-            start_date : startDate,
-            end_date :endDate,
-            reoccurring : reoccurring,
-            reoccurr_type :selectedReoccurrType,
-            day_of_week :dayOfWeek,
-            status:status,
-            opponent :opponent,
-            home_away :homeAway,
-            lift_type :liftType,
-            notes :notes,
+            team_id: teamId,
+            team_facility_id: teamFacilityId,
+            name: name,
+            type: type,
+            start_time: startTime,
+            end_time: endTime,
+            start_date: startDate,
+            end_date: endDate,
+            reoccurring: reoccurring,
+            reoccurr_type: selectedReoccurrType,
+            day_of_week: dayOfWeek,
+            status: status,
+            opponent: opponent,
+            home_away: homeAway,
+            lift_type: liftType,
+            notes: notes,
         });
 
         console.log("Created team_event:", team_event);
@@ -313,10 +349,9 @@ export class TeamController {
         res.status(201).json(team_event);
     }
 
-    static async getEvents(req: Request, res: Response) { 
+    static async getEvents(req: Request, res: Response) {
         const { teamId } = req.params;
         const events = await TeamEventModel.getByTeamId(teamId);
         res.json(events);
     }
-
 }

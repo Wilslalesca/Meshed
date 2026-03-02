@@ -1,7 +1,7 @@
 import type { Facility } from "@/features/facilities/types/facilities";
 export function getFacilityName(facilityId: string | undefined, allFacilities: Facility[]){
     try{
-        var facility = allFacilities.find(f => f.id === facilityId)
+        const facility = allFacilities.find(f => f.id === facilityId)
         if(facility?.name == undefined){
             return facilityId
         }

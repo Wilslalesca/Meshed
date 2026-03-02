@@ -10,7 +10,7 @@ export function useAthleteSchedule(athleteId?: string) {
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        if (!athleteId) {
+        if (!athleteId || !token) {
             setSchedule(null);
             return;
         }
@@ -19,13 +19,13 @@ export function useAthleteSchedule(athleteId?: string) {
             setLoading(true);
             setError(null);
 
-            const data = await getAthleteSchedule(athleteId, token!);
+            const data = await getAthleteSchedule(athleteId, token);
             setSchedule(data);
             setLoading(false);
         };
 
         fetchData();
-    }, [athleteId]);
+    }, [athleteId, token]);
 
     return { schedule, loading, error };
 }

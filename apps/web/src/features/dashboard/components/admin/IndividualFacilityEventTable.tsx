@@ -112,7 +112,7 @@ export const IndividualFacilityEventTable = ({ facilityId, facilityName, filter 
                     open={isModalOpen}
                     onOpenChange={setIsModalOpen}
                     eventInfo={selectedEvent}
-                    teamName={selectedEventTeam}
+                    teamName={selectedEventTeam ?? undefined}
                     onAdded={() => {
                         setRefresh(refresh+1)
                     }}

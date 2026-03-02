@@ -9,10 +9,9 @@ export interface NewAthleteCourseTime {
 }
 
 export const AthleteCourseModel = {
-  async insert(data: NewAthleteCourseTime, client?: any): Promise<UserEvent> {
-    const c = client || pool;
+  async insert(data: NewAthleteCourseTime): Promise<UserEvent> {
 
-    const res = await c.query(
+    const res = await pool.query(
       `INSERT INTO user_events (
           user_id, class_id, created_at, updated_at
        ) VALUES ($1, $2, NOW(), NOW())
@@ -24,13 +23,11 @@ export const AthleteCourseModel = {
 
   async updateAthleteCourseTime(
     classId: string,
-    athleteId: string,
-    data: Partial<NewAthleteCourseTime>
+    athleteId: string
   ): Promise<boolean> {
-    // Legacy behavior: treat an update as a touch.
     const res = await pool.query(
       `UPDATE user_events
-       SET updated_at = NOW()
+       SET class_id = $1, user_id = $2, updated_at = NOW()
        WHERE class_id = $1 AND user_id = $2`,
       [classId, athleteId]
     );
@@ -51,6 +48,6 @@ export const AthleteCourseModel = {
       `SELECT user_id FROM user_events WHERE class_id = $1`,
       [classId]
     );
-    return rows.map((r: any) => r.user_id);
+    return rows.map((r: UserEvent) => r.user_id);
   },
 };

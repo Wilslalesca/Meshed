@@ -6,7 +6,7 @@ import { apiAddAthleteByEmail, apiBulkAddAthletesByCsv } from "../api/teams";
 import { useAuth } from "@/shared/hooks/useAuth";
 import { toast } from "sonner";
 
-export const AddAthleteModal = ({ open, onOpenChange, teamId, onAdded }: any) => {
+export const AddAthleteModal = ({ open, onOpenChange, teamId, onAdded }: { open: boolean; onOpenChange: (open: boolean) => void; teamId: string; onAdded: () => void }) => {
     const [email, setEmail] = useState("");
     const [file, setFile] = useState<File | null>(null);
     const [uploading, setUploading] = useState(false);

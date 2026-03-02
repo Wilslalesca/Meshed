@@ -119,7 +119,7 @@ export const AllEventTable = () => {
                     open={isModalOpen}
                     onOpenChange={setIsModalOpen}
                     eventInfo={selectedEvent}
-                    teamName={selectedEventTeam}
+                    teamName={selectedEventTeam ?? ""}
                     onAdded={() => {
                         setRefresh(refresh+1)
                     }}

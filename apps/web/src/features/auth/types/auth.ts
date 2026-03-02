@@ -42,3 +42,16 @@ export interface AuthResponse {
     user: AuthUser;
     expiresAt?: string;
 }
+
+export interface Invite {
+    email: string;
+    role: Role;
+    token: string;
+    expiresAt: string; 
+}
+
+export interface AuthError {
+    message?: string;
+    needsVerification?: boolean;
+    userId?: string;
+};
