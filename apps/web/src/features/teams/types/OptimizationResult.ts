@@ -6,11 +6,23 @@ export type ScheduleSlot = {
   athletesMissing: AthleteMissesMap;
 };
 
-export type OptimizationResult = {
-  type: "MIN_MISSES" | "MAX_ATTENDANCE";
+export type MinMissesResult = {
+  type: "MIN_MISSES";
   result: {
     athleteMisses: AthleteMissesMap;
     maxMisses: number;
     schedule: ScheduleSlot[];
   };
 };
+
+export type MaxAttendanceDay = {
+  day: string;
+  option: ScheduleSlot;
+};
+
+export type MaxAttendanceResult = {
+  type: "MAX_ATTENDANCE";
+  result: MaxAttendanceDay[];
+};
+
+export type OptimizationResult = MinMissesResult | MaxAttendanceResult;

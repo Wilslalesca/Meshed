@@ -23,31 +23,31 @@ export const OptimizeResultsModal = ({ open, onOpenChange,  teamId, optimizeResu
     const [search, setSearch] = useState<string>("");
     const { roster } = useRoster(teamId!);
     const rosterCount = roster?.length ?? 0;
-    const [filteredEvents, setFilteredEvents] = useState<TeamScheduleEvent[]>([]);
     
-    useEffect(() => {
-        setFilteredEvents(useFilterOptimizedEvents(optimizeResults))
-    }, [optimizeResults]);
+    const filteredEvents = useFilterOptimizedEvents(optimizeResults);
+
 
     return(
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="max-w-md max-h-150 overflow-y-auto">
+            <DialogContent>
                 <DialogHeader>
                     <DialogTitle>Optimization Results</DialogTitle>
                 </DialogHeader>
-              <TeamScheduleCalendar
-                    view={view}
-                    setView={setView}
-                    events={filteredEvents}
-                    mode={mode}
-                    setMode={setMode}
-                    search={search}
-                    setSearch={setSearch}
-                    fromISO={range.fromISO}
-                    toISO={range.toISO}
-                    rosterCount={rosterCount}
-                    onRangeChange={(fromISO: string, toISO: string) => onRangeChange({ fromISO, toISO })}
-                />
+               { filteredEvents && (
+                <TeamScheduleCalendar
+                        view={view}
+                        setView={setView}
+                        events={filteredEvents}
+                        mode={mode}
+                        setMode={setMode}
+                        search={search}
+                        setSearch={setSearch}
+                        fromISO={range.fromISO}
+                        toISO={range.toISO}
+                        rosterCount={rosterCount}
+                        onRangeChange={(fromISO: string, toISO: string) => onRangeChange({ fromISO, toISO })}
+                    />
+                ) }
             </DialogContent>
 
         </Dialog>
