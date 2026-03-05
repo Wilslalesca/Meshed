@@ -23,6 +23,8 @@ import { CreateTeamNotificationModal } from "../modals/CreateTeamNotificationMod
 import { OptimizePracticeModal } from "../modals/OptimizePracticeModal";
 import { useTeamSchedule } from "../hooks/useTeamSchedule";
 import { startOfWeekISO, endOfWeekISO } from "../Services/isoRange";
+import { OptimizeResultsModal } from "../modals/OptimizationResultsModal";
+import type { OptimizationResult } from "../types/OptimizationResult";
 
 export const TeamDetailsPage = () => {
     const { teamId } = useParams<{ teamId: string }>();
@@ -50,6 +52,8 @@ export const TeamDetailsPage = () => {
         "athlete" | "manager"
     >("athlete");
     const [openOptimize, setOpenOptimize] = useState(false);
+    const [openOptimizeResults, setOpenOptimizeResults] = useState(false);
+    const [optimizeResult, setOptimizeResult] = useState<OptimizationResult | null>(null);
 
     if (loading || !team) return <p className="p-6">Loading...</p>;
 
@@ -164,7 +168,20 @@ export const TeamDetailsPage = () => {
               <OptimizePracticeModal
                       open={openOptimize}
                       onOpenChange={setOpenOptimize}
-                      teamId={team.id} />
+                      teamId={team.id} 
+                      onOptimizationComplete={(result) => {
+                        setOptimizeResult(result)
+                        setOpenOptimize(false);
+                        setOpenOptimizeResults(true);
+                    }}/>
+            )}
+            {isManager && (
+              <OptimizeResultsModal
+                      open={openOptimizeResults}
+                      onOpenChange={setOpenOptimizeResults}
+                      teamId={team.id} 
+                      optimizeResults = {optimizeResult}
+                      />
             )}
 
             {isManager && (
