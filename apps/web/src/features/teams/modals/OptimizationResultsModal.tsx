@@ -1,6 +1,6 @@
 
-import { useState } from "react";
-import { TeamScheduleTab } from "../components/tabs/TeamScheduleTab";
+import { useEffect, useState } from "react";
+import { TeamScheduleCalendar } from "../components/schedule/TeamScheduleCalendar"
 import { startOfWeekISO, endOfWeekISO } from "../Services/isoRange";
 import {
     Dialog,
@@ -9,26 +9,45 @@ import {
     DialogTitle
 } from "@/shared/components/ui/dialog";
 import type { OptimizationResult } from "../types/OptimizationResult";
+import { TeamScheduleMode, TeamScheduleView, type TeamScheduleEvent } from '../types/schedule';
+import { useRoster } from "../hooks/useRoster";
+import { useFilterOptimizedEvents } from "../hooks/useFilterOptimizedEvents";
 
 export const OptimizeResultsModal = ({ open, onOpenChange,  teamId, optimizeResults }: { open: boolean; onOpenChange: (open: boolean) => void; teamId: string; optimizeResults: OptimizationResult | null }) => {
-    const [range, setRange] = useState({
+    const [range, onRangeChange] = useState({
         fromISO: startOfWeekISO(),
         toISO: endOfWeekISO(),
     });
-    //const {events, reload: reloadSchedule} = useTeamSchedule(teamId!,range.fromISO,range.toISO )
-    const {events, setEvents} = useState
+    const [view, setView] = useState<TeamScheduleView>(TeamScheduleView.Week);
+    const [mode, setMode] = useState<TeamScheduleMode>(TeamScheduleMode.Calendar);
+    const [search, setSearch] = useState<string>("");
+    const { roster } = useRoster(teamId!);
+    const rosterCount = roster?.length ?? 0;
+    const [filteredEvents, setFilteredEvents] = useState<TeamScheduleEvent[]>([]);
+    
+    useEffect(() => {
+        setFilteredEvents(useFilterOptimizedEvents(optimizeResults))
+    }, [optimizeResults]);
+
     return(
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="max-w-md max-h-150 overflow-y-auto">
                 <DialogHeader>
                     <DialogTitle>Optimization Results</DialogTitle>
                 </DialogHeader>
-            <TeamScheduleTab
-                events={events}
-                range={range}
-                onRangeChange={setRange}
-                onReload={setEvents}
-            />
+              <TeamScheduleCalendar
+                    view={view}
+                    setView={setView}
+                    events={filteredEvents}
+                    mode={mode}
+                    setMode={setMode}
+                    search={search}
+                    setSearch={setSearch}
+                    fromISO={range.fromISO}
+                    toISO={range.toISO}
+                    rosterCount={rosterCount}
+                    onRangeChange={(fromISO: string, toISO: string) => onRangeChange({ fromISO, toISO })}
+                />
             </DialogContent>
 
         </Dialog>
