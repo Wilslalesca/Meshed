@@ -29,7 +29,7 @@ export const OptimizeResultsModal = ({ open, onOpenChange,  teamId, optimizeResu
 
     return(
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent>
+            <DialogContent "fixed inset-0 translate-x-0 translate-y-0 w-full h-full max-w-none overflow-y-auto flex p-50">
                 <DialogHeader>
                     <DialogTitle>Optimization Results</DialogTitle>
                 </DialogHeader>
