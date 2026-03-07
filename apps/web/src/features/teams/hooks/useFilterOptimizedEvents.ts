@@ -49,10 +49,10 @@ export const useFilterOptimizedEvents = (optimizeResults: OptimizationResult|nul
             const misses = "Absences: " + Object.keys(s.option.athletesMissing).length;
             var athleteNames :string
             ///RAAHHHHHHHHHHHHhh this desont work because stupid hook
-            Object.entries(s.option.athletesMissing).forEach(([id]) => {
+            /**Object.entries(s.option.athletesMissing).forEach(([id]) => {
                 var athlete = (useAthleteById(id)).athlete
                 athleteNames+= ((athlete ? athlete.first_name : "Unknown")) + ", "
-            });
+            });**/
             var event :TeamScheduleEvent= {
                 id:tempId,
                 athleteId:tempId,
