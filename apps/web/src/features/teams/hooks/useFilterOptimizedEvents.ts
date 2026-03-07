@@ -39,13 +39,13 @@ export function getClosestPracticeDates(dayResult: MaxAttendanceDay) {
   };
 }
 export const useFilterOptimizedEvents = (optimizeResults: OptimizationResult|null) => {
-    let filteredEvents : TeamScheduleEvent[] = []
+    const filteredEvents : TeamScheduleEvent[] = []
     if (optimizeResults && optimizeResults.type == "MAX_ATTENDANCE"){
         let tempId = "0";
         optimizeResults.result.forEach((s)=>{
             const {start, end} =  getClosestPracticeDates(s)
             const misses = "Absences: " + Object.keys(s.option.athletesMissing).length;
-            let event :TeamScheduleEvent= {
+            const event :TeamScheduleEvent= {
                 id:tempId,
                 athleteId:tempId,
                 athleteName:misses,
