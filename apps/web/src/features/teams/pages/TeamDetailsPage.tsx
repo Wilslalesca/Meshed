@@ -177,11 +177,11 @@ export const TeamDetailsPage = () => {
             )}
             {isManager && (
               <OptimizeResultsModal
-                      open={openOptimizeResults}
-                      onOpenChange={setOpenOptimizeResults}
-                      teamId={team.id} 
-                      optimizeResults = {optimizeResult}
-                      />
+                open={openOptimizeResults}
+                onOpenChange={setOpenOptimizeResults}
+                teamId={team.id} 
+                optimizeResults = {optimizeResult}
+                />
             )}
 
             {isManager && (
