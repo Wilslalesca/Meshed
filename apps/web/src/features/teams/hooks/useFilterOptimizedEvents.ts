@@ -1,8 +1,6 @@
 import type { OptimizationResult } from "../types/OptimizationResult"
 import type { TeamScheduleEvent } from "../types/schedule"
 import type { MaxAttendanceDay } from "../types/OptimizationResult";
-import { useAthleteById } from "../hooks/useAthleteById";
-import type { Athlete } from "../../teams/types/roster";
 
 const DAYS: Record<string, number> = {
   Sunday: 0,
@@ -47,18 +45,12 @@ export const useFilterOptimizedEvents = (optimizeResults: OptimizationResult|nul
         optimizeResults.result.forEach((s)=>{
             const {start, end} =  getClosestPracticeDates(s)
             const misses = "Absences: " + Object.keys(s.option.athletesMissing).length;
-            var athleteNames :string
-            ///RAAHHHHHHHHHHHHhh this desont work because stupid hook
-            /**Object.entries(s.option.athletesMissing).forEach(([id]) => {
-                var athlete = (useAthleteById(id)).athlete
-                athleteNames+= ((athlete ? athlete.first_name : "Unknown")) + ", "
-            });**/
             var event :TeamScheduleEvent= {
                 id:tempId,
                 athleteId:tempId,
                 athleteName:misses,
                 title:misses,
-                name:(athleteNames! ? athleteNames : misses),
+                name:misses,
                 startTime: start,
                 endTime : end,
                 type: "Other",

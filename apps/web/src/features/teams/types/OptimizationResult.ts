@@ -1,4 +1,4 @@
-type AthleteMissesMap = Record<string, number>;
+export type AthleteMissesMap = Record<string, number>;
 
 export type ScheduleSlot = {
   start: string;

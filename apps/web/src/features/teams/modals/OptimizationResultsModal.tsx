@@ -11,6 +11,7 @@ import type { OptimizationResult } from "../types/OptimizationResult";
 import { TeamScheduleMode, TeamScheduleView } from "../types/schedule";
 import { useRoster } from "../hooks/useRoster";
 import { useFilterOptimizedEvents } from "../hooks/useFilterOptimizedEvents";
+import { OptimizeResultsTable } from "../components/add-event/OptimizedResultsTable";
 
 export const OptimizeResultsModal = ({
     open,
@@ -36,6 +37,7 @@ export const OptimizeResultsModal = ({
     const rosterCount = roster?.length ?? 0;
 
     const filteredEvents = useFilterOptimizedEvents(optimizeResults);
+    console.log(filteredEvents)
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
@@ -62,6 +64,9 @@ export const OptimizeResultsModal = ({
                         />
                     )}
                 </div>
+                 <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden px-5 pb-5">
+                    <OptimizeResultsTable optimizeResults = {optimizeResults}/>
+                 </div>
             </DialogContent>
         </Dialog>
     );
