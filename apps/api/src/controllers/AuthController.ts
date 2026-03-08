@@ -1,11 +1,13 @@
 import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
+import { randomInt } from "crypto";
 import { z } from "zod";
 import { UserModel } from "../models/UserModel";
 import { signAccessToken, signRefreshToken, verifyRefresh } from "../utils/tokens";
 import { config } from "../config/config";
 import { sendEmail } from "../services/emailService";
 import { VerificationCodeModel } from "../models/VerificationCodeModel";
+import { PasswordResetCodeModel } from "../models/PasswordResetCodeModel";
 import { InviteModel } from "../models/InviteModel";
 import { TeamStaffModel } from "../models/TeamStaffModel";
 import { TeamRosterModel } from "../models/TeamRosterModel";
@@ -23,6 +25,16 @@ const registerSchema = z.object({
 const loginSchema = z.object({
   email: z.string().email(),
   password: z.string().min(1),
+});
+
+const forgotPasswordSchema = z.object({
+  email: z.string().email(),
+});
+
+const resetPasswordSchema = z.object({
+  email: z.string().email(),
+  code: z.string().min(6).max(6),
+  newPassword: z.string().min(8),
 });
 
 const cookieOpts = {
@@ -225,6 +237,72 @@ export const AuthController = {
     await sendEmail.sendVerificationEmail(user.email, code);
 
     return res.json({ message: "Verification email resent successfully" });
+  },
+
+  async forgotPassword(req: Request, res: Response) {
+    const parse = forgotPasswordSchema.safeParse(req.body);
+    if (!parse.success) {
+      return res.status(400).json({
+        error: "Validation error",
+        details: parse.error.flatten(),
+      });
+    }
+
+    const normalizedEmail = parse.data.email.toLowerCase();
+    const user = await UserModel.findByEmail(normalizedEmail);
+
+    // Always return success to avoid leaking which emails exist.
+    if (!user) {
+      return res.json({
+        message:
+          "If an account exists for that email, a password reset code has been sent.",
+      });
+    }
+
+    await PasswordResetCodeModel.invalidateAllForUser(user.id);
+
+    const code = randomInt(100000, 1000000).toString();
+    await PasswordResetCodeModel.create(user.id, code);
+
+    try {
+      await sendEmail.sendPasswordResetEmail(user.email, code);
+    } catch (err) {
+      console.error("Failed to send password reset email", err);
+      // Still return a generic success response to avoid user enumeration.
+    }
+
+    return res.json({
+      message:
+        "If an account exists for that email, a password reset code has been sent.",
+    });
+  },
+
+  async resetPassword(req: Request, res: Response) {
+    const parse = resetPasswordSchema.safeParse(req.body);
+    if (!parse.success) {
+      return res.status(400).json({
+        error: "Validation error",
+        details: parse.error.flatten(),
+      });
+    }
+
+    const { email, code, newPassword } = parse.data;
+    const normalizedEmail = email.toLowerCase();
+
+    const user = await UserModel.findByEmail(normalizedEmail);
+    if (!user) {
+      return res.status(400).json({ error: "Invalid or expired reset code" });
+    }
+
+    const record = await PasswordResetCodeModel.findValid(user.id, code);
+    if (!record) {
+      return res.status(400).json({ error: "Invalid or expired reset code" });
+    }
+
+    await PasswordResetCodeModel.markUsed(record.id);
+    await UserModel.setPassword(user.id, newPassword);
+
+    return res.json({ message: "Password reset successfully" });
   },
 
 

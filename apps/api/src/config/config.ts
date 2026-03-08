@@ -1,5 +1,14 @@
 import 'dotenv/config';
 
+const requiredEnv = ["JWT_ACCESS_SECRET", "JWT_REFRESH_SECRET", "DATABASE_URL", "GMAIL_APP_EMAIL", "GMAIL_APP_PASSWORD"] as const;
+
+for (const key of requiredEnv) {
+    if (!process.env[key]) {
+        console.warn(`ERROR: Missing environment variable ${key}`);
+        process.exit(1);
+    }
+}
+
 export const config = {
     port: Number(process.env.PORT ?? 4000),
     frontendOrigin: process.env.FRONTEND_ORIGIN ?? 'http://localhost:5173',
@@ -12,12 +21,4 @@ export const config = {
     nodeEnv: process.env.NODE_ENV ?? 'development',
     gmailEmail: process.env.GMAIL_APP_EMAIL!,
     gmailAppPassword: process.env.GMAIL_APP_PASSWORD!,
-    
 };
-
-["JWT_ACCESS_SECRET", "JWT_REFRESH_SECRET", "DATABASE_URL", "GMAIL_APP_EMAIL", "GMAIL_APP_PASSWORD"].forEach((key) => {
-    if (!process.env[key]) {
-        console.warn(`ERROR: Missing environment variable ${key}`);
-        process.exit(1);
-    }
-});

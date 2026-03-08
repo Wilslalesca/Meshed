@@ -164,7 +164,7 @@ export function RegisterForm({
                             <Input
                                 id="email"
                                 type="email"
-                                placeholder="test@gmail.com"
+                                placeholder="name@example.com"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 autoComplete="email"

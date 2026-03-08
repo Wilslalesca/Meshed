@@ -73,7 +73,7 @@ export function LoginForm({
                         <Label htmlFor="email">Email</Label>
                         <Input
                             type="email"
-                            placeholder="test@gmail.com"
+                            placeholder="name@example.com"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             autoComplete="email"

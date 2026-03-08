@@ -100,3 +100,39 @@ export async function apiResend(input: { userId: string }) {
 
   return data;
 }
+
+export async function apiForgotPassword(input: { email: string }) {
+  const res = await fetch(`${API_BASE}/auth/forgot-password`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(input),
+  });
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(data.error || "Forgot password failed");
+  }
+
+  return data as { message: string };
+}
+
+export async function apiResetPassword(input: {
+  email: string;
+  code: string;
+  newPassword: string;
+}) {
+  const res = await fetch(`${API_BASE}/auth/reset-password`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(input),
+  });
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(data.error || "Reset password failed");
+  }
+
+  return data as { message: string };
+}

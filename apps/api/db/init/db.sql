@@ -192,6 +192,15 @@ CREATE TABLE email_verification_codes (
   used BOOLEAN DEFAULT FALSE
 );
 
+CREATE TABLE password_reset_codes (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+  code VARCHAR(6) NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  expires_at TIMESTAMP DEFAULT (CURRENT_TIMESTAMP + INTERVAL '10 minutes'),
+  used BOOLEAN DEFAULT FALSE
+);
+
 
 -- CREATE INDEX IF NOT EXISTS idx_facilities_name ON facilities (name);
 
