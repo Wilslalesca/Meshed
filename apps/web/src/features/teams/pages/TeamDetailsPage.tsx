@@ -23,8 +23,9 @@ import { CreateTeamNotificationModal } from "../modals/CreateTeamNotificationMod
 import { OptimizePracticeModal } from "../modals/OptimizePracticeModal";
 import { useTeamSchedule } from "../hooks/useTeamSchedule";
 import { startOfWeekISO, endOfWeekISO } from "../Services/isoRange";
+import type { OptimizationResult, OptimizationTeamEvent } from "../types/OptimizationResult";
 import { OptimizeResultsModal } from "../modals/OptimizationResultsModal";
-import type { OptimizationResult } from "../types/OptimizationResult";
+import { AddOptimizedEventModal } from "../components/add-event/AddOptimizedEventModal";
 
 export const TeamDetailsPage = () => {
     const { teamId } = useParams<{ teamId: string }>();
@@ -55,6 +56,9 @@ export const TeamDetailsPage = () => {
     const [openOptimizeResults, setOpenOptimizeResults] = useState(false);
     const [optimizeResult, setOptimizeResult] = useState<OptimizationResult | null>(null);
 
+    const[openAddOptimizeEvent, setOpenAddOptimizeEvent] = useState(false)
+    const[addOptimizeEventInfo, setAddOptimizeEventInfo] = useState<OptimizationTeamEvent | null>(null)
+    
     if (loading || !team) return <p className="p-6">Loading...</p>;
 
     const sport = sports.find((s) => s.id === team.sport_id) ?? null;
@@ -175,12 +179,25 @@ export const TeamDetailsPage = () => {
                         setOpenOptimizeResults(true);
                     }}/>
             )}
-            {isManager && (
+            {isManager && openOptimizeResults && (
               <OptimizeResultsModal
                 open={openOptimizeResults}
                 onOpenChange={setOpenOptimizeResults}
                 teamId={team.id} 
                 optimizeResults = {optimizeResult}
+                onCreateOptimizedEvent={(event)=>{
+                    setOpenAddOptimizeEvent(true)
+                    setOpenOptimizeResults(false)
+                    setAddOptimizeEventInfo(event)
+                }}
+                />
+            )}
+            {(isManager && openAddOptimizeEvent && addOptimizeEventInfo) && (
+              <AddOptimizedEventModal
+                open={openAddOptimizeEvent}
+                onOpenChange={setOpenAddOptimizeEvent}
+                teamId={team.id} 
+                eventInfo = {addOptimizeEventInfo}
                 />
             )}
 

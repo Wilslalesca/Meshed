@@ -1,6 +1,6 @@
 import type { OptimizationResult } from "../types/OptimizationResult"
 import type { TeamScheduleEvent } from "../types/schedule"
-import type { MaxAttendanceDay } from "../types/OptimizationResult";
+import type { MaxAttendanceDay, ScheduleSlot } from "../types/OptimizationResult";
 
 const DAYS: Record<string, number> = {
   Sunday: 0,
@@ -12,9 +12,9 @@ const DAYS: Record<string, number> = {
   Saturday: 6,
 };
 
-export function getClosestPracticeDates(dayResult: MaxAttendanceDay) {
+export function getClosestPracticeDates(dayResult: ScheduleSlot, dayOfWeek:string) {
   const today = new Date();
-  const targetDay = DAYS[dayResult.day];
+  const targetDay = DAYS[dayOfWeek];
 
   const currentDay = today.getDay();
   let diff = targetDay - currentDay;
@@ -24,8 +24,8 @@ export function getClosestPracticeDates(dayResult: MaxAttendanceDay) {
   const baseDate = new Date(today);
   baseDate.setDate(today.getDate() + diff);
 
-  const [startHour, startMinute] = dayResult.option.start.split(":").map(Number);
-  const [endHour, endMinute] = dayResult.option.end.split(":").map(Number);
+  const [startHour, startMinute] = dayResult.start.split(":").map(Number);
+  const [endHour, endMinute] = dayResult.end.split(":").map(Number);
 
   const startDate = new Date(baseDate);
   startDate.setHours(startHour, startMinute, 0, 0);
@@ -38,12 +38,13 @@ export function getClosestPracticeDates(dayResult: MaxAttendanceDay) {
     end: endDate,
   };
 }
+
 export const useFilterOptimizedEvents = (optimizeResults: OptimizationResult|null) => {
     const filteredEvents : TeamScheduleEvent[] = []
     if (optimizeResults && optimizeResults.type == "MAX_ATTENDANCE"){
         let tempId = "0";
         optimizeResults.result.forEach((s)=>{
-            const {start, end} =  getClosestPracticeDates(s)
+            const {start, end} =  getClosestPracticeDates(s.option, s.day)
             const misses = "Absences: " + Object.keys(s.option.athletesMissing).length;
             const event :TeamScheduleEvent= {
                 id:tempId,
@@ -58,23 +59,26 @@ export const useFilterOptimizedEvents = (optimizeResults: OptimizationResult|nul
             filteredEvents.push(event)
             tempId+="0"
         })
+        return filteredEvents
     }
-    return filteredEvents
-    /**else if (optimizeResults.type == "MIN_MISSES"){
+    else if (optimizeResults && optimizeResults.type == "MIN_MISSES"){
         var tempId = "0";
         optimizeResults.result.schedule.forEach((s)=>{
-            var event :TeamScheduleEvent= {
+            const {start, end} =  getClosestPracticeDates(s, "Monday")
+            const misses = "Absences: " + Object.keys(s.athletesMissing).length;
+            const event :TeamScheduleEvent= {
                 id:tempId,
                 athleteId:tempId,
-                athleteName:tempId,
-                title:tempId,
-                name:tempId,
-                startTime: s.start,
-                endTime : s.end,
+                athleteName:misses,
+                title:misses,
+                name:misses,
+                startTime: start,
+                endTime : end,
                 type: "Other",
             }
             filteredEvents.push(event)
             tempId+="0"
         })
-    }**/
+        return filteredEvents
+    }
 }

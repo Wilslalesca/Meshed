@@ -25,4 +25,18 @@ export type MaxAttendanceResult = {
   result: MaxAttendanceDay[];
 };
 
+export type OptimizationTeamEvent = {
+  dayOfWeek:string;
+  startTime:string;
+  endTime: string;
+}
+
+export type OptimizedRow = {
+    day: string;
+    start: string;
+    end: string;
+    athletesMissing: AthleteMissesMap;
+    source:OptimizationResult;
+};
+
 export type OptimizationResult = MinMissesResult | MaxAttendanceResult;

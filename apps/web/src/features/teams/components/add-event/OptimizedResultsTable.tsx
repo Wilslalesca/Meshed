@@ -1,12 +1,14 @@
 import { Button } from "@/shared/components/ui/button";
-import type { OptimizationResult, AthleteMissesMap} from "../../types/OptimizationResult"
+import type { OptimizationResult, AthleteMissesMap, OptimizationTeamEvent} from "../../types/OptimizationResult"
 import { useAthleteByIds } from "../../hooks/useAthleteByIds";
 import { useMemo } from "react";
 
 export const OptimizeResultsTable = ({
     optimizeResults,
+    onCreateOptimizedEvent,
 }: {
     optimizeResults: OptimizationResult | null;
+     onCreateOptimizedEvent:(event:OptimizationTeamEvent)=>void;
 }) => {
     
     const allMissingIds = useMemo(() => {
@@ -67,7 +69,18 @@ export const OptimizeResultsTable = ({
                                     <td className="py-2 px-4">{event.option.end}</td>
                                     <td className="py-2 px-4">{Object.keys(event.option.athletesMissing).length}</td>
                                     <td className="py-2 px-4">{renderNames(event.option.athletesMissing)}</td>
-                                    <td className="py-2 px-4"><Button>Add Event</Button></td>
+                                    <td className="py-2 px-4">
+                                        <Button
+                                         onClick={() =>
+                                            onCreateOptimizedEvent({
+                                                dayOfWeek: event.day,
+                                                startTime: event.option.start,
+                                                endTime: event.option.end,
+                                            })
+                                        }>
+                                            Add Event
+                                        </Button>
+                                    </td>
                                 </tr>
                             ))
                         ) : (
@@ -78,7 +91,18 @@ export const OptimizeResultsTable = ({
                                     <td className="py-2 px-4">{slot.end}</td>
                                     <td className="py-2 px-4">{Object.keys(slot.athletesMissing).length}</td>
                                     <td className="py-2 px-4">{renderNames(slot.athletesMissing)}</td>
-                                    <td className="py-2 px-4"><Button>Add Event</Button></td>
+                                    <td className="py-2 px-4">
+                                        <Button
+                                         onClick={() =>
+                                            onCreateOptimizedEvent({
+                                                dayOfWeek: "Monday",
+                                                startTime: slot.start,
+                                                endTime: slot.end,
+                                            })
+                                        }>
+                                            Add Event
+                                        </Button>
+                                    </td>
                                 </tr>
                             ))
                         )}
