@@ -95,7 +95,7 @@ export const OptimizeResultsTable = ({
                                         <Button
                                          onClick={() =>
                                             onCreateOptimizedEvent({
-                                                dayOfWeek: "Monday",
+                                                dayOfWeek: "",
                                                 startTime: slot.start,
                                                 endTime: slot.end,
                                             })

@@ -40,10 +40,9 @@ export const AddOptimizedEventModal = ({
         return `${yyyy}-${mm}-${dd}`;
     };
 
-    const [selectedDay, setSelectedDay] = React.useState<string[]>([]);
-    setSelectedDay([eventInfo?.dayOfWeek])
-    const [startTime] = eventInfo?.startTime
-    const [endTime] = eventInfo?.endTime
+    const selectedDay: string[] =  eventInfo?.dayOfWeek ? [eventInfo.dayOfWeek] : [];
+    const startTime = eventInfo?.startTime
+    const endTime= eventInfo?.endTime
 
     const reoccurrTypes: readonly ReoccurrType[] = ReoccurrType;
     const [selectedReoccurrType, setSelectedReoccurrType] = useState<
