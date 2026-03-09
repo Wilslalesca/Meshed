@@ -198,6 +198,10 @@ export const TeamDetailsPage = () => {
                 onOpenChange={setOpenAddOptimizeEvent}
                 teamId={team.id} 
                 eventInfo = {addOptimizeEventInfo}
+                onShowOptimizedResultsModal={()=>{
+                    setOpenAddOptimizeEvent(false)
+                    setOpenOptimizeResults(true)
+                }}
                 />
             )}
 

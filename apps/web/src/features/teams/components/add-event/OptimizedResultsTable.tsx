@@ -1,7 +1,7 @@
 import { Button } from "@/shared/components/ui/button";
-import type { OptimizationResult, AthleteMissesMap, OptimizationTeamEvent} from "../../types/OptimizationResult"
+import type { OptimizationResult, AthleteMissesMap, OptimizationTeamEvent, OptimizedRow} from "../../types/OptimizationResult"
 import { useAthleteByIds } from "../../hooks/useAthleteByIds";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 
 export const OptimizeResultsTable = ({
     optimizeResults,
@@ -10,27 +10,45 @@ export const OptimizeResultsTable = ({
     optimizeResults: OptimizationResult | null;
      onCreateOptimizedEvent:(event:OptimizationTeamEvent)=>void;
 }) => {
-    
-    const allMissingIds = useMemo(() => {
-        if (!optimizeResults?.result) return [];
-        
+    //const [eventButton, setEventButton] = useState<number[]>([])
+    const { rows, allMissingIds } = useMemo(() => {
+        if (!optimizeResults) {
+            return { rows: [], allMissingIds: [] };
+        }
+
         const ids = new Set<string>();
-        if(optimizeResults.type == "MAX_ATTENDANCE"){
+        const rows: OptimizedRow[] = [];
+
+        if (optimizeResults.type === "MAX_ATTENDANCE") {
             optimizeResults.result.forEach(event => {
-                Object.keys(event.option.athletesMissing).forEach(id => {
-                    ids.add(id);
+                Object.keys(event.option.athletesMissing).forEach(id => ids.add(id));
+
+                rows.push({
+                    day: event.day,
+                    start: event.option.start,
+                    end: event.option.end,
+                    athletesMissing: event.option.athletesMissing,
+                    source: optimizeResults
                 });
             });
-        }
-        else{
-            optimizeResults.result.schedule.map(event => {
-                Object.keys(event.athletesMissing).forEach(id => {
-                    ids.add(id);
+        } else {
+            optimizeResults.result.schedule.forEach(slot => {
+                Object.keys(slot.athletesMissing).forEach(id => ids.add(id));
+
+                rows.push({
+                    day: "Monday", // temp
+                    start: slot.start,
+                    end: slot.end,
+                    athletesMissing: slot.athletesMissing,
+                    source: optimizeResults
                 });
             });
         }
 
-        return Array.from(ids);
+        return {
+            rows,
+            allMissingIds: Array.from(ids)
+        };
     }, [optimizeResults]);
 
     const athletes = (useAthleteByIds(allMissingIds)).athletes;
@@ -61,51 +79,30 @@ export const OptimizeResultsTable = ({
                         </tr>
                     </thead>
                     <tbody>
-                        {optimizeResults?.type === "MAX_ATTENDANCE" ? (
-                            optimizeResults?.result.map((event, index) => (
+                        {rows.map((event, index) => (
                                 <tr key={index} className="border-b hover:bg-gray-50">
                                     <td className="py-2 px-4">{event.day}</td>
-                                    <td className="py-2 px-4">{event.option.start}</td>
-                                    <td className="py-2 px-4">{event.option.end}</td>
-                                    <td className="py-2 px-4">{Object.keys(event.option.athletesMissing).length}</td>
-                                    <td className="py-2 px-4">{renderNames(event.option.athletesMissing)}</td>
+                                    <td className="py-2 px-4">{event.start}</td>
+                                    <td className="py-2 px-4">{event.end}</td>
+                                    <td className="py-2 px-4">{Object.keys(event.athletesMissing).length}</td>
+                                    <td className="py-2 px-4">{renderNames(event.athletesMissing)}</td>
                                     <td className="py-2 px-4">
                                         <Button
-                                         onClick={() =>
-                                            onCreateOptimizedEvent({
-                                                dayOfWeek: event.day,
-                                                startTime: event.option.start,
-                                                endTime: event.option.end,
-                                            })
-                                        }>
+                                            //disabled = {eventButton.has(index)}
+                                            onClick={() =>
+                                                onCreateOptimizedEvent({
+                                                    dayOfWeek: event.day,
+                                                    startTime: event.start,
+                                                    endTime: event.end,
+                                                })
+                                                //setEventButton
+                                            }>
                                             Add Event
                                         </Button>
                                     </td>
                                 </tr>
                             ))
-                        ) : (
-                            optimizeResults?.result.schedule.map((slot, index) => (
-                                <tr key={index} className="border-b hover:bg-gray-50">
-                                    <td className="py-2 px-4">-</td> {/* ScheduleSlot has no 'day' */}
-                                    <td className="py-2 px-4">{slot.start}</td>
-                                    <td className="py-2 px-4">{slot.end}</td>
-                                    <td className="py-2 px-4">{Object.keys(slot.athletesMissing).length}</td>
-                                    <td className="py-2 px-4">{renderNames(slot.athletesMissing)}</td>
-                                    <td className="py-2 px-4">
-                                        <Button
-                                         onClick={() =>
-                                            onCreateOptimizedEvent({
-                                                dayOfWeek: "",
-                                                startTime: slot.start,
-                                                endTime: slot.end,
-                                            })
-                                        }>
-                                            Add Event
-                                        </Button>
-                                    </td>
-                                </tr>
-                            ))
-                        )}
+                        }
                     </tbody>
                 </table>
             </div>

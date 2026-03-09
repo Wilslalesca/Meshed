@@ -30,7 +30,8 @@ export const AddOptimizedEventModal = ({
     onOpenChange,
     teamId,
     eventInfo,
-}: { open: boolean; onOpenChange: (open: boolean) => void; teamId: string; eventInfo:OptimizationTeamEvent}) => {
+    onShowOptimizedResultsModal,
+}: { open: boolean; onOpenChange: (open: boolean) => void; teamId: string; eventInfo:OptimizationTeamEvent; onShowOptimizedResultsModal:()=>void}) => {
     const { token } = useAuth();
 
     const formatLocalDate = (d: Date) => {
@@ -138,7 +139,7 @@ export const AddOptimizedEventModal = ({
                 eventTypeID,
             );
             toast.success("Event Created!");
-            onOpenChange(false);
+            onShowOptimizedResultsModal();
         } catch (error) {
             throw (error instanceof Error ? error : new Error("An error occurred"));
         }
