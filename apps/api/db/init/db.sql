@@ -155,6 +155,7 @@ CREATE TABLE team_events (
   home_away VARCHAR,               
   lift_type VARCHAR,               
   notes TEXT,
+  facility_notes TEXT,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP                  
 );

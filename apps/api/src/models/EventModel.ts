@@ -56,12 +56,12 @@ export class EventModel {
         return rows;
     }
 
-    static async updateStatus(id:string, status:string){
+    static async updateStatus(id:string, status:string, comments:string) {
         const response = await pool.query(
             `UPDATE team_events
-            SET status = $1, updated_at = NOW()
+            SET status = $1, updated_at = NOW(), facility_notes = $3
             WHERE id = $2`,
-            [status, id]
+            [status, id, comments]
         );
         return (response.rowCount ?? 0) > 0;
     }

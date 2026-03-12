@@ -34,7 +34,7 @@ export async function apiGetEventFacilities(
 }
 
 export async function apiUpdateEventStatus(
-    data: {status:string, id:string},
+    data: {status:string, id:string, comments:string},
     token: string
 ) {
     const res = await fetch(`${API_BASE}/events/${data.id}/${data.status}`, {

@@ -161,8 +161,8 @@ export class EventController {
     }
 
     static async updateEventStatus(req: Request, res: Response){
-        const {id, status }= req.params;
-        const event = await EventModel.updateStatus(id, status);
+        const {id, status, comments }= req.params;
+        const event = await EventModel.updateStatus(id, status, comments);
         res.json(event)
     }
 }

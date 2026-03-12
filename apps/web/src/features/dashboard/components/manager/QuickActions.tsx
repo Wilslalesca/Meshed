@@ -15,7 +15,7 @@ export const QuickActions = () => {
     { id: "bookFacility", label: "Book Facility", icon: MapPin, path: "/facilities" },
     { id: "teamCalendar", label: "Team Calendar", icon: Calendar, path: "/team/calendar" },
     { id: "approveSchedules", label: "Approve Schedules", icon: CheckCircle, path: "/schedule/approvals" },
-    { id : "generateOptimalSchedule", label: "Generate Optimal Schedule", icon: Calendar, path: "/optimize" },
+    // { id : "generateOptimalSchedule", label: "Generate Optimal Schedule", icon: Calendar, path: "/optimize" },
   ];
   const handleAction = (action: string, path: string) => {
     setActive(action);
