@@ -57,21 +57,6 @@ const mockFormattedEvent = {
   notes: 'Team practice',
 };
 
-beforeAll(() => {
-    process.env.DATABASE_URL = 'postgresql://test:test@localhost:5432/testdb';
-    process.env.JWT_ACCESS_SECRET="NQE-c6_RJRMYQOFjxBU-4QKiWn6U1ecSIQ1X_uXbMsXVZsJB5XvgSblD9XgkY9dKpVOH9fNLLt2f3VrQlvEFvA==";
-    process.env.JWT_REFRESH_SECRET="daTnDEdmIoQLRUYmWqxre0cxjmSSQIrvBfLfy-GWXIlsPS_wLSnRRWPgHTBokWkqiyZodny9V3yuQrINXpVCfA==";
-    process.env.PORT='4000';
-    process.env.FRONTEND_ORIGIN='http://localhost:5173';
-    process.env.DATABASE_URL='postgres://user:password@db:5432/mydatabase'
-    process.env.ACCESS_TTL='15m'
-    process.env.REFRESH_TTL='7d'
-    process.env.COOKIE_DOMAIN='localhost'
-    process.env.NODE_ENV='development'
-    process.env.GMAIL_APP_EMAIL="unitematchalign@gmail.com"
-    process.env.GMAIL_APP_PASSWORD="xkij gzin lecn zawb"
-});
-
 describe('getAllEvents', () => {
     test('should return formatted events', async () => {
       const req = mockRequest() as Request;
