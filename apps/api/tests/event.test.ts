@@ -74,16 +74,13 @@ beforeAll(() => {
 
 describe('getAllEvents', () => {
     test('should return formatted events', async () => {
-      // Arrange
       const req = mockRequest() as Request;
       const res = mockResponse() as Response;
       
       vi.mocked(EventModel.getAll).mockResolvedValue([mockDbEvent]);
 
-      // Act
       await EventController.getAllEvents(req, res);
 
-      // Assert
       expect(EventModel.getAll).toHaveBeenCalledTimes(1);
       expect(res.json).toHaveBeenCalledWith([mockFormattedEvent]);
     });
