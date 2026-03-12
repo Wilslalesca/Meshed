@@ -1,16 +1,15 @@
 import { Button } from "@/shared/components/ui/button";
 import type { OptimizationResult, AthleteMissesMap, OptimizationTeamEvent, OptimizedRow} from "../../types/OptimizationResult"
 import { useAthleteByIds } from "../../hooks/useAthleteByIds";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 
 export const OptimizeResultsTable = ({
     optimizeResults,
-    onCreateOptimizedEvent,
+    onCreateOptimizedEvent
 }: {
     optimizeResults: OptimizationResult | null;
-     onCreateOptimizedEvent:(event:OptimizationTeamEvent)=>void;
+    onCreateOptimizedEvent:(event:OptimizationTeamEvent)=>void;
 }) => {
-    //const [eventButton, setEventButton] = useState<number[]>([])
     const { rows, allMissingIds } = useMemo(() => {
         if (!optimizeResults) {
             return { rows: [], allMissingIds: [] };
@@ -88,15 +87,13 @@ export const OptimizeResultsTable = ({
                                     <td className="py-2 px-4">{renderNames(event.athletesMissing)}</td>
                                     <td className="py-2 px-4">
                                         <Button
-                                            //disabled = {eventButton.has(index)}
-                                            onClick={() =>
+                                            onClick={() => {
                                                 onCreateOptimizedEvent({
                                                     dayOfWeek: event.day,
                                                     startTime: event.start,
                                                     endTime: event.end,
-                                                })
-                                                //setEventButton
-                                            }>
+                                                });
+                                            }}>
                                             Add Event
                                         </Button>
                                     </td>
