@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi, test } from 'vitest';
+import { describe, expect, vi, test } from 'vitest';
 import { Request, Response } from 'express';
 import { EventController } from '../src/controllers/EventController';
 import { EventModel } from '../src/models/EventModel'
