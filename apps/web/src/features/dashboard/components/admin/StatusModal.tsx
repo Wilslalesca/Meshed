@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "@/shared/hooks/useAuth";
 import {
     Dialog,
@@ -7,17 +7,7 @@ import {
     DialogTitle,
     DialogDescription,
 } from "@/shared/components/ui/dialog";
-import {
-    Select,
-    SelectTrigger,
-    SelectValue,
-    SelectContent,
-    SelectItem,
-    SelectGroup,
-} from "@/shared/components/ui/select";
 import { Button } from "@/shared/components/ui/button";
-import { ButtonGroup } from "@/shared/components/ui/button-group";
-import { ButtonGroupSeparator } from "@/shared/components/ui/button-group";
 import { Textarea } from "@/shared/components/ui/textarea";
 import { apiUpdateEventStatus } from "@/features/teams/api/events";
 import { toast } from "sonner";
@@ -39,9 +29,14 @@ export const StatusModal = ({
 }) => {
     const { token } = useAuth();
     const [status, setStatus] = useState<string>("pending");
-    const [loading, setLoading] = useState(false);
-    const [showCommentBox, setCommentBox] = useState(false);
     const [comment, setComment] = useState<string>("");
+
+    useEffect(() => {
+        if (!open) {
+            setStatus("pending");
+            setComment("");
+        }
+    }, [open]);
 
     async function handleSubmit() {
         if (!eventInfo.id) {
@@ -60,6 +55,8 @@ export const StatusModal = ({
                 toast.error("Something went wrong!");
             } else {
                 toast.success("Event status updated!");
+                setStatus("pending");
+                setComment("");
                 onAdded?.();
                 onOpenChange(false);
             }
