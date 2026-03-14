@@ -39,7 +39,7 @@ export const useFilterOptimizedEvents = (optimizeResults: OptimizationResult|nul
         return filteredEvents
     }
     else if (optimizeResults && optimizeResults.type == "MIN_MISSES"){
-        var tempId = 0;
+        let tempId = 0;
         optimizeResults.result.schedule.forEach((s)=>{
             const misses = "Absences: " + Object.keys(s.option?.athletesMissing).length;
             const event :OptimizedCalendarResult= {

@@ -49,7 +49,6 @@ export const OptimizeResultsTable = ({
             allMissingIds: Array.from(ids)
         };
     }, [optimizeResults]);
-    console.log(rows)
 
     const athletes = (useAthleteByIds(allMissingIds)).athletes;
         const athletesById = useMemo(() => {
@@ -67,7 +66,7 @@ export const OptimizeResultsTable = ({
 
     return (
             <div className="overflow-x-auto">
-                {rows ? (
+                {rows.length > 0 ?(
                 <table className="w-full">
                     <thead>
                         <tr className="border-b">
