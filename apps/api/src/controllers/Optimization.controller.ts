@@ -18,7 +18,10 @@ export async function optimizeScheduleController(req: Request, res: Response) {
         }
 
         const daysWithMisses = await buildDaysWithAthleteMisses(teamId, days);
-            
+        console.log("days w misses: " + daysWithMisses)
+        /*for(var i=0;i<daysWithMisses.length;i++){
+            console.log("days: " + daysWithMisses[i].day)
+        }*/
         if (optimizationType === "MIN_MISSES") {
             const result = dpMinimizeMissesAlgService(daysWithMisses);
             return res.json({ type: "MIN_MISSES", result });

@@ -32,13 +32,13 @@ export const OptimizeResultsTable = ({
             });
         } else {
             optimizeResults.result.schedule.forEach(slot => {
-                Object.keys(slot.athletesMissing).forEach(id => ids.add(id));
+                Object.keys(slot.option.athletesMissing).forEach(id => ids.add(id));
 
                 rows.push({
-                    day: "Monday", // temp
-                    start: slot.start,
-                    end: slot.end,
-                    athletesMissing: slot.athletesMissing,
+                    day: slot.day,
+                    start: slot.option.start,
+                    end: slot.option.end,
+                    athletesMissing: slot.option.athletesMissing,
                     source: optimizeResults
                 });
             });

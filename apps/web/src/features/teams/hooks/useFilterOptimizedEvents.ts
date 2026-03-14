@@ -1,6 +1,6 @@
 import type { OptimizationResult } from "../types/OptimizationResult"
 import type { TeamScheduleEvent } from "../types/schedule"
-import type { MaxAttendanceDay, ScheduleSlot } from "../types/OptimizationResult";
+import type { ScheduleSlot, OptimizedCalendarResult } from "../types/OptimizationResult";
 
 const DAYS: Record<string, number> = {
   Sunday: 0,
@@ -64,8 +64,8 @@ export const useFilterOptimizedEvents = (optimizeResults: OptimizationResult|nul
     else if (optimizeResults && optimizeResults.type == "MIN_MISSES"){
         var tempId = "0";
         optimizeResults.result.schedule.forEach((s)=>{
-            const {start, end} =  getClosestPracticeDates(s, "Monday")
-            const misses = "Absences: " + Object.keys(s.athletesMissing).length;
+            const {start, end} =  getClosestPracticeDates(s.option, s.day)
+            const misses = "Absences: " + Object.keys(s.option.athletesMissing).length;
             const event :TeamScheduleEvent= {
                 id:tempId,
                 athleteId:tempId,
