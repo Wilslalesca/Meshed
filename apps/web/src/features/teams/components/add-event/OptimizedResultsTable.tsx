@@ -49,6 +49,7 @@ export const OptimizeResultsTable = ({
             allMissingIds: Array.from(ids)
         };
     }, [optimizeResults]);
+    console.log(rows)
 
     const athletes = (useAthleteByIds(allMissingIds)).athletes;
         const athletesById = useMemo(() => {
@@ -66,6 +67,7 @@ export const OptimizeResultsTable = ({
 
     return (
             <div className="overflow-x-auto">
+                {rows ? (
                 <table className="w-full">
                     <thead>
                         <tr className="border-b">
@@ -79,29 +81,32 @@ export const OptimizeResultsTable = ({
                     </thead>
                     <tbody>
                         {rows.map((event, index) => (
-                                <tr key={index} className="border-b hover:bg-gray-50">
-                                    <td className="py-2 px-4">{event.day}</td>
-                                    <td className="py-2 px-4">{event.start}</td>
-                                    <td className="py-2 px-4">{event.end}</td>
-                                    <td className="py-2 px-4">{Object.keys(event.athletesMissing).length}</td>
-                                    <td className="py-2 px-4">{renderNames(event.athletesMissing)}</td>
-                                    <td className="py-2 px-4">
-                                        <Button
-                                            onClick={() => {
-                                                onCreateOptimizedEvent({
-                                                    dayOfWeek: event.day,
-                                                    startTime: event.start,
-                                                    endTime: event.end,
-                                                });
-                                            }}>
-                                            Add Event
-                                        </Button>
-                                    </td>
-                                </tr>
-                            ))
-                        }
+                            <tr key={index} className="border-b hover:bg-gray-50">
+                                <td className="py-2 px-4">{event.day}</td>
+                                <td className="py-2 px-4">{event.start}</td>
+                                <td className="py-2 px-4">{event.end}</td>
+                                <td className="py-2 px-4">{Object.keys(event.athletesMissing).length}</td>
+                                <td className="py-2 px-4">{renderNames(event.athletesMissing)}</td>
+                                <td className="py-2 px-4">
+                                    <Button
+                                        onClick={() => {
+                                            onCreateOptimizedEvent({
+                                                dayOfWeek: event.day,
+                                                startTime: event.start,
+                                                endTime: event.end,
+                                            });
+                                        }}>
+                                        Add Event
+                                    </Button>
+                                </td>
+                            </tr>
+                        ))
+                        } 
                     </tbody>
-                </table>
+                </table>)
+                :
+                    <div>No Optimized Events</div>
+                }
             </div>
     );
 };

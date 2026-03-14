@@ -17,6 +17,15 @@ import {
     SelectContent,
     SelectItem,
 } from "@/shared/components/ui/select";
+import {
+  Breadcrumb,
+  BreadcrumbEllipsis,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/shared/components/ui/breadcrumb"
 import { ReoccurrType, TeamEventType } from "../../types/event";
 import { useAddTeamEvent } from "../../hooks/useAddTeamEvent";
 import { toast } from "sonner";
@@ -31,7 +40,7 @@ export const AddOptimizedEventModal = ({
     teamId,
     eventInfo,
     onShowOptimizedResultsModal,
-}: { open: boolean; onOpenChange: (open: boolean) => void; teamId: string; eventInfo:OptimizationTeamEvent; onShowOptimizedResultsModal:()=>void}) => {
+}: { open: boolean; onOpenChange: (open: boolean) => void; teamId: string; eventInfo:OptimizationTeamEvent; onShowOptimizedResultsModal:(result?:OptimizationTeamEvent)=>void}) => {
     const { token } = useAuth();
 
     const formatLocalDate = (d: Date) => {
@@ -51,7 +60,6 @@ export const AddOptimizedEventModal = ({
     >();
 
     const teamEvents: readonly TeamEventType[] = TeamEventType;
-
     const [eventName, setEventName] = useState<string>();
     const [eventTypeID, setEventTypeID] = useState<TeamEventType>();
     const [reoccurring, setReoccurring] = useState<boolean>(false);
@@ -139,7 +147,7 @@ export const AddOptimizedEventModal = ({
                 eventTypeID,
             );
             toast.success("Event Created!");
-            onShowOptimizedResultsModal();
+            onShowOptimizedResultsModal(eventInfo);
         } catch (error) {
             throw (error instanceof Error ? error : new Error("An error occurred"));
         }
@@ -150,7 +158,19 @@ export const AddOptimizedEventModal = ({
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="max-w-md max-h-150 overflow-y-auto">
                 <DialogHeader>
-                    <DialogTitle>Team Event Confirmation</DialogTitle>
+                    <DialogTitle>
+                        <Breadcrumb>
+                        <BreadcrumbList>
+                            <BreadcrumbItem>
+                                <button onClick={()=>onShowOptimizedResultsModal()}>Calendar View</button>
+                            </BreadcrumbItem>
+                            <BreadcrumbSeparator />
+                            <BreadcrumbItem>
+                                <BreadcrumbPage>Add Event</BreadcrumbPage>
+                            </BreadcrumbItem>
+                        </BreadcrumbList>
+                    </Breadcrumb>
+                    </DialogTitle>
                     <DialogDescription>
                         Confirm Event Creation for: {selectedDay} from {startTime} - {endTime}
                     </DialogDescription>
