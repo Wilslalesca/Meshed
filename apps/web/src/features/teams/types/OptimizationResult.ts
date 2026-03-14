@@ -42,7 +42,7 @@ export type OptimizedRow = {
 export type OptimizedCalendarResult = {
   id: string,
   title: string,
-  dayOfWeek: string,
+  dayOfWeek: number[],
   startTime: string,
   endTime:string
 };

@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { TeamScheduleCalendar } from "../components/schedule/TeamScheduleCalendar";
+//import { TeamScheduleCalendar } from "../components/schedule/TeamScheduleCalendar";
+import { OptimizedScheduleCalendar } from "../components/schedule/OptimizedScheduleCalendar";
 import { startOfWeekISO, endOfWeekISO } from "../Services/isoRange";
 import {
     Dialog,
@@ -49,20 +50,8 @@ export const OptimizeResultsModal = ({
                 </DialogHeader>
                 <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden px-5 pb-5">
                     {filteredEvents && (
-                        <TeamScheduleCalendar
-                            view={view}
-                            setView={setView}
-                            events={filteredEvents}
-                            mode={mode}
-                            setMode={setMode}
-                            search={search}
-                            setSearch={setSearch}
-                            fromISO={range.fromISO}
-                            toISO={range.toISO}
-                            rosterCount={rosterCount}
-                            onRangeChange={(fromISO: string, toISO: string) =>
-                                onRangeChange({ fromISO, toISO })
-                            }
+                        <OptimizedScheduleCalendar
+                           optimizedEvents={filteredEvents}
                         />
                     )}
                 </div>
