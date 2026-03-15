@@ -23,6 +23,9 @@ import { CreateTeamNotificationModal } from "../modals/CreateTeamNotificationMod
 import { OptimizePracticeModal } from "../modals/OptimizePracticeModal";
 import { useTeamSchedule } from "../hooks/useTeamSchedule";
 import { startOfWeekISO, endOfWeekISO } from "../Services/isoRange";
+import type { OptimizationResult, OptimizationTeamEvent } from "../types/OptimizationResult";
+import { OptimizeResultsModal } from "../modals/OptimizationResultsModal";
+import { AddOptimizedEventModal } from "../components/add-event/AddOptimizedEventModal";
 
 export const TeamDetailsPage = () => {
     const { teamId } = useParams<{ teamId: string }>();
@@ -50,11 +53,46 @@ export const TeamDetailsPage = () => {
         "athlete" | "manager"
     >("athlete");
     const [openOptimize, setOpenOptimize] = useState(false);
+    const [openOptimizeResults, setOpenOptimizeResults] = useState(false);
+    const [optimizeResult, setOptimizeResult] = useState<OptimizationResult | null>(null);
 
+    const[openAddOptimizeEvent, setOpenAddOptimizeEvent] = useState(false)
+    const[addOptimizeEventInfo, setAddOptimizeEventInfo] = useState<OptimizationTeamEvent | null>(null)
+    
     if (loading || !team) return <p className="p-6">Loading...</p>;
 
     const sport = sports.find((s) => s.id === team.sport_id) ?? null;
     const league = leagues.find((l) => l.id === team.league_id) ?? null;
+
+    const removeOptimizationEvent = (event:OptimizationTeamEvent) => {
+        if(!optimizeResult || !event )return;
+        if (optimizeResult.type == "MAX_ATTENDANCE"){
+            const pendingEvents:OptimizationResult = {
+                type : optimizeResult.type,
+                result: optimizeResult.result.filter((s) =>
+                    !(s.day === event.dayOfWeek &&
+                    s.option.start === event.startTime &&
+                    s.option.end === event.endTime)
+                ),
+            }
+            setOptimizeResult(pendingEvents)
+        }
+        else if (optimizeResult.type == "MIN_MISSES"){
+            const pendingEvents:OptimizationResult = {
+                type : optimizeResult.type,
+                result: {
+                    athleteMisses: optimizeResult.result?.athleteMisses,
+                    maxMisses: optimizeResult.result?.maxMisses,
+                    schedule : optimizeResult.result?.schedule.filter((s) =>
+                        !(s.day === event.dayOfWeek &&
+                        s.option.start === event.startTime &&
+                        s.option.end === event.endTime)
+                    ),
+                }
+            }
+            setOptimizeResult(pendingEvents)
+        }
+    }
 
     return (
         <div className="p-6 space-y-6">
@@ -164,7 +202,39 @@ export const TeamDetailsPage = () => {
               <OptimizePracticeModal
                       open={openOptimize}
                       onOpenChange={setOpenOptimize}
-                      teamId={team.id} />
+                      teamId={team.id} 
+                      onOptimizationComplete={(result) => {
+                        setOptimizeResult(result)
+                        setOpenOptimize(false);
+                        setOpenOptimizeResults(true);
+                    }}/>
+            )}
+            {isManager && openOptimizeResults && (
+              <OptimizeResultsModal
+                open={openOptimizeResults}
+                onOpenChange={setOpenOptimizeResults}
+                optimizeResults = {optimizeResult}
+                onCreateOptimizedEvent={(event)=>{
+                    setOpenAddOptimizeEvent(true)
+                    setOpenOptimizeResults(false)
+                    setAddOptimizeEventInfo(event)
+                }}
+                />
+            )}
+            {(isManager && openAddOptimizeEvent && addOptimizeEventInfo) && (
+              <AddOptimizedEventModal
+                open={openAddOptimizeEvent}
+                onOpenChange={setOpenAddOptimizeEvent}
+                teamId={team.id} 
+                eventInfo = {addOptimizeEventInfo}
+                onShowOptimizedResultsModal={(result?:OptimizationTeamEvent)=>{
+                    if(result){
+                        removeOptimizationEvent(result)
+                    }
+                    setOpenAddOptimizeEvent(false)
+                    setOpenOptimizeResults(true)
+                }}
+                />
             )}
 
             {isManager && (
