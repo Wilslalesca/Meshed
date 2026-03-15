@@ -1,8 +1,32 @@
 import { Request, Response } from "express";
 import { EventModel } from "../models/EventModel";
-import { TeamEvent } from "../types/event";
+import { ReoccurrType, BaseTeamEvent, TeamEventType } from "../types/event";
 
-function formatEvent(event: any) {
+type RawEventRow = {
+    id: string;
+    team_id: string;
+    team_facility_id?: string;
+    name?: string;
+    type: TeamEventType;
+    start_time: string;
+    end_time: string;
+    start_date: Date;
+    end_date?: Date;
+    reoccurring: boolean;
+    reoccurr_type?: ReoccurrType;
+    day_of_week?: string;
+    status?: string;
+    opponent?: string;
+    home_away?: "Home" | "Away";
+    lift_type?: string;
+    notes?: string;
+    facility_notes?: string;
+    requested_by_user_id?: string;
+    requested_by_name?: string;
+    requested_by_email?: string;
+};
+
+function formatEvent(event: RawEventRow): BaseTeamEvent {
     return {
         id: event.id,
         teamId: event.team_id,
