@@ -3,6 +3,7 @@ import { pool } from "../config/db";
 export type TeamEventInput = {
     team_id: string;
     team_facility_id?:string;
+    requested_by_user_id?: string;
     name?:string;
     type: string;
     start_time?: string;
@@ -26,6 +27,7 @@ export class TeamEventModel {
         const { 
             team_id,
             team_facility_id,
+            requested_by_user_id,
             name,
             type,
             start_time,
@@ -40,16 +42,16 @@ export class TeamEventModel {
             home_away,
             lift_type,
             notes
-        } 
-        = input;
+        } = input;
 
         const { rows } = await pool.query(
-            `INSERT INTO team_events (team_id, team_facility_id, name, type, start_time, end_time, start_date, end_date, reoccurring,
+            `INSERT INTO team_events (team_id, team_facility_id, requested_by_user_id, name, type, start_time, end_time, start_date, end_date, reoccurring,
             reoccurr_type, day_of_week, status, opponent, home_away, lift_type, notes, created_at, updated_at)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, NOW(), NOW())
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, NOW(), NOW())
        RETURNING *`,
             [team_id,
-            team_facility_id,
+            team_facility_id ?? null,
+            requested_by_user_id ?? null,
             name,
             type,
             start_time,

@@ -28,9 +28,18 @@ export interface BaseTeamEvent {
     endTime: string;
     reoccurring: boolean;
     reoccurrType?: ReoccurrType;
+    selectedReoccurrType?: string;
     dayOfWeek?: string;
     status?: string;
     conflict?: boolean;
+
+    requestedByUserId?: string;
+    requestedByUserName?: string;
+    requestedByEmail?: string;
+
+    approvedByUserId?: string;
+    approvedByUserName?: string;
+    approvedByEmail?: string;
 }
 
 export interface PracticeEvent extends BaseTeamEvent {
