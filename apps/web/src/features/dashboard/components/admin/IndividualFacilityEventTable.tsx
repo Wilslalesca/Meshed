@@ -9,6 +9,7 @@ import type { Team } from "@/features/teams/types/teams";
 import { getTeamName } from "@/features/dashboard/helpers/getTeamName"
 import { Button } from "@/shared/components/ui/button";
 import { StatusModal } from "./StatusModal";
+import { getRequestedByName } from "@/features/dashboard/helpers/getRequestedByName";
 
 export const IndividualFacilityEventTable = ({ facilityId, facilityName, filter }: { facilityId: string; facilityName: string; filter:string }) => {
     const { token } = useAuth(); 
@@ -22,6 +23,8 @@ export const IndividualFacilityEventTable = ({ facilityId, facilityName, filter 
      
     useEffect(() => {
         const fetchFacilityEvents = async () => {
+            if (!token) return;
+
             let facilities: TeamEvent[] = [];
 
             if(filter == 'pending' || filter == 'approved' || filter == 'denied'){
@@ -33,10 +36,8 @@ export const IndividualFacilityEventTable = ({ facilityId, facilityName, filter 
             else {
                 facilities = await getFacilityEvents(facilityId, token!);
             }
+            setEvents(facilities ?? []);
 
-            if (facilities) {
-                setEvents(facilities);
-            }
         };
 
         fetchFacilityEvents();
@@ -45,17 +46,16 @@ export const IndividualFacilityEventTable = ({ facilityId, facilityName, filter 
     useEffect(() => {
         const fetchTeamsWithEvents = async () => {
             if (!token || events.length === 0) return;
-            const uniqueTeamIds = [...new Set(events.map(e => e.teamId))];
-            for (const teamId of uniqueTeamIds) {
 
-                if (!allTeams.find(t => t.id === teamId)) {
-                    const data = await apiGetTeamById(teamId, token);
-                    setAllTeams(prev => [...prev, data]);
-                }
-            }
+            const uniqueTeamIds = [...new Set(events.map((e) => e.teamId).filter(Boolean))];
+            const missingTeamIds = uniqueTeamIds.filter((teamId) => !allTeams.find((t) => t.id === teamId));
+            
+            if (missingTeamIds.length === 0) return;
+            const teamResults = await Promise.all(missingTeamIds.map((teamId) => apiGetTeamById(teamId, token)));
+            setAllTeams((prev) => [...prev, ...teamResults.filter(Boolean),]);
         };
         fetchTeamsWithEvents();
-    })
+    }, [token, events, allTeams]);
 
     return (
         <Card>
@@ -67,7 +67,8 @@ export const IndividualFacilityEventTable = ({ facilityId, facilityName, filter 
                 <table className="w-full">
                 <thead>
                     <tr className="border-b">
-                    <th className="text-left py-2 px-4">Team</th>
+                    <th className="text-left py-2 px-4">Booked For</th>
+                    <th className="text-left py-2 px-4">Requested By</th>
                     <th className="text-left py-2 px-4">Event Name</th>
                     <th className="text-left py-2 px-4">Date</th>
                     <th className="text-left py-2 px-4">Start Time</th>
@@ -80,6 +81,7 @@ export const IndividualFacilityEventTable = ({ facilityId, facilityName, filter 
                     events.map((event) => (
                         <tr key={event.id} className="border-b hover:bg-gray-50">
                             <td className="py-2 px-4">{getTeamName(event.teamId, allTeams)}</td>
+                            <td className="py-2 px-4">{getRequestedByName(event)}</td>
                             <td className="py-2 px-4">{event.name}</td>
                             <td className="py-2 px-4">{new Date(event.startDate).toLocaleDateString()}</td>
                             <td className="py-2 px-4">{event.startTime}</td>
@@ -98,7 +100,7 @@ export const IndividualFacilityEventTable = ({ facilityId, facilityName, filter 
                     ))
                     ) : (
                     <tr>
-                        <td colSpan={2} className="py-4 px-4 text-center text-gray-500">
+                        <td colSpan={7} className="py-4 px-4 text-center text-gray-500">
                         No {(filter != 'All' ? filter : '') } Facility Requests for {facilityName}
                         </td>
                     </tr>
@@ -114,7 +116,7 @@ export const IndividualFacilityEventTable = ({ facilityId, facilityName, filter 
                     eventInfo={selectedEvent}
                     teamName={selectedEventTeam ?? undefined}
                     onAdded={() => {
-                        setRefresh(refresh+1)
+                        setRefresh((prev) => prev + 1)
                     }}
                 />
             )}

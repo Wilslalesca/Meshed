@@ -141,6 +141,7 @@ CREATE TABLE team_events (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   team_id UUID REFERENCES teams(id) ON DELETE CASCADE,
   team_facility_id UUID REFERENCES facilities(id) ON DELETE CASCADE,
+  requested_by_user_id UUID REFERENCES users(id),
   name VARCHAR,
   type VARCHAR NOT NULL,          
   start_date DATE NOT NULL,

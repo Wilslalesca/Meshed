@@ -34,12 +34,19 @@ export interface BaseTeamEvent {
   conflict?:boolean;
 
   requestedByUserId?: string;
-  requestedByUserName?: string;
+  requestedByName?: string;
   requestedByEmail?: string;
 
   approvedByUserId?: string;
-  approvedByUserName?: string;
+  approvedByName?: string;
   approvedByEmail?: string;
+
+  selectedReoccurrType?: string;
+  facilityNotes?: string;
+  notes?: string;
+  opponent?: string;
+  homeAway?: "Home" | "Away";
+  liftType?: string;
 }
 
 export interface PracticeEvent extends BaseTeamEvent {

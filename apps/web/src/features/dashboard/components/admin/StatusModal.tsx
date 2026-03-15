@@ -70,11 +70,11 @@ export const StatusModal = ({
             <DialogContent className="max-w-md max-h-150 overflow-y-auto">
                 <DialogHeader>
                     <DialogTitle>
-                        Updating {eventInfo.name} status for {teamName}
+                        Updating status for {eventInfo.name} 
+                        {teamName ? ` (${teamName})` : ""}
                     </DialogTitle>
                     <DialogDescription>
-                        Select a status from the dropdown and click submit to
-                        confirm your changes
+                        Select a status and add a comment if required before submitting your changes.
                     </DialogDescription>
                 </DialogHeader>
 
@@ -103,7 +103,9 @@ export const StatusModal = ({
 
                 <div className=" p-4 items-center w-full">
                     <div className="text-sm mb-1">
-                        Status set to <strong>{status.charAt(0).toUpperCase() + status.slice(1)}</strong>, {status == "approved" ? "(optional) " : ""}please provide a comment:
+                        Status set to{" "} 
+                        <strong>{status.charAt(0).toUpperCase() + status.slice(1)}</strong>.{" "} 
+                        {status === "approved" ? "Comment is optional." : "Comment is required."}
                     </div>
                     <div className="flex flex-col">
                         <Textarea

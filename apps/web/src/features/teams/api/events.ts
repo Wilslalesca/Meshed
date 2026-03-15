@@ -43,7 +43,8 @@ export async function apiUpdateEventStatus(
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
         },
+        body: JSON.stringify({ comments: data.comments }),
     });
 
-    return res.ok ? data : undefined;
+    return res.ok ? await res.json() : undefined;
 }

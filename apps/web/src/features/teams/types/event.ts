@@ -28,6 +28,7 @@ export interface BaseTeamEvent {
     endTime: string;
     reoccurring: boolean;
     reoccurrType?: ReoccurrType;
+    selectedReoccurrType?: string;
     dayOfWeek?: string;
     status?: string;
     conflict?: boolean;
