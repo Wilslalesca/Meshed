@@ -1,4 +1,3 @@
-// apps/api/src/models/FacilityModel.ts
 import { pool } from "../config/db";
 
 export type FacilityInput = {
