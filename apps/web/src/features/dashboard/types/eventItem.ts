@@ -12,6 +12,8 @@ export type FacilityCalendarItem = {
     title: string,
     start: Date,
     end:Date,
+    backgroundColor: string,
+    borderColor: string,
     extendedProps: {
         originalEvent:TeamEvent
     }

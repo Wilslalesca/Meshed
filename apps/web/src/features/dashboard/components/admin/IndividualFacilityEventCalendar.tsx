@@ -26,6 +26,13 @@ import {
 import type { CalendarApi } from '@fullcalendar/core';
 import {combineLocalDateTime} from "@/features/teams/Services/getTeamScheduleRange.ts";
 
+function getColor(event: TeamEvent) {
+  if (event.status === "pending") return "#45a4ca";
+  if (event.status === "approved") return "#45906e";
+  if (event.status === "denied") return "#d44146";
+  return "#6c757d";
+}
+
 function getMonthDayChip(api: CalendarApi | null) {
   if (!api) return { month: "", day: "" };
 
@@ -108,9 +115,11 @@ export const IndividualFacilityEventCalendar = (
             const updateCalendarEvents = async () => {
                 const tempCalendarEvents:FacilityCalendarItem[] = events.map((e) => ({
                     id : e.id!,
-                    title: getTeamName(e.teamId, allTeams),
+                    title: getTeamName(e.teamId, allTeams) + " (" + e.status + ")",
                     start: combineLocalDateTime(e.startDate, e.startTime),
                     end: combineLocalDateTime(e.startDate, e.endTime),
+                    backgroundColor: getColor(e),
+                    borderColor: getColor(e),
                     extendedProps:{
                         originalEvent: e
                     },
