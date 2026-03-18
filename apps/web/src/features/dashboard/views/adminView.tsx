@@ -6,12 +6,15 @@ import { AllEventTable } from "../components/admin/AllEventTable";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/components/ui/select";
 import { Label } from "@/shared/components//ui/label";
 import { IndividualFacilityEventTable } from "../components/admin/IndividualFacilityEventTable";
+import { IndividualFacilityEventCalendar } from "../components/admin/IndividualFacilityEventCalendar";
+import { Tabs, TabsList, TabsTrigger } from "@/shared/components/ui/tabs";
 
 export const AdminDashboard = () => {
     const { token } = useAuth();
     const [allFacilities, setAllFacilities] = useState<Facility[]>([]);
     const [displayFacility, setDisplayFacility] = useState<string | undefined>("All");
     const [filter, setFilter] = useState<string>("All");
+    const [individualView, setIndividualView] = useState<string>("table");
     
     useEffect(() => {
         const fetchFacilities = async () => {
@@ -79,12 +82,34 @@ export const AdminDashboard = () => {
                         </div>
                     </>
                 )}
+                { displayFacility != "All" && (
+                    <div className="gap-3 py-2">
+                        <Tabs
+                            value={individualView}
+                            onValueChange={setIndividualView}
+                            className="w-full"
+                        >
+                            <TabsList className="grid w-full grid-cols-2">
+                                <TabsTrigger className="w-full" value="table">
+                                    Table
+                                </TabsTrigger>
+                                <TabsTrigger className="w-full" value="calendar">
+                                    Calendar
+                                </TabsTrigger>
+                            </TabsList>
+                        </Tabs>
+                    </div>
+                )}
             </div>
             {
                 (() => {
                     const selectedFacility = displayFacility === "All" ? null : allFacilities.find(f => f.id === displayFacility);
                     return selectedFacility ? (
-                        <IndividualFacilityEventTable facilityId={selectedFacility.id} facilityName={selectedFacility.name} filter={filter} />
+                        individualView == "table" ? (
+                            <IndividualFacilityEventTable facilityId={selectedFacility.id} facilityName={selectedFacility.name} filter={filter} />
+                        ) : (
+                            <IndividualFacilityEventCalendar facilityId={selectedFacility.id} filter={filter} />
+                        )
                     ) : (
                         <AllEventTable />
                     );
