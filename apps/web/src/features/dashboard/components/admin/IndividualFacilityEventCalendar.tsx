@@ -3,7 +3,7 @@ import timeGridPlugin from '@fullcalendar/timegrid';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import { apiGetTeamById } from "@/features/teams/api/teams"
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
 import { useAuth } from "@/shared/hooks/useAuth";
 import type { TeamEvent } from "@/features/teams/types/event";
 import { getFacilityEvents, getStatusFacilityEvents, getConflictingFacilityEvents } from "../../api/dashboardApi";
@@ -12,10 +12,20 @@ import { getTeamName } from "@/features/dashboard/helpers/getTeamName"
 import { StatusModal } from "./StatusModal";
 import type {FacilityCalendarItem} from "@/features/dashboard/types/eventItem"
 import type { EventClickArg } from '@fullcalendar/core';
-import { Search, X, ArrowLeft, ArrowRight } from 'lucide-react';
+import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { ButtonGroup } from "@/shared/components/ui/button-group";
 import { Button } from '@/shared/components/ui/button';
+import { TeamScheduleMode, TeamScheduleView } from '@/features/teams/types/schedule';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/shared/components/ui/select";
 import type { CalendarApi } from '@fullcalendar/core';
+import { startOfWeekISO, endOfWeekISO } from "@/features/teams/Services/isoRange";
+import {combineLocalDateTime} from "@/features/teams/Services/getTeamScheduleRange.ts";
 
 function getMonthDayChip(api: CalendarApi | null) {
   if (!api) return { month: "", day: "" };
@@ -46,8 +56,8 @@ const DAYS: Record<DayName, number> = {
 };
 
 export const IndividualFacilityEventCalendar = (
-    { facilityId, facilityName, filter }:
-    { facilityId: string; facilityName: string; filter:string }) => {
+    { facilityId, filter }:
+    { facilityId: string; filter:string }) => {
         const { token } = useAuth(); 
         const [events, setEvents] = useState<TeamEvent[]>([]);   
         const [allTeams, setAllTeams] = useState<Team[]>([]);
@@ -57,8 +67,36 @@ export const IndividualFacilityEventCalendar = (
         const [calendarEvents, setCalendarEvents] = useState<FacilityCalendarItem[]>([]);
         const [refresh, setRefresh] = useState<number>(0)
         const [api, setApi] = useState<CalendarApi | null>(null);
+        const [title, setTitle] = useState<string>("");
+        const chip = useMemo(() => getMonthDayChip(api), [api]);
+        const calendarReference = useRef<FullCalendar | null>(null);
+        const [view, setView] = useState<TeamScheduleView>(TeamScheduleView.Week);
+        const [mode, setMode] = useState<TeamScheduleMode>(TeamScheduleMode.Calendar);
+        const [range, setRange] = useState({
+            fromISO: startOfWeekISO(),
+            toISO: endOfWeekISO(),
+        });
+        
+        function onRangeChange(fromISO: string, toISO: string) {
+            setRange({ fromISO, toISO });
+        }
     
-            
+        useEffect(() => {
+            const calApi = calendarReference.current?.getApi();
+            if(!calApi) return;
+
+            setApi(calApi);
+            setTitle(calApi.view.title);
+
+        }, []);
+
+        useEffect(() => {
+            if (!api) return;
+            if (api.view.type !== view) api.changeView(view);
+            setTitle(api.view.title);
+
+        }, [api, view]);
+
         useEffect(() => {
             const fetchFacilityEvents = async () => {
                 if (!token) return;
@@ -100,9 +138,8 @@ export const IndividualFacilityEventCalendar = (
                 const tempCalendarEvents:FacilityCalendarItem[] = events.map((e) => ({
                     id : e.id!,
                     title: getTeamName(e.teamId, allTeams),
-                    daysOfWeek: [DAYS[e.dayOfWeek as DayName]],
-                    startTime: e.startTime,
-                    endTime:e.endTime,
+                    start: combineLocalDateTime(e.startDate, e.startTime),
+                    end: combineLocalDateTime(e.startDate, e.endTime),
                     extendedProps:{
                         originalEvent: e
                     },
@@ -120,24 +157,72 @@ export const IndividualFacilityEventCalendar = (
         }
 
     return (
-        <div>
-            <div>
-                <ButtonGroup>
-                <Button variant="outline" size="sm" onClick={() => api?.prev()}>
-                    <ArrowLeft className="h-4 w-4" />
-                </Button>
-                <Button variant="outline" size="sm" onClick={() => api?.today()}>
-                    Today
-                </Button>
-                <Button variant="outline" size="sm" onClick={() => api?.next()}>
-                    <ArrowRight className="h-4 w-4" />
-                </Button>
-                </ButtonGroup>
+        <div className="team-calendar rounded-2xl border border-border/60 bg-background/70 shadow-sm">
+            <div className='rounded-2xl p-3 '>
+                <div className='mb-3 flex items-center justify-between gap-3'>
+                    <div className="flex items-center gap-3 min-w-0">
+                        <div className="flex items-center gap-3 min-w-0">
+                            <div className="flex overflow-hidden rounded-lg border bg-background shadow-sm">
+                            <div className="px-2 py-1 text-[10px] font-semibold tracking-wider text-muted-foreground bg-muted/40">
+                                {chip.month}
+                            </div>
+                            <div className="px-2 py-1 text-sm font-semibold tabular-nums">
+                                {chip.day}
+                            </div>
+                            </div>
+
+                            <div className="min-w-0">
+                            <div className="truncate text-sm font-semibold">{title}</div>
+                            <div className="truncate text-xs text-muted-foreground">
+                                {api?.view?.activeStart
+                                ? `${api.view.activeStart.toLocaleDateString()} – ${api.view.activeEnd.toLocaleDateString()}`
+                                : ""}
+                            </div>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <ButtonGroup>
+                                <Button variant="outline" size="sm" onClick={() => api?.prev()}>
+                                    <ArrowLeft className="h-4 w-4" />
+                                </Button>
+                                <Button variant="outline" size="sm" onClick={() => api?.today()}>
+                                    Today
+                                </Button>
+                                <Button variant="outline" size="sm" onClick={() => api?.next()}>
+                                    <ArrowRight className="h-4 w-4" />
+                                </Button>
+                            </ButtonGroup>
+
+                            <Select
+                                value={api?.view.type ?? view}
+                                onValueChange={(val) => {
+                                    const nextView = val as TeamScheduleView;
+
+                                    if (nextView === TeamScheduleView.Month) {
+                                    setMode(TeamScheduleMode.Calendar);
+                                    }
+                                    setView(nextView);
+                                    api?.changeView(val);
+                                }}
+                                >
+                                <SelectTrigger className="w-[140px]">
+                                    <SelectValue placeholder="Select view" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="timeGridWeek">Week view</SelectItem>
+                                    <SelectItem value="dayGridMonth">Month view</SelectItem>
+                                    <SelectItem value="timeGridDay">Day view</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <FullCalendar
+            ref={calendarReference}
             plugins={[timeGridPlugin, dayGridPlugin, interactionPlugin]}
-            initialView="timeGridWeek"
+            initialView={view}
             headerToolbar={false}
             allDaySlot={false}
             events={calendarEvents}
@@ -145,6 +230,10 @@ export const IndividualFacilityEventCalendar = (
             slotMinTime="04:00:00"
             slotMaxTime="23:00:00"
             height="auto"
+            datesSet={(arg) => {
+                setTitle(arg.view.title);
+                onRangeChange?.(arg.start.toISOString(), arg.end.toISOString());
+            }}
             />
             
             {selectedEvent && (

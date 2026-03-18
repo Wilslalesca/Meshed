@@ -108,7 +108,7 @@ export const AdminDashboard = () => {
                         individualView == "table" ? (
                             <IndividualFacilityEventTable facilityId={selectedFacility.id} facilityName={selectedFacility.name} filter={filter} />
                         ) : (
-                            <IndividualFacilityEventCalendar facilityId={selectedFacility.id} facilityName={selectedFacility.name} filter={filter} />
+                            <IndividualFacilityEventCalendar facilityId={selectedFacility.id} filter={filter} />
                         )
                     ) : (
                         <AllEventTable />

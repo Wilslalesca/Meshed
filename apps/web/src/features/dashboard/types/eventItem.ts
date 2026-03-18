@@ -10,9 +10,8 @@ export interface EventItem {
 export type FacilityCalendarItem = {
     id: string,
     title: string,
-    daysOfWeek: number[],
-    startTime: string,
-    endTime:string,
+    start: Date,
+    end:Date,
     extendedProps: {
         originalEvent:TeamEvent
     }
