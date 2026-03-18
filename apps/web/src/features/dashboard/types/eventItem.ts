@@ -4,3 +4,11 @@ export interface EventItem {
     date: string;
     time: string;
 }
+
+export interface CalendarEventItem {
+    id: string,
+    title: string,
+    day: number,
+    startTime: string,
+    endTime: string
+}
