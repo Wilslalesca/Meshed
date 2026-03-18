@@ -61,7 +61,7 @@ function parseTimeParts(value: unknown): { hh: number; mm: number; ss: number } 
   return { hh: 0, mm: 0, ss: 0 };
 }
 
-function combineLocalDateTime(dateValue: unknown, timeValue: unknown): Date {
+export function combineLocalDateTime(dateValue: unknown, timeValue: unknown): Date {
   const date = asLocalDate(dateValue);
   const t = parseTimeParts(timeValue);
 
