@@ -1,3 +1,5 @@
+import type { TeamEvent } from "@/features/teams/types/event";
+
 export interface EventItem {
     id: string;
     title: string;
@@ -6,9 +8,12 @@ export interface EventItem {
 }
 
 export type FacilityCalendarItem = {
-  id: string,
-  title: string,
-  daysOfWeek: number[],
-  startTime: string,
-  endTime:string
+    id: string,
+    title: string,
+    daysOfWeek: number[],
+    startTime: string,
+    endTime:string,
+    extendedProps: {
+        originalEvent:TeamEvent
+    }
 };

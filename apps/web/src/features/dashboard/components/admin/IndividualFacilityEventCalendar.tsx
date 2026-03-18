@@ -10,6 +10,8 @@ import type { Team } from "@/features/teams/types/teams";
 import { getTeamName } from "@/features/dashboard/helpers/getTeamName"
 import { StatusModal } from "./StatusModal";
 import type {FacilityCalendarItem} from "@/features/dashboard/types/eventItem"
+import type { EventClickArg } from '@fullcalendar/core';
+
 
 type DayName =
   | "Sunday"
@@ -86,19 +88,22 @@ export const IndividualFacilityEventCalendar = (
                     title: getTeamName(e.teamId, allTeams),
                     daysOfWeek: [DAYS[e.dayOfWeek as DayName]],
                     startTime: e.startTime,
-                    endTime:e.endTime
+                    endTime:e.endTime,
+                    extendedProps:{
+                        originalEvent: e
+                    },
                 }))
                 setCalendarEvents(tempCalendarEvents)
-                console.log(calendarEvents)
             };
             updateCalendarEvents();
         }, [events, allTeams]);
 
-        /*function EventTrigger(event) {
+        function EventTrigger(info:EventClickArg) {
+            const event = info.event.extendedProps.originalEvent
             setSelectedEvent(event);
             setSelectedEventTeam(getTeamName(event.teamId, allTeams));
             setIsModalOpen(true);
-        }*/
+        }
 
     return (
         <div>
@@ -108,6 +113,7 @@ export const IndividualFacilityEventCalendar = (
             headerToolbar={false}
             allDaySlot={false}
             events={calendarEvents}
+            eventClick ={EventTrigger}
             height="auto"
             />
             {selectedEvent && (
