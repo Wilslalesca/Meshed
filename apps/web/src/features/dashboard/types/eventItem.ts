@@ -5,10 +5,10 @@ export interface EventItem {
     time: string;
 }
 
-export interface CalendarEventItem {
-    id: string,
-    title: string,
-    day: number,
-    startTime: string,
-    endTime: string
-}
+export type FacilityCalendarItem = {
+  id: string,
+  title: string,
+  daysOfWeek: number[],
+  startTime: string,
+  endTime:string
+};

@@ -9,8 +9,26 @@ import { getFacilityEvents, getStatusFacilityEvents, getConflictingFacilityEvent
 import type { Team } from "@/features/teams/types/teams";
 import { getTeamName } from "@/features/dashboard/helpers/getTeamName"
 import { StatusModal } from "./StatusModal";
-import { getRequestedByName } from "@/features/dashboard/helpers/getRequestedByName";
-import type {CalendarEventItem} from "@/features/dashboard/types/eventItem"
+import type {FacilityCalendarItem} from "@/features/dashboard/types/eventItem"
+
+type DayName =
+  | "Sunday"
+  | "Monday"
+  | "Tuesday"
+  | "Wednesday"
+  | "Thursday"
+  | "Friday"
+  | "Saturday"
+
+const DAYS: Record<DayName, number> = {
+  Sunday: 0,
+  Monday: 1,
+  Tuesday: 2,
+  Wednesday: 3,
+  Thursday: 4,
+  Friday: 5,
+  Saturday: 6,
+};
 
 export const IndividualFacilityEventCalendar = (
     { facilityId, facilityName, filter }:
@@ -21,7 +39,7 @@ export const IndividualFacilityEventCalendar = (
         const [isModalOpen, setIsModalOpen] = useState(false);
         const [selectedEvent, setSelectedEvent] = useState<TeamEvent | null>(null);
         const [selectedEventTeam, setSelectedEventTeam] = useState<string | null>(null);
-        const [calendarEvents, setCalendarEvents] = useState<CalendarEventItem | null >(null);
+        const [calendarEvents, setCalendarEvents] = useState<FacilityCalendarItem[]>([]);
         const [refresh, setRefresh] = useState<number>(0)
     
             
@@ -57,30 +75,30 @@ export const IndividualFacilityEventCalendar = (
                 if (missingTeamIds.length === 0) return;
                 const teamResults = await Promise.all(missingTeamIds.map((teamId) => apiGetTeamById(teamId, token)));
                 setAllTeams((prev) => [...prev, ...teamResults.filter(Boolean),]);
-                /*const tempCalendarEvents:CalendarEventItem = events.map((e) => ({
-                    id : e.id,
-                    title: getTeamName(e.teamId, allTeams),
-                    day: e.dayOfWeek,
-                    startTime: e.startTime,
-                    endTime:e.endTime
-                }))*/
-                //setCalendarEvents()
             };
             fetchTeamsWithEvents();
         }, [token, events, allTeams]);
 
-        /*export const func {
+        useEffect(() => {
+            const updateCalendarEvents = async () => {
+                const tempCalendarEvents:FacilityCalendarItem[] = events.map((e) => ({
+                    id : e.id!,
+                    title: getTeamName(e.teamId, allTeams),
+                    daysOfWeek: [DAYS[e.dayOfWeek as DayName]],
+                    startTime: e.startTime,
+                    endTime:e.endTime
+                }))
+                setCalendarEvents(tempCalendarEvents)
+                console.log(calendarEvents)
+            };
+            updateCalendarEvents();
+        }, [events, allTeams]);
+
+        /*function EventTrigger(event) {
             setSelectedEvent(event);
             setSelectedEventTeam(getTeamName(event.teamId, allTeams));
             setIsModalOpen(true);
-        }
-    /*const calendarEvents = facilityEvents.map(event => ({
-        id: event.id,
-        title: event.title,
-        daysOfWeek: [event.dayOfWeek],
-        startTime: event.startTime,
-        endTime: event.endTime
-    }))*/
+        }*/
 
     return (
         <div>
@@ -89,7 +107,7 @@ export const IndividualFacilityEventCalendar = (
             initialView="timeGridWeek"
             headerToolbar={false}
             allDaySlot={false}
-            //events={calendarEvents}
+            events={calendarEvents}
             height="auto"
             />
             {selectedEvent && (
