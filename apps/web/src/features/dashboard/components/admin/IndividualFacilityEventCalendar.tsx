@@ -1,5 +1,6 @@
 import FullCalendar from '@fullcalendar/react';
 import timeGridPlugin from '@fullcalendar/timegrid';
+import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import { apiGetTeamById } from "@/features/teams/api/teams"
 import { useEffect, useState } from "react";
@@ -11,7 +12,19 @@ import { getTeamName } from "@/features/dashboard/helpers/getTeamName"
 import { StatusModal } from "./StatusModal";
 import type {FacilityCalendarItem} from "@/features/dashboard/types/eventItem"
 import type { EventClickArg } from '@fullcalendar/core';
+import { Search, X, ArrowLeft, ArrowRight } from 'lucide-react';
+import { ButtonGroup } from "@/shared/components/ui/button-group";
+import { Button } from '@/shared/components/ui/button';
+import type { CalendarApi } from '@fullcalendar/core';
 
+function getMonthDayChip(api: CalendarApi | null) {
+  if (!api) return { month: "", day: "" };
+
+  const d = api.getDate(); 
+  const month = d.toLocaleString(undefined, { month: "short" }).toUpperCase();
+  const day = String(d.getDate()).padStart(2, "0");
+  return { month, day };
+}
 
 type DayName =
   | "Sunday"
@@ -43,6 +56,7 @@ export const IndividualFacilityEventCalendar = (
         const [selectedEventTeam, setSelectedEventTeam] = useState<string | null>(null);
         const [calendarEvents, setCalendarEvents] = useState<FacilityCalendarItem[]>([]);
         const [refresh, setRefresh] = useState<number>(0)
+        const [api, setApi] = useState<CalendarApi | null>(null);
     
             
         useEffect(() => {
@@ -107,15 +121,32 @@ export const IndividualFacilityEventCalendar = (
 
     return (
         <div>
+            <div>
+                <ButtonGroup>
+                <Button variant="outline" size="sm" onClick={() => api?.prev()}>
+                    <ArrowLeft className="h-4 w-4" />
+                </Button>
+                <Button variant="outline" size="sm" onClick={() => api?.today()}>
+                    Today
+                </Button>
+                <Button variant="outline" size="sm" onClick={() => api?.next()}>
+                    <ArrowRight className="h-4 w-4" />
+                </Button>
+                </ButtonGroup>
+            </div>
+
             <FullCalendar
-            plugins={[timeGridPlugin, interactionPlugin]}
+            plugins={[timeGridPlugin, dayGridPlugin, interactionPlugin]}
             initialView="timeGridWeek"
             headerToolbar={false}
             allDaySlot={false}
             events={calendarEvents}
             eventClick ={EventTrigger}
+            slotMinTime="04:00:00"
+            slotMaxTime="23:00:00"
             height="auto"
             />
+            
             {selectedEvent && (
                 <StatusModal
                     open={isModalOpen}
