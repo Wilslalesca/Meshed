@@ -15,7 +15,7 @@ import type { EventClickArg } from '@fullcalendar/core';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { ButtonGroup } from "@/shared/components/ui/button-group";
 import { Button } from '@/shared/components/ui/button';
-import { TeamScheduleMode, TeamScheduleView } from '@/features/teams/types/schedule';
+import {TeamScheduleView } from '@/features/teams/types/schedule';
 import {
   Select,
   SelectContent,
@@ -24,7 +24,6 @@ import {
   SelectValue,
 } from "@/shared/components/ui/select";
 import type { CalendarApi } from '@fullcalendar/core';
-import { startOfWeekISO, endOfWeekISO } from "@/features/teams/Services/isoRange";
 import {combineLocalDateTime} from "@/features/teams/Services/getTeamScheduleRange.ts";
 
 function getMonthDayChip(api: CalendarApi | null) {
