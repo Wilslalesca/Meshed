@@ -36,25 +36,6 @@ function getMonthDayChip(api: CalendarApi | null) {
   return { month, day };
 }
 
-type DayName =
-  | "Sunday"
-  | "Monday"
-  | "Tuesday"
-  | "Wednesday"
-  | "Thursday"
-  | "Friday"
-  | "Saturday"
-
-const DAYS: Record<DayName, number> = {
-  Sunday: 0,
-  Monday: 1,
-  Tuesday: 2,
-  Wednesday: 3,
-  Thursday: 4,
-  Friday: 5,
-  Saturday: 6,
-};
-
 export const IndividualFacilityEventCalendar = (
     { facilityId, filter }:
     { facilityId: string; filter:string }) => {
@@ -71,15 +52,6 @@ export const IndividualFacilityEventCalendar = (
         const chip = useMemo(() => getMonthDayChip(api), [api]);
         const calendarReference = useRef<FullCalendar | null>(null);
         const [view, setView] = useState<TeamScheduleView>(TeamScheduleView.Week);
-        const [mode, setMode] = useState<TeamScheduleMode>(TeamScheduleMode.Calendar);
-        const [range, setRange] = useState({
-            fromISO: startOfWeekISO(),
-            toISO: endOfWeekISO(),
-        });
-        
-        function onRangeChange(fromISO: string, toISO: string) {
-            setRange({ fromISO, toISO });
-        }
     
         useEffect(() => {
             const calApi = calendarReference.current?.getApi();
@@ -197,10 +169,6 @@ export const IndividualFacilityEventCalendar = (
                                 value={api?.view.type ?? view}
                                 onValueChange={(val) => {
                                     const nextView = val as TeamScheduleView;
-
-                                    if (nextView === TeamScheduleView.Month) {
-                                    setMode(TeamScheduleMode.Calendar);
-                                    }
                                     setView(nextView);
                                     api?.changeView(val);
                                 }}
@@ -232,7 +200,6 @@ export const IndividualFacilityEventCalendar = (
             height="auto"
             datesSet={(arg) => {
                 setTitle(arg.view.title);
-                onRangeChange?.(arg.start.toISOString(), arg.end.toISOString());
             }}
             />
             
