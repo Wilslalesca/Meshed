@@ -36,7 +36,7 @@ export const AdminDashboard = () => {
 
     return (
         <div className="px-6 py-2">
-            <Card className="justify-start mb-6">
+            <Card className="justify-start mb-6 shadow-none">
                 <CardHeader>
                     <CardTitle>
                         Dashboard Filters
