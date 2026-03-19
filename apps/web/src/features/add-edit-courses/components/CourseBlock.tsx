@@ -41,7 +41,7 @@ export const CourseBlock = ({
         const success = await apiDeleteCourseById(classId, user?.id);
 
         if (success) {
-            window.location.reload();
+            onAdded()
         } else {
             toast.error("Failed to delete course. Please try again.");
         }

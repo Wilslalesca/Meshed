@@ -7,7 +7,9 @@ import DropzoneField from "@/shared/components/ui/dropzonefield";
 import { toast } from "sonner"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/shared/components/ui/dialog';
 
-export function Upload(): JSX.Element {
+export const Upload = ({
+    onAdded,
+}: { onAdded: () => void }) => {
     const { user } = useAuth();
     const [files, setFiles] = useState<File[] | undefined>();
 
@@ -50,7 +52,7 @@ export function Upload(): JSX.Element {
             console.error("Unknown error Adding Course:", err);
             return { success: false, message: String(err) };
         }
-        window.location.reload();
+        onAdded();
     }
 
     return (

@@ -28,7 +28,7 @@ export default function AthleteSchedulePage() {
                         onOpenChange={setIsAddModalOpen}
                         onAdded={() => refetch()}
                     />
-                    <Upload></Upload>
+                    <Upload onAdded={() => refetch()} />
                 </div>
             </div>   
             {!schedule?.length 
