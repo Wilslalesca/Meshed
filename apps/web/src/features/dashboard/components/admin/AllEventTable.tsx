@@ -16,6 +16,7 @@ import { getRequestedByName } from "@/features/dashboard/helpers/getRequestedByN
 import { apiGetEventFacilities } from "@/features/teams/api/events";
 import { apiGetTeamById } from "@/features/teams/api/teams";
 import { getAllEvents } from "../../api/dashboardApi";
+import {asLocalDate} from "@/features/teams/Services/getTeamScheduleRange"
 
 export const AllEventTable = () => {
     const { token } = useAuth();
@@ -92,7 +93,7 @@ export const AllEventTable = () => {
                             <td className="py-2 px-4">{getRequestedByName(event)}</td>
                             <td className="py-2 px-4">{event.name}</td>
                             <td className="py-2 px-4">{getFacilityName(event.teamFacilityId, allFacilities)}</td>
-                            <td className="py-2 px-4">{new Date(event.startDate).toLocaleDateString()}</td>
+                            <td className="py-2 px-4">{asLocalDate(event.startDate).toLocaleDateString()}</td>
                             <td className="py-2 px-4">{event.startTime}</td>
                             <td className="py-2 px-4">{event.endTime}</td>
                             <td className="py-2 px-4">
