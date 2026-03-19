@@ -40,6 +40,14 @@ export class EventModel {
         );
         return rows;
     }
+    static async getById(id: string) {
+        const { rows } = await pool.query(
+            `${EVENT_SELECT}
+             WHERE te.id = $1`,
+            [id]
+        );
+        return rows[0] ?? [];
+    }
 
     static async getForFacility(facilityId: string) {
         const { rows } = await pool.query(

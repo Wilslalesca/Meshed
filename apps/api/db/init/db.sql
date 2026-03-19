@@ -208,3 +208,11 @@ CREATE TABLE notifications (
   read_at TIMESTAMP
 );
 
+CREATE TABLE team_event_email_log (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  team_event_id UUID NOT NULL REFERENCES team_events(id) ON DELETE CASCADE,
+  email_type VARCHAR(50) NOT NULL,
+  recipient_email VARCHAR(255) NOT NULL,
+  sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE (team_event_id, email_type, recipient_email)
+);

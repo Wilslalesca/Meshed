@@ -23,6 +23,14 @@ export class FacilityModel {
     return rows;
   }
 
+  static async findById(id: number) {
+    const { rows } = await pool.query(
+      `SELECT * FROM facilities WHERE id = $1`,
+      [id]
+    );
+    return rows[0] ?? [];
+  }
+
   static async create(input: FacilityInput) {
     const {
       name,
