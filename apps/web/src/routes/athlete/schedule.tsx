@@ -33,7 +33,7 @@ export default function AthleteSchedulePage() {
             </div>   
             {!schedule?.length 
             ? <EmptyState />
-            : <CourseBlock data={schedule}/>
+            : <CourseBlock data={schedule} onAdded={() => refetch()}/>
             }
         </div>
     );
