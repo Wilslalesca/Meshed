@@ -11,8 +11,6 @@ import { Upload } from "./features/upload/components/Upload.tsx";
 import { useAuth } from "./shared/hooks/useAuth";
 import ScheduleBackground from './screens/ScheduleBackground';
 import { Layout } from "./shared/components/layout/Layout.tsx";
-import { AddCourse } from "./routes/courses/AddCourse.tsx";
-import { EditCourse } from "./routes/courses/EditCourse.tsx";
 import AthleteSchedulePage from "./routes/athlete/schedule";
 import { Toaster } from "@/shared/components/ui/sonner";
 import { ProtectedRoute } from "./shared/components/ProtectedRoute.tsx";
@@ -68,8 +66,6 @@ export default function App() {
         <Route path="/facilities" element={ <ProtectedRoute allowedRoles={["admin"]}> <Facilities /> </ProtectedRoute> }/>
         <Route path="/mySchedule" element={ <ProtectedRoute> <AthleteSchedulePage /> </ProtectedRoute> }/>
         <Route path="/profile" element={ <ProtectedRoute> <Profile /> </ProtectedRoute> }/>
-        <Route path="/editcourse/:courseId" element={<ProtectedRoute><EditCourse /></ProtectedRoute>}/>
-        <Route path="/addcourse" element={ <ProtectedRoute><AddCourse /></ProtectedRoute>}/>
         <Route path="/optimize" element={ <ProtectedRoute><OptimizePage /></ProtectedRoute>}/>
 
                 {/* Fallback */}
