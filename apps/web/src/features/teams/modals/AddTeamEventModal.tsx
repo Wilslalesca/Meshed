@@ -130,9 +130,14 @@ export const AddTeamEventModal = ({
             toast.error("Start date is required!");
             return;
         }
-        if (!selectedDays.length) {
-            toast.error("No days selected!");
+
+        if (reoccurring && !selectedDays.length) {
+            toast.error("No days selected for recurring events!");
             return;
+        }
+
+        if (!reoccurring ) {
+            setSelectedDays([weekdays[startDate.getDay()]])
         }
 
         if (reoccurring && !endDate) {
@@ -227,38 +232,6 @@ export const AddTeamEventModal = ({
                                 </SelectContent>
                             </Select>
                         </div>
-                        <div className="grid w-full items-center gap-3 py-2">
-                            <Label>Day(s) of the Week</Label>
-                            <div className="columns-1 sm:columns-2 lg:columns-3 gap-6">
-                                {weekdays.map((day) => (
-                                    <div
-                                        className="flex items-center gap-3"
-                                        key={day}
-                                    >
-                                        <input
-                                            type="checkbox"
-                                            value={day}
-                                            name="selectedDays"
-                                            onChange={(e) => {
-                                                if (e.target.checked) {
-                                                    setSelectedDays((s) => [
-                                                        ...s,
-                                                        day,
-                                                    ]);
-                                                } else {
-                                                    setSelectedDays((s) =>
-                                                        s.filter(
-                                                            (d) => d !== day,
-                                                        ),
-                                                    );
-                                                }
-                                            }}
-                                        />
-                                        <Label>{day}</Label>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
 
                         <div className="grid w-full items-center gap-3 py-2">
                             <Label htmlFor="start_time">Start Time</Label>
@@ -332,6 +305,41 @@ export const AddTeamEventModal = ({
                                         events
                                     </Label>
                                 )}
+                            </div>
+                            
+                        )}
+                        {reoccurring && (
+                            <div className="grid w-full items-center gap-3 py-2">
+                                <Label>Day(s) of the Week</Label>
+                                <div className="columns-1 sm:columns-2 lg:columns-3 gap-6">
+                                    {weekdays.map((day) => (
+                                        <div
+                                            className="flex items-center gap-3"
+                                            key={day}
+                                        >
+                                            <input
+                                                type="checkbox"
+                                                value={day}
+                                                name="selectedDays"
+                                                onChange={(e) => {
+                                                    if (e.target.checked) {
+                                                        setSelectedDays((s) => [
+                                                            ...s,
+                                                            day,
+                                                        ]);
+                                                    } else {
+                                                        setSelectedDays((s) =>
+                                                            s.filter(
+                                                                (d) => d !== day,
+                                                            ),
+                                                        );
+                                                    }
+                                                }}
+                                            />
+                                            <Label>{day}</Label>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
                         )}
 
