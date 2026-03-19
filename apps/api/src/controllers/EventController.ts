@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { EventModel } from "../models/EventModel";
 import { ReoccurrType, BaseTeamEvent, TeamEventType } from "../types/event";
+import { EventEmailService } from "../services/eventEmailService";
 
 type RawEventRow = {
     id: string;
@@ -78,7 +79,7 @@ export class EventController {
     }
 
     static async getConflictingFacilityEvents(req: Request, res: Response){
-        const {facilityId }= req.params;
+        const {facilityId, status }= req.params;
         const events = await EventModel.getAllStatusFacilityRequests(facilityId, status);
         
         if (!events || events.length === 0) return res.json([]);
@@ -99,7 +100,6 @@ export class EventController {
     }
 
     static async getStatusFacilityEvents(req: Request, res: Response){
-        console.log(req.params)
         const {facilityId, status }= req.params;
         const events = await EventModel.getAllStatusFacilityRequests(facilityId, status);
         const formattedEvents = events.map(formatEvent);
@@ -107,8 +107,13 @@ export class EventController {
     }
 
     static async updateEventStatus(req: Request, res: Response){
-        const {id, status, comments }= req.params;
+        const {id, status }= req.params;
+        const { comments } = req.body;
+        if (!status ) return res.status(400).json({ error: "Status is required" });
+
         const event = await EventModel.updateStatus(id, status, comments);
-        res.json(event)
+        if (!event) return res.status(404).json({ error: "Event not found" });
+        await EventEmailService.sendBookingStatusUpdateEmail(id);
+        return res.json({ success: true });
     }
 }

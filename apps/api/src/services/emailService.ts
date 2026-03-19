@@ -98,7 +98,7 @@ export const sendEmail = {
     const subject = normalizedStatus === "APPROVED" ? "Your booking request was approved" : "Your booking request was denied";
     return mail.sendEmail(
       email,
-      `Your booking request for ${facilityName} has been ${normalizedStatus.toLowerCase()}`,
+      subject,
       `
         <p><strong>Facility:</strong> ${facilityName}</p>
         <p><strong>Event name:</strong> ${eventName || "N/A"}</p>
