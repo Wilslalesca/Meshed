@@ -31,7 +31,7 @@ export const AddCourseModal = ({
     const [endTime, setEndTime] = useState("11:20:00");
     const [startDate, setStartDate] = useState("");
     const [endDate, setEndDate] = useState("");
-    const [reoccurring, setReoccurring] = useState("");
+    const [reoccurring, setReoccurring] = useState("No");
     const weekdays = [
         "Monday",
         "Tuesday",
@@ -182,6 +182,7 @@ export const AddCourseModal = ({
                             value={reoccurring}
                             onValueChange={setReoccurring}
                             className="w-full"
+                            defaultValue="No"
                         >
                             <TabsList className="grid w-full grid-cols-2">
                                 <TabsTrigger className="w-full" value="Yes">

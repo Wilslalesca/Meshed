@@ -1,4 +1,4 @@
-import { useState, type JSX } from 'react';
+import { useState} from 'react';
 import { useAuth } from "@/shared/hooks/useAuth";
 import { Button } from "@/shared/components//ui/button";
 import { apiUploadCourses } from '@/features/upload/api/upload'
