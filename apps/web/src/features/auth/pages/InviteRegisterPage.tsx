@@ -12,6 +12,7 @@ export default function InviteRegisterPage() {
     const [invite, setInvite] = useState<InviteData>(null);
     const [loading, setLoading] = useState(true);
     const nav = useNavigate();
+
     useEffect(() => {
         async function load() {
             if (!token) {
@@ -31,7 +32,7 @@ export default function InviteRegisterPage() {
         }
 
         load();
-    }, [token]);
+    }, [token, nav]);
 
     if (loading) {
         return <div className="p-8">Validating invite…</div>;
@@ -49,8 +50,8 @@ export default function InviteRegisterPage() {
                 <div className="flex flex-1 items-center justify-center">
                     <div className="w-full max-w-xs">
                         <RegisterForm
-                            invitedEmail={invite.email}
-                            invitedRole={invite.role}
+                            invitedEmail={invite?.email}
+                            invitedRole={invite?.role}
                             invitedToken={token ?? undefined}
                         />
                     </div>

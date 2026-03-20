@@ -2,7 +2,7 @@ import React from "react";
 import { Routes, Route, Outlet, Navigate } from "react-router-dom";
 import { Home } from "./screens/Home";
 import LoginPage from "./features/auth/pages/Login.tsx";
-import { Register } from "./features/auth/pages/Register.tsx";
+import Register  from "./features/auth/pages/Register.tsx";
 import { Dashboard } from "./routes/dashboard";
 import { Profile } from "./screens/Profile";
 import { Facilities } from "./screens/Facilities.tsx";

@@ -1,102 +1,97 @@
-import type { User } from "@/features/profiles/user/types";
+import type { AuthUser, LoginCredentials, RegisterCredentials } from "../types/auth";
 
 export const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
-export async function apiLogin(input: { email: string; password: string; }) {
-  const res = await fetch(`${API_BASE}/auth/login`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    credentials: 'include',
-    body: JSON.stringify(input),
-  });
+export async function apiLogin(input: LoginCredentials) {
+    const res = await fetch(`${API_BASE}/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(input),
+    });
 
-  if (!res.ok) {
-    throw new Error((await res.json()).error || 'Login failed');
-  }
+    const data = await res.json();
 
-  return (await res.json()) as { token: string; user: User };
+    if (!res.ok) {
+        throw data;
+    }
+
+    return data as { token: string; user: AuthUser };
 }
 
-export async function apiRegister(input: {
-  firstName: string;
-  lastName?: string;
-  email: string;
-  password: string;
-  phone?: string;
-  role?: 'admin' | 'manager' | 'user';
-  invitedToken?: string | null;
-}) {
-  const res = await fetch(`${API_BASE}/auth/register`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    credentials: "include",
-    body: JSON.stringify(input),
-  });
+export async function apiRegister(input: RegisterCredentials) {
+    const res = await fetch(`${API_BASE}/auth/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(input),
+    });
 
-  const data = await res.json();
+    const data = await res.json();
 
-  if (!res.ok) {
-    throw new Error(data.error || "Register failed");
-  }
+    if (!res.ok) {
+        throw data;
+    }
 
-  return data; 
+    return data as { message: string; userId: string };
 }
-
 
 export async function apiRefresh() {
-  const res = await fetch(`${API_BASE}/auth/refresh`, {
-    method: 'POST',
-    credentials: 'include',
-  });
+    const res = await fetch(`${API_BASE}/auth/refresh`, {
+        method: "POST",
+        credentials: "include",
+    });
 
-  if (!res.ok) {
-    throw new Error('Refresh failed');
-  }
+    const data = await res.json();
 
-  return (await res.json()) as { token: string; user: User };
+    if (!res.ok) {
+        throw data;
+    }
+
+    return data as { token: string; user: AuthUser };
 }
 
 export async function apiMe(token: string) {
-  const res = await fetch(`${API_BASE}/users/me`, {
-    headers: { Authorization: `Bearer ${token}` },
-    credentials: 'include',
-  });
+    const res = await fetch(`${API_BASE}/users/me`, {
+        headers: { Authorization: `Bearer ${token}` },
+        credentials: "include",
+    });
 
-  if (!res.ok) {
-    return null;
-  }
+    if (!res.ok) {
+        return null;
+    }
 
-  return await res.json() as User;
+    return (await res.json()) as AuthUser;
 }
 
+export async function apiVerify(input: { userId: string; code: string }) {
+    const res = await fetch(`${API_BASE}/auth/verify`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(input),
+    });
 
-export async function apiVerify(input: {userId: string, code: string}) {
-  const res = await fetch(`${API_BASE}/auth/verify`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(input),
-  });
-  const data = await res.json();
+    const data = await res.json();
 
-  if (!res.ok) {
-    throw new Error(data.error || "Resend failed");
-  }
+    if (!res.ok) {
+        throw data;
+    }
 
-  return data;
+    return data;
 }
 
 export async function apiResend(input: { userId: string }) {
-  const res = await fetch(`${API_BASE}/auth/resend`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(input),
-  });
+    const res = await fetch(`${API_BASE}/auth/resend`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(input),
+    });
 
-  const data = await res.json();
+    const data = await res.json();
 
-  if (!res.ok) {
-    throw new Error(data.error || "Resend failed");
-  }
+    if (!res.ok) {
+        throw data;
+    }
 
-  return data;
+    return data;
 }
