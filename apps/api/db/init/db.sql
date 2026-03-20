@@ -1,3 +1,19 @@
+
+
+CREATE TABLE users (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  first_name VARCHAR(100) NOT NULL,
+  last_name VARCHAR(100),
+  email VARCHAR(255) UNIQUE NOT NULL,
+  phone VARCHAR(20),
+  role VARCHAR(20) NOT NULL DEFAULT 'user',
+  password_hash TEXT NOT NULL,
+  active BOOLEAN DEFAULT FALSE,
+  verified BOOLEAN DEFAULT FALSE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 CREATE TABLE organizations (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   name VARCHAR(150) NOT NULL,
@@ -17,20 +33,6 @@ CREATE TABLE organization_memberships (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   UNIQUE (organization_id, user_id)
-);
-
-CREATE TABLE users (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  first_name VARCHAR(100) NOT NULL,
-  last_name VARCHAR(100),
-  email VARCHAR(255) UNIQUE NOT NULL,
-  phone VARCHAR(20),
-  role VARCHAR(20) NOT NULL DEFAULT 'user',
-  password_hash TEXT NOT NULL,
-  active BOOLEAN DEFAULT FALSE,
-  verified BOOLEAN DEFAULT FALSE,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE sports_lookup (
@@ -243,3 +245,4 @@ CREATE TABLE team_event_email_log (
   sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   UNIQUE (team_event_id, email_type, recipient_email)
 );
+

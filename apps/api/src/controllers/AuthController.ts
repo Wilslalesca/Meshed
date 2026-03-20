@@ -37,7 +37,6 @@ export const AuthController = {
 
   async register(req: Request, res: Response) {
     const parse = registerSchema.safeParse(req.body);
-    console.log("Register request body:", req.body);
     if (!parse.success) {
       return res.status(400).json({
         error: "Validation error",
