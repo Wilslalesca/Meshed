@@ -22,39 +22,22 @@ export class StaffController {
     static async addStaff(req: AuthedRequest, res: Response) {
         
         if (!req.user) return res.status(401).json({ error: "Unauthorized" });
-        const userId = req.user?.id;
 
-        let user = await UserModel.findById(userId);
-        if (!user) return res.status(404).send("User not found");
-
-        if (!isManagerOrAdmin(user.role))
+        if (!isManagerOrAdmin(req.user.organizationRole)) {
             return res.status(403).send("Forbidden");
-
+        }        
+        
         const { teamId } = req.params;
         const { email, role, notes = null } = req.body || {};
-
         if (!email) return res.status(400).send("email required");
 
-        user = await UserModel.findByEmail(email);
+        let staffUser = await UserModel.findByEmail(email);
         let isGhost = false;
 
-        if (!user) {
-            user = await UserModel.createGhostUser(email);
-            isGhost = true;
-        }
+        if (!staffUser || staffUser.id === null) return res.status(500).send("Failed to find or create user");
+        const added = await TeamStaffModel.addStaff(teamId, staffUser.id, role, notes);
 
-        if (!user || user.id === null) {
-            return res.status(500).send("Failed to find or create user");
-        }
-
-        const added = await TeamStaffModel.addStaff(
-            teamId,
-            user.id,
-            role,
-            notes,
-        );
         const team = await TeamModel.getTeam(teamId, req.user.organizationId);
-
         if (!team) return res.status(500).send("Team not found");
 
         if (isGhost) {

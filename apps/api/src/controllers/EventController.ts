@@ -84,10 +84,10 @@ export class EventController {
         const events = await EventModel.getAllStatusFacilityRequests(facilityId, status, req.user.organizationId);
         
         if (!events || events.length === 0) return res.json([]);
-
+        const orgId = req.user.organizationId;
         const conflictPromises = events.map(async (event) => {
            
-            const conflicts = await EventModel.checkConflicts( event.team_facility_id, event.start_date, event.end_date, event.start_time, event.end_time, req.user!.organizationId);
+            const conflicts = await EventModel.checkConflicts( event.team_facility_id, event.start_date, event.start_time, event.end_time, event.id, orgId );
             return conflicts ? conflicts.map(formatEvent) : [];
         });
 

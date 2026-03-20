@@ -90,10 +90,15 @@ export class TeamController {
         res.json({ success: true });
     }
 
-    static async getTeamAthletes(req: Request, res: Response) {
+    static async getTeamAthletes(req: AuthedRequest, res: Response) {
+        if (!req.user) return res.status(401).send("Unauthorized");
+
         const { teamId } = req.params;
+        const team = await TeamModel.getTeam(teamId, req.user.organizationId);
+        if (!team) return res.status(404).send("Team not found");
+
         const athletes = await TeamRosterModel.getAthletes(teamId);
-        res.json(athletes);
+        return res.json(athletes);
     }
 
     static async addAthleteByEmail(req: AuthedRequest, res: Response) {
