@@ -5,6 +5,6 @@ dotenv.config({ path: '.env.test' });
 
 export default defineConfig({
   test: {
-    setupFiles: ['./tests/setup.ts'],
+    setupFiles: ['.setup.ts'],
   },
 });
