@@ -1,5 +1,12 @@
 export type Role = "admin" | "manager" | "user";
 
+export interface AuthUser {
+    id: string;
+    systemRole: Role;
+    organizationId: string;
+    organizationRole: Role;
+}
+
 export interface User {
     id: string;
     first_name: string;
@@ -16,7 +23,9 @@ export interface User {
 
 export interface JWTPayload {
     userId: string;
-    role: Role;
+    systemRole: Role;
+    organizationId: string;
+    organizationRole: Role;
     jti?: string;
 }
 

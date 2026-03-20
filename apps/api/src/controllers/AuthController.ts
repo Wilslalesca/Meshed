@@ -93,7 +93,10 @@ export const AuthController = {
       const invite = await InviteModel.findByToken(invitedToken);
 
       if (invite) {
+        const membershipRole = invite.role === "manager" ? "manager" : "user";
 
+        await UserModel.createMembership(user.id, invite.organization_id, membershipRole);
+        
         if (invite.role === "manager") {
           const staff = await TeamStaffModel.findStaffRecord(invite.team_id, user.id);
 
@@ -107,7 +110,7 @@ export const AuthController = {
         } else {
           await TeamRosterModel.updateAthlete(invite.team_id, user.id, { status: "pending", position: invite.position ?? null});
         }
-        await InviteModel.markAccepted(invite.id);
+        await InviteModel.markAccepted(invite.id, invite.organization_id);
       }
     }
  
@@ -128,18 +131,17 @@ export const AuthController = {
     if (!parse.success) return res.status(400).json({ error: 'Validation error', details: parse.error.flatten() });
 
     const { email, password } = parse.data;
-    const user = await UserModel.findByEmail(email.toLowerCase());
-    if (!user) return res.status(401).json({ error: "Invalid email or password" });
 
-    if (!user.verified){
-      return res.status(403).json({ error: "Email not verified", needsVerification: true, userId: user.id });
-    }
+    const user = await UserModel.findByEmailWithMembership(email.toLowerCase());
+
+    if (!user) return res.status(401).json({ error: "Invalid email or password" });
+    if (!user.verified) return res.status(403).json({ error: "Email not verified", needsVerification: true, userId: user.id });
 
     const ok = await bcrypt.compare(password, user.passwordHash);
     if (!ok) return res.status(401).json({ error: "Invalid email or password" });
 
-    const accessToken = signAccessToken(user.id, user.role);
-    const refreshToken = signRefreshToken(user.id, user.role);
+    const accessToken = signAccessToken(user.id, user.role, user.organizationId, user.organizationRole);
+    const refreshToken = signRefreshToken(user.id, user.role, user.organizationId, user.organizationRole);
 
     res.cookie("refresh_token", refreshToken, { ...cookieOpts, maxAge: 7 * 24 * 60 * 60 * 1000 });
 
@@ -158,13 +160,14 @@ export const AuthController = {
     try {
       const payload = verifyRefresh(token);
       const user = await UserModel.findById(payload.userId);
-      if (!user) return res.status(401).json({ error: "Invalid refresh token" });
+      const membership = await UserModel.findMembershipByUserId(payload.userId);
+      if (!user || !membership) return res.status(401).json({ error: "Invalid refresh token" });
 
-      const newRefresh = signRefreshToken(user.id, user.role);
+      const newRefresh = signRefreshToken(user.id, user.role, membership.organizationId, membership.role);
       res.cookie("refresh_token", newRefresh, { ...cookieOpts, maxAge: 7 * 24 * 60 * 60 * 1000 });
 
-      const newAccess = signAccessToken(user.id, user.role);
-      return res.json({ token: newAccess, user });
+      const newAccess = signAccessToken(user.id, user.role, membership.organizationId, membership.role);
+      return res.json({ token: newAccess, user: {...user, organizationId: membership.organizationId, organizationRole: membership.role } });
     } catch {
       return res.status(401).json({ error: "Invalid refresh token" });
     }
@@ -172,29 +175,23 @@ export const AuthController = {
 
   async verify(req: Request, res: Response) {
     const { userId, code } = req.body;
-    const record = await VerificationCodeModel.findValid(userId, code);
 
-    if (!record) {
-      return res.status(400).json({ error: "Invalid or expired verification code" });
-    }
+    const record = await VerificationCodeModel.findValid(userId, code);
+    if (!record) return res.status(400).json({ error: "Invalid or expired verification code" });
 
     const user = await UserModel.findById(userId);
-    
-    if (!user) {
-      return res.status(404).json({ error: "User not found" });
-    }
+    if (!user) return res.status(404).json({ error: "User not found" });
 
-    if (user.verified) {
-      return res.status(400).json({ error: "Email is already in use" });
-    }
+    if (user.verified) return res.status(400).json({ error: "Email is already in use" });
 
     await VerificationCodeModel.markUsed(record.id);
-
     await UserModel.activateUser(userId);
+    const membership = await UserModel.findMembershipByUserId(userId);
+    if(!membership) return res.status(400).json({error: "No active organization memebership found"});
+      
+    const newAccess = signAccessToken(userId, user.role, membership.organizationId, membership.role);
+    const newRefresh = signRefreshToken(userId, user.role, membership.organizationId, membership.role);
 
-  
-    const newAccess = signAccessToken(userId, user.role);
-    const newRefresh = signRefreshToken(userId, user.role);
     res.cookie("refresh_token", newRefresh, { ...cookieOpts, maxAge: 7 * 24 * 60 * 60 * 1000 });
 
     return res.json({ message: "Email verified successfully", token: newAccess } );

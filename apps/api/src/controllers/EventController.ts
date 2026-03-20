@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { EventModel } from "../models/EventModel";
 import { ReoccurrType, BaseTeamEvent, TeamEventType } from "../types/event";
 import { EventEmailService } from "../services/eventEmailService";
+import { AuthedRequest } from "../middleware/authMiddleware";
 
 type RawEventRow = {
     id: string;
@@ -62,30 +63,31 @@ export class EventController {
     }
 
     
-    static async getAllEvents(_req: Request, res: Response) { 
-        const events = await EventModel.getAll();
-        const formattedEvents = events.map(formatEvent);
-        if(!formattedEvents) return [];
-
-        res.json(formattedEvents);
+    static async getAllEvents(req: AuthedRequest, res: Response) { 
+        if (!req.user) return res.status(401).json({ error: "Unauthorized" });
+        const events = await EventModel.getAll(req.user.organizationId);
+        return res.json(events.map(formatEvent));
     }
 
-    static async getFacilityEvents(req: Request, res: Response) { 
-        console.log(req.params)
-        const {facilityId }= req.params;
-        const events = await EventModel.getForFacility(facilityId);
-        const formattedEvents = events.map(formatEvent);
-        res.json(formattedEvents);
+    static async getFacilityEvents(req: AuthedRequest, res: Response) { 
+        if (!req.user) return res.status(401).json({ error: "Unauthorized" });
+        const { facilityId } = req.params;
+        const events = await EventModel.getForFacility(facilityId, req.user.organizationId);
+        return res.json(events.map(formatEvent));
     }
 
-    static async getConflictingFacilityEvents(req: Request, res: Response){
+    static async getConflictingFacilityEvents(req: AuthedRequest, res: Response){
+
+        if (!req.user) return res.status(401).json({ error: "Unauthorized" });
+
         const {facilityId, status }= req.params;
-        const events = await EventModel.getAllStatusFacilityRequests(facilityId, status);
+        const events = await EventModel.getAllStatusFacilityRequests(facilityId, status, req.user.organizationId);
         
         if (!events || events.length === 0) return res.json([]);
 
-        const conflictPromises = events.map(async event => {
-            const conflicts = await EventModel.checkConflicts(event.team_facility_id, event.start_date, event.start_time, event.end_time, event.id);
+        const conflictPromises = events.map(async (event) => {
+           
+            const conflicts = await EventModel.checkConflicts( event.team_facility_id, event.start_date, event.end_date, event.start_time, event.end_time, req.user!.organizationId);
             return conflicts ? conflicts.map(formatEvent) : [];
         });
 
@@ -96,24 +98,29 @@ export class EventController {
             (conflict, index, self) => 
                 self.findIndex((c) => c.id === conflict.id) === index
         );
-        res.json(nonDupConflicts);
+        return res.json(nonDupConflicts);
     }
 
-    static async getStatusFacilityEvents(req: Request, res: Response){
+    static async getStatusFacilityEvents(req: AuthedRequest, res: Response){
+        if (!req.user) return res.status(401).json({ error: "Unauthorized" });
         const {facilityId, status }= req.params;
-        const events = await EventModel.getAllStatusFacilityRequests(facilityId, status);
-        const formattedEvents = events.map(formatEvent);
-        res.json(formattedEvents);
+        const events = await EventModel.getAllStatusFacilityRequests(facilityId, status, req.user.organizationId);
+        return res.json(events.map(formatEvent));
     }
 
-    static async updateEventStatus(req: Request, res: Response){
+    static async updateEventStatus(req: AuthedRequest, res: Response){
+        if (!req.user) return res.status(401).json({ error: "Unauthorized" });
         const {id, status }= req.params;
         const { comments } = req.body;
         if (!status ) return res.status(400).json({ error: "Status is required" });
 
-        const event = await EventModel.updateStatus(id, status, comments);
-        if (!event) return res.status(404).json({ error: "Event not found" });
+        const updated = await EventModel.updateStatus(id, status, comments, req.user.organizationId);
+        if (!updated) return res.status(404).json({ error: "Event not found" });
+
         await EventEmailService.sendBookingStatusUpdateEmail(id);
         return res.json({ success: true });
     }
+
+
+       
 }
