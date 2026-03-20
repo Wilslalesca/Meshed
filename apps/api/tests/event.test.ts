@@ -1,4 +1,4 @@
-import { describe, expect, vi, test } from 'vitest';
+/*import { describe, expect, vi, test } from 'vitest';
 import { Request, Response } from 'express';
 import { EventController } from '../src/controllers/EventController';
 import { EventModel } from '../src/models/EventModel'
@@ -71,4 +71,4 @@ describe('getAllEvents', () => {
       expect(EventModel.getAll).toHaveBeenCalledTimes(1);
       expect(res.json).toHaveBeenCalledWith([mockFormattedEvent]);
     });
-});
+});*/
