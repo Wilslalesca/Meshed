@@ -6,7 +6,7 @@
   "scripts": {
     "lint":"eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts,.tsx --fix",
-    "test": "node --env-file=.env.test node_modules/vitest/vitest.mjs",
+    "test": "--env-file=.env vitest run",
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js"
