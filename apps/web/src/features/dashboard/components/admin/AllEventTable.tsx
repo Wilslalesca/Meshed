@@ -1,17 +1,21 @@
 import { Card, CardHeader, CardTitle, CardContent } from "@/shared/components/ui/card";
-import { apiGetEventFacilities } from "@/features/teams/api/events"
-import { apiGetTeamById } from "@/features/teams/api/teams"
-import type { Facility } from "@/features/facilities/types/facilities";
-import { getAllEvents } from "../../api/dashboardApi"
+import { Button } from "@/shared/components/ui/button";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/shared/hooks/useAuth";
-import type { TeamEvent } from "@/features/teams/types/event";
+
+import type { Facility } from "@/features/facilities/types/facilities";
 import type { Team } from "@/features/teams/types/teams";
-import { getTeamName } from "@/features/dashboard/helpers/getTeamName"
-import { getFacilityName } from "@/features/dashboard/helpers/getFacilityName"
-import { Button } from "@/shared/components/ui/button";
+import type { TeamEvent } from "@/features/teams/types/event";
+
 import { StatusModal } from "./StatusModal";
 
+import { getFacilityName } from "@/features/dashboard/helpers/getFacilityName";
+import { getTeamName } from "@/features/dashboard/helpers/getTeamName";
+import { getRequestedByName } from "@/features/dashboard/helpers/getRequestedByName";
+
+import { apiGetEventFacilities } from "@/features/teams/api/events";
+import { apiGetTeamById } from "@/features/teams/api/teams";
+import { getAllEvents } from "../../api/dashboardApi";
 
 export const AllEventTable = () => {
     const { token } = useAuth();
@@ -42,25 +46,23 @@ export const AllEventTable = () => {
             setEvents(data);
         };
         
-        if (token) {
-            fetchEvents();
-        }
+        fetchEvents();
     }, [token, refresh]);
 
     useEffect(() => {
         const fetchTeamsWithEvents = async () => {
             if (!token || events.length === 0) return;
-            const uniqueTeamIds = [...new Set(events.map(e => e.teamId))];
-            for (const teamId of uniqueTeamIds) {
 
-                if (!allTeams.find(t => t.id === teamId)) {
-                    const data = await apiGetTeamById(teamId, token);
-                    setAllTeams(prev => [...prev, data]);
-                }
-            }
+            const uniqueTeamIds = [...new Set(events.map(e => e.teamId))];
+            const missingTeamIds = uniqueTeamIds.filter(teamId => !allTeams.find(t => t.id === teamId));
+
+            if (missingTeamIds.length === 0) return;
+            const teamResults = await Promise.all(missingTeamIds.map(teamId => apiGetTeamById(teamId, token)));
+
+            setAllTeams(prev => [...prev, ...teamResults]);
         };
         fetchTeamsWithEvents();
-    })
+    }, [token, events, allTeams]);
 
     return (
         <Card>
@@ -72,7 +74,8 @@ export const AllEventTable = () => {
                 <table className="w-full">
                 <thead>
                     <tr className="border-b">
-                    <th className="text-left py-2 px-4">Team</th>
+                    <th className="text-left py-2 px-4">Booked For</th>
+                    <th className="text-left py-2 px-4">Requested By</th>
                     <th className="text-left py-2 px-4">Event Name</th>
                     <th className="text-left py-2 px-4">Facility</th>
                     <th className="text-left py-2 px-4">Date</th>
@@ -86,6 +89,7 @@ export const AllEventTable = () => {
                     events.map((event) => (
                         <tr key={event.id} className="border-b hover:bg-gray-50">
                             <td className="py-2 px-4">{getTeamName(event.teamId, allTeams)}</td>
+                            <td className="py-2 px-4">{getRequestedByName(event)}</td>
                             <td className="py-2 px-4">{event.name}</td>
                             <td className="py-2 px-4">{getFacilityName(event.teamFacilityId, allFacilities)}</td>
                             <td className="py-2 px-4">{new Date(event.startDate).toLocaleDateString()}</td>
@@ -105,8 +109,8 @@ export const AllEventTable = () => {
                     ))
                     ) : (
                     <tr>
-                        <td colSpan={2} className="py-4 px-4 text-center text-gray-500">
-                        No Pending Facility Requests
+                        <td colSpan={8} className="py-4 px-4 text-center text-gray-500">
+                            No Facility Requests
                         </td>
                     </tr>
                     )}
@@ -121,7 +125,7 @@ export const AllEventTable = () => {
                     eventInfo={selectedEvent}
                     teamName={selectedEventTeam ?? ""}
                     onAdded={() => {
-                        setRefresh(refresh+1)
+                        setRefresh((prev) => prev +1)
                     }}
                 />
             )}

@@ -141,6 +141,7 @@ CREATE TABLE team_events (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   team_id UUID REFERENCES teams(id) ON DELETE CASCADE,
   team_facility_id UUID REFERENCES facilities(id) ON DELETE CASCADE,
+  requested_by_user_id UUID REFERENCES users(id),
   name VARCHAR,
   type VARCHAR NOT NULL,          
   start_date DATE NOT NULL,
@@ -155,6 +156,7 @@ CREATE TABLE team_events (
   home_away VARCHAR,               
   lift_type VARCHAR,               
   notes TEXT,
+  facility_notes TEXT,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP                  
 );
@@ -206,3 +208,11 @@ CREATE TABLE notifications (
   read_at TIMESTAMP
 );
 
+CREATE TABLE team_event_email_log (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  team_event_id UUID NOT NULL REFERENCES team_events(id) ON DELETE CASCADE,
+  email_type VARCHAR(50) NOT NULL,
+  recipient_email VARCHAR(255) NOT NULL,
+  sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE (team_event_id, email_type, recipient_email)
+);

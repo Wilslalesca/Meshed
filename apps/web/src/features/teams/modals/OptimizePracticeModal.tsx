@@ -23,8 +23,9 @@ import { Label } from "@/shared/components//ui/label";
 import { generateIntervalOptions } from "@/features/dashboard/utils/generateIntervalOptions";
 import { apiOptimizeSchedule } from "@/features/teams/api/optimize";
 import type { OptimizationRequestPayload } from "@/features/teams/types/OptimizationRequest";
+import type { OptimizationResult } from "@/features/teams/types/OptimizationResult";
 
-export const OptimizePracticeModal = ({ open, onOpenChange, teamId }: { open: boolean; onOpenChange: (open: boolean) => void; teamId: string }) => {
+export const OptimizePracticeModal = ({ open, onOpenChange, teamId, onOptimizationComplete }: { open: boolean; onOpenChange: (open: boolean) => void; teamId: string; onOptimizationComplete: (result: OptimizationResult) => void }) => {
     const { token } = useAuth();
     const [OptimizationType, setOptimizationType] = useState(
         "The highest attendance at each practice",
@@ -143,11 +144,12 @@ export const OptimizePracticeModal = ({ open, onOpenChange, teamId }: { open: bo
         };
         if (!token || !teamId) return;
         // @ISLA = here is the results of the optimize
-        const result = await apiOptimizeSchedule(teamId, payload, token);
+        const result = await apiOptimizeSchedule(teamId, payload, token) as OptimizationResult;
         console.log("Optimization payload:", payload);
         console.log("Optimization result:", result);
 
         onOpenChange(false);
+        onOptimizationComplete(result)
     };
 
     return (

@@ -305,7 +305,9 @@ export class TeamController {
         return res.json(updated);
     }
 
-    static async addEvent(req: Request, res: Response) {
+    static async addEvent(req: AuthedRequest, res: Response) {
+        const userId = req.user?.id;
+        if (!userId) return res.status(401).send("Unauthorized");
         const {
             teamId,
             teamFacilityId,
@@ -328,6 +330,7 @@ export class TeamController {
         const team_event = await TeamEventModel.createTeamEvent({
             team_id: teamId,
             team_facility_id: teamFacilityId,
+            requested_by_user_id: userId,
             name: name,
             type: type,
             start_time: startTime,

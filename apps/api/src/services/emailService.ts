@@ -70,4 +70,48 @@ export const sendEmail = {
       `
     );
   },
+
+  async sendBookingConfirmationEmail(email: string, facilityName: string, userRequested: string, eventName: string, type: string, startDate: string, endDate: string, startTime: string, endTime: string, notes?: string | null) {
+    return mail.sendEmail(
+      email,
+      `A New Booking Request for ${facilityName} has been made`,
+      `
+        <p>A new booking request has been made in Meshed</p>
+        <p><strong>Requested by:</strong> ${userRequested || "A manager at your organization"}</p>
+        <p><strong>Event name:</strong> ${eventName || "N/A"}</p>
+        <p><strong>Type:</strong> ${type}</p>
+        <p><strong>Date:</strong> ${startDate}</p>
+        <p><strong>Time:</strong> ${startTime} - ${endTime}</p>
+        <p><strong>Notes:</strong> ${notes || "None provided"}</p>
+
+        <p>
+          <a href="${BASE_URL}/dashboard">
+            Review booking request
+          </a>
+        </p>
+      `
+    );
+  },
+
+  async sendBookingStatusEmail(email: string, facilityName: string, eventName: string, startDate: string, startTime: string, endTime: string, status: string, comments?: string | null) {
+    const normalizedStatus = status.toUpperCase();
+    const subject = normalizedStatus === "APPROVED" ? "Your booking request was approved" : "Your booking request was denied";
+    return mail.sendEmail(
+      email,
+      subject,
+      `
+        <p><strong>Facility:</strong> ${facilityName}</p>
+        <p><strong>Event name:</strong> ${eventName || "N/A"}</p>
+        <p><strong>Date:</strong> ${startDate}</p>
+        <p><strong>Time:</strong> ${startTime} - ${endTime}</p>
+        <p><strong>Manager comments:</strong> ${comments || "None provided"}</p>
+
+        <p>
+          <a href="${BASE_URL}/teams">
+            View your bookings
+          </a>
+        </p>
+      `
+    );
+  }
 };
