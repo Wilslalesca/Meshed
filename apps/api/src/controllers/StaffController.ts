@@ -31,7 +31,7 @@ export class StaffController {
         const { email, role, notes = null } = req.body || {};
         if (!email) return res.status(400).send("email required");
 
-        let staffUser = await UserModel.findByEmail(email);
+        const staffUser = await UserModel.findByEmail(email);
         let isGhost = false;
 
         if (!staffUser || staffUser.id === null) return res.status(500).send("Failed to find or create user");
