@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { getAthleteSchedule } from "../api/getAthleteSchedule";
 import { useAuth } from "@/shared/hooks/useAuth";
 import type { Schedule } from "../types/Schedule";
@@ -9,23 +9,25 @@ export function useAthleteSchedule(athleteId?: string) {
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
 
-    useEffect(() => {
-        if (!athleteId || !token) {
-            setSchedule(null);
-            return;
-        }
-
-        const fetchData = async () => {
-            setLoading(true);
-            setError(null);
-
+    const fetchData = useCallback(async () => {
+        if(!athleteId || !token) return;
+        setLoading(true);
+        setError(null);
+        try{
             const data = await getAthleteSchedule(athleteId, token);
             setSchedule(data);
+        }
+        catch{
+            setError("Failed to fetch schedule");
+        }
+        finally{
             setLoading(false);
-        };
+        }
+    },[athleteId, token]);
 
+    useEffect(() => {
         fetchData();
-    }, [athleteId, token]);
+    }, [fetchData]);
 
-    return { schedule, loading, error };
+    return { schedule, loading, error, refetch:fetchData };
 }

@@ -3,20 +3,30 @@ import { Input } from "@/shared/components//ui/input";
 import { Label } from "@/shared/components//ui/label";
 import { apiEditCourse } from "../api/editcourse";
 import type { Schedule } from "@/features/athlete-schedule/types/Schedule";
-import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useAuth } from "@/shared/hooks/useAuth";
 import { formatTimeTo12Hour } from "../utils/formatTime";
 import { toast } from "sonner";
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle
+} from "@/shared/components/ui/dialog";
 
-interface EditCourseModalProps {
+export const EditCourseModal = ({
+    open,
+    onOpenChange,
+    onAdded,
+    course,
+}: {
+    open: boolean;
+    onOpenChange: (open: boolean) => void;
+    onAdded: () => void;
     course: Schedule;
-}
-
-export const EditCourseForm: React.FC<EditCourseModalProps> = ({ course }) => {
+}) => {
     const [formData, setFormData] = useState(course);
     const { user } = useAuth();
-    const navigate = useNavigate();
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
@@ -66,22 +76,18 @@ export const EditCourseForm: React.FC<EditCourseModalProps> = ({ course }) => {
         );
         if (success) {
             toast.success("Successfully updated course");
-            navigate('/myschedule');
-
+            onAdded()
+            onOpenChange(false)
         }
         else toast.error("Failed to update course");
     };
 
-    const handleCancel = async () => {
-        navigate('/myschedule')
-    };
-
     return (
-        <form>
-            <div className="w-full">
-                <div>
-                    <h1 className="text-2xl font-bold">Edit Event</h1>
-                </div>
+        <Dialog open={open} onOpenChange={onOpenChange}>
+            <DialogContent className="max-w-md max-h-150 overflow-y-auto">
+                <DialogHeader>
+                    <DialogTitle className="text-2xl font-bold">Edit Event</DialogTitle>
+                </DialogHeader>
                 <div className="flex-col items-center">
                     <div className="grid w-full items-center gap-3 py-2">
                         <Label htmlFor="name">Name</Label>
@@ -152,12 +158,12 @@ export const EditCourseForm: React.FC<EditCourseModalProps> = ({ course }) => {
                         <Button type="button" onClick={handleSubmit}>
                             Submit
                         </Button>
-                        <Button type="button" onClick={handleCancel}>
+                        <Button type="button" onClick={()=>onOpenChange(false)}>
                             Cancel
                         </Button>
                     </div>
                 </div>
-            </div>
-        </form>
+            </DialogContent>
+        </Dialog>
     );
 };
