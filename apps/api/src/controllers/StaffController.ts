@@ -32,7 +32,7 @@ export class StaffController {
         if (!email) return res.status(400).send("email required");
 
         const staffUser = await UserModel.findByEmail(email);
-        let isGhost = false;
+        const isGhost = false;
 
         if (!staffUser || staffUser.id === null) return res.status(500).send("Failed to find or create user");
         const added = await TeamStaffModel.addStaff(teamId, staffUser.id, role, notes);
