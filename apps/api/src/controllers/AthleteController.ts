@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Response } from "express";
 import { AthleteModel } from "../models/AthleteModel";
 import { AuthedRequest } from "../middleware/authMiddleware";
 
