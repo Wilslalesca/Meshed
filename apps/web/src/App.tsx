@@ -20,7 +20,7 @@ import { TeamDetailsPage } from "./features/teams/pages/TeamDetailsPage.tsx";
 import { TeamsPage } from "@/features/teams/pages/TeamPage.tsx";
 import { AthleteDetailsPage } from "@/features/teams/pages/AthleteDetailsPage.tsx";
 import InviteRegisterPage from "./features/auth/pages/InviteRegisterPage.tsx";
-
+import OrganizationPage from "@/features/organizations/page.tsx";
 
 function AppLayout() {
     return (
@@ -71,7 +71,7 @@ export default function App() {
         <Route path="/editcourse/:courseId" element={<ProtectedRoute><EditCourse /></ProtectedRoute>}/>
         <Route path="/addcourse" element={ <ProtectedRoute><AddCourse /></ProtectedRoute>}/>
         <Route path="/optimize" element={ <ProtectedRoute><OptimizePage /></ProtectedRoute>}/>
-
+        <Route path="/organization" element={ <ProtectedRoute allowedRoles={["admin"]}><OrganizationPage /></ProtectedRoute>}/>
                 {/* Fallback */}
                 <Route path="*" element={<Navigate to="/" replace />} />
             </Route>

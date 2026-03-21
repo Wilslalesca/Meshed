@@ -7,13 +7,13 @@ import { AdminDashboard } from "./views/adminView";
 export const DashboardView = () => {
     const role = useUserRole();
 
-    if (role.isUser) {
-        return UserDashboard();
+    if (role.isAdmin) {
+        return AdminDashboard();
     }
     else if (role.isManager) {
         return ManagerView();
     }
-    else if (role.isAdmin){
-        return AdminDashboard();
+    else {
+        return UserDashboard();
     }
 }

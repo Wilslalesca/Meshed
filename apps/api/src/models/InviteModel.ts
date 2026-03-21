@@ -1,7 +1,7 @@
 import { pool } from "../config/db";
 
 export class InviteModel {
-  static async createInvite(organizationId: string, teamId: string, email: string, role: string | null, position: string | null, token: string) {
+  static async createInvite(organizationId: string, teamId: string | null, email: string, role: string | null, position: string | null, token: string) {
     const { rows } = await pool.query(
       `INSERT INTO invites (organization_id, team_id, email, token, role, position)
        VALUES ($1, $2, $3, $4, $5, $6)

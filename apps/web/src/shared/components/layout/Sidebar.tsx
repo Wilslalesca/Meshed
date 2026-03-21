@@ -11,6 +11,7 @@ import {
     User,
     ChevronUp,
     ChevronDown,
+    Grid2X2Check,
 } from "lucide-react";
 import {
     DropdownMenu,
@@ -70,7 +71,9 @@ export const Sidebar = ({
             subLinks: [{ name: "My Schedule", href: "/myschedule" }],
         },
         { name: "Facilities", href: "/facilities", icon: Building2 },
+        { name: "Organization", href: "/organization", icon: Grid2X2Check },
         { name: "Settings", href: "/settings", icon: Settings },
+        
     ];
 
     return (

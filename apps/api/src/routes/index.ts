@@ -15,6 +15,7 @@ import athleteRoutes from "./athletes.routes";
 import eventRoutes from "./event.routes";
 import notificationsRoutes from "../features/notifications/notifications.route";
 import optimizationRoutes from "./optimization.routes";
+import organizationRoutes from "./organization.routes";
 
 
 const router = Router();
@@ -33,4 +34,5 @@ router.use("/invites", inviteRoutes);
 router.use("/athletes", athleteRoutes);
 router.use("/notifications", notificationsRoutes);
 router.use("/optimization", optimizationRoutes);
+router.use("/organization", organizationRoutes);
 export default router;
