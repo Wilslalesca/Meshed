@@ -1,6 +1,5 @@
 import { pool } from "../config/db";
 import { CourseTime } from "../types/index";
-import { UserEventModel } from "./UserEventModel";
 
 export interface NewCourseTime {
   user_id?: string;  
