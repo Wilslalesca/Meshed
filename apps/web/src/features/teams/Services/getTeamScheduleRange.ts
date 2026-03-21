@@ -11,7 +11,7 @@ function parseDateOnlyLocal(dateStr: string): Date {
   return new Date(y, (m ?? 1) - 1, d ?? 1, 0, 0, 0, 0);
 }
 
-function asLocalDate(value: unknown): Date {
+export function asLocalDate(value: unknown): Date {
   if (value instanceof Date) return value;
 
   if (typeof value === "string") {
