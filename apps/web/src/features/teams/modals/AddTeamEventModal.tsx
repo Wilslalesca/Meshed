@@ -137,7 +137,7 @@ export const AddTeamEventModal = ({
         }
 
         if (!reoccurring ) {
-            setSelectedDays([weekdays[startDate.getDay()]])
+            setSelectedDays([weekdays[startDate.getDay()]]);
         }
 
         if (reoccurring && !endDate) {
