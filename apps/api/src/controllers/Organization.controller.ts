@@ -12,11 +12,6 @@ const updateOrganizationSchema = z.object({
     active: z.boolean().optional(),
 });
 
-const addUserSchema = z.object({
-    email: z.string().email(),
-    role: z.enum(["admin", "manager", "user"]).default("user"),
-});
-
 const updateUserRoleSchema = z.object({
     role: z.enum(["admin", "manager", "user"]),
 });
