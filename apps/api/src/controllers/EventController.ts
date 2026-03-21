@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Response } from "express";
 import { EventModel } from "../models/EventModel";
 import { ReoccurrType, BaseTeamEvent, TeamEventType } from "../types/event";
 import { EventEmailService } from "../services/eventEmailService";
