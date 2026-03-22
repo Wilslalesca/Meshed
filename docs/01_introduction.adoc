@@ -20,17 +20,18 @@ The most important user requirements Meshed implements:
 
 A full list of user requirements is provided in the docs/SuplementaryMaterials folder.
 
-###1.2 Quality Goals
+### 1.2 Quality Goals
 The most important engineering specifications Meshed implements include:
-| ID: | Description |
-| -------: | :------ |
-|        1 | The scheduling algorithm must generate a weekly team practice for up to 150 users within 2 seconds in 95% of cases.|
-|        2 | The database must return all events for a single team within a 7-day window in ≤ 600 ms with up to 5000 stored events.|
-|        3 | The system must parse an uploaded .ics file with user’s events with a 95th-percentile latency of no more than 3 seconds.|
+
+| ID | Description |
+|----|-------------|
+| 1  | The scheduling algorithm must generate a weekly team practice for up to 150 users within 2 seconds in 95% of cases. |
+| 2  | The database must return all events for a single team within a 7-day window in ≤ 600 ms with up to 5000 stored events. |
+| 3  | The system must parse an uploaded .ics file with user events with a 95th-percentile latency of no more than 3 seconds. |
 
 A full list of user requiremtns is provided in the docs/SuplementaryMaterials folder.
 
-###1.3 Target Audience/Stakeholders
+### 1.3 Target Audience/Stakeholders
 This document is intended for:
 
 - Software Architects
@@ -39,7 +40,7 @@ This document is intended for:
 - TME4025 Professors
 - SWE Senior Design Advisors
 
-###1.4 Scope
+### 1.4 Scope
 The document covers the entire system architecture of Meshed, including:
 
 - System context and external dependencies.
