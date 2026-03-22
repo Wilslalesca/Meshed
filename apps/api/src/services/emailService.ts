@@ -1,24 +1,51 @@
 import nodemailer from "nodemailer";
+import { config } from "../config/config";
 
-const BASE_URL = process.env.FRONTEND_ORIGIN!;
-const GMAIL_APP_PASSWORD = process.env.GMAIL_APP_PASSWORD!;
-const GMAIL_APP_EMAIL = process.env.GMAIL_APP_EMAIL!;
+const BASE_URL = config.frontendOrigin;
 
-const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 587,
-  secure: false,
-  requireTLS: true,
-  auth: {
-    user: GMAIL_APP_EMAIL,
-    pass: GMAIL_APP_PASSWORD,
-  },
-});
+function buildTransport() {
+  const smtpHost = config.smtpHost;
+  const smtpPort = config.smtpPort;
+  const smtpSecure = config.smtpSecure;
+  const smtpUser = config.smtpUser;
+  const smtpPass = config.smtpPass;
+
+  // Backwards-compat fallback (deprecated): allow existing dev envs to keep working.
+  const legacyUser = config.legacyGmailUser;
+  const legacyPass = config.legacyGmailPass;
+
+  const host = smtpHost ?? (legacyUser && legacyPass ? "smtp.gmail.com" : undefined);
+  const port = smtpPort ?? (legacyUser && legacyPass ? 587 : undefined);
+  const secure = smtpSecure ?? false;
+
+  const user = smtpUser ?? legacyUser;
+  const pass = smtpPass ?? legacyPass;
+
+  if (!host || !port || !user || !pass) {
+    return null;
+  }
+
+  return nodemailer.createTransport({
+    host,
+    port,
+    secure,
+    auth: { user, pass },
+  });
+}
+
+const transporter = buildTransport();
+const mailFrom = config.mailFrom ?? (config.smtpUser ?? config.legacyGmailUser);
 
 export const mail = {
   async sendEmail(to: string, subject: string, html: string) {
+    if (!transporter || !mailFrom) {
+      throw new Error(
+        "Email is not configured. Set SMTP_HOST/SMTP_PORT/SMTP_USER/SMTP_PASS (and optionally MAIL_FROM)."
+      );
+    }
+
     const info = await transporter.sendMail({
-      from: `"Meshed" <${GMAIL_APP_EMAIL}>`,
+      from: `"Meshed" <${mailFrom}>`,
       to,
       subject,
       html,

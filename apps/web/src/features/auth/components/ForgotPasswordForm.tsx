@@ -3,6 +3,11 @@ import { cn } from "@/shared/utils/utils";
 import { Button } from "@/shared/components//ui/button";
 import { Input } from "@/shared/components//ui/input";
 import { Label } from "@/shared/components//ui/label";
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSlot,
+} from "@/shared/components/ui/input-otp";
 import { Link } from "react-router-dom";
 import { apiForgotPassword, apiResetPassword } from "../api/auth";
 
@@ -106,16 +111,15 @@ export function ForgotPasswordForm({
           <>
             <div className="grid gap-3">
               <Label htmlFor="code">Reset code</Label>
-              <Input
-                id="code"
-                type="text"
-                inputMode="numeric"
-                placeholder="123456"
-                value={code}
-                onChange={(e) => setCode(e.target.value)}
-                required
-                disabled={pending}
-              />
+              <div className="flex justify-center">
+                <InputOTP value={code} onChange={setCode} maxLength={6}>
+                  <InputOTPGroup>
+                    {Array.from({ length: 6 }).map((_, i) => (
+                      <InputOTPSlot key={i} index={i} />
+                    ))}
+                  </InputOTPGroup>
+                </InputOTP>
+              </div>
             </div>
 
             <div className="grid gap-3">
