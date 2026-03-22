@@ -26,8 +26,4 @@ export const config = {
     smtpUser: process.env.SMTP_USER,
     smtpPass: process.env.SMTP_PASS,
     mailFrom: process.env.MAIL_FROM,
-
-    // Backwards-compat for older dev envs (deprecated)
-    legacyGmailUser: process.env.GMAIL_APP_EMAIL,
-    legacyGmailPass: process.env.GMAIL_APP_PASSWORD,
 };

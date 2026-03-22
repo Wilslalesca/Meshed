@@ -15,16 +15,12 @@ function buildTransport() {
   const smtpUser = config.smtpUser;
   const smtpPass = config.smtpPass;
 
-  // Backwards-compat fallback (deprecated): allow existing dev envs to keep working.
-  const legacyUser = config.legacyGmailUser;
-  const legacyPass = config.legacyGmailPass;
-
-  const host = smtpHost ?? (legacyUser && legacyPass ? "smtp.gmail.com" : undefined);
-  const port = smtpPort ?? (legacyUser && legacyPass ? 587 : undefined);
+  const host = smtpHost;
+  const port = smtpPort;
   const secure = smtpSecure ?? false;
 
-  const user = smtpUser ?? legacyUser;
-  const pass = smtpPass ?? legacyPass;
+  const user = smtpUser;
+  const pass = smtpPass;
 
   if (!host || !port || !user || !pass) {
     return null;
@@ -42,7 +38,6 @@ const transporter = buildTransport();
 const mailFrom =
   config.mailFrom ??
   config.smtpUser ??
-  config.legacyGmailUser ??
   (config.nodeEnv === "test" ? "test@example.com" : undefined);
 
 export const mail = {
