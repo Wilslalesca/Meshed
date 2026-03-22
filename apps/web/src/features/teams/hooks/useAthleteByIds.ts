@@ -12,14 +12,20 @@ export const useAthleteByIds = (athleteIds: string[]) => {
     let cancel = false;
 
     const load = async () => {
+      if (!token || athleteIds.length === 0) {
+        setAthletes([]);
+        setLoading(false);
+        return;
+      }
       setLoading(true);
+
       const data = await Promise.all(
-        athleteIds.map(id =>apiGetAthleteById(id, token!))
+        athleteIds.map(id =>apiGetAthleteById(id, token))
       )
       if (!cancel){
         setAthletes(data);
+        setLoading(false);
       }
-      setLoading(false);
     };
 
     load();
