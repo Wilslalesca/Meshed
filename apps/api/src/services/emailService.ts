@@ -42,6 +42,21 @@ export const sendEmail = {
       `
     );
   },
+  async sendOrganizationInviteEmail(email: string, organizationId: string, token: string) {
+    return mail.sendEmail(
+      email,
+      `Complete your Meshed account to join your organization`,
+      `
+        <p>You’ve been invited to join an organization on Meshed.</p>
+        <p>Create your account to access the organization:</p>
+        <p>
+          <a href="${BASE_URL}/register/invite?invite=${token}">
+            Complete Your Account
+          </a>
+        </p>
+      `
+    );
+  },
 
   async sendVerificationEmail(email: string, code: string) {
     return mail.sendEmail(

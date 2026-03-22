@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Response } from "express";
 import { TeamModel } from "../models/TeamModel";
 import { TeamEventModel } from "../models/TeamEventModel";
 import { TeamRosterModel } from "../models/TeamRosterModel";
@@ -10,16 +10,11 @@ import crypto from "crypto";
 import * as xlsx from "xlsx";
 import { AuthedRequest } from "../middleware/authMiddleware";
 
-async function isTeamManagerOrAdmin(
-    req: AuthedRequest,
-    teamId: string,
-): Promise<boolean> {
+async function isTeamManagerOrAdmin(req: AuthedRequest, teamId: string): Promise<boolean> {
     const userId = req.user?.id;
-    if (!userId) return false;
-    const user = await UserModel.findById(userId);
-    if (!user) return false;
+    if (!userId || !req.user) return false;
 
-    if (user.role === "admin") return true;
+    if (req.user.organizationRole === "admin") return true;
 
     const staff = await TeamStaffModel.findStaffRecord(teamId, userId);
     return staff?.role === "manager";
@@ -27,42 +22,40 @@ async function isTeamManagerOrAdmin(
 
 export class TeamController {
     static async getMyTeams(req: AuthedRequest, res: Response) {
-        const userId = req.user?.id;
-        console.log("Getting My Teams for userId:", userId);
-        console.log("Getting Teams");
-        console.log("User ID:", userId);
+        if (!req.user) return res.status(401).send("Unauthorized");
 
-        if (!userId) return res.json([]);
-        const teams = await TeamModel.findForUser(userId);
-        console.log("Found Teams:", teams.length);
-        res.json(teams);
+        const teams = await TeamModel.findForUser(req.user.id, req.user.organizationId);
+        return res.json(teams);
     }
 
-    static async getTeamById(req: Request, res: Response) {
+    static async getTeamById(req: AuthedRequest, res: Response) {
+        if (!req.user) return res.status(401).send("Unauthorized");
+
         const { teamId } = req.params;
-        const team = await TeamModel.getTeam(teamId);
+        const team = await TeamModel.getTeam(teamId, req.user.organizationId);
         if (!team) return res.status(404).send("Team not found");
-        res.json(team);
+
+        return res.json(team);
     }
 
     static async createTeam(req: AuthedRequest, res: Response) {
         try {
+            if (!req.user) return res.status(401).send("Unauthorized");
+
             const { name, sport_id, season, league_id, gender } = req.body;
 
-            if (!name || name.trim().length < 1)
-                return res.status(400).send("name required");
+            if (!name || name.trim().length < 1) return res.status(400).send("name required");
+                
 
             const team = await TeamModel.createTeam({
-                name: name.trim(),
-                sport_id: sport_id || null,
-                season: season || null,
-                league_id: league_id || null,
-                gender: gender || null,
-            });
-
-            const userId = req.user?.id;
-            if (!userId) return res.status(401).send("Unauthorized");
-            await TeamStaffModel.addStaff(team.id, userId, "manager", null);
+                    name: name.trim(),
+                    sport_id: sport_id || null,
+                    season: season || null,
+                    league_id: league_id || null,
+                    gender: gender || null,
+                }, req.user.organizationId
+            );
+            await TeamStaffModel.addStaff(team.id, req.user.id, "manager", null);
 
             res.status(201).json(team);
         } catch {
@@ -70,10 +63,13 @@ export class TeamController {
         }
     }
 
-    static async updateTeam(req: Request, res: Response) {
+    static async updateTeam(req: AuthedRequest, res: Response) {
+        if (!req.user) return res.status(401).send("Unauthorized");
+
+        if (!(await isTeamManagerOrAdmin(req, req.params.teamId))) return res.status(403).send("Forbidden");
         const { teamId } = req.params;
 
-        const updated = await TeamModel.updateTeam(teamId, {
+        const updated = await TeamModel.updateTeam(teamId, req.user.organizationId, {
             name: req.body.name,
             sport_id: req.body.sport_id || null,
             season: req.body.season || null,
@@ -85,19 +81,30 @@ export class TeamController {
         res.json(updated);
     }
 
-    static async deleteTeam(req: Request, res: Response) {
-        await TeamModel.deleteTeam(req.params.teamId);
+    static async deleteTeam(req: AuthedRequest, res: Response) {
+        if (!req.user) return res.status(401).send("Unauthorized");
+
+        if (!(await isTeamManagerOrAdmin(req, req.params.teamId))) return res.status(403).send("Forbidden");
+
+        await TeamModel.deleteTeam(req.params.teamId, req.user.organizationId);
         res.json({ success: true });
     }
 
-    static async getTeamAthletes(req: Request, res: Response) {
+    static async getTeamAthletes(req: AuthedRequest, res: Response) {
+        if (!req.user) return res.status(401).send("Unauthorized");
+
         const { teamId } = req.params;
+        const team = await TeamModel.getTeam(teamId, req.user.organizationId);
+        if (!team) return res.status(404).send("Team not found");
+
         const athletes = await TeamRosterModel.getAthletes(teamId);
-        res.json(athletes);
+        return res.json(athletes);
     }
 
     static async addAthleteByEmail(req: AuthedRequest, res: Response) {
         const { teamId } = req.params;
+        if (!req.user) return res.status(401).send("Unauthorized");
+
         if (!(await isTeamManagerOrAdmin(req, teamId)))
             return res.status(403).send("Forbidden");
         const { email } = req.body;
@@ -114,17 +121,18 @@ export class TeamController {
 
         await TeamRosterModel.addToTeam(teamId, user!.id, "athlete", null);
 
-        const team = await TeamModel.getTeam(teamId);
+        const team = await TeamModel.getTeam(teamId, req.user.organizationId);
         if (!team) return res.status(500).send("Team not found");
 
         if (isGhost) {
             const token = crypto.randomBytes(32).toString("hex");
             await InviteModel.createInvite(
+                req.user.organizationId,
                 teamId,
                 email,
                 "athlete",
                 null,
-                token,
+                token
             );
             await sendEmail.sendEmailInvite(email, team.name, token);
         } else {
@@ -136,13 +144,15 @@ export class TeamController {
 
     static async bulkAddAthletesByCsv(req: AuthedRequest, res: Response) {
         const { teamId } = req.params;
+        if (!req.user) return res.status(401).send("Unauthorized");
+
         if (!(await isTeamManagerOrAdmin(req, teamId)))
             return res.status(403).send("Forbidden");
         const file = req.file;
 
         if (!file) return res.status(400).send("CSV file required");
 
-        const team = await TeamModel.getTeam(teamId);
+        const team = await TeamModel.getTeam(teamId, req.user.organizationId);
         if (!team) return res.status(404).send("Team not found");
 
         try {
@@ -237,11 +247,12 @@ export class TeamController {
                     if (isGhost) {
                         const token = crypto.randomBytes(32).toString("hex");
                         await InviteModel.createInvite(
+                            req.user.organizationId,
                             teamId,
                             email,
                             "athlete",
                             null,
-                            token,
+                            token
                         );
                         await sendEmail.sendEmailInvite(
                             email,
@@ -306,8 +317,8 @@ export class TeamController {
     }
 
     static async addEvent(req: AuthedRequest, res: Response) {
-        const userId = req.user?.id;
-        if (!userId) return res.status(401).send("Unauthorized");
+        if (!req.user) return res.status(401).send("Unauthorized");
+
         const {
             teamId,
             teamFacilityId,
@@ -327,34 +338,36 @@ export class TeamController {
             notes,
         } = req.body;
 
-        const team_event = await TeamEventModel.createTeamEvent({
-            team_id: teamId,
-            team_facility_id: teamFacilityId,
-            requested_by_user_id: userId,
-            name: name,
-            type: type,
-            start_time: startTime,
-            end_time: endTime,
-            start_date: startDate,
-            end_date: endDate,
-            reoccurring: reoccurring,
-            reoccurr_type: selectedReoccurrType,
-            day_of_week: dayOfWeek,
-            status: status,
-            opponent: opponent,
-            home_away: homeAway,
-            lift_type: liftType,
-            notes: notes,
-        });
+        const team_event = await TeamEventModel.createTeamEvent(
+            {
+                team_id: teamId,
+                team_facility_id: teamFacilityId,
+                requested_by_user_id: req.user.id,
+                name,
+                type,
+                start_time: startTime,
+                end_time: endTime,
+                start_date: startDate,
+                end_date: endDate,
+                reoccurring,
+                reoccurr_type: selectedReoccurrType,
+                day_of_week: dayOfWeek,
+                status,
+                opponent,
+                home_away: homeAway,
+                lift_type: liftType,
+                notes,
+            },
+            req.user.organizationId
+        );
 
-        console.log("Created team_event:", team_event);
-
-        res.status(201).json(team_event);
+        return res.status(201).json(team_event);
     }
 
-    static async getEvents(req: Request, res: Response) {
+    static async getEvents(req: AuthedRequest, res: Response) {
+        if (!req.user) return res.status(401).send("Unauthorized");
         const { teamId } = req.params;
-        const events = await TeamEventModel.getByTeamId(teamId);
-        res.json(events);
+        const events = await TeamEventModel.getByTeamId(teamId, req.user.organizationId);
+        return res.json(events);
     }
 }

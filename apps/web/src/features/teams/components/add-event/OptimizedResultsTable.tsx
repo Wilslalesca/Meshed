@@ -49,13 +49,14 @@ export const OptimizeResultsTable = ({
             allMissingIds: Array.from(ids)
         };
     }, [optimizeResults]);
-
-    const athletes = (useAthleteByIds(allMissingIds)).athletes;
-        const athletesById = useMemo(() => {
+    const { athletes } = useAthleteByIds(allMissingIds);
+    
+    const athletesById = useMemo(() => {
         const map: Record<string, { first_name: string; id: string }> = {};
-        athletes?.forEach(athlete => {
+        (athletes ?? []).forEach(athlete => {
+            if (!athlete) return;
             map[athlete.id] = athlete;
-        });
+        })
         return map;
     }, [athletes]);
 
@@ -73,7 +74,7 @@ export const OptimizeResultsTable = ({
                         <th className="text-left py-2 px-4">Day of the Week</th>
                         <th className="text-left py-2 px-4">Start Time</th>
                         <th className="text-left py-2 px-4">End Time</th>
-                        <th className="text-left py-2 px-4">Absenses</th>
+                        <th className="text-left py-2 px-4">Absences</th>
                         <th className="text-left py-2 px-4">Athletes Missing</th>
                         <th className="text-left py-2 px-4">Status</th>
                         </tr>

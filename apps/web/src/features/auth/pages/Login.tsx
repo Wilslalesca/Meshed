@@ -9,17 +9,23 @@ export default function LoginPage() {
                 <div className="flex justify-center gap-2 md:justify-start">
                     <a href="#" className="flex items-center gap-2 font-medium">
                         <div className="text-primary-foreground flex size-6 items-center justify-center rounded-md">
-                            <img src={Meshed_Icon} alt="Meshed Icon" className="size-4" />
+                            <img
+                                src={Meshed_Icon}
+                                alt="Meshed Icon"
+                                className="size-4"
+                            />
                         </div>
                         Meshed
                     </a>
                 </div>
+
                 <div className="flex flex-1 items-center justify-center">
                     <div className="w-full max-w-xs">
                         <LoginForm />
                     </div>
                 </div>
             </div>
+
             <div className="relative hidden bg-muted lg:block">
                 <img
                     src={Logo}

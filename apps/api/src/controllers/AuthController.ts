@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
 import { UserModel } from "../models/UserModel";
+import { OrganizationModel } from "../models/OrganizationModel";
 import { signAccessToken, signRefreshToken, verifyRefresh } from "../utils/tokens";
 import { config } from "../config/config";
 import { sendEmail } from "../services/emailService";
@@ -10,15 +11,25 @@ import { InviteModel } from "../models/InviteModel";
 import { TeamStaffModel } from "../models/TeamStaffModel";
 import { TeamRosterModel } from "../models/TeamRosterModel";
 
-const registerSchema = z.object({
-  firstName: z.string().min(1),
-  lastName: z.string().optional(),
-  email: z.string().email(),
-  password: z.string().min(8),
-  phone: z.string().optional(),
-  role: z.enum(["admin", "manager", "user"]).optional().default("user"),
-  invitedToken: z.string().nullable().optional(),
-});
+const registerSchema = z
+  .object({
+    firstName: z.string().min(1),
+    lastName: z.string().optional(),
+    email: z.string().email(),
+    password: z.string().min(8),
+    phone: z.string().optional(),
+    organizationName: z.string().min(1).optional(),
+    invitedToken: z.string().nullable().optional(),
+  })
+  .superRefine((data, ctx) => {
+    if (!data.invitedToken && !data.organizationName) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Organization name is required",
+        path: ["organizationName"],
+      });
+    }
+  });
 
 const loginSchema = z.object({
   email: z.string().email(),
@@ -37,111 +48,91 @@ export const AuthController = {
 
   async register(req: Request, res: Response) {
     const parse = registerSchema.safeParse(req.body);
-    console.log("Register request body:", req.body);
-    if (!parse.success) {
-      return res.status(400).json({
-        error: "Validation error",
-        details: parse.error.flatten(),
-      });
-    }
 
-    const { firstName, lastName, email, password, phone, role, invitedToken } =
-      parse.data;
+    if (!parse.success) return res.status(400).json({ error: "Validation error", details: parse.error.flatten()});
 
+
+    const { firstName, lastName, email, password, phone, organizationName, invitedToken } = parse.data;
     const normalizedEmail = email.toLowerCase();
-
     const existing = await UserModel.findByEmail(normalizedEmail);
 
     let user;
 
-    if (existing && !invitedToken) {
-      return res.status(409).json({ error: "Email already registered" });
-    }
+    if (existing && !invitedToken) return res.status(409).json({ error: "Email already registered" });
 
     if (existing && invitedToken) {
       await UserModel.setPassword(existing.id, password);
-
-      await UserModel.updateUser(existing.id, {
-        first_name: firstName,
-        last_name: lastName ?? "",
-        phone: phone ?? "",
-        role,
-    });
-
+      await UserModel.updateUser(existing.id, {first_name: firstName, last_name: lastName ?? "", phone: phone ?? "", role: "user"});
       user = await UserModel.findById(existing.id);
     }
 
-
     if (!existing) {
       const passwordHash = await bcrypt.hash(password, 10);
-
-      user = await UserModel.insert({
-        firstName,
-        lastName,
-        email: normalizedEmail,
-        phone,
-        role,
-        passwordHash,
-      });
+      user = await UserModel.insert({ firstName, lastName, email: normalizedEmail, phone, role: "user", passwordHash});
     }
 
-    if (!user) {
-      return res.status(500).json({ error: "User creation failed" });
-    }
+    if (!user) return res.status(500).json({ error: "User creation failed" });
+
 
     if (invitedToken) {
       const invite = await InviteModel.findByToken(invitedToken);
 
-      if (invite) {
+      if (!invite) return res.status(400).json({ error: "Invalid invite token" });
+        
+      const membershipRole = invite.role === "manager" ? "manager" : "user";
 
-        if (invite.role === "manager") {
-          const staff = await TeamStaffModel.findStaffRecord(invite.team_id, user.id);
+      await UserModel.createMembership(user.id, invite.organization_id, membershipRole);
 
-          if (staff) {
-            await TeamStaffModel.updateStaffById(staff.id, { role: invite.role, status: "pending" });
-          
-          } else {
-            await TeamRosterModel.updateAthlete(invite.team_id, user.id, { status: "pending", position: invite.position ?? null});
-          
-          }
-        } else {
+      if (invite.role === "manager") {
+
+        const staff = await TeamStaffModel.findStaffRecord(invite.team_id, user.id);
+
+        if (staff) {
+          await TeamStaffModel.updateStaffById(staff.id, { role: invite.role, status: "pending"});
+
+        } 
+        else {
           await TeamRosterModel.updateAthlete(invite.team_id, user.id, { status: "pending", position: invite.position ?? null});
         }
-        await InviteModel.markAccepted(invite.id);
+      } 
+      else {
+        await TeamRosterModel.updateAthlete(invite.team_id, user.id, { status: "pending", position: invite.position ?? null });
       }
+
+      await InviteModel.markAccepted(invite.id, invite.organization_id);
+    } 
+    else {
+      const org = await OrganizationModel.create(organizationName!);
+      await UserModel.createMembership(user.id, org.id, "admin");
     }
- 
-   
 
     const code = Math.floor(100000 + Math.random() * 900000).toString();
     await VerificationCodeModel.create(user.id, code);
     await sendEmail.sendVerificationEmail(user.email, code);
 
-    return res.status(201).json({
-      message: "User registered successfully. Please verify your email.",
-      userId: user.id,
-    });
+    return res.status(201).json({ message: "User registered successfully. Please verify your email.", userId: user.id});
   },
 
   async login(req: Request, res: Response) {
     const parse = loginSchema.safeParse(req.body);
-    if (!parse.success) return res.status(400).json({ error: 'Validation error', details: parse.error.flatten() });
 
+    if (!parse.success) return res.status(400).json({ error: "Validation error", details: parse.error.flatten()});
+    
     const { email, password } = parse.data;
-    const user = await UserModel.findByEmail(email.toLowerCase());
+    const user = await UserModel.findByEmailWithMembership(email.toLowerCase());
+
     if (!user) return res.status(401).json({ error: "Invalid email or password" });
 
-    if (!user.verified){
-      return res.status(403).json({ error: "Email not verified", needsVerification: true, userId: user.id });
-    }
+    if (!user.verified) return res.status(403).json({ error: "Email not verified", needsVerification: true, userId: user.id,});
+    
 
     const ok = await bcrypt.compare(password, user.passwordHash);
     if (!ok) return res.status(401).json({ error: "Invalid email or password" });
+    
+    const accessToken = signAccessToken(user.id, user.role, user.organizationId, user.organizationRole);
+    const refreshToken = signRefreshToken(user.id, user.role, user.organizationId, user.organizationRole);
 
-    const accessToken = signAccessToken(user.id, user.role);
-    const refreshToken = signRefreshToken(user.id, user.role);
-
-    res.cookie("refresh_token", refreshToken, { ...cookieOpts, maxAge: 7 * 24 * 60 * 60 * 1000 });
+    res.cookie("refresh_token", refreshToken, { ...cookieOpts, maxAge: 7 * 24 * 60 * 60 * 1000});
 
     return res.json({ token: accessToken, user });
   },
@@ -154,18 +145,19 @@ export const AuthController = {
   async refresh(req: Request, res: Response) {
     const token = req.cookies?.["refresh_token"];
     if (!token) return res.status(401).json({ error: "Missing refresh token" });
-
+    
     try {
       const payload = verifyRefresh(token);
       const user = await UserModel.findById(payload.userId);
-      if (!user) return res.status(401).json({ error: "Invalid refresh token" });
+      const membership = await UserModel.findMembershipByUserId(payload.userId);
+      if (!user || !membership) return res.status(401).json({ error: "Invalid refresh token" });
 
-      const newRefresh = signRefreshToken(user.id, user.role);
+      const newRefresh = signRefreshToken(user.id, user.role, membership.organizationId, membership.role );
       res.cookie("refresh_token", newRefresh, { ...cookieOpts, maxAge: 7 * 24 * 60 * 60 * 1000 });
-
-      const newAccess = signAccessToken(user.id, user.role);
-      return res.json({ token: newAccess, user });
-    } catch {
+      const newAccess = signAccessToken(user.id, user.role, membership.organizationId, membership.role );
+      return res.json({token: newAccess, user: { ...user, organizationId: membership.organizationId, organizationRole: membership.role }});
+    } 
+    catch {
       return res.status(401).json({ error: "Invalid refresh token" });
     }
   },
@@ -173,59 +165,39 @@ export const AuthController = {
   async verify(req: Request, res: Response) {
     const { userId, code } = req.body;
     const record = await VerificationCodeModel.findValid(userId, code);
-
-    if (!record) {
-      return res.status(400).json({ error: "Invalid or expired verification code" });
-    }
+    if (!record) return res.status(400).json({ error: "Invalid or expired verification code" });
 
     const user = await UserModel.findById(userId);
-    
-    if (!user) {
-      return res.status(404).json({ error: "User not found" });
-    }
+    if (!user) return res.status(404).json({ error: "User not found" });
 
-    if (user.verified) {
-      return res.status(400).json({ error: "Email is already in use" });
-    }
-
+    if (user.verified) return res.status(400).json({ error: "Email is already in use" });
     await VerificationCodeModel.markUsed(record.id);
-
     await UserModel.activateUser(userId);
 
-  
-    const newAccess = signAccessToken(userId, user.role);
-    const newRefresh = signRefreshToken(userId, user.role);
-    res.cookie("refresh_token", newRefresh, { ...cookieOpts, maxAge: 7 * 24 * 60 * 60 * 1000 });
+    const membership = await UserModel.findMembershipByUserId(userId);
+    if (!membership) return res.status(400).json({ error: "No active organization membership found" });
+    
 
-    return res.json({ message: "Email verified successfully", token: newAccess } );
+    const newAccess = signAccessToken(userId, user.role, membership.organizationId, membership.role);
+    const newRefresh = signRefreshToken(userId, user.role, membership.organizationId, membership.role);
+
+    res.cookie("refresh_token", newRefresh, { ...cookieOpts, maxAge: 7 * 24 * 60 * 60 * 1000 });
+    return res.json({ message: "Email verified successfully", token: newAccess});
   },
 
   async resendVerification(req: Request, res: Response) {
     const { userId } = req.body;
-
-    if (!userId) {
-      return res.status(400).json({ error: "User ID is required" });
-    }
+    if (!userId) return res.status(400).json({ error: "User ID is required" });
 
     const user = await UserModel.findById(userId);
-    if (!user) {
-      return res.status(404).json({ error: "User not found" });
-    }
-
-    if (user.verified) {
-      return res.status(400).json({ error: "Email is already verified" });
-    }
-
+    if (!user) return res.status(404).json({ error: "User not found" });
+    if (user.verified) return res.status(400).json({ error: "Email is already verified" });
+    
     await VerificationCodeModel.invalidateAllForUser(userId);
-
     const code = Math.floor(100000 + Math.random() * 900000).toString();
-
     await VerificationCodeModel.create(userId, code);
-
     await sendEmail.sendVerificationEmail(user.email, code);
 
     return res.json({ message: "Verification email resent successfully" });
   },
-
-
 };

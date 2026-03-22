@@ -2,7 +2,7 @@ import React from "react";
 import { Routes, Route, Outlet, Navigate } from "react-router-dom";
 import { Home } from "./screens/Home";
 import LoginPage from "./features/auth/pages/Login.tsx";
-import { Register } from "./features/auth/pages/Register.tsx";
+import Register  from "./features/auth/pages/Register.tsx";
 import { Dashboard } from "./routes/dashboard";
 import { Profile } from "./screens/Profile";
 import { Facilities } from "./screens/Facilities.tsx";
@@ -18,7 +18,7 @@ import { TeamDetailsPage } from "./features/teams/pages/TeamDetailsPage.tsx";
 import { TeamsPage } from "@/features/teams/pages/TeamPage.tsx";
 import { AthleteDetailsPage } from "@/features/teams/pages/AthleteDetailsPage.tsx";
 import InviteRegisterPage from "./features/auth/pages/InviteRegisterPage.tsx";
-
+import OrganizationPage from "@/features/organizations/page.tsx";
 
 function AppLayout() {
     return (
@@ -67,7 +67,7 @@ export default function App() {
         <Route path="/mySchedule" element={ <ProtectedRoute> <AthleteSchedulePage /> </ProtectedRoute> }/>
         <Route path="/profile" element={ <ProtectedRoute> <Profile /> </ProtectedRoute> }/>
         <Route path="/optimize" element={ <ProtectedRoute><OptimizePage /></ProtectedRoute>}/>
-
+        <Route path="/organization" element={ <ProtectedRoute allowedRoles={["admin"]}><OrganizationPage /></ProtectedRoute>}/>
                 {/* Fallback */}
                 <Route path="*" element={<Navigate to="/" replace />} />
             </Route>

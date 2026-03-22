@@ -23,10 +23,10 @@ const updateProfileSchema = userSchema.partial();
 export const UserController = {
 
     async me(req: AuthedRequest, res: Response) {
+        if (!req.user) return res.status(401).json({ error: "Unauthorized" });
         const user = await UserModel.findById(req.user!.id);
         if (!user) return res.status(404).json({ error: "User not found" });
-
-        return res.json(user);
+        return res.json({ ...user, organizationId: req.user.organizationId, organizationRole: req.user.organizationRole });
     },
 
     adminPing(_req: AuthedRequest, res: Response) {
@@ -40,9 +40,8 @@ export const UserController = {
     async updateUser(req: Request, res: Response){
         const { user_id, profile } = req.body;
         const parseUser = updateProfileSchema.safeParse(profile);
-        if (!parseUser.success) {
-        return res.status(400).json({ error: "Validation error", details: parseUser.error.flatten() });
-        }
+        if (!parseUser.success) return res.status(400).json({ error: "Validation error", details: parseUser.error.flatten() });
+        
         try{
             const updated = await UserModel.updateUser(user_id, profile);
             if (!updated) return res.status(404).json({ message: "Course not found" });
