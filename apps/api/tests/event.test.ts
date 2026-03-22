@@ -1,5 +1,7 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { Request, Response } from "express";
+import { describe, expect, vi, test } from 'vitest';
+import { Request, Response } from 'express';
+import { EventController } from '../src/controllers/EventController';
+import { EventModel } from '../src/models/EventModel'
 
 vi.mock("../src/models/EventModel", () => ({
   EventModel: {
