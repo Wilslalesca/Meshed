@@ -6,12 +6,15 @@
 4. Backend: http://localhost:4000   
 5. To stop `docker compose down -v`
 
-## Email (Gmail)
+## Email (SMTP)
 
-The API email service uses Gmail SMTP via Nodemailer.
+The API email service uses SMTP via Nodemailer (provider-agnostic).
 
-- `GMAIL_APP_EMAIL`
-- `GMAIL_APP_PASSWORD`
+- `SMTP_HOST`
+- `SMTP_PORT` (e.g. `587`)
+- `SMTP_USER`
+- `SMTP_PASS`
+- `MAIL_FROM` (optional; defaults to `SMTP_USER`)
 
 You can provide these via your shell environment or an `.env` file in `apps/api/`.
 

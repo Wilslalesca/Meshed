@@ -4,8 +4,11 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 process.env.JWT_ACCESS_SECRET ??= "test-access-secret";
 process.env.JWT_REFRESH_SECRET ??= "test-refresh-secret";
 process.env.DATABASE_URL ??= "postgres://user:password@localhost:5432/test";
-process.env.GMAIL_APP_EMAIL ??= "test@example.com";
-process.env.GMAIL_APP_PASSWORD ??= "test-password";
+process.env.SMTP_HOST ??= "smtp.example.com";
+process.env.SMTP_PORT ??= "587";
+process.env.SMTP_USER ??= "test@example.com";
+process.env.SMTP_PASS ??= "test-password";
+process.env.MAIL_FROM ??= "test@example.com";
 
 vi.mock("../src/models/UserModel", () => ({
   UserModel: {
