@@ -1,13 +1,16 @@
 import 'dotenv/config';
 
+const requiredEnv = ["JWT_ACCESS_SECRET", "JWT_REFRESH_SECRET"];
 
-const requiredEnv = ["JWT_ACCESS_SECRET", "JWT_REFRESH_SECRET", "DATABASE_URL"] as const;
-for (const key of requiredEnv) {
-    if (!process.env[key]) {
-        console.warn(`ERROR: Missing environment variable ${key}`);
-        process.exit(1);
-    }
+if (process.env.NODE_ENV !== "test") {
+  requiredEnv.push("DATABASE_URL", "GMAIL_APP_EMAIL", "GMAIL_APP_PASSWORD");
 }
+
+requiredEnv.forEach((key) => {
+  if (!process.env[key]) {
+    throw new Error(`Missing environment variable ${key}`);
+  }
+});
 
 
 
