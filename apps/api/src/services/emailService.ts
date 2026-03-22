@@ -4,6 +4,11 @@ import { config } from "../config/config";
 const BASE_URL = config.frontendOrigin;
 
 function buildTransport() {
+  if (config.nodeEnv === "test") {
+    // Avoid network calls in unit tests.
+    return nodemailer.createTransport({ jsonTransport: true });
+  }
+
   const smtpHost = config.smtpHost;
   const smtpPort = config.smtpPort;
   const smtpSecure = config.smtpSecure;
@@ -34,11 +39,24 @@ function buildTransport() {
 }
 
 const transporter = buildTransport();
-const mailFrom = config.mailFrom ?? (config.smtpUser ?? config.legacyGmailUser);
+const mailFrom =
+  config.mailFrom ??
+  config.smtpUser ??
+  config.legacyGmailUser ??
+  (config.nodeEnv === "test" ? "test@example.com" : undefined);
 
 export const mail = {
   async sendEmail(to: string, subject: string, html: string) {
-    if (!transporter || !mailFrom) {
+    if (!mailFrom) {
+      throw new Error("MAIL_FROM is not configured.");
+    }
+
+    if (!transporter) {
+      if (config.nodeEnv !== "production") {
+        console.log("[DEV EMAIL]", { to, subject, html });
+        return { messageId: "dev-email", accepted: [to], rejected: [] };
+      }
+
       throw new Error(
         "Email is not configured. Set SMTP_HOST/SMTP_PORT/SMTP_USER/SMTP_PASS (and optionally MAIL_FROM)."
       );

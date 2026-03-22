@@ -10,6 +10,8 @@
 
 The API email service uses SMTP via Nodemailer (provider-agnostic).
 
+In `development`, if SMTP is not configured, emails are logged to the API console instead of being sent.
+
 - `SMTP_HOST`
 - `SMTP_PORT` (e.g. `587`)
 - `SMTP_USER`
