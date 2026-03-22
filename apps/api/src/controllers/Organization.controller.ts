@@ -47,7 +47,7 @@ export class OrganizationController {
 
     static async create(req: AuthedRequest, res: Response) {
         if (!req.user) return res.status(401).send("Unauthorized");
-        if (!isAdmin(req.user.systemRole)) return res.status(403).send("Forbidden");
+        if (!isAdmin(req.user.organizationRole)) return res.status(403).send("Forbidden");
 
         const verified = z.object({ name: z.string().min(1) }).safeParse(req.body);
         if (!verified.success) return res.status(400).json({ error: "Validation error", details: verified.error.flatten() });
@@ -71,7 +71,7 @@ export class OrganizationController {
 
     static async delete(req: AuthedRequest, res: Response) {
         if (!req.user) return res.status(401).send("Unauthorized");
-        if (!isAdmin(req.user.systemRole)) return res.status(403).send("Forbidden");
+        if (!isAdmin(req.user.organizationRole)) return res.status(403).send("Forbidden");
 
         const val = await OrganizationModel.delete(req.user.organizationId);
         if (!val) return res.status(404).send("Organization not found");
@@ -89,7 +89,7 @@ export class OrganizationController {
 
     static async addUser(req: AuthedRequest, res: Response) {
         if (!req.user) return res.status(401).send("Unauthorized");
-        if (!isAdmin(req.user.systemRole)) return res.status(403).send("Forbidden");
+        if (!isAdmin(req.user.organizationRole)) return res.status(403).send("Forbidden");
         const newUser = z.object({ email: z.string().email(), role: z.enum(["admin", "manager", "user"]).default("user") }).safeParse(req.body);
         if (!newUser.success) return res.status(400).json({ error: "Validation error", details: newUser.error.flatten() });
         const { email, role } = newUser.data;
@@ -111,7 +111,7 @@ export class OrganizationController {
 
     static async removeUser(req: AuthedRequest, res: Response) {
         if (!req.user) return res.status(401).send("Unauthorized");
-        if (!isAdmin(req.user.systemRole)) return res.status(403).send("Forbidden");
+        if (!isAdmin(req.user.organizationRole)) return res.status(403).send("Forbidden");
         const { membershipId } = req.params;
         const membership = await OrganizationModel.findMembershipById(membershipId, req.user.organizationId);
         if (!membership) return res.status(404).send("Membership not found");
@@ -127,7 +127,7 @@ export class OrganizationController {
 
     static async updateUserRole(req: AuthedRequest, res: Response) {
         if (!req.user) return res.status(401).send("Unauthorized");
-        if (!isAdmin(req.user.systemRole)) return res.status(403).send("Forbidden");
+        if (!isAdmin(req.user.organizationRole)) return res.status(403).send("Forbidden");
 
         const { membershipId } = req.params;
         const verified = updateUserRoleSchema.safeParse(req.body);
