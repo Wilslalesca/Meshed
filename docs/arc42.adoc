@@ -1,4 +1,4 @@
-= SmartSpot Software Architecture Documentation
+= Meshed Software Architecture Documentation
 :toc:
 :sectnums:
 :sectlinks:

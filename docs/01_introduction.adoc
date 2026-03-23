@@ -23,11 +23,20 @@ A full list of user requirements is provided in the docs/SuplementaryMaterials f
 ### 1.2 Quality Goals
 The most important engineering specifications Meshed implements include:
 
-| ID | Description |
-|----|-------------|
-| 1  | The scheduling algorithm must generate a weekly team practice for up to 150 users within 2 seconds in 95% of cases. |
-| 2  | The database must return all events for a single team within a 7-day window in ≤ 600 ms with up to 5000 stored events. |
-| 3  | The system must parse an uploaded .ics file with user events with a 95th-percentile latency of no more than 3 seconds. |
+[cols="1,4"]
+|===
+| ID | Description
+
+| 1  
+| The scheduling algorithm must generate a weekly team practice for up to 150 users within 2 seconds in 95% of cases.
+
+| 2  
+| The database must return all events for a single team within a 7-day window in ≤ 600 ms with up to 5000 stored events.
+
+| 3  
+| The system must parse an uploaded .ics file with user events with a 95th-percentile latency of no more than 3 seconds.
+
+|===
 
 A full list of user requiremtns is provided in the docs/SuplementaryMaterials folder.
 

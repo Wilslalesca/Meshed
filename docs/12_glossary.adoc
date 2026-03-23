@@ -1,6 +1,6 @@
 == Glossary
 
-The glossary provides definitions for key terms and abbreviations used throughout the SmartSpot architecture documentation.
+The glossary provides definitions for key terms and abbreviations used throughout the Meshed architecture documentation.
 
 **A**
 
