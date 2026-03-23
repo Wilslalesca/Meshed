@@ -52,10 +52,6 @@ The glossary provides definitions for key terms and abbreviations used throughou
 - **Model View Controller**: An architectural pattern that separates applications into Model (data/business logic), View (UI), and Controller (user input handling) for better modularity and maintainability.
 - **MongoDB**: A NoSQL document database that stores data in JSON-like BSON format, enabling high scalability, flexibility, and efficient querying.
 
-**O**
-
-- **Observer Pattern**: A behavioral pattern where objects (observers) subscribe to another object (subject) to get notified of state changes, promoting decoupling.
-
 
 **N**
 - **NoSQL Database**: A type of database designed for scalability and flexibility in handling unstructured data.
@@ -68,12 +64,7 @@ The glossary provides definitions for key terms and abbreviations used throughou
 **S**
 
 - **Scalability**: The ability of a system to handle increasing workloads by adding resources.
-- **Singleton Pattern**: Ensures a class has only one instance and provides a global access point to it, often used for configuration or resource management.
-- **SpringBoot**: A Java-based framework used to create stand-alone, production-grade Spring applications.
 
-**T**
-
-- **Transaction Processing**: The execution of parking payments.
 
 **U**
 
@@ -82,7 +73,7 @@ The glossary provides definitions for key terms and abbreviations used throughou
 
 
 
-This glossary serves as a reference guide for understanding the terminology used in the SmartSpot architecture documentation. It provides clarity on key concepts and terms to facilitate better comprehension of the system design and implementation.
+This glossary serves as a reference guide for understanding the terminology used in the Meshed architecture documentation. It provides clarity on key concepts and terms to facilitate better comprehension of the system design and implementation.
 
 
 // End of glossary

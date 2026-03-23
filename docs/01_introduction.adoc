@@ -12,7 +12,7 @@ The primary goals of these documents are to:
 - Facilitate maintainability and scalability by documenting key architectural decisions.
 - Enhance security and compliance by outlining specific choices made by the team.
 
-###1.1 Requirements Overview
+### 1.1 Requirements Overview
 The most important user requirements Meshed implements: 
 - The system shall generate optimized practice schedules efficiently based on athlete availability.  
 - The system shall clearly present facility booking conflicts in multiple formats. 
