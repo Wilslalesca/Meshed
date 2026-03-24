@@ -29,7 +29,6 @@ import { toast } from "sonner";
 import { useUserRole } from "@/shared/hooks/useUserRole";
 
 import Meshed_Icon from "@/assets/Icon.png";
-import type { Role } from "@/features/auth/types/auth";
 export const Sidebar = ({
     open,
     collapsed,
@@ -148,7 +147,7 @@ export const Sidebar = ({
                 </div>
 
                 <nav className="flex-1 overflow-y-auto px-3 pt-2 space-y-1 text-sm">
-                    {filteredLinks.map(({ name, href, icon: Icon, subLinks, roles }) => {
+                    {filteredLinks.map(({ name, href, icon: Icon, subLinks }) => {
                         const isActive = location.pathname === href;
                         const isOpen = openSubMenu === name;
                         const hasSub = (subLinks?.length ?? 0) > 0;
