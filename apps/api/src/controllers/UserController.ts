@@ -11,7 +11,6 @@ const userSchema = z.object({
   password: z.string().min(8),
   phone: z.string().optional(),
   role: z.enum(["admin", "manager", "user"]).optional().default("user"),
-  password_hash: z.string(),
   active: z.boolean().optional(),
   verified:z.boolean().optional(),
   created_at: z.string().datetime().optional(),
@@ -19,17 +18,19 @@ const userSchema = z.object({
 });
 
 function toSafeUserFromUser(user: User, organizationId: string, organizationRole: Role): SafeUser {
+  const mappedUser = user as User & { firstName: string; lastName?: string | null; };
+
   return {
-    id: user.id,
-    firstName: user.first_name,
-    lastName: user.last_name ?? null,
-    email: user.email,
-    phone: user.phone ?? null,
-    role: user.role,
-    active: user.active,
-    verified: user.verified,
-    createdAt: user.createdAt,
-    updatedAt: user.updatedAt,
+    id: mappedUser.id,
+    firstName: mappedUser.firstName,
+    lastName: mappedUser.lastName ?? null,
+    email: mappedUser.email,
+    phone: mappedUser.phone ?? null,
+    role: mappedUser.role,
+    active: mappedUser.active,
+    verified: mappedUser.verified,
+    createdAt: mappedUser.createdAt,
+    updatedAt: mappedUser.updatedAt,
     organizationId,
     organizationRole,
   };
