@@ -10,6 +10,8 @@ import { VerificationCodeModel } from "../models/VerificationCodeModel";
 import { InviteModel } from "../models/InviteModel";
 import { TeamStaffModel } from "../models/TeamStaffModel";
 import { TeamRosterModel } from "../models/TeamRosterModel";
+import type { SafeUser, User } from "../types";
+import type { UserWithMembership } from "../models/UserModel";
 
 const registerSchema = z
   .object({
@@ -31,6 +33,38 @@ const registerSchema = z
     }
   });
 
+function toSafeUser(user: UserWithMembership): SafeUser {
+  return {
+    id: user.id,
+    firstName: user.first_name,
+    lastName: user.last_name ?? null,
+    email: user.email,
+    phone: user.phone ?? null,
+    role: user.role,
+    active: user.active,
+    verified: user.verified,
+    createdAt: user.createdAt,
+    updatedAt: user.updatedAt,
+    organizationId: user.organizationId,
+    organizationRole: user.organizationRole,
+  };
+}
+function toSafeUserWithMembership(user: User, organizationId: string, organizationRole: "admin" | "manager" | "user"): SafeUser {
+  return {
+    id: user.id,
+    firstName: user.first_name,
+    lastName: user.last_name ?? null,
+    email: user.email,
+    phone: user.phone ?? null,
+    role: user.role,
+    active: user.active,
+    verified: user.verified,
+    createdAt: user.createdAt,
+    updatedAt: user.updatedAt,
+    organizationId,
+    organizationRole,
+  };
+}
 const loginSchema = z.object({
   email: z.string().email(),
   password: z.string().min(1),
@@ -134,7 +168,7 @@ export const AuthController = {
 
     res.cookie("refresh_token", refreshToken, { ...cookieOpts, maxAge: 7 * 24 * 60 * 60 * 1000});
 
-    return res.json({ token: accessToken, user });
+    return res.json({ token: accessToken, user: toSafeUser(user) });
   },
 
   async logout(_req: Request, res: Response) {
@@ -155,7 +189,7 @@ export const AuthController = {
       const newRefresh = signRefreshToken(user.id, user.role, membership.organizationId, membership.role );
       res.cookie("refresh_token", newRefresh, { ...cookieOpts, maxAge: 7 * 24 * 60 * 60 * 1000 });
       const newAccess = signAccessToken(user.id, user.role, membership.organizationId, membership.role );
-      return res.json({token: newAccess, user: { ...user, organizationId: membership.organizationId, organizationRole: membership.role }});
+      return res.json({token: newAccess, user: toSafeUserWithMembership(user, membership.organizationId, membership.role)});
     } 
     catch {
       return res.status(401).json({ error: "Invalid refresh token" });

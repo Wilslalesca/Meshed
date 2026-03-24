@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { AuthedRequest } from "../middleware/authMiddleware";
 import { UserModel } from "../models/UserModel";
 import { z } from "zod";
-
+import type { Role, SafeUser, User} from "../types";
 
 const userSchema = z.object({
   firstName: z.string().min(1),
@@ -18,6 +18,22 @@ const userSchema = z.object({
   updated_at: z.string().datetime().optional(),
 });
 
+function toSafeUserFromUser(user: User, organizationId: string, organizationRole: Role): SafeUser {
+  return {
+    id: user.id,
+    firstName: user.first_name,
+    lastName: user.last_name ?? null,
+    email: user.email,
+    phone: user.phone ?? null,
+    role: user.role,
+    active: user.active,
+    verified: user.verified,
+    createdAt: user.createdAt,
+    updatedAt: user.updatedAt,
+    organizationId,
+    organizationRole,
+  };
+}
 const updateProfileSchema = userSchema.partial();
 
 export const UserController = {
@@ -26,7 +42,7 @@ export const UserController = {
         if (!req.user) return res.status(401).json({ error: "Unauthorized" });
         const user = await UserModel.findById(req.user!.id);
         if (!user) return res.status(404).json({ error: "User not found" });
-        return res.json({ ...user, organizationId: req.user.organizationId, organizationRole: req.user.organizationRole });
+        return res.json(toSafeUserFromUser(user, req.user.organizationId, req.user.organizationRole))
     },
 
     adminPing(_req: AuthedRequest, res: Response) {
