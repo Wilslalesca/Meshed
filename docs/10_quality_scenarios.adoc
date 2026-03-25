@@ -2,8 +2,25 @@
 == Quality Scenarios
 Quality scenarios define measurable criteria for assessing the performance, reliability, security, and maintainability of Meshed. Each scenario follows the **SEI six-part format**, which includes:
 
+=== Performance Scenarios
+=== **Scenario 1: Large Optimization Input**
+- **Source of Stimulus**: A manager uses the schedule optimization algorithm.
+- **Stimulus**: Attempt to make generate a schedule for a large number of users
+- **Environment**: Public facing web application
+- **Artifact**: Optimization service.
+- **Response**: The system displays a loading symbol to warn the user of possible delays.
+- **Response Meausure**: The service generates an optimal schedule within 2 seconds for up to 150 users.
+
+=== **Scenario 2: Sudden Activity Increase**
+- **Source of Stimulus**: A large number of users
+- **Stimulus**: Great amount of accounts log on near the same time.
+- **Environment**: Google cloud hosting.
+- **Artifact**: Load balancer.
+- **Response**: Google cloud load balancer automatically scales up resources to account for the increased load.
+- **Response Measure**: Minimal users report a disturbance in load times and service.
+
 === Security Scenarios
-==== **Scenario 1: Unauthorized Access Attempt**
+==== **Scenario 3: Unauthorized Access Attempt**
 - **Source of Stimulus**: A user without an account/with the wrong password.
 - **Stimulus**: Attempted log in with an unregistered email/password combination.
 - **Environment**: Public-facing web application.
@@ -11,4 +28,13 @@ Quality scenarios define measurable criteria for assessing the performance, reli
 - **Response**: The system blocks the user from entering the system and displays a message about the error.
 - **Response Measure**: The system blocks the user from entering immediately in all scenarios.
 
-These quality scenarios ensure that SmartSpot maintains **high performance, security, and usability standards**.
+=== Functionality Scenarios
+=== **Scenario 4**: Facility Connection
+- **Source of Stimulus**: Facility administrator
+- **Stimulus**: The administrator views a conflict page for all of their facilities
+- **Environment**: Public-facing web app
+- **Artifact**: Facility bookings confirmation page
+- **Response**: The system accurately displays all bookings made by team managers, quickly and accurately.
+- **Response Measure**: Bookings requested by managers display to the facility administrator with 100% accuracy, no missing or made up bookings, within 10 seconds.
+
+These quality scenarios ensure that Meshed maintains **high performance, security, and usability standards**.
