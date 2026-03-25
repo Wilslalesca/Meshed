@@ -11,6 +11,7 @@ vi.mock('@/services/eventEmailService');
 //The purpose of this testing file is to test all EventController functions
 
 //getAllEvents
+//test?
 describe('EventController.getAllEvents', () => {
   test('should return formatted events', async () => {
     vi.clearAllMocks();
