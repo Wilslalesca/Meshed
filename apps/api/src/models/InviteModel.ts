@@ -1,12 +1,12 @@
 import { pool } from "../config/db";
 
 export class InviteModel {
-  static async createInvite(teamId: string, email: string, role: string | null, position: string | null, token: string) {
+  static async createInvite(organizationId: string, teamId: string | null, email: string, role: string | null, position: string | null, token: string) {
     const { rows } = await pool.query(
-      `INSERT INTO invites (team_id, email, token, role, position)
-       VALUES ($1, $2, $3, $4, $5)
+      `INSERT INTO invites (organization_id, team_id, email, token, role, position)
+       VALUES ($1, $2, $3, $4, $5, $6)
        RETURNING *`,
-      [teamId, email, token, role, position]
+      [organizationId, teamId, email, token, role, position]
     );
     return rows[0];
   }
@@ -18,11 +18,27 @@ export class InviteModel {
     );
     return rows[0] ?? null;
   }
+   static async findByTokenAndOrganization(token: string, organizationId: string) {
+      const { rows } = await pool.query(
+        `SELECT *
+        FROM invites
+        WHERE token = $1
+          AND organization_id = $2
+        LIMIT 1`,
+        [token, organizationId]
+      );
 
-  static async markAccepted(inviteId: string) {
+      return rows[0] ?? null;
+  }
+
+  static async markAccepted(inviteId: string, organizationId: string) {
     await pool.query(
-      `UPDATE invites SET status = 'accepted', accepted_at = NOW() WHERE id = $1`,
-      [inviteId]
+      `UPDATE invites
+       SET status = 'accepted',
+           accepted_at = NOW()
+       WHERE id = $1
+         AND organization_id = $2`,
+      [inviteId, organizationId]
     );
   }
 }

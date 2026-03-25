@@ -20,3 +20,4 @@ The deployment view describes how Meshed is deployed across the development envi
 2. **Production Environment**
 
    - Hosted on Google Cloud
+   - Containerized with Docker

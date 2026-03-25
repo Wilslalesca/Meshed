@@ -20,7 +20,7 @@ export const config = {
     accessSecret: process.env.JWT_ACCESS_SECRET!,
     refreshSecret: process.env.JWT_REFRESH_SECRET!,
     databaseUrl: process.env.DATABASE_URL!,
-    accessTtl: process.env.ACCESS_TTL ?? '15m',
+    accessTtl: process.env.ACCESS_TTL ?? '8h',
     refreshTtl: process.env.REFRESH_TTL ?? '7d',
     cookieDomain: process.env.COOKIE_DOMAIN ?? 'localhost',
     nodeEnv: process.env.NODE_ENV ?? 'development',

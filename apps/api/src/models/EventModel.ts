@@ -12,7 +12,7 @@ export type TeamEventInput = {
     reoccurring:boolean;
     reoccurr_type?:string;
     day_of_week?: string;
-    status?:boolean;
+    status?: string;
     opponent?: string;
     home_away?: string;
     lift_type?: string;
@@ -33,69 +33,77 @@ const EVENT_SELECT = `
 `;
 
 export class EventModel {
-    static async getAll() {
+    static async getAll(organizationId: string) {
         const { rows } = await pool.query(
-            `${EVENT_SELECT}
-             ORDER BY te.start_date ASC, te.start_time ASC`
+        `${EVENT_SELECT}
+        WHERE te.organization_id = $1
+        ORDER BY te.start_date ASC, te.start_time ASC`,
+        [organizationId]
         );
+
         return rows;
     }
-    static async getById(id: string) {
+    static async getById(id: string, organizationId: string) {
         const { rows } = await pool.query(
-            `${EVENT_SELECT}
-             WHERE te.id = $1`,
-            [id]
+        `${EVENT_SELECT}
+        WHERE te.id = $1
+            AND te.organization_id = $2`,
+        [id, organizationId]
         );
-        return rows[0] ?? [];
+
+        return rows[0] ?? null;
     }
 
-    static async getForFacility(facilityId: string) {
+    static async getForFacility(facilityId: string, organizationId: string) {
         const { rows } = await pool.query(
-            `${EVENT_SELECT}
-             WHERE te.team_facility_id = $1
-             ORDER BY te.start_date ASC, te.start_time ASC`,
-            [facilityId]
+        `${EVENT_SELECT}
+        WHERE te.team_facility_id = $1
+            AND te.organization_id = $2
+        ORDER BY te.start_date ASC, te.start_time ASC`,
+        [facilityId, organizationId]
         );
-        return rows;
-    }
 
-    static async getAllStatusFacilityRequests(facilityId: string, status: string) {
-        const { rows } = await pool.query(
-            `${EVENT_SELECT}
-             WHERE te.team_facility_id = $1
-             AND te.status = $2
-             ORDER BY te.start_date ASC, te.start_time ASC`,
-            [facilityId, status]
-        );
         return rows;
     }
 
-    static async checkConflicts(
-        facilityId: string,
-        startDate: Date,
-        startTime: string,
-        endTime: string,
-        eventId: string
-    ) {
+    static async getAllStatusFacilityRequests(facilityId: string, status: string, organizationId: string) {
         const { rows } = await pool.query(
-            `${EVENT_SELECT}
-             WHERE te.team_facility_id = $1
-             AND te.start_date = $2
-             AND te.start_time <= $4
-             AND te.end_time >= $3
-             AND te.id != $5`,
-            [facilityId, startDate, startTime, endTime, eventId]
+        `${EVENT_SELECT}
+        WHERE te.team_facility_id = $1
+            AND te.status = $2
+            AND te.organization_id = $3
+        ORDER BY te.start_date ASC, te.start_time ASC`,
+        [facilityId, status, organizationId]
         );
         return rows;
     }
 
-    static async updateStatus(id: string, status: string, comments: string) {
-        const response = await pool.query(
-            `UPDATE team_events
-             SET status = $1, updated_at = NOW(), facility_notes = $3
-             WHERE id = $2`,
-            [status, id, comments]
-        );
-        return (response.rowCount ?? 0) > 0;
-    }
+    static async checkConflicts( facilityId: string, startDate: Date, startTime: string, endTime: string, eventId: string, organizationId: string) {
+    const { rows } = await pool.query(
+      `${EVENT_SELECT}
+       WHERE te.team_facility_id = $1
+         AND te.start_date = $2
+         AND te.start_time <= $4
+         AND te.end_time >= $3
+         AND te.id != $5
+         AND te.organization_id = $6`,
+      [facilityId, startDate, startTime, endTime, eventId, organizationId]
+    );
+
+    return rows;
+  }
+
+  static async updateStatus(id: string, status: string, comments: string, organizationId: string) {
+    const response = await pool.query(
+      `UPDATE team_events
+       SET status = $1,
+           updated_at = NOW(),
+           facility_notes = $3
+       WHERE id = $2
+         AND organization_id = $4`,
+      [status, id, comments, organizationId]
+    );
+
+    return (response.rowCount ?? 0) > 0;
+  }
 }

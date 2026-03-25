@@ -10,6 +10,7 @@ import { getTeamName } from "@/features/dashboard/helpers/getTeamName"
 import { Button } from "@/shared/components/ui/button";
 import { StatusModal } from "./StatusModal";
 import { getRequestedByName } from "@/features/dashboard/helpers/getRequestedByName";
+import {asLocalDate} from "@/features/teams/Services/getTeamScheduleRange"
 
 export const IndividualFacilityEventTable = ({ facilityId, facilityName, filter }: { facilityId: string; facilityName: string; filter:string }) => {
     const { token } = useAuth(); 
@@ -83,7 +84,7 @@ export const IndividualFacilityEventTable = ({ facilityId, facilityName, filter 
                             <td className="py-2 px-4">{getTeamName(event.teamId, allTeams)}</td>
                             <td className="py-2 px-4">{getRequestedByName(event)}</td>
                             <td className="py-2 px-4">{event.name}</td>
-                            <td className="py-2 px-4">{new Date(event.startDate).toLocaleDateString()}</td>
+                            <td className="py-2 px-4">{asLocalDate(event.startDate).toLocaleDateString()}</td>
                             <td className="py-2 px-4">{event.startTime}</td>
                             <td className="py-2 px-4">{event.endTime}</td>
                             <td className="py-2 px-4">

@@ -1,5 +1,4 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import type { Schedule } from "@/features/athlete-schedule/types/Schedule";
 import { formatTime } from "@/features/athlete-schedule/utils/formatTime";
 import { Card, CardHeader, CardContent } from "@/shared/components//ui/card";
@@ -8,14 +7,15 @@ import { useAuth } from "@/shared/hooks/useAuth";
 import { Button } from "@/shared/components//ui/button";
 import { Pencil, Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import { EditCourseModal } from "@/features/add-edit-courses/components/EditCourseModal"
 
-interface Props {
-    data: Schedule[];
-}
-
-export const CourseBlock: React.FC<Props> = ({ data }) => {
+export const CourseBlock = ({
+    data,
+    onAdded,
+}: { data: Schedule[]; onAdded: () => void }) => {
     const { user } = useAuth();
-    const navigate = useNavigate();
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [modalCourse, setModalCourse] = useState<Schedule>();
     const dayOrder: Record<string, number> = {
         Sunday: 0,
         Monday: 1,
@@ -29,7 +29,7 @@ export const CourseBlock: React.FC<Props> = ({ data }) => {
     const grouped: Record<string, Schedule[]> = {};
 
     for (const course of data) {
-        const key = course.name; // or course.course_id
+        const key = course.name;
         if (!grouped[key]) grouped[key] = [];
         grouped[key].push(course);
     }
@@ -41,7 +41,7 @@ export const CourseBlock: React.FC<Props> = ({ data }) => {
         const success = await apiDeleteCourseById(classId, user?.id);
 
         if (success) {
-            window.location.reload();
+            onAdded()
         } else {
             toast.error("Failed to delete course. Please try again.");
         }
@@ -78,7 +78,11 @@ export const CourseBlock: React.FC<Props> = ({ data }) => {
                     <Button
                         size="icon"
                         variant="outline"
-                        onClick={() => navigate(`/editcourse/${c.id}`)}
+                        onClick={() => {
+                            setModalCourse(c)
+                            setIsModalOpen(true)
+                            }
+                        }
                     >
                         <Pencil className="w-4 h-4" />
                     </Button>
@@ -95,6 +99,12 @@ export const CourseBlock: React.FC<Props> = ({ data }) => {
             </CardContent>
             </Card>
         ))}
+        { modalCourse ?
+            <EditCourseModal open={isModalOpen}  onOpenChange={setIsModalOpen} onAdded={onAdded} course={modalCourse}/>
+            :
+            <></>
+        }
+        
         </div>
     );
 };

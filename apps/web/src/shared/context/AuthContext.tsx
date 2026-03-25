@@ -120,7 +120,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     const hasRole = useCallback(
         (allowed: Role | Role[]) => {
             const roles = Array.isArray(allowed) ? allowed : [allowed];
-            const userRole = state.user?.role;
+            const userRole = state.user?.organizationRole;
             return userRole ? roles.includes(userRole) : false;
         },
         [state.user]

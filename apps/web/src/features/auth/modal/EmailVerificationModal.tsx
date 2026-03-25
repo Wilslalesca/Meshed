@@ -34,8 +34,8 @@ export function EmailVerificationModal({
             await apiVerify({ userId, code });
             onClose();
         } catch (err: unknown) {
-            const apiErr = err as { message?: string };
-            setError(apiErr.message || "Verification failed");
+            const apiErr = err as { error?: string; message?: string };
+            setError(apiErr.error || apiErr.message || "Verification failed");
         } finally {
             setLoading(false);
         }
@@ -47,14 +47,21 @@ export function EmailVerificationModal({
 
         try {
             await apiResend({ userId });
+        } catch (err: unknown) {
+            const apiErr = err as { error?: string; message?: string };
+            setError(apiErr.error || apiErr.message || "Resend failed");
         } finally {
             setLoading(false);
         }
     }
 
     return (
-        <Dialog open={open} onOpenChange={onClose}>
-            <DialogContent className="max-w-sm">
+        <Dialog open={open}>
+            <DialogContent
+                className="max-w-sm"
+                onPointerDownOutside={(e) => e.preventDefault()}
+                onEscapeKeyDown={(e) => e.preventDefault()}
+            >
                 <DialogHeader>
                     <DialogTitle>Verify your email</DialogTitle>
                 </DialogHeader>

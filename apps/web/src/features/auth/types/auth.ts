@@ -1,7 +1,4 @@
-// All types needed for frontend and backend auth
-
-// admin is a rare role only for dev team so us currently
-export type Role = "admin" | "user" | "manager" | "facility_manager";
+export type Role = "admin" | "manager" | "user";
 
 export interface AuthUser {
     id: string;
@@ -10,9 +7,11 @@ export interface AuthUser {
     email: string;
     phone?: string;
     role: Role;
+    organizationId: string;
+    organizationRole: Role;
     active: boolean;
     verified: boolean;
-};
+}
 
 export interface AuthState {
     user: AuthUser | null;
@@ -20,7 +19,7 @@ export interface AuthState {
     isAuthenticated: boolean;
     loading: boolean;
     error: string | null;
-};
+}
 
 export type RegisterCredentials = {
     firstName: string;
@@ -28,7 +27,7 @@ export type RegisterCredentials = {
     email: string;
     password: string;
     phone?: string;
-    role?: 'admin' | 'manager' | 'user' | 'facility_manager';
+    organizationName?: string;
     invitedToken?: string | null;
 };
 
@@ -47,11 +46,11 @@ export interface Invite {
     email: string;
     role: Role;
     token: string;
-    expiresAt: string; 
+    expiresAt: string;
 }
 
 export interface AuthError {
     message?: string;
     needsVerification?: boolean;
     userId?: string;
-};
+}

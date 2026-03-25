@@ -32,7 +32,7 @@ services:
       FRONTEND_ORIGIN: http://localhost:5173
       JWT_ACCESS_SECRET: dev-access
       JWT_REFRESH_SECRET: dev-refresh
-      ACCESS_TTL: 15m
+      ACCESS_TTL: 8h
       REFRESH_TTL: 7d
       COOKIE_DOMAIN: localhost
       RESEND_API_KEY: ${RESEND_API_KEY:-}

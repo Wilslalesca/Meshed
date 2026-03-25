@@ -3,22 +3,27 @@ import { Button } from "@/shared/components//ui/button";
 import { useAuth } from "@/shared/hooks/useAuth";
 import { Input } from "@/shared/components//ui/input";
 import { Label } from "@/shared/components//ui/label";
-import { useNavigate } from "react-router-dom";
 import { apiAddCourseAndAthleteCourse } from "@/features/add-edit-courses/api/addcourse";
 import { formatTimeTo12Hour } from "../utils/formatTime";
+import { Tabs, TabsList, TabsTrigger } from "@/shared/components/ui/tabs";
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuLabel,
-    DropdownMenuRadioGroup,
-    DropdownMenuRadioItem,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from "@/shared/components//ui/dropdown-menu";
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogDescription,
+} from "@/shared/components/ui/dialog";
 import { toast } from "sonner";
 
-export function AddCourseForm() {
-    const navigate = useNavigate();
+export const AddCourseModal = ({
+    open,
+    onOpenChange,
+    onAdded,
+}: {
+    open: boolean;
+    onOpenChange: (open: boolean) => void;
+    onAdded: () => void;
+}) => {
     const { user } = useAuth();
     const [eventName, setEventName] = useState("");
     const [location, setLocation] = useState("");
@@ -26,7 +31,7 @@ export function AddCourseForm() {
     const [endTime, setEndTime] = useState("11:20:00");
     const [startDate, setStartDate] = useState("");
     const [endDate, setEndDate] = useState("");
-    const [reoccurring, setReoccurring] = useState("");
+    const [reoccurring, setReoccurring] = useState("No");
     const weekdays = [
         "Monday",
         "Tuesday",
@@ -109,20 +114,20 @@ export function AddCourseForm() {
             console.error("Error submitting course:", err);
             toast.error("An unexpected error occurred");
         }
-        setTimeout(() => navigate("/myschedule"), 200);
+        onAdded()
+        onOpenChange(false)
     }
 
     return (
-        <form className="bg-white min-h-screen flex">
-            <div className="w-full">
-                <div>
-                    <h1 className="text-2xl font-bold">Add an Event</h1>
-                    <p className="text-muted-foreground text-sm text-balance">
+        <Dialog open={open} onOpenChange={onOpenChange}>
+            <DialogContent className="max-w-md max-h-150 overflow-y-auto">
+                <DialogHeader>
+                    <DialogTitle>Add an Event</DialogTitle>
+                    <DialogDescription>
                         Add an event to your schedule, like a course or a
                         doctor's appointment.
-                    </p>
-                </div>
-                <div className="flex-col items-center">
+                    </DialogDescription>
+                </DialogHeader>
                     <div className="grid w-full items-center gap-3 py-2">
                         <Label htmlFor="event">Event/Course Name</Label>
                         <Input
@@ -173,29 +178,21 @@ export function AddCourseForm() {
                         <Label htmlFor="reoccurring">
                             Is the event recurring?
                         </Label>
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <Button variant="outline">{reoccurring}</Button>
-                            </DropdownMenuTrigger>
-
-                            <DropdownMenuContent className="w-40">
-                                <DropdownMenuLabel>
-                                    Will the event reoccurr?
-                                </DropdownMenuLabel>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuRadioGroup
-                                    value={reoccurring}
-                                    onValueChange={setReoccurring}
-                                >
-                                    <DropdownMenuRadioItem value="Yes">
-                                        Yes
-                                    </DropdownMenuRadioItem>
-                                    <DropdownMenuRadioItem value="No">
-                                        No
-                                    </DropdownMenuRadioItem>
-                                </DropdownMenuRadioGroup>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
+                        <Tabs
+                            value={reoccurring}
+                            onValueChange={setReoccurring}
+                            className="w-full"
+                            defaultValue="No"
+                        >
+                            <TabsList className="grid w-full grid-cols-2">
+                                <TabsTrigger className="w-full" value="Yes">
+                                    Yes
+                                </TabsTrigger>
+                                <TabsTrigger className="w-full" value="No">
+                                    No
+                                </TabsTrigger>
+                            </TabsList>
+                        </Tabs>
                     </div>
 
                     {reoccurring === "Yes" && (
@@ -256,8 +253,7 @@ export function AddCourseForm() {
                             Submit
                         </Button>
                     </div>
-                </div>
-            </div>
-        </form>
+                </DialogContent>
+        </Dialog>
     );
 }
