@@ -2,8 +2,9 @@ import { describe, expect, test, vi } from 'vitest';
 import { EventController } from '../src/controllers/EventController';
 import { EventModel } from '../src/models/EventModel';
 import { makeHttp } from './utils/http';
-import { mockDbEvent, mockFormattedEvent } from './utils/fixtures';
+import { mockDbEvent, mockFormattedEvent, mockUser } from './utils/fixtures';
 import { EventEmailService } from "../src/services/eventEmailService";
+import { attachUser } from "../tests/utils/auth"
 
 vi.mock('@/models/EventModel');
 vi.mock('@/services/eventEmailService');
@@ -11,14 +12,14 @@ vi.mock('@/services/eventEmailService');
 //The purpose of this testing file is to test all EventController functions
 
 //getAllEvents
-//test?
 describe('EventController.getAllEvents', () => {
   test('should return formatted events', async () => {
     vi.clearAllMocks();
     const { req, res } = makeHttp();
+    const authReq = attachUser(req, mockUser)
 
     vi.mocked(EventModel.getAll).mockResolvedValue([mockDbEvent]);
-    await EventController.getAllEvents(req, res);
+    await EventController.getAllEvents(authReq, res);
 
     expect(EventModel.getAll).toHaveBeenCalledTimes(1);
     expect(res.json).toHaveBeenCalledWith([mockFormattedEvent]);

@@ -1,3 +1,5 @@
+import type { Role } from "../../src/types/index";
+
 export const mockDbEvent = {
     id: '1',
     team_id: 'team-1',
@@ -43,7 +45,7 @@ export const mockUser = {
     email: 'test@example.com',
     role: 'admin',
     organizationId: 'org-1',
-    organizationRole: 'admin',
+    organizationRole: 'admin' as Role,
     verified: true,
 };
 
