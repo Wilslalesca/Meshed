@@ -38,14 +38,14 @@ export class EventEmailService {
         );
     }
 
-    static async sendBookingStatusUpdateEmail(eventId: string) {
-        const event = await EventModel.getById(eventId);
+    static async sendBookingStatusUpdateEmail(eventId: string, orgId:string) {
+        const event = await EventModel.getById(eventId, orgId);
         if (!event || !event.requested_by_email || !event.team_facility_id || !event.status) return;
 
         const normStatus = String(event.status).toUpperCase();
         if (normStatus !== "APPROVED" && normStatus !== "DENIED") return;
 
-        const facility = await FacilityModel.findById(event.team_facility_id);
+        const facility = await FacilityModel.findById(event.team_facility_id, orgId);
         const facilityName = facility ? facility.name : "Facility";
 
         const emailType = normStatus === "APPROVED" ? "booking_approval" : "booking_denial";

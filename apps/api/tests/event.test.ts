@@ -30,50 +30,50 @@ describe('EventController.getAllEvents', () => {
 describe('EventController.updateEventStatus', () => {
   test('should update status to approved', async () => {
     vi.clearAllMocks();
-    const { req, res } = makeHttp();
+    const { req, res } = makeHttp()
     const authReq = attachUser(req, mockUser)
-    authReq.params = { id: 'event-1', status: 'approved' };
-    authReq.body = { comments: 'LGTM' };
+    authReq.params = { id: 'event-1', status: 'approved' }
+    authReq.body = { comments: 'LGTM' }
 
-    vi.mocked(EventModel.updateStatus).mockResolvedValue(true);
-    vi.mocked(EventEmailService.sendBookingStatusUpdateEmail).mockResolvedValue(undefined);
+    vi.mocked(EventModel.updateStatus).mockResolvedValue(true)
+    vi.mocked(EventEmailService.sendBookingStatusUpdateEmail).mockResolvedValue(undefined)
     
-    await EventController.updateEventStatus(authReq, res);
+    await EventController.updateEventStatus(authReq, res)
 
-    expect(EventModel.updateStatus).toHaveBeenCalledWith('event-1', 'approved', 'LGTM');
-    expect(EventEmailService.sendBookingStatusUpdateEmail).toHaveBeenCalledWith('event-1');
-    expect(res.json).toHaveBeenCalledWith({ success: true });
+    expect(EventModel.updateStatus).toHaveBeenCalledWith('event-1', 'approved', 'LGTM')
+    expect(EventEmailService.sendBookingStatusUpdateEmail).toHaveBeenCalledWith('event-1', mockUser.organizationId)
+    expect(res.json).toHaveBeenCalledWith({ success: true })
   });
 
   test('should update status to denied', async () => {
-    vi.clearAllMocks();
-    const { req, res } = makeHttp();
+    vi.clearAllMocks()
+    const { req, res } = makeHttp()
     const authReq = attachUser(req, mockUser)
-    authReq.params = { id: 'event-2', status: 'denied' };
-    authReq.body = { comments: 'Please fix' };
+    authReq.params = { id: 'event-2', status: 'denied' }
+    authReq.body = { comments: 'Please fix' }
 
-    vi.mocked(EventModel.updateStatus).mockResolvedValue(true);
-    //vi.mocked(EventEmailService.sendBookingStatusUpdateEmail).mockResolvedValue(undefined);
+    vi.mocked(EventModel.updateStatus).mockResolvedValue(true)
+    vi.mocked(EventEmailService.sendBookingStatusUpdateEmail).mockResolvedValue(undefined)
     
-    await EventController.updateEventStatus(authReq, res);
+    await EventController.updateEventStatus(authReq, res)
 
-    expect(EventModel.updateStatus).toHaveBeenCalledWith('event-2', 'denied', 'Please fix');
-    //expect(EventEmailService.sendBookingStatusUpdateEmail).toHaveBeenCalledWith('event-2');
-    expect(res.json).toHaveBeenCalledWith({ success: true });
+    expect(EventModel.updateStatus).toHaveBeenCalledWith('event-2', 'denied', 'Please fix')
+    expect(EventEmailService.sendBookingStatusUpdateEmail).toHaveBeenCalledWith('event-2', mockUser.organizationId)
+    expect(res.json).toHaveBeenCalledWith({ success: true })
   });
 
   test('should fail because no status', async () => {
-    vi.clearAllMocks();
-    const { req, res } = makeHttp();
+    vi.clearAllMocks()
+    const { req, res } = makeHttp()
     const authReq = attachUser(req, mockUser)
-    authReq.params = { id: 'event-3' };
-    authReq.body = { comments: 'Please fix' };
+    authReq.params = { id: 'event-3' }
+    authReq.body = { comments: 'Please fix' }
     
-    await EventController.updateEventStatus(authReq, res);
+    await EventController.updateEventStatus(authReq, res)
 
-    expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.json).toHaveBeenCalledWith({ error: "Status is required" });
-    expect(EventModel.updateStatus).not.toHaveBeenCalled();
+    expect(res.status).toHaveBeenCalledWith(400)
+    expect(res.json).toHaveBeenCalledWith({ error: "Status is required" })
+    expect(EventModel.updateStatus).not.toHaveBeenCalled()
   });
 });
 
