@@ -117,7 +117,7 @@ export class EventController {
         const updated = await EventModel.updateStatus(id, status, comments, req.user.organizationId);
         if (!updated) return res.status(404).json({ error: "Event not found" });
 
-        await EventEmailService.sendBookingStatusUpdateEmail(id);
+        await EventEmailService.sendBookingStatusUpdateEmail(id, req.user.organizationId);
         return res.json({ success: true });
     }
 
