@@ -22,8 +22,9 @@ describe('FacilityController.list', () => {
   });
 });
 
+//Add a facility
 describe('FacilityController.create', () => {
-  test('should return formatted facilities', async () => {
+  test('should add a facility', async () => {
     vi.clearAllMocks()
     const { req, res } = makeHttp()
     const authReq = attachUser(req, mockUser)
@@ -34,5 +35,17 @@ describe('FacilityController.create', () => {
 
     expect(FacilityModel.create).toHaveBeenCalledTimes(1)
     expect(res.json).toHaveBeenCalledWith(mockFacility)
+  });
+
+  test('should return unauthorized', async () => {
+    vi.clearAllMocks()
+    const { req, res } = makeHttp()
+    req.body = {name:"Currie Centre"}
+
+    vi.mocked(FacilityModel.create).mockResolvedValue(mockFacility)
+    await FacilityController.create(req, res)
+
+    expect(FacilityModel.create).toHaveBeenCalledTimes(0)
+    expect(res.status).toHaveBeenCalledWith(401)
   });
 });
