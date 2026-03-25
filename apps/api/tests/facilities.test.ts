@@ -8,7 +8,7 @@ import { makeAuthedRequest } from "./utils/auth"
 vi.mock('@/models/FacilityModel');
 
 //getAllFacilities
-describe('EventController.getAllEvents', () => {
+describe('FacilityController.list', () => {
   test('should return formatted facilities', async () => {
     vi.clearAllMocks();
     const { req, res } = makeHttp();
