@@ -27,6 +27,7 @@ describe('FacilityController.create', () => {
     vi.clearAllMocks()
     const { req, res } = makeHttp()
     const authReq = attachUser(req, mockUser)
+    authReq.body = {name:"Currie Centre"}
 
     vi.mocked(FacilityModel.create).mockResolvedValue(mockFacility)
     await FacilityController.create(authReq, res)
