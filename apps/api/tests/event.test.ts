@@ -40,7 +40,7 @@ describe('EventController.updateEventStatus', () => {
     
     await EventController.updateEventStatus(authReq, res)
 
-    expect(EventModel.updateStatus).toHaveBeenCalledWith('event-1', 'approved', 'LGTM')
+    expect(EventModel.updateStatus).toHaveBeenCalledWith('event-1', 'approved', 'LGTM', mockUser.organizationId)
     expect(EventEmailService.sendBookingStatusUpdateEmail).toHaveBeenCalledWith('event-1', mockUser.organizationId)
     expect(res.json).toHaveBeenCalledWith({ success: true })
   });
@@ -57,7 +57,7 @@ describe('EventController.updateEventStatus', () => {
     
     await EventController.updateEventStatus(authReq, res)
 
-    expect(EventModel.updateStatus).toHaveBeenCalledWith('event-2', 'denied', 'Please fix')
+    expect(EventModel.updateStatus).toHaveBeenCalledWith('event-2', 'denied', 'Please fix', mockUser.organizationId)
     expect(EventEmailService.sendBookingStatusUpdateEmail).toHaveBeenCalledWith('event-2', mockUser.organizationId)
     expect(res.json).toHaveBeenCalledWith({ success: true })
   });
