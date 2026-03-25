@@ -46,7 +46,7 @@ describe('EventController.updateEventStatus', () => {
     
     await EventController.updateEventStatus(req, res);
 
-    expect(EventModel.updateStatus).toHaveBeenCalledWith('event-1', 'denied', 'Please fix');
+    expect(EventModel.updateStatus).toHaveBeenCalledWith('event-2', 'denied', 'Please fix');
     //expect(EventEmailService.sendBookingStatusUpdateEmail).toHaveBeenCalledWith('event-2');
     expect(res.json).toHaveBeenCalledWith({ success: true });
   });
