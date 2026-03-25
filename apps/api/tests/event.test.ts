@@ -17,5 +17,19 @@ describe('EventController.getAllEvents', () => {
     expect(EventModel.getAll).toHaveBeenCalledTimes(1);
     expect(res.json).toHaveBeenCalledWith([mockFormattedEvent]);
   });
+
+  test('change event status', async () => {
+    const success_json = {
+      success : true
+    };
+
+    const { req, res } = makeHttp();
+
+    vi.mocked(EventModel.updateStatus).mockResolvedValue(true);
+    await EventController.updateEventStatus(req, res);
+
+    expect(EventModel.updateStatus).toHaveBeenCalledTimes(1);
+    expect(res.json).toHaveBeenCalledWith(success_json);
+  });
 });
 
