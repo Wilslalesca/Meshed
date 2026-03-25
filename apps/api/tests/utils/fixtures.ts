@@ -51,3 +51,16 @@ export const mockOrganization = {
     id: 'org-1',
     name: 'Meshed Org',
 };
+
+export const mockFacility = {
+  name: 'facility-1',
+  address1: '12 Windsor St',
+  address2: null,
+  city: 'Fredericton',
+  province_state: 'NB',
+  postal_code: 'E3B7G4',
+  country: 'Canada',
+  email: 'unitematchalign@gmail.com',
+  phone: null,
+  notes: null
+};

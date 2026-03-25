@@ -8,7 +8,8 @@ import { EventEmailService } from "../src/services/eventEmailService";
 vi.mock('@/models/EventModel');
 vi.mock('@/services/eventEmailService');
 
-//Test all event controller functions
+//The purpose of this testing file is to test all EventController functions
+
 //getAllEvents
 describe('EventController.getAllEvents', () => {
   test('should return formatted events', async () => {
@@ -60,7 +61,7 @@ describe('EventController.updateEventStatus', () => {
   test('should fail because no status', async () => {
     vi.clearAllMocks();
     const { req, res } = makeHttp();
-    req.params = { id: 'event-3' }; // status is undefined
+    req.params = { id: 'event-3' };
     req.body = { comments: 'Please fix' };
     
     await EventController.updateEventStatus(req, res);
