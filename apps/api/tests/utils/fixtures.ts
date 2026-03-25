@@ -66,3 +66,20 @@ export const mockFacility = {
   phone: null,
   notes: null
 };
+
+export const mockCourseTime = {
+    id : 'course-1',
+    user_id: 'user-1',
+    name: 'MATH1503',
+    course_code: 'MATH1503',
+    location: 'GD102',
+    day_of_week: 'Monday',
+    start_time: '8:00AM',
+    end_time: '10:00AM',
+    term: 'WINTER',
+    start_date: '2026-03-25',
+    end_date: '2026-04-25',
+    recurring:true,
+    created_at: '2026-03-25',
+    updated_at: '2026-03-25',
+}
