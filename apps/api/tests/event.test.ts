@@ -23,7 +23,7 @@ describe('EventController.getAllEvents', () => {
   });
 });
 
-//updateEventStatus, both approved + denied
+//updateEventStatus, both approved + denied and missing status
 describe('EventController.updateEventStatus', () => {
   test('should update status to approved', async () => {
     vi.clearAllMocks();
@@ -57,18 +57,17 @@ describe('EventController.updateEventStatus', () => {
     expect(res.json).toHaveBeenCalledWith({ success: true });
   });
 
-  test('should fail', async () => {
+  test('should fail because no status', async () => {
     vi.clearAllMocks();
     const { req, res } = makeHttp();
-    req.params = { id: 'event-3' };
+    req.params = { id: 'event-3' }; // status is undefined
     req.body = { comments: 'Please fix' };
-
-    vi.mocked(EventModel.updateStatus).mockResolvedValue(false);
     
     await EventController.updateEventStatus(req, res);
 
-    expect(EventModel.updateStatus).toHaveBeenCalledWith('event-3','Please fix');
-    expect(res.json).toHaveBeenCalledWith({ success: false });
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith({ error: "Status is required" });
+    expect(EventModel.updateStatus).not.toHaveBeenCalled();
   });
 });
 
