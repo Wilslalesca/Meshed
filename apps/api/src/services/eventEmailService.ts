@@ -12,12 +12,12 @@ function formatDate(date: Date | string | null) {
 
 export class EventEmailService {
 
-    static async sendBookingConfirmationEmail(eventId: string) {
-        const event = await EventModel.getById(eventId);
+    static async sendBookingConfirmationEmail(eventId: string, orgId:string) {
+        const event = await EventModel.getById(eventId, orgId);
         if (!event) return;
         if (!event.team_facility_id) return;
 
-        const facility = await FacilityModel.findById(event.team_facility_id);
+        const facility = await FacilityModel.findById(event.team_facility_id, orgId);
         if (!facility) return;
         if (!facility.email) return;
 
