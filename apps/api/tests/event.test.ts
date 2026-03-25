@@ -12,6 +12,7 @@ vi.mock('@/services/eventEmailService');
 //getAllEvents
 describe('EventController.getAllEvents', () => {
   test('should return formatted events', async () => {
+    vi.clearAllMocks();
     const { req, res } = makeHttp();
 
     vi.mocked(EventModel.getAll).mockResolvedValue([mockDbEvent]);
@@ -25,6 +26,7 @@ describe('EventController.getAllEvents', () => {
 //updateEventStatus, both approved + denied
 describe('EventController.updateEventStatus', () => {
   test('should update status to approved', async () => {
+    vi.clearAllMocks();
     const { req, res } = makeHttp();
     req.params = { id: 'event-1', status: 'approved' };
     req.body = { comments: 'LGTM' };
@@ -40,6 +42,7 @@ describe('EventController.updateEventStatus', () => {
   });
 
   test('should update status to denied', async () => {
+    vi.clearAllMocks();
     const { req, res } = makeHttp();
     req.params = { id: 'event-2', status: 'denied' };
     req.body = { comments: 'Please fix' };
@@ -55,15 +58,16 @@ describe('EventController.updateEventStatus', () => {
   });
 
   test('should fail', async () => {
+    vi.clearAllMocks();
     const { req, res } = makeHttp();
-    req.params = { id: 'event-2' };
+    req.params = { id: 'event-3' };
     req.body = { comments: 'Please fix' };
 
     vi.mocked(EventModel.updateStatus).mockResolvedValue(false);
     
     await EventController.updateEventStatus(req, res);
 
-    expect(EventModel.updateStatus).toHaveBeenCalledWith('event-2','Please fix');
+    expect(EventModel.updateStatus).toHaveBeenCalledWith('event-3','Please fix');
     expect(res.json).toHaveBeenCalledWith({ success: false });
   });
 });
