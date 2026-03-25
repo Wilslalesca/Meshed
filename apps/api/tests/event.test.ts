@@ -29,7 +29,7 @@ describe('EventController.getAllEvents', () => {
 //updateEventStatus, both approved + denied and missing status
 describe('EventController.updateEventStatus', () => {
   test('should update status to approved', async () => {
-    vi.clearAllMocks();
+    vi.clearAllMocks()
     const { req, res } = makeHttp()
     const authReq = attachUser(req, mockUser)
     authReq.params = { id: 'event-1', status: 'approved' }
@@ -41,7 +41,7 @@ describe('EventController.updateEventStatus', () => {
     await EventController.updateEventStatus(authReq, res)
 
     expect(EventModel.updateStatus).toHaveBeenCalledWith('event-1', 'approved', 'LGTM', mockUser.organizationId)
-    expect(EventEmailService.sendBookingStatusUpdateEmail).toHaveBeenCalledWith('event-1')
+    expect(EventEmailService.sendBookingStatusUpdateEmail).toHaveBeenCalledWith('event-1', mockUser.organizationId)
     expect(res.json).toHaveBeenCalledWith({ success: true })
   });
 
@@ -58,7 +58,7 @@ describe('EventController.updateEventStatus', () => {
     await EventController.updateEventStatus(authReq, res)
 
     expect(EventModel.updateStatus).toHaveBeenCalledWith('event-2', 'denied', 'Please fix', mockUser.organizationId)
-    expect(EventEmailService.sendBookingStatusUpdateEmail).toHaveBeenCalledWith('event-2')
+    expect(EventEmailService.sendBookingStatusUpdateEmail).toHaveBeenCalledWith('event-2', mockUser.organizationId)
     expect(res.json).toHaveBeenCalledWith({ success: true })
   });
 
