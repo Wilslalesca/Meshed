@@ -35,5 +35,20 @@ describe('EventController.updateEventStatus', () => {
     expect(EventEmailService.sendBookingStatusUpdateEmail).toHaveBeenCalledWith('event-1');
     expect(res.json).toHaveBeenCalledWith({ success: true });
   });
+
+  test('should update status to denied', async () => {
+    const { req, res } = makeHttp();
+    req.params = { id: 'event-2', status: 'denied' };
+    req.body = { comments: 'Please fix' };
+
+    vi.mocked(EventModel.updateStatus).mockResolvedValue(true);
+    //vi.mocked(EventEmailService.sendBookingStatusUpdateEmail).mockResolvedValue(undefined);
+    
+    await EventController.updateEventStatus(req, res);
+
+    expect(EventModel.updateStatus).toHaveBeenCalledWith('event-1', 'denied', 'Please fix');
+    //expect(EventEmailService.sendBookingStatusUpdateEmail).toHaveBeenCalledWith('event-2');
+    expect(res.json).toHaveBeenCalledWith({ success: true });
+  });
 });
 
