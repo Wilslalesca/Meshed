@@ -41,7 +41,7 @@ describe('EventController.updateEventStatus', () => {
     await EventController.updateEventStatus(authReq, res)
 
     expect(EventModel.updateStatus).toHaveBeenCalledWith('event-1', 'approved', 'LGTM', mockUser.organizationId)
-    expect(EventEmailService.sendBookingStatusUpdateEmail).toHaveBeenCalledWith('event-1', mockUser.organizationId)
+    expect(EventEmailService.sendBookingStatusUpdateEmail).toHaveBeenCalledWith('event-1')
     expect(res.json).toHaveBeenCalledWith({ success: true })
   });
 
