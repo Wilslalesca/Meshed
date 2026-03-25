@@ -8,7 +8,8 @@ import { EventEmailService } from "../src/services/eventEmailService";
 vi.mock('@/models/EventModel');
 vi.mock('@/services/eventEmailService');
 
-
+//Test all event controller functions
+//getAllEvents
 describe('EventController.getAllEvents', () => {
   test('should return formatted events', async () => {
     const { req, res } = makeHttp();
@@ -21,6 +22,7 @@ describe('EventController.getAllEvents', () => {
   });
 });
 
+//updateEventStatus, both approved + denied
 describe('EventController.updateEventStatus', () => {
   test('should update status to approved', async () => {
     const { req, res } = makeHttp();
@@ -50,6 +52,19 @@ describe('EventController.updateEventStatus', () => {
     expect(EventModel.updateStatus).toHaveBeenCalledWith('event-2', 'denied', 'Please fix');
     expect(EventEmailService.sendBookingStatusUpdateEmail).toHaveBeenCalledWith('event-2');
     expect(res.json).toHaveBeenCalledWith({ success: true });
+  });
+
+  test('should fail', async () => {
+    const { req, res } = makeHttp();
+    req.params = { id: 'event-2' };
+    req.body = { comments: 'Please fix' };
+
+    vi.mocked(EventModel.updateStatus).mockResolvedValue(false);
+    
+    await EventController.updateEventStatus(req, res);
+
+    expect(EventModel.updateStatus).toHaveBeenCalledWith('event-2','Please fix');
+    expect(res.json).toHaveBeenCalledWith({ success: false });
   });
 });
 
