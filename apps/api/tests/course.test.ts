@@ -10,6 +10,7 @@ describe('CourseController.createCourse', () => {
   test('should return formatted facilities', async () => {
     vi.clearAllMocks()
     const { req, res } = makeHttp()
+    req.body = mockCourseTime
 
     vi.mocked(CourseModel.insertCourse).mockResolvedValue(mockCourseTime)
     await CourseController.createCourse(req, res)
