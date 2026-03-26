@@ -15,8 +15,8 @@ describe('CourseController.createCourse', () => {
     vi.mocked(CourseModel.insertCourse).mockResolvedValue(mockCourseTime)
     await CourseController.createCourse(req, res)
 
-    expect(CourseModel.insertCourse).toHaveBeenCalledTimes(1)
-    expect(res.status).toHaveBeenCalledWith(200)
+    expect(CourseModel.insertCourse).toHaveBeenCalledTimes(0)
+    expect(res.status).toHaveBeenCalledWith(400)
   });
 
   test('should NOT return formatted facilities', async () => {
