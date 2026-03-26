@@ -99,3 +99,11 @@ export const mockCourseTimeInput = {
     created_at: '2026-03-25T00:00:00Z',
     updated_at: '2026-03-25T00:00:00Z',
 }
+
+export const mockTeam = {
+    name: 'Team1',
+    sport_id: '550e8400-e29b-41d4-a716-446655440000',
+    season: '2026',
+    league_id: 'AUS',
+    gender:'CoEd'
+}
