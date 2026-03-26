@@ -50,10 +50,10 @@ export const mockUser = {
 };
 
 export const mockManager = {
-    id: '550e8400-e29b-41d4-a716-446655440000',
+    id: 'user-1',
     email: 'test@example.com',
     role: 'manager',
-    organizationId: '550e8400-e29b-41d4-a716-446655440000',
+    organizationId: 'org-1',
     organizationRole: 'manager' as Role,
     verified: true,
 };
