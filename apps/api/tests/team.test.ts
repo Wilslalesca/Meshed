@@ -20,3 +20,26 @@ describe('TeamController.getMyTeams', () => {
 
   });
 });
+
+describe('TeamController.createTeam', () => {
+    test('should create a team', async () => {
+        const { req, res } = makeHttp()
+        const authReq = attachUser(req, mockUser)
+        authReq.body = mockTeam
+
+        vi.mocked(TeamModel.createTeam).mockResolvedValue([mockTeam])
+        await TeamController.createTeam(authReq, res)
+    
+        expect(TeamModel.createTeam).toHaveBeenCalledTimes(1)
+        expect(res.status).toHaveBeenCalledWith(201)
+  });
+  test('should NOT create a team', async () => {
+        const { req, res } = makeHttp()
+
+        vi.mocked(TeamModel.createTeam).mockResolvedValue([mockTeam])
+        await TeamController.createTeam(req, res)
+    
+        expect(TeamModel.createTeam).toHaveBeenCalledTimes(0)
+        expect(res.status).toHaveBeenCalledWith(500)
+  });
+});
