@@ -1,6 +1,7 @@
 import { describe, expect, test, vi } from 'vitest';
 import { TeamController } from '../src/controllers/TeamController';
 import { TeamModel } from '../src/models/TeamModel';
+import { TeamStaffModel } from '../src/models/TeamStaffModel'
 import { makeHttp } from './utils/http';
 import { mockUser, mockManager, mockTeam } from './utils/fixtures';
 import { attachUser } from "./utils/auth"
@@ -33,7 +34,8 @@ describe('TeamController.createTeam', () => {
             gender: mockTeam.gender
         }
 
-        vi.mocked(TeamModel.createTeam).mockResolvedValue([mockTeam])
+        vi.mocked(TeamModel.createTeam).mockResolvedValue(mockTeam)
+        vi.mocked(TeamStaffModel.addStaff).mockResolvedValue(undefined)
         await TeamController.createTeam(authReq, res)
     
         expect(TeamModel.createTeam).toHaveBeenCalledTimes(1)
