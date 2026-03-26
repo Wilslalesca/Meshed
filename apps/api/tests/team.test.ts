@@ -25,7 +25,13 @@ describe('TeamController.createTeam', () => {
     test('should create a team', async () => {
         const { req, res } = makeHttp()
         const authReq = attachUser(req, mockUser)
-        authReq.body = mockTeam
+        authReq.body = {
+            name: mockTeam.name,
+            sport_id: mockTeam.sport_id,
+            season: mockTeam.season,
+            league_id: mockTeam.league_id,
+            gender: mockTeam.gender
+        }
 
         vi.mocked(TeamModel.createTeam).mockResolvedValue([mockTeam])
         await TeamController.createTeam(authReq, res)
@@ -33,6 +39,7 @@ describe('TeamController.createTeam', () => {
         expect(TeamModel.createTeam).toHaveBeenCalledTimes(1)
         expect(res.status).toHaveBeenCalledWith(201)
   });
+
   test('should NOT create a team', async () => {
         const { req, res } = makeHttp()
 
@@ -40,6 +47,6 @@ describe('TeamController.createTeam', () => {
         await TeamController.createTeam(req, res)
     
         expect(TeamModel.createTeam).toHaveBeenCalledTimes(0)
-        expect(res.status).toHaveBeenCalledWith(500)
+        expect(res.status).toHaveBeenCalledWith(401)
   });
 });
