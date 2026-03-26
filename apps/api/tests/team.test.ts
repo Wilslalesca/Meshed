@@ -7,6 +7,7 @@ import { mockUser, mockManager, mockTeam } from './utils/fixtures';
 import { attachUser } from "./utils/auth"
 
 vi.mock('@/models/TeamModel')
+vi.mock('@/models/TeamStaffModel')
 
 describe('TeamController.getMyTeams', () => {
     test('should return formatted team(s)', async () => {
