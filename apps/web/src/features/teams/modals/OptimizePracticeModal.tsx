@@ -170,7 +170,7 @@ export const OptimizePracticeModal = ({ open, onOpenChange, teamId, onOptimizati
                         </DropdownMenuTrigger>
                         <DropdownMenuContent className="w-56">
                             <DropdownMenuLabel>
-                                Which Optimization Algorithm?
+                                How should we optimize your schedule?
                             </DropdownMenuLabel>
                             <DropdownMenuSeparator />
                             <DropdownMenuRadioGroup
@@ -178,11 +178,10 @@ export const OptimizePracticeModal = ({ open, onOpenChange, teamId, onOptimizati
                                 onValueChange={setOptimizationType}
                             >
                                 <DropdownMenuRadioItem value="The highest attendance at each practice">
-                                    The highest attendance at each practice
+                                    Maximize attendance at each practice
                                 </DropdownMenuRadioItem>
                                 <DropdownMenuRadioItem value="Minimizing the amount of practices each athlete misses">
-                                    Minimizing the amount of practices each
-                                    athlete misses
+                                    Minimize missed practices per athlete
                                 </DropdownMenuRadioItem>
                             </DropdownMenuRadioGroup>
                         </DropdownMenuContent>
