@@ -156,12 +156,13 @@ export const OptimizePracticeModal = ({ open, onOpenChange, teamId, onOptimizati
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
-                    <DialogTitle>Optimize Practice Schedule</DialogTitle>
+                    <DialogTitle>Generate Optimized Schedule</DialogTitle>
                 </DialogHeader>
 
                 {/* Optimization Type */}
                 <div className="grid gap-3 py-2">
                     <Label>I would like my practices to prioritise:</Label>
+                    <Label></Label>
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <Button variant="outline">
@@ -235,12 +236,12 @@ export const OptimizePracticeModal = ({ open, onOpenChange, teamId, onOptimizati
                                     <DropdownMenuRadioItem
                                         value={PRACTICE_OPTIONS.SPECIFIC_TIMES}
                                     >
-                                        Select specific practice time options
+                                        Select from available time slots
                                     </DropdownMenuRadioItem>
                                     <DropdownMenuRadioItem
                                         value={PRACTICE_OPTIONS.INTERVAL}
                                     >
-                                        Generate options from a time interval
+                                        Generate options within a time range
                                     </DropdownMenuRadioItem>
                                 </DropdownMenuRadioGroup>
                             </DropdownMenuContent>
