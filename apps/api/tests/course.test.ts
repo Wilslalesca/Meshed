@@ -44,3 +44,17 @@ describe('CourseController.updateCourse', () => {
     expect(res.status).toHaveBeenCalledWith(200)
   });
 });
+
+describe('CourseController.deleteCourse', () => {
+  test('should delete course', async () => {
+    vi.clearAllMocks()
+    const { req, res } = makeHttp()
+    req.params = {classId:mockCourseTime.id}
+
+    vi.mocked(CourseModel.deleteCourseByID).mockResolvedValue(mockCourseTime)
+    await CourseController.deleteCourse(req, res)
+
+    expect(CourseModel.deleteCourseByID).toHaveBeenCalledTimes(1)
+    expect(res.status).toHaveBeenCalledWith(200)
+  });
+});
