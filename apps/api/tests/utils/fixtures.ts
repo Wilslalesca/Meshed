@@ -69,7 +69,7 @@ export const mockFacility = {
 
 export const mockCourseTime = {
     id : 'course-1',
-    user_id: 'user-1',
+    user_id: '550e8400-e29b-41d4-a716-446655440000',
     name: 'MATH1503',
     course_code: 'MATH1503',
     location: 'GD102',
@@ -80,13 +80,12 @@ export const mockCourseTime = {
     start_date: '2026-03-25',
     end_date: '2026-04-25',
     recurring:true,
-    created_at: '2026-03-25',
-    updated_at: '2026-03-25',
+    created_at: '2026-03-25T00:00:00Z',
+    updated_at: '2026-03-25T00:00:00Z',
 }
 
 export const mockCourseTimeInput = {
-    //id : 'course-1',
-    user_id: 'user-1',
+    user_id: '550e8400-e29b-41d4-a716-446655440000',
     name: 'MATH1503',
     course_code: 'MATH1503',
     location: 'GD102',
@@ -97,6 +96,6 @@ export const mockCourseTimeInput = {
     start_date: '2026-03-25',
     end_date: '2026-04-25',
     recurring:true,
-    created_at: '2026-03-25',
-    updated_at: '2026-03-25',
+    created_at: '2026-03-25T00:00:00Z',
+    updated_at: '2026-03-25T00:00:00Z',
 }
