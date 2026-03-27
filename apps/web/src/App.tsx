@@ -7,7 +7,6 @@ import { Dashboard } from "./routes/dashboard";
 import { Profile } from "./screens/Profile";
 import { Facilities } from "./screens/Facilities.tsx";
 import { OptimizePage } from "./screens/OptimizePage.tsx";
-import { Upload } from "./features/upload/components/Upload.tsx";
 import { useAuth } from "./shared/hooks/useAuth";
 import ScheduleBackground from './screens/ScheduleBackground';
 import { Layout } from "./shared/components/layout/Layout.tsx";
@@ -62,7 +61,6 @@ export default function App() {
         <Route path="/teams/:teamId" element={<ProtectedRoute><TeamDetailsPage /></ProtectedRoute>} />
         <Route path="/athletes/:athleteId" element={<ProtectedRoute><AthleteDetailsPage /></ProtectedRoute>} />
         <Route path="/manager" element={ <ProtectedRoute allowedRoles={["admin", "manager"]}> <ScheduleBackground /> </ProtectedRoute> }/>
-        <Route path="/upload" element={ <ProtectedRoute> <Upload /> </ProtectedRoute> }/>
         <Route path="/facilities" element={ <ProtectedRoute allowedRoles={["admin"]}> <Facilities /> </ProtectedRoute> }/>
         <Route path="/mySchedule" element={ <ProtectedRoute> <AthleteSchedulePage /> </ProtectedRoute> }/>
         <Route path="/profile" element={ <ProtectedRoute> <Profile /> </ProtectedRoute> }/>
