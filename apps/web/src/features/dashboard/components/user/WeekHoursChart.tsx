@@ -1,6 +1,5 @@
 import { Bar, BarChart, CartesianGrid, LabelList, XAxis } from "recharts";
 import type {
-    NameType,
     ValueType,
 } from "recharts/types/component/DefaultTooltipContent";
 import {
@@ -66,8 +65,7 @@ export function WeekHoursChart({ data }: WeekHoursChartProps) {
                                 <ChartTooltipContent
                                     hideLabel
                                     formatter={(
-                                        value: ValueType | undefined,
-                                        _name: NameType | undefined,
+                                        value: ValueType | undefined
                                     ) => {
                                         const numericValue = toNumber(value);
                                         return numericValue === null
