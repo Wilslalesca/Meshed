@@ -49,6 +49,15 @@ export const mockUser = {
     verified: true,
 };
 
+export const mockManager = {
+    id: 'user-1',
+    email: 'test@example.com',
+    role: 'manager',
+    organizationId: 'org-1',
+    organizationRole: 'manager' as Role,
+    verified: true,
+};
+
 export const mockOrganization = {
     id: 'org-1',
     name: 'Meshed Org',
@@ -66,3 +75,77 @@ export const mockFacility = {
   phone: null,
   notes: null
 };
+
+export const mockCourseTime = {
+    id : 'course-1',
+    user_id: '550e8400-e29b-41d4-a716-446655440000',
+    name: 'MATH1503',
+    course_code: 'MATH1503',
+    location: 'GD102',
+    day_of_week: 'Monday',
+    start_time: '8:00AM',
+    end_time: '10:00AM',
+    term: 'WINTER',
+    start_date: '2026-03-25',
+    end_date: '2026-04-25',
+    recurring:true,
+    created_at: '2026-03-25T00:00:00Z',
+    updated_at: '2026-03-25T00:00:00Z',
+}
+
+export const mockCourseTimeInput = {
+    user_id: '550e8400-e29b-41d4-a716-446655440000',
+    name: 'MATH1503',
+    course_code: 'MATH1503',
+    location: 'GD102',
+    day_of_week: 'Monday',
+    start_time: '8:00AM',
+    end_time: '10:00AM',
+    term: 'WINTER',
+    start_date: '2026-03-25',
+    end_date: '2026-04-25',
+    recurring:true,
+    created_at: '2026-03-25T00:00:00Z',
+    updated_at: '2026-03-25T00:00:00Z',
+}
+
+export const mockCourseTimeInput2 = {
+    user_id: '550e8400-e29b-41d4-a716-446655440000',
+    name: 'ENGG1001',
+    course_code: 'ENGG1001',
+    location: 'GD103',
+    day_of_week: 'Tuesday',
+    start_time: '8:00AM',
+    end_time: '10:00AM',
+    term: 'WINTER',
+    start_date: '2026-03-25',
+    end_date: '2026-04-25',
+    recurring:true,
+    created_at: '2026-03-25T00:00:00Z',
+    updated_at: '2026-03-25T00:00:00Z',
+}
+
+export const mockCourseTime2 = {
+    id : 'course-1',
+    user_id: '550e8400-e29b-41d4-a716-446655440000',
+    name: 'ENGG1001',
+    course_code: 'ENGG1001',
+    location: 'GD103',
+    day_of_week: 'Tuesday',
+    start_time: '8:00AM',
+    end_time: '10:00AM',
+    term: 'WINTER',
+    start_date: '2026-03-25',
+    end_date: '2026-04-25',
+    recurring:true,
+    created_at: '2026-03-25T00:00:00Z',
+    updated_at: '2026-03-25T00:00:00Z',
+}
+
+export const mockTeam = {
+    name: 'Team1',
+    sport_id: '550e8400-e29b-41d4-a716-446655440000',
+    season: '2026',
+    league_id: 'AUS',
+    gender:'CoEd'
+}
