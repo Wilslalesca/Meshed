@@ -1,5 +1,6 @@
 import type { DashboardEvent, DashboardNotification } from "../types/dashboard";
 import type {
+    RawFacility,
     RawNotification,
     RawScheduleItem,
     RawTeam,
@@ -31,13 +32,18 @@ export function mapScheduleEvents(
 export function mapTeamEvents(
     team: RawTeam,
     events: RawTeamEvent[],
+    facilities: RawFacility[],
 ): DashboardEvent[] {
     return events.map((item: RawTeamEvent) => {
-        const startDate: string = item.startDate ?? item.start_date ?? "";
-        const startTime: string | null =
-            item.startTime ?? item.start_time ?? null;
-        const endTime: string | null = item.endTime ?? item.end_time ?? null;
+        const startDate = item.startDate ?? item.start_date ?? "";
+        const startTime = item.startTime ?? item.start_time ?? null;
+        const endTime = item.endTime ?? item.end_time ?? null;
 
+        const facilityId = item.teamFacilityId ?? item.team_facility_id ?? null;
+        const facility = facilities.find(
+            (curr: RawFacility) => curr.id === facilityId,
+        );
+       
         return {
             id: `team-${item.id}`,
             title: item.name ?? "Untitled Team Event",
@@ -50,6 +56,7 @@ export function mapTeamEvents(
                 item.location ??
                 item.facility_name ??
                 item.facilityName ??
+                facility?.name ??
                 null,
             status: item.status ?? null,
             source: "team",

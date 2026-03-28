@@ -7,9 +7,9 @@ import type {
 } from "../types/dashboard";
 import type {
     RawNotification,
-    RawScheduleItem,
     RawTeam,
     RawTeamEvent,
+    RawFacility,
 } from "../types/api";
 import {
     mapNotifications,
@@ -122,9 +122,10 @@ export async function getUserDashboardEvents(
     athleteId: string,
     token: string,
 ): Promise<DashboardEvent[]> {
-    const [schedule, teams] = await Promise.all([
-        getAthleteSchedule(athleteId, token) as Promise<RawScheduleItem[]>,
+    const [schedule, teams, facilities] = await Promise.all([
+        getAthleteSchedule(athleteId, token),
         getMyTeams(token),
+        getFacilities(token),
     ]);
 
     const scheduleEvents = mapScheduleEvents(schedule);
@@ -132,7 +133,7 @@ export async function getUserDashboardEvents(
     const teamEventGroups = await Promise.all(
         teams.map(async (team: RawTeam): Promise<DashboardEvent[]> => {
             const rawTeamEvents = await getTeamEvents(team.id, token);
-            return mapTeamEvents(team, rawTeamEvents);
+            return mapTeamEvents(team, rawTeamEvents, facilities);
         }),
     );
 
@@ -173,4 +174,19 @@ export async function getUserDashboardData(
         notifications,
         unreadCount,
     };
+}
+async function getFacilities(token: string): Promise<RawFacility[]> {
+    const res = await fetch(`${API_BASE}/facilities`, {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
+
+    if (!res.ok) {
+        console.warn("Failed to fetch facilities", res.status);
+        return [];
+    }
+
+    const data = await res.json();
+    return Array.isArray(data) ? data : [];
 }

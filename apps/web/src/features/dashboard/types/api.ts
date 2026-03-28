@@ -51,3 +51,8 @@ export type RawTeamEvent = {
     reoccurring?: boolean | null;
     reoccurr_type?: string | null;
 };
+
+export type RawFacility = {
+    id: string;
+    name: string;
+};

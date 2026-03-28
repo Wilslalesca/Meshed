@@ -11,10 +11,6 @@ export class FacilityController {
     static async list(req: AuthedRequest, res: Response) {
         if (!req.user) return res.status(401).send("Unauthorized");
 
-        if (!canManageFacilities(req.user.organizationRole)) {
-        return res.status(403).send("Forbidden");
-        }
-
         const facilities = await FacilityModel.findAll(req.user.organizationId);
         return res.json(facilities);
     }

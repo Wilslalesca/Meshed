@@ -2,9 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
     Calendar,
-    MapPin,
     Contact2,
-    Megaphone,
     Users,
     Settings,
 } from "lucide-react";

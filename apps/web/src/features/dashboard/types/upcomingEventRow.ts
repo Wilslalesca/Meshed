@@ -1,3 +1,4 @@
+
 export type UpcomingEventRow = {
   id: string;
   title: string;

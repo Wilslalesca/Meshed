@@ -62,23 +62,6 @@ export function getWeeklyHoursData(events: DashboardEvent[]): WeekHoursDatum[] {
     for (const event of events) {
         const weekday = normalizeWeekday(event.dayOfWeek);
 
-        if (
-            event.team?.toLowerCase().includes("test") ||
-            event.source === "team"
-        ) {
-            console.log("WEEKLY EVENT DEBUG", {
-                title: event.title,
-                source: event.source,
-                date: event.date,
-                dayOfWeek: event.dayOfWeek,
-                recurring: event.recurring,
-                endDate: event.endDate,
-                time: event.time,
-                parsedHours: parseHoursFromRange(event.time),
-                normalizedWeekday: weekday,
-            });
-        }
-
         if (event.recurring && weekday) {
             const key = `${event.source}-${weekday}-${event.time}-${event.title}-${event.team ?? ""}`;
             if (seen.has(key)) continue;
@@ -105,26 +88,61 @@ export function getWeeklyHoursData(events: DashboardEvent[]): WeekHoursDatum[] {
     }));
 }
 
+function getNextOccurrenceDate(day: Weekday): Date {
+    const today = startOfDay(new Date());
+    const todayIndex = today.getDay();
+    const targetIndex = WEEKDAYS.indexOf(day);
+
+    const diff = (targetIndex - todayIndex + 7) % 7;
+    const next = new Date(today);
+    next.setDate(today.getDate() + diff);
+    return next;
+}
+
 export function getUpcomingTableEvents(
     events: DashboardEvent[],
     todayIso: string,
 ): DashboardEvent[] {
+    const today = startOfDay(parseLocalDate(todayIso));
+
     return events
         .filter((event: DashboardEvent) => {
-            if (event.source === "team") return event.date >= todayIso;
+            const weekday = normalizeWeekday(event.dayOfWeek);
 
-            if (event.source === "schedule") {
-                if (event.recurring && event.endDate) {
-                    return event.endDate >= todayIso;
+            if (event.recurring && weekday) {
+                if (event.endDate) {
+                    const endDate = startOfDay(parseLocalDate(event.endDate));
+                    if (endDate < today) return false;
                 }
-                return event.date >= todayIso;
+
+                const nextOccurrence = getNextOccurrenceDate(weekday);
+                return nextOccurrence >= today;
             }
 
-            return false;
+            if (!event.date) return false;
+
+            const eventDate = startOfDay(parseLocalDate(event.date));
+            return eventDate >= today;
         })
-        .sort((a: DashboardEvent, b: DashboardEvent) =>
-            `${a.date} ${a.time}`.localeCompare(`${b.date} ${b.time}`),
-        );
+        .sort((a: DashboardEvent, b: DashboardEvent) => {
+            const aWeekday = normalizeWeekday(a.dayOfWeek);
+            const bWeekday = normalizeWeekday(b.dayOfWeek);
+
+            const aDate =
+                a.recurring && aWeekday
+                    ? getNextOccurrenceDate(aWeekday)
+                    : startOfDay(parseLocalDate(a.date));
+
+            const bDate =
+                b.recurring && bWeekday
+                    ? getNextOccurrenceDate(bWeekday)
+                    : startOfDay(parseLocalDate(b.date));
+
+            const dateDiff = aDate.getTime() - bDate.getTime();
+            if (dateDiff !== 0) return dateDiff;
+
+            return a.time.localeCompare(b.time);
+        });
 }
 
 export function toUpcomingEventRows(

@@ -82,7 +82,7 @@ export const UserDashboard = () => {
                     Welcome back{user?.firstName ? `, ${user.firstName}` : ""}
                 </h1>
                 <p className="text-sm text-muted-foreground">
-                    Here’s a quick look at your upcoming schedule and team
+                    Here's a quick look at your upcoming schedule and team
                     activity.
                 </p>
             </div>
