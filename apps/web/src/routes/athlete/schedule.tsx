@@ -15,6 +15,10 @@ export default function AthleteSchedulePage() {
         navigate('/addcourse');
     }
 
+    const toggleView = async () => {
+        navigate('/athlete/schedule/calendar'); //Navigate to the other view check path
+    }
+
     if (authLoading || loading) {
         return <div>Loading...</div>;
     }
@@ -26,6 +30,7 @@ export default function AthleteSchedulePage() {
                 <div className="flex flex-wrap items-center gap-2">
                     <Button type="submit" onClick={addCourse} className="px-3 py-2 flex-1 sm:flex-none bg-cyan-500 hover:bg-cyan-800">Add/Edit your Schedule</Button>
                     <Upload></Upload>
+                    <Button type="submit" onClick={toggleView} className="px-3 py-2 flex-1 sm:flex-none bg-cyan-500 hover:bg-cyan-800">Change to calendar view</Button>
                 </div>
             </div>   
             {!schedule?.length 

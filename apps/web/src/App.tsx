@@ -14,6 +14,7 @@ import { Layout } from "./shared/components/layout/Layout.tsx";
 import { AddCourse } from "./routes/courses/AddCourse.tsx";
 import { EditCourse } from "./routes/courses/EditCourse.tsx";
 import AthleteSchedulePage from "./routes/athlete/schedule";
+import AthleteScheduleCalendarPage from '@/features/athlete-schedule/pages/AthleteScheduleCalendarPage';
 import { Toaster } from "@/shared/components/ui/sonner";
 import { ProtectedRoute } from "./shared/components/ProtectedRoute.tsx";
 import { TeamDetailsPage } from "./features/teams/pages/TeamDetailsPage.tsx";
@@ -71,6 +72,7 @@ export default function App() {
         <Route path="/editcourse/:courseId" element={<ProtectedRoute><EditCourse /></ProtectedRoute>}/>
         <Route path="/addcourse" element={ <ProtectedRoute><AddCourse /></ProtectedRoute>}/>
         <Route path="/optimize" element={ <ProtectedRoute><OptimizePage /></ProtectedRoute>}/>
+        <Route path="/athlete/schedule/calendar" element={<ProtectedRoute><AthleteScheduleCalendarPage /></ProtectedRoute>} />
 
                 {/* Fallback */}
                 <Route path="*" element={<Navigate to="/" replace />} />
