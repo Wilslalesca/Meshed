@@ -7,88 +7,73 @@ import {
 } from "@/shared/components/ui/card";
 import { QuickActions } from "../components/user/QuickActions";
 import { StatCard } from "../components/StatCard";
-import { TeamSchedule } from "../components/user/TeamSchedule";
 import { ActivityFeed } from "../components/user/ActivityFeed";
-import { EventWidget } from "../components/EventWidget";
-import { getAthleteEvents } from "../api/dashboardApi";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { useAuth } from "@/shared/hooks/useAuth";
+import { WeekHoursChart } from "../components/user/WeekHoursChart";
+import { UpcomingEventsTable } from "../components/user/UpcomingEventsTable";
+import { useUserDashboard } from "../hooks/useUserDashboard";
+import {
+    getThisWeekCount,
+    getTodayEvents,
+    getUpcomingEvents,
+    getUpcomingTableEvents,
+    getWeeklyHoursData,
+    toUpcomingEventRows,
+} from "../utils/dashboardSelectors";
+const todayIso = new Date().toISOString().split("T")[0];
 
-type DashboardEvent = {
-    id: string;
-    title: string;
-    date: string;
-    time: string;
-};
+
+
+
 
 export const UserDashboard = () => {
-    const [events, setEvents] = useState<DashboardEvent[]>([]);
-    const [loading, setLoading] = useState(true);
     const { user, token } = useAuth();
+    const { events, notifications, unreadCount, loading } =
+        useUserDashboard(user?.id, token ?? undefined);
 
-    useEffect(() => {
-        const loadEvents = async () => {
-            if (!user?.id || !token) return;
+    const upcomingEvents = useMemo(
+        () => getUpcomingEvents(events, todayIso),
+        [events, todayIso],
+    );
 
-            try {
-                setLoading(true);
-                const data = await getAthleteEvents(user.id, token);
-                setEvents(data);
-            } finally {
-                setLoading(false);
-            }
-        };
+    const todayEvents = useMemo(
+        () => getTodayEvents(upcomingEvents, todayIso),
+        [upcomingEvents, todayIso],
+    );
 
-        loadEvents();
-    }, [user?.id, token]);
+    const thisWeekCount = useMemo(
+        () => getThisWeekCount(upcomingEvents),
+        [upcomingEvents],
+    );
 
-    const todayIso = new Date().toISOString().split("T")[0];
+    const weeklyHoursData = useMemo(
+        () => getWeeklyHoursData(events),
+        [events],
+    );
 
-    const upcomingEvents = useMemo(() => {
-        return events
-            .filter((event) => event.date >= todayIso)
-            .sort((a, b) =>
-                `${a.date} ${a.time}`.localeCompare(`${b.date} ${b.time}`),
-            );
-    }, [events, todayIso]);
+    const activityData = useMemo(() => {
+        return notifications.map((item) => ({
+            user: item.type
+                ? item.type.charAt(0).toUpperCase() + item.type.slice(1)
+                : "Meshed",
+            text: item.text,
+            time: item.time,
+        }));
+        
+    }, [notifications]);
 
-    const todayEvents = useMemo(() => {
-        return upcomingEvents.filter((event) => event.date === todayIso);
-    }, [upcomingEvents, todayIso]);
+    
+    const upcomingTableEvents = useMemo(
+        () => getUpcomingTableEvents(events, todayIso),
+        [events, todayIso],
+    );
 
-    const nextEvent = upcomingEvents[0] ?? null;
-
-    const thisWeekCount = useMemo(() => {
-        const now = new Date();
-        const next7 = new Date();
-        next7.setDate(now.getDate() + 7);
-
-        return events.filter((event) => {
-            const eventDate = new Date(event.date);
-            return eventDate >= now && eventDate <= next7;
-        }).length;
-    }, [events]);
-
-    const teamScheduleData = todayEvents.map((event) => ({
-        time: event.time,
-        event: event.title,
-        location: "Facility TBA",
-    }));
-
-    const activityData = [
-        nextEvent
-            ? {
-                  user: "Meshed",
-                  text: `Your next event is ${nextEvent.title}.`,
-                  time: `${nextEvent.date} • ${nextEvent.time}`,
-              }
-            : null,
-        {
-            user: "Coach",
-            text: "Check your weekly schedule and upcoming events.",
-            time: "Today",
-        },
-    ].filter(Boolean) as { user: string; text: string; time: string }[];
+    const upcomingEventRows = useMemo(
+        () => toUpcomingEventRows(upcomingTableEvents),
+        [upcomingTableEvents],
+    );
+    
 
     return (
         <div className="flex flex-col gap-6 p-6">
@@ -96,7 +81,6 @@ export const UserDashboard = () => {
                 <h1 className="text-2xl font-semibold tracking-tight">
                     Welcome back{user?.firstName ? `, ${user.firstName}` : ""}
                 </h1>
-
                 <p className="text-sm text-muted-foreground">
                     Here’s a quick look at your upcoming schedule and team
                     activity.
@@ -123,47 +107,52 @@ export const UserDashboard = () => {
                     loading={loading}
                 />
                 <StatCard
-                    title="Next Event"
-                    value={nextEvent ? nextEvent.time : "—"}
-                    subtitle={nextEvent ? nextEvent.title : "No upcoming event"}
+                    title="Unread Notifications"
+                    value={unreadCount}
+                    subtitle="Notifications waiting for you"
                     loading={loading}
                 />
             </div>
-            <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-                <Card className="h-full">
-                    <CardHeader>
-                        <CardTitle>Recent Updates</CardTitle>
-                        <CardDescription>
-                            Latest activity related to your schedule and team.
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent className="p-0">
-                        <ActivityFeed data={activityData} />
-                    </CardContent>
-                </Card>
 
-                <QuickActions />
-            </div>
-
-            <div className="grid grid-cols-1 gap-4 xl:grid-cols-3">
-                <div className="xl:col-span-2">
-                    <Card className="h-full">
+            <div className="grid grid-cols-1 gap-4 xl:grid-cols-4 xl:auto-rows-[360px]">
+                <div className="xl:col-span-2 min-h-0">
+                    <Card className="flex h-full min-h-0 flex-col">
                         <CardHeader>
-                            <CardTitle>Today’s Schedule</CardTitle>
+                            <CardTitle>Recent Notifications</CardTitle>
                             <CardDescription>
-                                Your next practices, games, and team events.
+                                Latest updates related to your schedule and
+                                team.
                             </CardDescription>
                         </CardHeader>
-                        <CardContent className="p-0">
-                            <TeamSchedule data={teamScheduleData} />
+
+                        <CardContent className="min-h-0 flex-1 overflow-y-auto no-scrollbar p-0">
+                            <ActivityFeed data={activityData} />
                         </CardContent>
                     </Card>
                 </div>
 
+                <div className="xl:col-span-1 h-full">
+                    <QuickActions />
+                </div>
+
                 <div className="xl:col-span-1">
-                    <EventWidget events={events} />
+                    <WeekHoursChart data={weeklyHoursData} />
                 </div>
             </div>
+
+            <Card className="flex flex-col">
+                <CardHeader>
+                    <CardTitle>Upcoming Events</CardTitle>
+                    <CardDescription>
+                        All of your scheduled events and team activities coming
+                        up.
+                    </CardDescription>
+                </CardHeader>
+
+                <CardContent className="flex-1 overflow-y-auto max-h-[400px] no-scrollbar">
+                    <UpcomingEventsTable data={upcomingEventRows} />
+                </CardContent>
+            </Card>
         </div>
     );
 };
