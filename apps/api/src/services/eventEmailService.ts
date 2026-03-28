@@ -12,12 +12,12 @@ function formatDate(date: Date | string | null) {
 
 export class EventEmailService {
 
-    static async sendBookingConfirmationEmail(eventId: string) {
-        const event = await EventModel.getById(eventId);
+    static async sendBookingConfirmationEmail(eventId: string, orgId:string) {
+        const event = await EventModel.getById(eventId, orgId);
         if (!event) return;
         if (!event.team_facility_id) return;
 
-        const facility = await FacilityModel.findById(event.team_facility_id);
+        const facility = await FacilityModel.findById(event.team_facility_id, orgId);
         if (!facility) return;
         if (!facility.email) return;
 
@@ -38,14 +38,14 @@ export class EventEmailService {
         );
     }
 
-    static async sendBookingStatusUpdateEmail(eventId: string) {
-        const event = await EventModel.getById(eventId);
+    static async sendBookingStatusUpdateEmail(eventId: string, orgId:string) {
+        const event = await EventModel.getById(eventId, orgId);
         if (!event || !event.requested_by_email || !event.team_facility_id || !event.status) return;
 
         const normStatus = String(event.status).toUpperCase();
         if (normStatus !== "APPROVED" && normStatus !== "DENIED") return;
 
-        const facility = await FacilityModel.findById(event.team_facility_id);
+        const facility = await FacilityModel.findById(event.team_facility_id, orgId);
         const facilityName = facility ? facility.name : "Facility";
 
         const emailType = normStatus === "APPROVED" ? "booking_approval" : "booking_denial";

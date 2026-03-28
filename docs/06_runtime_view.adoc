@@ -1,7 +1,7 @@
 :imagesdir: diagrams
 == Runtime View
 
-The runtime view describes how SmartSpot components interact at runtime to process user actions and system workflows. It focuses on key scenarios that demonstrate how different parts of the system work together.
+The runtime view describes how Meshed components interact at runtime to process user actions and system workflows. It focuses on key scenarios that demonstrate how different parts of the system work together.
 
 === Key Runtime Scenarios
 
@@ -27,9 +27,20 @@ The runtime view describes how SmartSpot components interact at runtime to proce
    - The user fills in required information based on the desired practice times (custom or recommended options).
    - The API confirms the facility request, and saves it to the database.
 
+5. **Facility Manager Approves a Booking**
+   - The facility manager navigates to the pending requests page for their facilities
+   - The user views the pending requests and approves of disapproves and leaves a comment
+   - The API executes the users action and sends an email to the requester
+   - The requester receives an email with the approval or a note for the disapproval
+
 
 === UML Diagram
 
-image::uml_SmartSpot.png[Diagram]
+image::athlete_upload_schedule.puml[Diagram]
+image::athlete_view_schedule.puml[Diagram]
+image::coach_request_practice.puml[Diagram]
+image::facility_manager_report.puml[Diagram]
+image::facility-booking.puml[Diagram]
+image::login.puml[Diagram]
 
 This section provides insights into real-time interactions between services and how different system components contribute to the overall functionality. The runtime view helps in understanding the flow of data and control during user actions and system operations.

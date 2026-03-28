@@ -36,5 +36,3 @@ Identifying and mitigating technical risks is critical to ensuring the stability
 - **Mitigation**:
   * Constantly save a working back up to be implemented in a moments notice.
   * Implement thorough test procedure before deployment.
-
-Note: This document especially was adapted from the risks provided in the Lab7 Arc42 example documentation.

@@ -6,6 +6,7 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/shared/components/ui/dialog";
+import { toast } from "sonner";
 import type {
     OptimizationResult,
     OptimizationTeamEvent,
@@ -24,7 +25,17 @@ export const OptimizeResultsModal = ({
     optimizeResults: OptimizationResult | null;
     onCreateOptimizedEvent: (event: OptimizationTeamEvent) => void;
 }) => {
+    if(!optimizeResults){
+        toast.success("No recommended events")
+        onOpenChange(false)
+    }
+
     const filteredEvents = useFilterOptimizedEvents(optimizeResults);
+
+    if(!filteredEvents || filteredEvents.length == 0 ){
+        toast.success("No recommended events")
+        onOpenChange(false)
+    }
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>

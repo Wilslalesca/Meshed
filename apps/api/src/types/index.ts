@@ -60,3 +60,35 @@ export interface AthleteProfile {
     created_at?: string;
     updated_at?: string;
 }
+
+
+export type UserWithMembership = {
+  id: string;
+  firstName: string;
+  lastName: string | null;
+  email: string;
+  phone: string | null;
+  role: "user" | "manager" | "admin";
+  passwordHash: string;
+  active: boolean;
+  verified: boolean;
+  createdAt: string;
+  updatedAt: string;
+  organizationId: string | null;
+  organizationRole: "user" | "manager" | "admin" | null;
+};
+
+export type SafeUser = {
+  id: string;
+  firstName: string;
+  lastName: string | null;
+  email: string;
+  phone: string | null;
+  role: "user" | "manager" | "admin";
+  active: boolean;
+  verified: boolean;
+  createdAt: string;
+  updatedAt: string;
+  organizationId: string | null;
+  organizationRole: "user" | "manager" | "admin" | null;
+};

@@ -13,10 +13,8 @@ import { Checkbox } from "@/shared/components/ui/checkbox";
 import {
     DropdownMenu,
     DropdownMenuContent,
-    DropdownMenuLabel,
     DropdownMenuRadioGroup,
     DropdownMenuRadioItem,
-    DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/shared/components//ui/dropdown-menu";
 import { Label } from "@/shared/components//ui/label";
@@ -143,7 +141,7 @@ export const OptimizePracticeModal = ({ open, onOpenChange, teamId, onOptimizati
             }),
         };
         if (!token || !teamId) return;
-        // @ISLA = here is the results of the optimize
+
         const result = await apiOptimizeSchedule(teamId, payload, token) as OptimizationResult;
         console.log("Optimization payload:", payload);
         console.log("Optimization result:", result);
@@ -156,12 +154,12 @@ export const OptimizePracticeModal = ({ open, onOpenChange, teamId, onOptimizati
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
-                    <DialogTitle>Optimize Practice Schedule</DialogTitle>
+                    <DialogTitle>Generate Optimized Schedule</DialogTitle>
                 </DialogHeader>
 
                 {/* Optimization Type */}
                 <div className="grid gap-3 py-2">
-                    <Label>I would like my practices to prioritise:</Label>
+                    <Label>How should we optimize your schedule?</Label>
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <Button variant="outline">
@@ -169,24 +167,25 @@ export const OptimizePracticeModal = ({ open, onOpenChange, teamId, onOptimizati
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent className="w-56">
-                            <DropdownMenuLabel>
-                                Which Optimization Algorithm?
-                            </DropdownMenuLabel>
-                            <DropdownMenuSeparator />
                             <DropdownMenuRadioGroup
                                 value={OptimizationType}
                                 onValueChange={setOptimizationType}
                             >
                                 <DropdownMenuRadioItem value="The highest attendance at each practice">
-                                    The highest attendance at each practice
+                                    Maximize attendance at each practice
                                 </DropdownMenuRadioItem>
                                 <DropdownMenuRadioItem value="Minimizing the amount of practices each athlete misses">
-                                    Minimizing the amount of practices each
-                                    athlete misses
+                                    Minimize missed practices per athlete
                                 </DropdownMenuRadioItem>
                             </DropdownMenuRadioGroup>
                         </DropdownMenuContent>
                     </DropdownMenu>
+                    <Label className="italic text-xs">{OptimizationType == "The highest attendance at each practice" ?
+                        <>Your schedule will be arranged to ensure maxmium attendance at each event from the days of the week and times chosen.</>
+                        :
+                        <>Your schedule will be arranged to help each athlete attend as many practices as possible, minimizing individual absences.</>
+                        }
+                    </Label>
                 </div>
 
                 {/* Day Selection */}
@@ -223,7 +222,7 @@ export const OptimizePracticeModal = ({ open, onOpenChange, teamId, onOptimizati
                                         PRACTICE_OPTIONS.INTERVAL &&
                                         "Time interval"}
                                     {!practiceChoices[day] &&
-                                        "Select practice option"}
+                                        "Select timing option"}
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent className="w-56">
@@ -236,12 +235,12 @@ export const OptimizePracticeModal = ({ open, onOpenChange, teamId, onOptimizati
                                     <DropdownMenuRadioItem
                                         value={PRACTICE_OPTIONS.SPECIFIC_TIMES}
                                     >
-                                        Select specific practice time options
+                                        Select from available time slots
                                     </DropdownMenuRadioItem>
                                     <DropdownMenuRadioItem
                                         value={PRACTICE_OPTIONS.INTERVAL}
                                     >
-                                        Generate options from a time interval
+                                        Generate options within a time range
                                     </DropdownMenuRadioItem>
                                 </DropdownMenuRadioGroup>
                             </DropdownMenuContent>

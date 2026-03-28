@@ -7,7 +7,6 @@ import { Dashboard } from "./routes/dashboard";
 import { Profile } from "./screens/Profile";
 import { Facilities } from "./screens/Facilities.tsx";
 import { OptimizePage } from "./screens/OptimizePage.tsx";
-import { Upload } from "./features/upload/components/Upload.tsx";
 import { useAuth } from "./shared/hooks/useAuth";
 import ScheduleBackground from "./screens/ScheduleBackground";
 import { Layout } from "./shared/components/layout/Layout.tsx";
