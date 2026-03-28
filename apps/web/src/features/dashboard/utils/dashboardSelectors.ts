@@ -1,5 +1,6 @@
 import type {
     DashboardEvent,
+    UpcomingEventFilter,
     UpcomingEventRow,
     Weekday,
     WeekHoursDatum,
@@ -157,4 +158,49 @@ export function toUpcomingEventRows(
         location: event.location ?? "—",
         status: event.status ?? "—",
     }));
+}
+
+
+function getEffectiveEventDate(event: DashboardEvent): Date {
+    const weekday = normalizeWeekday(event.dayOfWeek);
+
+    if (event.recurring && weekday) {
+        return getNextOccurrenceDate(weekday);
+    }
+
+    return startOfDay(parseLocalDate(event.date));
+}
+
+export function filterUpcomingTableEvents(
+    events: DashboardEvent[],
+    filter: UpcomingEventFilter,
+): DashboardEvent[] {
+    const today = startOfDay(new Date());
+    const weekEnd = getEndOfWeek(today);
+
+    if (filter === "all") {
+        return events;
+    }
+
+    return events.filter((event: DashboardEvent) => {
+        const eventDate = getEffectiveEventDate(event);
+
+        if (filter === "today") {
+            return eventDate.getTime() === today.getTime();
+        }
+
+        if (filter === "week") {
+            return eventDate >= today && eventDate <= weekEnd;
+        }
+
+        if (filter === "schedule") {
+            return event.source === "schedule";
+        }
+
+        if (filter === "team") {
+            return event.source === "team";
+        }
+
+        return true;
+    });
 }

@@ -46,3 +46,5 @@ export type WeekHoursDatum = {
     day: Weekday;
     hours: number;
 };
+
+export type UpcomingEventFilter = "all" | "today" | "week" | "schedule" | "team";

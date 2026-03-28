@@ -8,12 +8,13 @@ import {
 import { QuickActions } from "../components/user/QuickActions";
 import { StatCard } from "../components/StatCard";
 import { ActivityFeed } from "../components/user/ActivityFeed";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useAuth } from "@/shared/hooks/useAuth";
 import { WeekHoursChart } from "../components/user/WeekHoursChart";
 import { UpcomingEventsTable } from "../components/user/UpcomingEventsTable";
 import { useUserDashboard } from "../hooks/useUserDashboard";
 import {
+    filterUpcomingTableEvents,
     getThisWeekCount,
     getTodayEvents,
     getUpcomingEvents,
@@ -22,15 +23,16 @@ import {
     toUpcomingEventRows,
 } from "../utils/dashboardSelectors";
 const todayIso = new Date().toISOString().split("T")[0];
-
-
-
-
+import type { UpcomingEventFilter } from "../types/dashboard";
 
 export const UserDashboard = () => {
     const { user, token } = useAuth();
-    const { events, notifications, unreadCount, loading } =
-        useUserDashboard(user?.id, token ?? undefined);
+    const [upcomingEventFilter, setUpcomingEventFilter] =
+        useState<UpcomingEventFilter>("all");
+    const { events, notifications, unreadCount, loading } = useUserDashboard(
+        user?.id,
+        token ?? undefined,
+    );
 
     const upcomingEvents = useMemo(
         () => getUpcomingEvents(events, todayIso),
@@ -47,10 +49,7 @@ export const UserDashboard = () => {
         [upcomingEvents],
     );
 
-    const weeklyHoursData = useMemo(
-        () => getWeeklyHoursData(events),
-        [events],
-    );
+    const weeklyHoursData = useMemo(() => getWeeklyHoursData(events), [events]);
 
     const activityData = useMemo(() => {
         return notifications.map((item) => ({
@@ -60,20 +59,23 @@ export const UserDashboard = () => {
             text: item.text,
             time: item.time,
         }));
-        
     }, [notifications]);
 
-    
     const upcomingTableEvents = useMemo(
         () => getUpcomingTableEvents(events, todayIso),
         [events, todayIso],
     );
 
-    const upcomingEventRows = useMemo(
-        () => toUpcomingEventRows(upcomingTableEvents),
-        [upcomingTableEvents],
+    const filteredUpcomingTableEvents = useMemo(
+        () =>
+            filterUpcomingTableEvents(upcomingTableEvents, upcomingEventFilter),
+        [upcomingTableEvents, upcomingEventFilter],
     );
-    
+
+    const upcomingEventRows = useMemo(
+        () => toUpcomingEventRows(filteredUpcomingTableEvents),
+        [filteredUpcomingTableEvents],
+    );
 
     return (
         <div className="flex flex-col gap-6 p-6">
@@ -141,12 +143,41 @@ export const UserDashboard = () => {
             </div>
 
             <Card className="flex flex-col">
-                <CardHeader>
-                    <CardTitle>Upcoming Events</CardTitle>
-                    <CardDescription>
-                        All of your scheduled events and team activities coming
-                        up.
-                    </CardDescription>
+                <CardHeader className="flex flex-row items-start justify-between gap-4">
+                    <div>
+                        <CardTitle>Upcoming Events</CardTitle>
+                        <CardDescription>
+                            All of your scheduled events and team activities
+                            coming up.
+                        </CardDescription>
+                    </div>
+
+                    <div className="flex gap-2 shrink-0">
+                        {(
+                            [
+                                { value: "all", label: "All" },
+                                { value: "today", label: "Today" },
+                                { value: "week", label: "Week" },
+                                { value: "schedule", label: "Schedule" },
+                                { value: "team", label: "Team" },
+                            ] as { value: UpcomingEventFilter; label: string }[]
+                        ).map((option) => (
+                            <button
+                                key={option.value}
+                                type="button"
+                                onClick={() =>
+                                    setUpcomingEventFilter(option.value)
+                                }
+                                className={`rounded-full border px-2 py-1 text-xs transition-colors ${
+                                    upcomingEventFilter === option.value
+                                        ? "border-primary bg-primary text-primary-foreground"
+                                        : "border-border bg-background text-foreground hover:bg-muted"
+                                }`}
+                            >
+                                {option.label}
+                            </button>
+                        ))}
+                    </div>
                 </CardHeader>
 
                 <CardContent className="flex-1 overflow-y-auto max-h-[400px] no-scrollbar">
