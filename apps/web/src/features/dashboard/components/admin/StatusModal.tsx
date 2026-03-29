@@ -61,7 +61,7 @@ export const StatusModal = ({
                 onOpenChange(false);
             }
         } catch (error) {
-            console.log(error);
+            console.log("ERROR, ", error)
             toast.error("Something went wrong!");
         }
     }
