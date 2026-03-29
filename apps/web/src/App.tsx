@@ -23,9 +23,16 @@ function AppLayout() {
     return (
         <Layout>
             <Outlet />
-            <Toaster />
         </Layout>
     );
+}
+
+function PublicLayout() {
+  return (
+    <div className="min-h-screen w-screen bg-brand-soft text-foreground">
+      <Outlet />
+    </div>
+  );
 }
 
 function AuthLayout() {
@@ -43,32 +50,36 @@ function GuestRoute({ children }: { children: React.ReactNode }) {
 
 export default function App() {
   return (
-    <Routes>
-      <Route element={<AuthLayout />}>
-        <Route path="/login" element={ <GuestRoute> <LoginPage /> </GuestRoute> } />
-        <Route path="/register/invite" element={<GuestRoute>< InviteRegisterPage /></GuestRoute>} />
-        <Route path="/register" element={ <GuestRoute> <Register /> </GuestRoute> } />
-        
+    <>
+      <Toaster />
+      <Routes>
+        <Route element={<AuthLayout />}>
+          <Route path="/login" element={ <GuestRoute> <LoginPage /> </GuestRoute> } />
+          <Route path="/register/invite" element={<GuestRoute>< InviteRegisterPage /></GuestRoute>} />
+          <Route path="/register" element={ <GuestRoute> <Register /> </GuestRoute> } />
+        </Route>
 
-      </Route>
+        <Route element={<PublicLayout />}>
+          <Route path="/" element={<Home />} />
+          <Route path="/home" element={<Navigate to="/" replace />} />
+        </Route>
 
-      <Route element={<AppLayout />}>
+        <Route element={<AppLayout />}>
+          <Route path="/dashboard" element={ <ProtectedRoute> <Dashboard /> </ProtectedRoute> }/>
+          <Route path="/teams" element={ <ProtectedRoute> <TeamsPage /> </ProtectedRoute> }/>
+          <Route path="/teams/:teamId" element={<ProtectedRoute><TeamDetailsPage /></ProtectedRoute>} />
+          <Route path="/athletes/:athleteId" element={<ProtectedRoute><AthleteDetailsPage /></ProtectedRoute>} />
+          <Route path="/manager" element={ <ProtectedRoute allowedRoles={["admin", "manager"]}> <ScheduleBackground /> </ProtectedRoute> }/>
+          <Route path="/facilities" element={ <ProtectedRoute allowedRoles={["admin"]}> <Facilities /> </ProtectedRoute> }/>
+          <Route path="/mySchedule" element={ <ProtectedRoute> <AthleteSchedulePage /> </ProtectedRoute> }/>
+          <Route path="/profile" element={ <ProtectedRoute> <Profile /> </ProtectedRoute> }/>
+          <Route path="/optimize" element={ <ProtectedRoute><OptimizePage /></ProtectedRoute>}/>
+          <Route path="/organization" element={ <ProtectedRoute allowedRoles={["admin"]}><OrganizationPage /></ProtectedRoute>}/>
+        </Route>
 
-        <Route path="/" element={<Home />} />
-        <Route path="/home" element={<Navigate to="/" replace />} />
-        <Route path="/dashboard" element={ <ProtectedRoute> <Dashboard /> </ProtectedRoute> }/>
-        <Route path="/teams" element={ <ProtectedRoute> <TeamsPage /> </ProtectedRoute> }/>
-        <Route path="/teams/:teamId" element={<ProtectedRoute><TeamDetailsPage /></ProtectedRoute>} />
-        <Route path="/athletes/:athleteId" element={<ProtectedRoute><AthleteDetailsPage /></ProtectedRoute>} />
-        <Route path="/manager" element={ <ProtectedRoute allowedRoles={["admin", "manager"]}> <ScheduleBackground /> </ProtectedRoute> }/>
-        <Route path="/facilities" element={ <ProtectedRoute allowedRoles={["admin"]}> <Facilities /> </ProtectedRoute> }/>
-        <Route path="/mySchedule" element={ <ProtectedRoute> <AthleteSchedulePage /> </ProtectedRoute> }/>
-        <Route path="/profile" element={ <ProtectedRoute> <Profile /> </ProtectedRoute> }/>
-        <Route path="/optimize" element={ <ProtectedRoute><OptimizePage /></ProtectedRoute>}/>
-        <Route path="/organization" element={ <ProtectedRoute allowedRoles={["admin"]}><OrganizationPage /></ProtectedRoute>}/>
-                {/* Fallback */}
-                <Route path="*" element={<Navigate to="/" replace />} />
-            </Route>
-        </Routes>
+        {/* Fallback */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </>
     );
 }
