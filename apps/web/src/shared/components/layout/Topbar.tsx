@@ -17,6 +17,7 @@ import {
     CommandList,
     CommandSeparator,
 } from "@/shared/components/ui/command";
+import { ToggleSwitch } from "@/shared/components/ThemeToggleButton";
 import { useNotifications } from "@/features/notifications/hooks/useNotifications";
 export const Topbar = ({
     onMenuClick,
@@ -64,7 +65,7 @@ export const Topbar = ({
                         </kbd>
                     </button>
                 </div>
-
+                <ToggleSwitch></ToggleSwitch>
                 <DropdownMenu
                     onOpenChange={(isOpen) => {
                         if (isOpen) refresh(10);
