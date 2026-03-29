@@ -118,21 +118,6 @@ export default function App() {
                     }
                 />
                 <Route
-                    path="/upload"
-                    element={
-                        <ProtectedRoute>
-                            {" "}
-                            <Upload
-                                onAdded={function (): void {
-                                    throw new Error(
-                                        "Function not implemented.",
-                                    );
-                                }}
-                            />{" "}
-                        </ProtectedRoute>
-                    }
-                />
-                <Route
                     path="/facilities"
                     element={
                         <ProtectedRoute allowedRoles={["admin"]}>
