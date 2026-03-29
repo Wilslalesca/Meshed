@@ -13,7 +13,7 @@ DECLARE
   v_team_id UUID;
   manager_id UUID;
   athlete_id UUID;
-  user_id UUID;
+  v_user_id UUID;
 BEGIN
   -- Organization
   INSERT INTO organizations (name, slug, plan, active, created_at, updated_at)
@@ -73,7 +73,7 @@ BEGIN
   )
   ON CONFLICT (email) DO NOTHING;
 
-  SELECT id INTO user_id FROM users WHERE email = 'user@email.com' LIMIT 1;
+  SELECT id INTO v_user_id FROM users WHERE email = 'user@email.com' LIMIT 1;
 
   -- Org memberships
   IF manager_id IS NOT NULL THEN
@@ -93,11 +93,11 @@ BEGIN
     ON CONFLICT (organization_id, user_id) DO NOTHING;
   END IF;
 
-  IF user_id IS NOT NULL THEN
+  IF v_user_id IS NOT NULL THEN
     INSERT INTO organization_memberships (
       organization_id, user_id, role, status, created_at, updated_at
     )
-    VALUES (org_id, user_id, 'user', 'active', NOW(), NOW())
+    VALUES (org_id, v_user_id, 'user', 'active', NOW(), NOW())
     ON CONFLICT (organization_id, user_id) DO NOTHING;
   END IF;
 
@@ -121,11 +121,11 @@ BEGIN
       SET role = 'athlete', status = 'active', updated_at = NOW();
   END IF;
 
-  IF user_id IS NOT NULL THEN
+  IF v_user_id IS NOT NULL THEN
     INSERT INTO user_teams (
       user_id, team_id, role, position, status, joined_at, updated_at
     )
-    VALUES (user_id, v_team_id, 'athlete', NULL, 'active', NOW(), NOW())
+    VALUES (v_user_id, v_team_id, 'athlete', NULL, 'active', NOW(), NOW())
     ON CONFLICT (user_id, team_id) DO UPDATE
       SET role = 'athlete', status = 'active', updated_at = NOW();
   END IF;

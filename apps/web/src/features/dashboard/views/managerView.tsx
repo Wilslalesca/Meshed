@@ -9,7 +9,7 @@ import { StatCard } from "../components/StatCard";
 import { TeamOverview } from "../components/manager/TeamOverview";
 import { ActivityFeed } from "../components/manager/ActivityFeed";
 import { EventWidget } from "../components/EventWidget";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useAuth } from "@/shared/hooks/useAuth";
 import { apiGetMyTeams } from "@/features/teams/api/teams";
 import type { Team } from "@/features/teams/types/teams";
@@ -19,8 +19,6 @@ import { apiGetRoster } from "@/features/teams/api/teams";
 import type { Athlete } from "@/features/teams/types/roster";
 import { apiGetStaff } from "@/features/teams/api/staff";
 import type { StaffMember } from "@/features/teams/types/staff";
-
-type TeamEventRow = { status?: string | null };
 
 export const ManagerView = () => {
     const { user, token } = useAuth();
@@ -36,16 +34,43 @@ export const ManagerView = () => {
     const [totalAthletes, setTotalAthletes] = useState<number>(0);
     const [pendingApprovals, setPendingApprovals] = useState<number>(0);
 
-    const fetchTeamEvents = async (
-        teamId: string,
-        tokenValue: string,
-    ): Promise<TeamEventRow[]> => {
-        const API_BASE = import.meta.env.VITE_API_BASE_URL;
-        const res = await fetch(`${API_BASE}/teams/${teamId}/events`, {
-            headers: { Authorization: `Bearer ${tokenValue}` },
-        });
-        return res.ok ? ((await res.json()) as TeamEventRow[]) : [];
-    };
+    const loadStats = useCallback(async () => {
+        if (!token || teams.length === 0) {
+            setTotalAthletes(0);
+            setPendingApprovals(0);
+            return;
+        }
+
+        try {
+            const [rosters, staffLists] = await Promise.all([
+                Promise.all(teams.map((t) => apiGetRoster(t.id, token))),
+                Promise.all(teams.map((t) => apiGetStaff(t.id, token))),
+            ]);
+
+            const athleteCount = rosters.reduce((sum, roster) => {
+                const items = Array.isArray(roster) ? (roster as Athlete[]) : [];
+                return sum + items.filter((a) => a.status === "active").length;
+            }, 0);
+
+            const pendingRosterCount = rosters.reduce((sum, roster) => {
+                const items = Array.isArray(roster) ? (roster as Athlete[]) : [];
+                return sum + items.filter((a) => a.status === "pending").length;
+            }, 0);
+
+            const pendingStaffCount = staffLists.reduce((sum, staff) => {
+                const items = Array.isArray(staff)
+                    ? (staff as StaffMember[])
+                    : [];
+                return sum + items.filter((s) => s.status === "pending").length;
+            }, 0);
+
+            setTotalAthletes(athleteCount);
+            setPendingApprovals(pendingRosterCount + pendingStaffCount);
+        } catch {
+            setTotalAthletes(0);
+            setPendingApprovals(0);
+        }
+    }, [teams, token]);
 
     useEffect(() => {
         let ignore = false;
@@ -70,75 +95,23 @@ export const ManagerView = () => {
     }, [user?.id, token]);
 
     useEffect(() => {
-        let ignore = false;
-
-        const loadStats = async () => {
-            if (!token) {
-                setTotalAthletes(0);
-                setPendingApprovals(0);
-                return;
-            }
-
-            if (teams.length === 0) {
-                setTotalAthletes(0);
-                setPendingApprovals(0);
-                return;
-            }
-
-            try {
-                const [rosters, staffLists, teamEvents] = await Promise.all([
-                    Promise.all(teams.map((t) => apiGetRoster(t.id, token))),
-                    Promise.all(teams.map((t) => apiGetStaff(t.id, token))),
-                    Promise.all(teams.map((t) => fetchTeamEvents(t.id, token))),
-                ]);
-
-                if (ignore) return;
-
-                const athleteCount = rosters.reduce((sum, roster) => {
-                    const items = Array.isArray(roster) ? (roster as Athlete[]) : [];
-                    return sum + items.filter((a) => a.status === "active").length;
-                }, 0);
-
-                const pendingRosterCount = rosters.reduce((sum, roster) => {
-                    const items = Array.isArray(roster) ? (roster as Athlete[]) : [];
-                    return sum + items.filter((a) => a.status === "pending").length;
-                }, 0);
-
-                const pendingStaffCount = staffLists.reduce((sum, staff) => {
-                    const items = Array.isArray(staff)
-                        ? (staff as StaffMember[])
-                        : [];
-                    return sum + items.filter((s) => s.status === "pending").length;
-                }, 0);
-
-                const pendingEventCount = teamEvents.reduce((sum, list) => {
-                    const items = Array.isArray(list) ? list : [];
-                    return (
-                        sum +
-                        items.filter(
-                            (e) =>
-                                typeof e.status === "string" &&
-                                e.status.toLowerCase() === "pending",
-                        ).length
-                    );
-                }, 0);
-
-                setTotalAthletes(athleteCount);
-                setPendingApprovals(
-                    pendingRosterCount + pendingStaffCount + pendingEventCount,
-                );
-            } catch {
-                if (ignore) return;
-                setTotalAthletes(0);
-                setPendingApprovals(0);
-            }
-        };
-
         void loadStats();
-        return () => {
-            ignore = true;
+
+        // Keep stats fresh as invites/approvals change.
+        const id = window.setInterval(() => {
+            void loadStats();
+        }, 15_000);
+
+        const onFocus = () => {
+            void loadStats();
         };
-    }, [teams, token]);
+        window.addEventListener("focus", onFocus);
+
+        return () => {
+            window.clearInterval(id);
+            window.removeEventListener("focus", onFocus);
+        };
+    }, [loadStats]);
 
     useEffect(() => {
         if (!token || !user?.id) return;
@@ -181,7 +154,7 @@ export const ManagerView = () => {
                     <StatCard
                         title="Pending Approvals"
                         value={String(pendingApprovals)}
-                        subtitle="Pending users and event requests"
+                        subtitle="Pending users"
                     />
                     <StatCard
                         title="Unread Messages"
