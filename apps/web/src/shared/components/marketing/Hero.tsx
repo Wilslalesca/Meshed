@@ -11,7 +11,7 @@ export function Hero() {
               New • Facility & Team Ops
             </div>
             <h1 className="mt-4 text-4xl font-extrabold tracking-tight sm:text-5xl">
-              Scheduling, teams & compliance—made easy.
+              Schedule less, do more
             </h1>
             <p className="mt-4 text-sm/6 text-muted-foreground">
               Centralize rosters, practices, facilities and eligibility in one
@@ -34,18 +34,26 @@ export function Hero() {
           </div>
 
           <div className="rounded-xl border border-sidebar-border bg-card/80 p-4 shadow-md backdrop-blur">
-            {/* Placeholder “product shot” — swap later */}
-            <div className="aspect-video rounded-lg bg-[linear-gradient(135deg,#0f142b_0%,#1e2442_100%)] relative overflow-hidden">
-              <div className="absolute inset-0 pointer-events-none"
-                   style={{
-                     background:
-                       "radial-gradient(600px 300px at 100% 0%, #ff5ea833 0%, transparent 60%), radial-gradient(600px 300px at 0% 100%, #00e5ff33 0%, transparent 60%)"
-                   }} />
-              <div className="absolute inset-4 rounded-lg border border-white/10 bg-white/5 backdrop-blur-sm"></div>
+            <div className="grid gap-3">
+              <div className="overflow-hidden rounded-lg border border-border bg-background">
+                <img
+                  src="/dashboard view.png"
+                  alt="Dashboard view"
+                  className="h-auto w-full object-cover"
+                  draggable={false}
+                  loading="lazy"
+                />
+              </div>
+              <div className="overflow-hidden rounded-lg border border-border bg-background">
+                <img
+                  src="/calendar_example.png"
+                  alt="Calendar example"
+                  className="h-auto w-full object-cover"
+                  draggable={false}
+                  loading="lazy"
+                />
+              </div>
             </div>
-            <p className="mt-3 text-center text-xs text-muted-foreground">
-              Preview panel — replace with a real screenshot later
-            </p>
           </div>
         </div>
       </div>

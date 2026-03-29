@@ -1,10 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import img1 from "@/assets/unb_campus_homepage_header_1.jpg";
-// import img2 from '@/assets/unb_campus_homepage_header_2.jpg';
-import img3 from "@/assets/unb_campus_homepage_header_3.jpg";
-import img4 from "@/assets/Logo_long.png";
-
-const IMAGES = [img1, img3, img4];
+const IMAGES = ["/meshed_logo_green_poster.png"];
 const INTERVAL_MS = 5000;
 
 export const RotatingHeader: React.FC = () => {
