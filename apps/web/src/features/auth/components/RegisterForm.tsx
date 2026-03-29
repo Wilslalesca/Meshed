@@ -189,7 +189,7 @@ export function RegisterForm({
                             <Input
                                 id="organizationName"
                                 type="text"
-                                placeholder="UNB Athletics"
+                                placeholder="Organization Name"
                                 value={organizationName}
                                 onChange={(e) =>
                                     setOrganizationName(e.target.value)
