@@ -10,10 +10,6 @@ import { Upload } from '@/features/upload/components/Upload';
 import { TeamScheduleCalendar } from "@/features/teams/components/schedule/TeamScheduleCalendar";
 import { TeamScheduleMode, TeamScheduleView, type TeamScheduleEvent } from "@/features/teams/types/schedule";
 
-import { useTeamSchedule } from "@/features/teams/hooks/useTeamSchedule";
-import { useUserTeams } from "@/features/teams/hooks/useUserTeams";
-
-
 export default function AthleteSchedulePage() {
     const { user, loading: authLoading } = useAuth();
     const athleteId = user?.id;
@@ -23,25 +19,6 @@ export default function AthleteSchedulePage() {
     const [viewMode, setViewMode] = useState<"cards" | "calendar">("cards");
     const [calendarView, setCalendarView] = useState<TeamScheduleView>("timeGridWeek");
     const [calendarMode, setCalendarMode] = useState<TeamScheduleMode>(TeamScheduleMode.Calendar);
-
-    const { teams, loading: teamsLoading } = useUserTeams();
-
-    const teamId = teams?.[0]?.id;
-    const fromISO = new Date().toISOString();
-    const toISO = new Date(new Date().setDate(new Date().getDate() + 7)).toISOString();
-
-    const { 
-        events: teamEvents,
-        loading: teamScheduleLoading
-    } = useTeamSchedule(teamId, fromISO, toISO);
-
-    // const filteredEvents = (teamEvents || []).filter((e) => {
-    //     return (
-    //         e.athleteId === athleteId ||   
-    //         e.type === "Practice" ||       
-    //         e.type === "Team Event"        
-    //     );
-    // });
 
     const [search, setSearch] = useState("");
 
@@ -55,10 +32,6 @@ export default function AthleteSchedulePage() {
         const result = new Date(today);
         result.setDate(today.getDate() + diff);
         return result;
-    }
-
-    if (authLoading || loading || teamsLoading || teamScheduleLoading) {
-        return <div>Loading...</div>;
     }
 
     return (
