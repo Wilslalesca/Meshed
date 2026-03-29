@@ -11,9 +11,9 @@ import { TeamScheduleCalendar } from "@/features/teams/components/schedule/TeamS
 import { TeamScheduleMode, TeamScheduleView, type TeamScheduleEvent } from "@/features/teams/types/schedule";
 
 export default function AthleteSchedulePage() {
-    const { user, loading: authLoading } = useAuth();
+    const { user  } = useAuth();
     const athleteId = user?.id;
-    const { schedule, loading, refetch } = useAthleteSchedule(athleteId);
+    const { schedule, refetch } = useAthleteSchedule(athleteId);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
     const [viewMode, setViewMode] = useState<"cards" | "calendar">("cards");
