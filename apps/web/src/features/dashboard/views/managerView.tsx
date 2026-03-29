@@ -17,6 +17,8 @@ import { useNotifications } from "@/features/notifications/hooks/useNotification
 import { formatRelativeTime } from "../utils/notifications";
 import { apiGetRoster } from "@/features/teams/api/teams";
 import type { Athlete } from "@/features/teams/types/roster";
+import { apiGetStaff } from "@/features/teams/api/staff";
+import type { StaffMember } from "@/features/teams/types/staff";
 
 type TeamEventRow = { status?: string | null };
 
@@ -84,8 +86,9 @@ export const ManagerView = () => {
             }
 
             try {
-                const [rosters, teamEvents] = await Promise.all([
+                const [rosters, staffLists, teamEvents] = await Promise.all([
                     Promise.all(teams.map((t) => apiGetRoster(t.id, token))),
+                    Promise.all(teams.map((t) => apiGetStaff(t.id, token))),
                     Promise.all(teams.map((t) => fetchTeamEvents(t.id, token))),
                 ]);
 
@@ -96,7 +99,19 @@ export const ManagerView = () => {
                     return sum + items.filter((a) => a.status === "active").length;
                 }, 0);
 
-                const pendingCount = teamEvents.reduce((sum, list) => {
+                const pendingRosterCount = rosters.reduce((sum, roster) => {
+                    const items = Array.isArray(roster) ? (roster as Athlete[]) : [];
+                    return sum + items.filter((a) => a.status === "pending").length;
+                }, 0);
+
+                const pendingStaffCount = staffLists.reduce((sum, staff) => {
+                    const items = Array.isArray(staff)
+                        ? (staff as StaffMember[])
+                        : [];
+                    return sum + items.filter((s) => s.status === "pending").length;
+                }, 0);
+
+                const pendingEventCount = teamEvents.reduce((sum, list) => {
                     const items = Array.isArray(list) ? list : [];
                     return (
                         sum +
@@ -109,7 +124,9 @@ export const ManagerView = () => {
                 }, 0);
 
                 setTotalAthletes(athleteCount);
-                setPendingApprovals(pendingCount);
+                setPendingApprovals(
+                    pendingRosterCount + pendingStaffCount + pendingEventCount,
+                );
             } catch {
                 if (ignore) return;
                 setTotalAthletes(0);
@@ -164,7 +181,7 @@ export const ManagerView = () => {
                     <StatCard
                         title="Pending Approvals"
                         value={String(pendingApprovals)}
-                        subtitle="Pending event requests"
+                        subtitle="Pending users and event requests"
                     />
                     <StatCard
                         title="Unread Messages"

@@ -53,7 +53,7 @@ export const UserModel = {
                 ON om.user_id = u.id
             WHERE u.email = $1
                 AND om.status = 'active'
-            ORDER BY om.created_at ASC
+            ORDER BY om.updated_at DESC, om.created_at DESC
             LIMIT 1`,
             [email]
         );
@@ -69,7 +69,7 @@ export const UserModel = {
         FROM organization_memberships
         WHERE user_id = $1
             AND status = 'active'
-        ORDER BY created_at ASC
+        ORDER BY updated_at DESC, created_at DESC
         LIMIT 1`,
         [userId]
         );
