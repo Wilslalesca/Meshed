@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { cn } from "@/shared/utils/utils";
-import { Button } from "@/shared/components//ui/button";
-import { Input } from "@/shared/components//ui/input";
-import { Label } from "@/shared/components//ui/label";
+import { Button } from "@/shared/components/ui/button";
+import { Input } from "@/shared/components/ui/input";
+import { Label } from "@/shared/components/ui/label";
 import {
   InputOTP,
   InputOTPGroup,
@@ -10,6 +10,8 @@ import {
 } from "@/shared/components/ui/input-otp";
 import { Link } from "react-router-dom";
 import { apiForgotPassword, apiResetPassword } from "../api/auth";
+import { PasswordRequirements } from "./PasswordRequirements";
+import { validatePassword } from "../utils/passwordValidation";
 
 type Step = "request" | "reset" | "done";
 
@@ -26,6 +28,13 @@ export function ForgotPasswordForm({
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
+
+  const passwordValidation = useMemo(
+    () => validatePassword(newPassword),
+    [newPassword],
+  );
+  const passwordsMatch = newPassword === confirm;
+  const showPasswordMismatch = confirm.length > 0 && !passwordsMatch;
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -47,6 +56,13 @@ export function ForgotPasswordForm({
         setPending(false);
       }
 
+      return;
+    }
+
+    if (!passwordValidation.isValid) {
+      setError(
+        "Password must be at least 8 characters with 1 number and 1 special character",
+      );
       return;
     }
 
@@ -132,7 +148,14 @@ export function ForgotPasswordForm({
                 autoComplete="new-password"
                 required
                 disabled={pending}
+                className={cn(
+                  newPassword.length > 0 &&
+                    !passwordValidation.isValid &&
+                    "border-destructive focus-visible:ring-destructive",
+                )}
               />
+
+              <PasswordRequirements password={newPassword} />
             </div>
 
             <div className="grid gap-3">
@@ -145,7 +168,15 @@ export function ForgotPasswordForm({
                 autoComplete="new-password"
                 required
                 disabled={pending}
+                className={cn(
+                  showPasswordMismatch &&
+                    "border-destructive focus-visible:ring-destructive",
+                )}
               />
+
+              {showPasswordMismatch && (
+                <p className="text-xs text-destructive">Passwords do not match</p>
+              )}
             </div>
           </>
         )}

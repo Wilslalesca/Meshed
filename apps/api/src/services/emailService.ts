@@ -15,6 +15,9 @@ function buildTransport() {
   const smtpUser = config.smtpUser;
   const smtpPass = config.smtpPass;
 
+  const gmailUser = config.gmailAppEmail;
+  const gmailPass = config.gmailAppPassword;
+
   const host = smtpHost;
   const port = smtpPort;
   const secure = smtpSecure ?? false;
@@ -22,39 +25,54 @@ function buildTransport() {
   const user = smtpUser;
   const pass = smtpPass;
 
-  if (!host || !port || !user || !pass) {
-    return null;
+  if (host && port && user && pass) {
+    return nodemailer.createTransport({
+      host,
+      port,
+      secure,
+      auth: { user, pass },
+    });
   }
 
-  return nodemailer.createTransport({
-    host,
-    port,
-    secure,
-    auth: { user, pass },
-  });
+  // Local/dev convenience: support Gmail app passwords without SMTP_* env vars.
+  if (gmailUser && gmailPass) {
+    return nodemailer.createTransport({
+      host: "smtp.gmail.com",
+      port: 465,
+      secure: true,
+      auth: { user: gmailUser, pass: gmailPass },
+    });
+  }
+
+  return null;
 }
 
 const transporter = buildTransport();
 const mailFrom =
   config.mailFrom ??
+  config.gmailAppEmail ??
   config.smtpUser ??
-  (config.nodeEnv === "test" ? "test@example.com" : undefined);
+  (config.nodeEnv === "test"
+    ? "test@example.com"
+    : config.nodeEnv !== "production"
+      ? "dev@meshed.local"
+      : undefined);
 
 export const mail = {
   async sendEmail(to: string, subject: string, html: string) {
-    if (!mailFrom) {
-      throw new Error("MAIL_FROM is not configured.");
-    }
-
     if (!transporter) {
       if (config.nodeEnv !== "production") {
-        console.log("[DEV EMAIL]", { to, subject, html });
+        console.log("[DEV EMAIL]", { from: mailFrom, to, subject, html });
         return { messageId: "dev-email", accepted: [to], rejected: [] };
       }
 
       throw new Error(
         "Email is not configured. Set SMTP_HOST/SMTP_PORT/SMTP_USER/SMTP_PASS (and optionally MAIL_FROM)."
       );
+    }
+
+    if (!mailFrom) {
+      throw new Error("MAIL_FROM is not configured.");
     }
 
     const info = await transporter.sendMail({

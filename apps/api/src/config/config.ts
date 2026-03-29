@@ -2,7 +2,9 @@ import 'dotenv/config';
 
 const requiredEnv = ["JWT_ACCESS_SECRET", "JWT_REFRESH_SECRET"] as const;
 
-const envToCheck = [...requiredEnv];
+type RequiredEnvKey = (typeof requiredEnv)[number] | "DATABASE_URL";
+
+const envToCheck: RequiredEnvKey[] = [...requiredEnv];
 
 if (process.env.NODE_ENV !== "test") {
     envToCheck.push("DATABASE_URL");
@@ -32,4 +34,8 @@ export const config = {
     smtpUser: process.env.SMTP_USER,
     smtpPass: process.env.SMTP_PASS,
     mailFrom: process.env.MAIL_FROM,
+
+    // Convenience Gmail config (for local/dev): uses Gmail SMTP under the hood
+    gmailAppEmail: process.env.GMAIL_APP_EMAIL,
+    gmailAppPassword: process.env.GMAIL_APP_PASSWORD,
 };
