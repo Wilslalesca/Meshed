@@ -20,45 +20,29 @@ export class StaffController {
     }
 
     static async addStaff(req: AuthedRequest, res: Response) {
-        const userId = req.user?.id;
-        if (!userId) return res.status(401).send("Unauthorized");
+        
+        if (!req.user) return res.status(401).json({ error: "Unauthorized" });
 
-        let user = await UserModel.findById(userId);
-        if (!user) return res.status(404).send("User not found");
-
-        if (!isManagerOrAdmin(user.role))
+        if (!isManagerOrAdmin(req.user.organizationRole)) {
             return res.status(403).send("Forbidden");
-
+        }        
+        
         const { teamId } = req.params;
         const { email, role, notes = null } = req.body || {};
-
         if (!email) return res.status(400).send("email required");
 
-        user = await UserModel.findByEmail(email);
-        let isGhost = false;
+        const staffUser = await UserModel.findByEmail(email);
+        const isGhost = false;
 
-        if (!user) {
-            user = await UserModel.createGhostUser(email);
-            isGhost = true;
-        }
+        if (!staffUser || staffUser.id === null) return res.status(500).send("Failed to find or create user");
+        const added = await TeamStaffModel.addStaff(teamId, staffUser.id, role, notes);
 
-        if (!user || user.id === null) {
-            return res.status(500).send("Failed to find or create user");
-        }
-
-        const added = await TeamStaffModel.addStaff(
-            teamId,
-            user.id,
-            role,
-            notes,
-        );
-        const team = await TeamModel.getTeam(teamId);
-
+        const team = await TeamModel.getTeam(teamId, req.user.organizationId);
         if (!team) return res.status(500).send("Team not found");
 
         if (isGhost) {
             const token = crypto.randomBytes(32).toString("hex");
-            await InviteModel.createInvite(teamId, email, role, null, token);
+            await InviteModel.createInvite(req.user.organizationId, teamId, email, role, null, token);
             await sendEmail.sendEmailInvite(email, team.name, token);
         } else {
             await sendEmail.sendAddedToTeamEmail(email, team.name, role);
@@ -68,11 +52,9 @@ export class StaffController {
     }
 
     static async updateStaff(req: AuthedRequest, res: Response) {
-        const userId = req.user?.id;
-        if (!userId) return res.status(401).send("Unauthorized");
+        if (!req.user) return res.status(401).json({ error: "Unauthorized" });
 
-        const user = await UserModel.findById(userId);
-        if (!user || !isManagerOrAdmin(user.role)) {
+        if (!isManagerOrAdmin(req.user.organizationRole)) {
             return res.status(403).send("Forbidden");
         }
 
@@ -84,11 +66,10 @@ export class StaffController {
     }
 
     static async removeStaff(req: AuthedRequest, res: Response) {
-        const userId = req.user?.id;
-        if (!userId) return res.status(401).send("Unauthorized");
 
-        const user = await UserModel.findById(userId);
-        if (!user || !isManagerOrAdmin(user.role)) {
+        if (!req.user) return res.status(401).json({ error: "Unauthorized" });
+
+        if (!isManagerOrAdmin(req.user.organizationRole)) {
             return res.status(403).send("Forbidden");
         }
 

@@ -11,6 +11,7 @@ import {
     User,
     ChevronUp,
     ChevronDown,
+    Grid2X2Check,
 } from "lucide-react";
 import {
     DropdownMenu,
@@ -25,6 +26,7 @@ import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/shared/hooks/useAuth";
 import { apiGetNotifications, apiMarkNotificationsRead } from "@/shared/services/notifications";
 import { toast } from "sonner";
+import { useUserRole } from "@/shared/hooks/useUserRole";
 
 import Meshed_Icon from "@/assets/Icon.png";
 export const Sidebar = ({
@@ -59,19 +61,18 @@ export const Sidebar = ({
     const [openMenu, setOpenMenu] = useState(false);
     const [openSubMenu, setOpenSubMenu] = useState<string | null>(null);
     const navigate = useNavigate();
+    
 
     const links = [
-        { name: "Dashboard", href: "/dashboard", icon: Home },
-        { name: "Teams", href: "/teams", icon: Users },
-        {
-            name: "Schedules",
-            href: "/schedules",
-            icon: Calendar,
-            subLinks: [{ name: "My Schedule", href: "/myschedule" }],
-        },
-        { name: "Facilities", href: "/facilities", icon: Building2 },
-        { name: "Settings", href: "/settings", icon: Settings },
+        { name: "Dashboard", href: "/dashboard", icon: Home, roles: ["user", "manager", "admin"] },
+        { name: "Teams", href: "/teams", icon: Users, roles: ["user", "manager", "admin"] },
+        { name: "Schedules", href: "/schedules", icon: Calendar, roles: ["user", "manager", "admin"], subLinks: [{ name: "My Schedule", href: "/myschedule" }]},
+        { name: "Facilities", href: "/facilities", icon: Building2, roles: ["admin"] },
+        { name: "Organization", href: "/organization", icon: Grid2X2Check, roles: ["admin"] },
+        { name: "Settings", href: "/settings", icon: Settings, roles: ["user", "manager", "admin"] },
     ];
+    const { role } = useUserRole();
+    const filteredLinks = links.filter(link => !link.roles || link.roles.includes(role));
 
     return (
         <>
@@ -146,7 +147,7 @@ export const Sidebar = ({
                 </div>
 
                 <nav className="flex-1 overflow-y-auto px-3 pt-2 space-y-1 text-sm">
-                    {links.map(({ name, href, icon: Icon, subLinks }) => {
+                    {filteredLinks.map(({ name, href, icon: Icon, subLinks }) => {
                         const isActive = location.pathname === href;
                         const isOpen = openSubMenu === name;
                         const hasSub = (subLinks?.length ?? 0) > 0;

@@ -34,7 +34,7 @@ export async function apiGetEventFacilities(
 }
 
 export async function apiUpdateEventStatus(
-    data: {status:string, id:string},
+    data: {status:string, id:string, comments:string},
     token: string
 ) {
     const res = await fetch(`${API_BASE}/events/${data.id}/${data.status}`, {
@@ -43,7 +43,8 @@ export async function apiUpdateEventStatus(
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
         },
+        body: JSON.stringify({ comments: data.comments }),
     });
 
-    return res.ok ? data : undefined;
+    return res.ok ? await res.json() : undefined;
 }

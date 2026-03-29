@@ -13,11 +13,11 @@ export interface DpPracticeDay {
 interface DpState {
     maxMisses: number;
     athleteMisses: AthleteMissesMap;
-    currentSched: DpPracticeOption[];
+    currentSched: { day: unknown; option: DpPracticeOption }[];
 }
 
 export interface DpMinimizeMissesResult {
-    schedule: DpPracticeOption[];
+    schedule: { day: unknown; option: DpPracticeOption }[];
     maxMisses: number;
     athleteMisses: AthleteMissesMap;
 }
@@ -27,7 +27,6 @@ export function dpMinimizeMissesAlgService(
 ): DpMinimizeMissesResult {
     //Input: Array of days with practice options and athletes missing per option, identified by their athlete ID
     //Output: Schedule minimizing the maximum number of misses for any athlete
-
     if (daysIn.length === 0) {
         return {
             schedule: [],
@@ -61,7 +60,7 @@ export function dpMinimizeMissesAlgService(
         return {
             maxMisses: maxArrayValue(Object.values(athleteMisses)),
             athleteMisses,
-            currentSched: [option],
+            currentSched: [{ day: daysIn[0].day, option }],
         };
     });
 
@@ -105,7 +104,7 @@ export function dpMinimizeMissesAlgService(
                         //Best previous state for this option on this day
                         maxMisses: currentMaxMisses,
                         athleteMisses: combinedMisses,
-                        currentSched: prevState.currentSched.slice(), //copy previous schedule so you don't get mutation stuff
+                        currentSched: [...prevState.currentSched], //copy previous schedule so you don't get mutation stuff
                     };
                 }
             }
@@ -117,8 +116,8 @@ export function dpMinimizeMissesAlgService(
                     ? { ...bestPrevState.athleteMisses }
                     : {},
                 currentSched: bestPrevState
-                    ? [...bestPrevState.currentSched, currentOption]
-                    : [currentOption],
+                    ? [...bestPrevState.currentSched, { day: daysIn[dayIndex].day, option: currentOption }]
+                    : [{ day: daysIn[dayIndex].day, option: currentOption }],
             });
         }
     }

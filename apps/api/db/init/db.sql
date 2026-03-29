@@ -1,3 +1,5 @@
+
+
 CREATE TABLE users (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   first_name VARCHAR(100) NOT NULL,
@@ -10,6 +12,27 @@ CREATE TABLE users (
   verified BOOLEAN DEFAULT FALSE,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE organizations (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name VARCHAR(150) NOT NULL,
+  slug VARCHAR(100) UNIQUE NOT NULL,
+  plan VARCHAR(50) DEFAULT 'Pro',
+  active BOOLEAN DEFAULT TRUE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE organization_memberships (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  organization_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  role VARCHAR(20) NOT NULL DEFAULT 'user',
+  status VARCHAR(50) NOT NULL DEFAULT 'active',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE (organization_id, user_id)
 );
 
 CREATE TABLE sports_lookup (
@@ -31,6 +54,7 @@ CREATE TABLE insights (
 CREATE TABLE teams (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   name VARCHAR(100) NOT NULL,
+  organization_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
   sport_id UUID REFERENCES sports_lookup(id),
   season VARCHAR(50),
   insights_id UUID REFERENCES insights(id),
@@ -106,6 +130,7 @@ CREATE TABLE coach_athlete_visibility (
 CREATE TABLE activity_log (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+  organization_id UUID REFERENCES organizations(id) ON DELETE CASCADE,
   action VARCHAR(100),
   entity VARCHAR(50),
   entity_id UUID,
@@ -115,6 +140,7 @@ CREATE TABLE activity_log (
 
 CREATE TABLE facilities (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  organization_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
   name VARCHAR(100) NOT NULL,
   address1 VARCHAR(100),
   address2 VARCHAR(100),
@@ -141,6 +167,8 @@ CREATE TABLE team_events (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   team_id UUID REFERENCES teams(id) ON DELETE CASCADE,
   team_facility_id UUID REFERENCES facilities(id) ON DELETE CASCADE,
+  organization_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+  requested_by_user_id UUID REFERENCES users(id),
   name VARCHAR,
   type VARCHAR NOT NULL,          
   start_date DATE NOT NULL,
@@ -155,6 +183,7 @@ CREATE TABLE team_events (
   home_away VARCHAR,               
   lift_type VARCHAR,               
   notes TEXT,
+  facility_notes TEXT,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP                  
 );
@@ -162,6 +191,7 @@ CREATE TABLE team_events (
 CREATE TABLE invites (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   team_id UUID REFERENCES teams(id) ON DELETE CASCADE,
+  organization_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
   email VARCHAR(255) NOT NULL,
   token VARCHAR(255) NOT NULL,
   role VARCHAR(50),
@@ -208,10 +238,20 @@ CREATE TABLE password_reset_codes (
 CREATE TABLE notifications (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+  organization_id UUID REFERENCES organizations(id) ON DELETE CASCADE,
   type VARCHAR(50) NOT NULL,
   message TEXT NOT NULL,
   meta JSONB,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   read_at TIMESTAMP
+);
+
+CREATE TABLE team_event_email_log (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  team_event_id UUID NOT NULL REFERENCES team_events(id) ON DELETE CASCADE,
+  email_type VARCHAR(50) NOT NULL,
+  recipient_email VARCHAR(255) NOT NULL,
+  sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE (team_event_id, email_type, recipient_email)
 );
 

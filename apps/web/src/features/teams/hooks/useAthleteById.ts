@@ -12,10 +12,18 @@ export const useAthleteById = (athleteId: string) => {
     let cancel = false;
 
     const load = async () => {
+      if (!token || !athleteId) {
+        setAthlete(null);
+        setLoading(false);
+        return;
+      }
       setLoading(true);
-      const data = await apiGetAthleteById(athleteId, token!);
-      if (!cancel) setAthlete(data);
-      setLoading(false);
+      const data = await apiGetAthleteById(athleteId, token);
+
+      if (!cancel) {
+        setAthlete(data);
+        setLoading(false);
+      }
     };
 
     load();

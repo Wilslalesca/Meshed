@@ -1,22 +1,16 @@
-import React, { useState, useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { cn } from "@/shared/utils/utils";
-import { Button } from "@/shared/components//ui/button";
-import { Input } from "@/shared/components//ui/input";
-import { Label } from "@/shared/components//ui/label";
+import { Button } from "@/shared/components/ui/button";
+import { Input } from "@/shared/components/ui/input";
+import { Label } from "@/shared/components/ui/label";
 import { useAuth } from "@/shared/hooks/useAuth";
 import { Link, useNavigate } from "react-router-dom";
 import type { RegisterCredentials } from "../types/auth";
 import { EmailVerificationModal } from "../modal/EmailVerificationModal";
 
-const roleOptions: { label: string; value: RegisterCredentials['role'] }[] = [
-    { label: "Athlete", value: "user" },
-    { label: "Manager", value: "manager" },
-    { label: "Admin", value: "admin" },
-];
-
-const normalizeRole = (
-    role?: string | null
-): RegisterCredentials['role'] => {
+const normalizeInvitedRole = (
+    role?: string | null,
+): "admin" | "manager" | "user" => {
     if (role === "manager" || role === "admin") {
         return role;
     }
@@ -49,7 +43,7 @@ export function RegisterForm({
     ...props
 }: React.ComponentProps<"form"> & {
     invitedEmail?: string;
-    invitedRole?: RegisterCredentials['role'];
+    invitedRole?: "admin" | "manager" | "user";
     invitedToken?: string;
 }) {
     const { register } = useAuth();
@@ -57,10 +51,9 @@ export function RegisterForm({
 
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
+    const [organizationName, setOrganizationName] = useState("");
 
     const [email, setEmail] = useState(invitedEmail ?? "");
-    const [role, setRole] = useState<RegisterCredentials['role']>(normalizeRole(invitedRole));
-    
     const [password, setPassword] = useState("");
     const [confirm, setConfirm] = useState("");
 
@@ -73,12 +66,14 @@ export function RegisterForm({
     const [showPassword] = useState(false);
     const [showConfirmPassword] = useState(false);
 
-    const passwordValidation = useMemo(() => validatePassword(password), [password]);
+    const passwordValidation = useMemo(
+        () => validatePassword(password),
+        [password],
+    );
     const passwordsMatch = password === confirm;
     const showPasswordMismatch = confirm.length > 0 && !passwordsMatch;
 
     const emailValidation = useMemo(() => validateEmail(email), [email]);
-    // const showEmailInvalid = email.length > 0 && !emailValidation;
 
     React.useEffect(() => {
         if (invitedEmail && invitedToken) {
@@ -86,41 +81,58 @@ export function RegisterForm({
         }
     }, [invitedEmail, invitedToken]);
 
-    React.useEffect(() => {
-        setRole(normalizeRole(invitedRole));
-    }, [invitedRole]);
-    
     async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
         setError(null);
 
+        if (!invitedToken && !emailValidation) {
+            return setError("Please enter a valid email address");
+        }
 
-        if (!invitedToken && !emailValidation) return setError("Please enter a valid email address");        
-        if (!passwordValidation.isValid ) return setError("Password must be at least 8 characters with 1 number and 1 special character");
-        if (password !== confirm) return setError("Passwords do not match");
-        
+        if (!invitedToken && !organizationName.trim()) {
+            return setError("Organization name is required");
+        }
+
+        if (!passwordValidation.isValid) {
+            return setError(
+                "Password must be at least 8 characters with 1 number and 1 special character",
+            );
+        }
+
+        if (password !== confirm) {
+            return setError("Passwords do not match");
+        }
+
         setPending(true);
 
         try {
-            if (invitedEmail && invitedToken) {
-                setEmail(invitedEmail);
-            }
-            const res = await register({ firstName, lastName, email: email.toLowerCase(), password, role, invitedToken: invitedToken || null });
+            const payload: RegisterCredentials = {
+                firstName,
+                lastName,
+                email: (invitedEmail && invitedToken
+                    ? invitedEmail
+                    : email
+                ).toLowerCase(),
+                password,
+                organizationName: invitedToken
+                    ? undefined
+                    : organizationName.trim(),
+                invitedToken: invitedToken || null,
+            };
+
+            const res = await register(payload);
             setVerifyUserId(res.userId);
             setVerifyOpen(true);
-        
         } catch (err: unknown) {
-            const authErr = err as { message?: string };
-            setError(authErr.message || "Registration failed");
+            const authErr = err as { error?: string; message?: string };
+            setError(authErr.error || authErr.message || "Registration failed");
         } finally {
             setPending(false);
         }
     }
 
-
     return (
         <>
-        
             <form
                 onSubmit={onSubmit}
                 className={cn("flex flex-col gap-6", className)}
@@ -132,28 +144,30 @@ export function RegisterForm({
                         Enter your details below to create your account
                     </p>
                 </div>
+
                 <div className="grid gap-6">
                     <div className="grid gap-3">
-                        <Label htmlFor="name">First Name</Label>
+                        <Label htmlFor="firstName">First Name</Label>
                         <Input
-                            id="name"
+                            id="firstName"
                             type="text"
                             placeholder="Your first name"
                             value={firstName}
                             onChange={(e) => setFirstName(e.target.value)}
-                            autoComplete="name"
+                            autoComplete="given-name"
                             required
                         />
                     </div>
+
                     <div className="grid gap-3">
-                        <Label htmlFor="name">Last Name</Label>
+                        <Label htmlFor="lastName">Last Name</Label>
                         <Input
-                            id="name"
+                            id="lastName"
                             type="text"
                             placeholder="Your last name"
                             value={lastName}
                             onChange={(e) => setLastName(e.target.value)}
-                            autoComplete="name"
+                            autoComplete="family-name"
                             required
                         />
                     </div>
@@ -172,13 +186,40 @@ export function RegisterForm({
                                 className={cn(
                                     email.length > 0 &&
                                         !emailValidation &&
-                                        "border-destructive focus-visible:ring-destructive"
+                                        "border-destructive focus-visible:ring-destructive",
                                 )}
                             />
                         </div>
                     )}
 
-                    
+                    {!invitedToken && (
+                        <div className="grid gap-3">
+                            <Label htmlFor="organizationName">
+                                Organization Name
+                            </Label>
+                            <Input
+                                id="organizationName"
+                                type="text"
+                                placeholder="UNB Athletics"
+                                value={organizationName}
+                                onChange={(e) =>
+                                    setOrganizationName(e.target.value)
+                                }
+                                required
+                            />
+                        </div>
+                    )}
+
+                    {invitedEmail && invitedRole && (
+                        <p className="text-sm text-muted-foreground">
+                            You’ve been invited to join as a{" "}
+                            <span className="font-medium capitalize">
+                                {normalizeInvitedRole(invitedRole)}
+                            </span>
+                            .
+                        </p>
+                    )}
+
                     <div className="grid gap-3">
                         <Label htmlFor="password">Password</Label>
                         <div className="relative">
@@ -192,23 +233,11 @@ export function RegisterForm({
                                 className={cn(
                                     password.length > 0 &&
                                         !passwordValidation.isValid &&
-                                        "border-destructive focus-visible:ring-destructive"
+                                        "border-destructive focus-visible:ring-destructive",
                                 )}
                             />
-                            {/* <Button
-                                type="button"
-                                variant="ghost"
-                                size="sm"
-                                className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent text-gray-400 hover:text-gray-600"
-                                onClick={() => setShowPassword(!showPassword)}
-                            >
-                                {showPassword ? (
-                                    <EyeOff className="h-4 w-4" />
-                                ) : (
-                                    <Eye className="h-4 w-4" />
-                                )}
-                            </Button> */}
                         </div>
+
                         {password.length > 0 && (
                             <div className="text-xs space-y-1">
                                 <div
@@ -216,33 +245,39 @@ export function RegisterForm({
                                         "flex items-center gap-2",
                                         passwordValidation.minLength
                                             ? "text-green-600"
-                                            : "text-destructive"
+                                            : "text-destructive",
                                     )}
                                 >
                                     <span className="text-xs">
-                                        {passwordValidation.minLength ? "✓" : "✗"}
+                                        {passwordValidation.minLength
+                                            ? "✓"
+                                            : "✗"}
                                     </span>
                                     At least 8 characters
                                 </div>
+
                                 <div
                                     className={cn(
                                         "flex items-center gap-2",
                                         passwordValidation.hasNumber
                                             ? "text-green-600"
-                                            : "text-destructive"
+                                            : "text-destructive",
                                     )}
                                 >
                                     <span className="text-xs">
-                                        {passwordValidation.hasNumber ? "✓" : "✗"}
+                                        {passwordValidation.hasNumber
+                                            ? "✓"
+                                            : "✗"}
                                     </span>
                                     At least 1 number
                                 </div>
+
                                 <div
                                     className={cn(
                                         "flex items-center gap-2",
                                         passwordValidation.hasSpecialChar
                                             ? "text-green-600"
-                                            : "text-destructive"
+                                            : "text-destructive",
                                     )}
                                 >
                                     <span className="text-xs">
@@ -255,6 +290,7 @@ export function RegisterForm({
                             </div>
                         )}
                     </div>
+
                     <div className="grid gap-3">
                         <Label htmlFor="confirm">Confirm password</Label>
                         <div className="relative">
@@ -267,61 +303,36 @@ export function RegisterForm({
                                 autoComplete="new-password"
                                 className={cn(
                                     showPasswordMismatch &&
-                                        "border-destructive focus-visible:ring-destructive"
+                                        "border-destructive focus-visible:ring-destructive",
                                 )}
                             />
-                            {/* <Button
-                                type="button"
-                                variant="ghost"
-                                size="sm"
-                                className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent text-gray-400 hover:text-gray-600"
-                                onClick={() =>
-                                    setShowConfirmPassword(!showConfirmPassword)
-                                }
-                            >
-                                {showConfirmPassword ? (
-                                    <EyeOff className="h-4 w-4" />
-                                ) : (
-                                    <Eye className="h-4 w-4" />
-                                )}
-                            </Button> */}
                         </div>
+
                         {showPasswordMismatch && (
                             <p className="text-xs text-destructive">
                                 Passwords do not match
                             </p>
                         )}
                     </div>
-                    {!invitedEmail && (
-                        
-                        <div className="grid gap-3">
-                            <Label htmlFor="role">Role</Label>
-                            <select
-                                id="role"
-                                value={role}
-                                onChange={(e) => setRole(e.target.value as RegisterCredentials['role'])}
-                                className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
-                            >
-                                {roleOptions.map((opt) => (
-                                    <option key={opt.value} value={opt.value}>
-                                        {opt.label}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-                    )}
+
                     {error && (
-                        <p className="text-sm text-destructive -mt-2">{error}</p>
+                        <p className="text-sm text-destructive -mt-2">
+                            {error}
+                        </p>
                     )}
+
                     <Button type="submit" className="w-full" disabled={pending}>
                         {pending ? "Creating..." : "Create account"}
                     </Button>
                 </div>
+
                 {!invitedEmail && (
-                    
                     <div className="text-center text-sm">
                         Already have an account?{" "}
-                        <Link to="/login" className="underline underline-offset-4">
+                        <Link
+                            to="/login"
+                            className="underline underline-offset-4"
+                        >
                             Sign in
                         </Link>
                     </div>
@@ -334,7 +345,7 @@ export function RegisterForm({
                     setVerifyOpen(false);
                     nav("/login", { replace: true });
                 }}
-                userId={verifyUserId!}
+                userId={verifyUserId || ""}
             />
         </>
     );

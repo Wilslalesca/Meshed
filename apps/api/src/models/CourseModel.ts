@@ -1,6 +1,5 @@
 import { pool } from "../config/db";
 import { CourseTime } from "../types/index";
-import { UserEventModel } from "./UserEventModel";
 
 export interface NewCourseTime {
   user_id?: string;  
@@ -47,13 +46,41 @@ export const CourseModel = {
   async insertCourseAndLinkUser(data: NewCourseTime, userId: string): Promise<CourseTime> {
     const client = await pool.connect();
     try {
-      await pool.query("BEGIN");
-      const course = await this.insertCourse(data);
-      await UserEventModel.insert({ user_id: userId, class_id: course.id });
-      await pool.query("COMMIT");
+      await client.query("BEGIN");
+
+      const res = await client.query(
+        `INSERT INTO course_times (
+            user_id, name, course_code, location, day_of_week, start_time,
+            end_time, term, start_date, end_date, recurring, created_at, updated_at
+          ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, NOW(), NOW())
+          RETURNING *`,
+        [
+          data.user_id ?? null,
+          data.name,
+          data.course_code,
+          data.location,
+          data.day_of_week,
+          data.start_time,
+          data.end_time,
+          data.term,
+          data.start_date,
+          data.end_date,
+          data.recurring,
+        ]
+      );
+
+      const course = res.rows[0];
+
+      await client.query(
+        `INSERT INTO user_events (user_id, class_id, created_at, updated_at)
+        VALUES ($1, $2, NOW(), NOW())`,
+        [userId, course.id]
+      );
+
+      await client.query("COMMIT");
       return course;
     } catch (err) {
-      await pool.query("ROLLBACK");
+      await client.query("ROLLBACK");
       throw err;
     } finally {
       client.release();

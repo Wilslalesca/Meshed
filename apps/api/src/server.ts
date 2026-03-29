@@ -8,6 +8,7 @@ import {
     testingAccountGeneration,
     testingAddingUserToath,
 } from "./scripts/seedUsers";
+import { seedDemoOrganization } from "./scripts/seedOrganizations";
 import { seedLeaguesAndSports } from "./scripts/seedLeagueAndSport";
 
 const port = config.port;
@@ -15,19 +16,20 @@ const port = config.port;
 async function start() {
     await ensurePasswordResetCodesTable();
 
-    app.listen(port, () => {
-        console.log(`Backend running on http://localhost:${port}`);
-    });
+app.listen(port, () => {
+    console.log(`Backend running on http://localhost:${port}`);
+});
 
-    // test scripts (non-fatal for boot)
-    Promise.resolve()
-        .then(async () => {
-            await testingAccountGeneration();
-            await testingAddingUserToath();
-            await seedLeaguesAndSports();
-            // await seedTeams(); // function for seeding teams
-        })
-        .catch((err) => console.error("Seed scripts failed:", err));
+// test scripts (non-fatal for boot)
+Promise.resolve()
+    .then(async () => {
+        await testingAccountGeneration();
+        await testingAddingUserToath();
+        await seedDemoOrganization();
+        await seedLeaguesAndSports();
+        await seedTeams(); // function for seeding teams
+    })
+    .catch((err) => console.error("Seed scripts failed:", err));
 }
 
 start().catch((err) => {

@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import { verifyAccess } from '../utils/tokens';
-import { Role } from '../types/index';
+import { Role, AuthUser } from '../types/index';
 
-export interface AuthedRequest extends Request { user?: { id: string; role: Role }; }
+export interface AuthedRequest extends Request { user?: AuthUser; }
 
 export function requireAuth(req: AuthedRequest, res: Response, next: NextFunction) {
     const header = req.header('Authorization');
@@ -14,7 +14,7 @@ export function requireAuth(req: AuthedRequest, res: Response, next: NextFunctio
 
     try {
         const payload = verifyAccess(token);
-        req.user = { id: payload.userId, role: payload.role };
+        req.user = { id: payload.userId, systemRole: payload.systemRole, organizationId: payload.organizationId, organizationRole: payload.organizationRole };
         next();
     } 
     catch {
@@ -31,8 +31,32 @@ export function requireRole(allowed: Role | Role[]) {
             return res.status(401).json({ error: 'Unauthenticated' });
         }
 
-        if (!roles.includes(req.user.role)) {
+        if (!roles.includes(req.user.organizationRole)) {
             return res.status(403).json({ error: 'Forbidden' });
+        }
+
+        next();
+    };
+}
+
+export function requireOrganization(req: AuthedRequest, res: Response, next: NextFunction) {
+    if (!req.user?.organizationId) {
+        return res.status(403).json({ error: "No active organization" });
+    }
+
+    next();
+}
+
+export function requireSystemRole(allowed: Role | Role[]) {
+    const roles = Array.isArray(allowed) ? allowed : [allowed];
+
+    return (req: AuthedRequest, res: Response, next: NextFunction) => {
+        if (!req.user) {
+            return res.status(401).json({ error: "Unauthenticated" });
+        }
+
+        if (!roles.includes(req.user.systemRole)) {
+            return res.status(403).json({ error: "Forbidden" });
         }
 
         next();

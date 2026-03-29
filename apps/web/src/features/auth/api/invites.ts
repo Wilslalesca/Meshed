@@ -1,4 +1,4 @@
-export const API_BASE = import.meta.env.VITE_API_BASE_URL;
+const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
 export async function apiInviteUser(teamId: string, email: string, role: string, position: string | null, token: string) {
   const res = await fetch(`${API_BASE}/invites/${teamId}`, {
@@ -16,9 +16,8 @@ export async function apiInviteUser(teamId: string, email: string, role: string,
 
 export async function apiAcceptInvite(token: string) {
   const res = await fetch(`${API_BASE}/invites/accept/${token}`);
-  
+
   if (!res.ok) return null;
 
-  return await res.json(); 
-
+  return await res.json();
 }

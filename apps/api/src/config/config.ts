@@ -1,11 +1,16 @@
 import 'dotenv/config';
 
-const requiredEnv = ["JWT_ACCESS_SECRET", "JWT_REFRESH_SECRET", "DATABASE_URL"] as const;
+const requiredEnv = ["JWT_ACCESS_SECRET", "JWT_REFRESH_SECRET"] as const;
 
-for (const key of requiredEnv) {
+const envToCheck = [...requiredEnv];
+
+if (process.env.NODE_ENV !== "test") {
+    envToCheck.push("DATABASE_URL");
+}
+
+for (const key of envToCheck) {
     if (!process.env[key]) {
-        console.warn(`ERROR: Missing environment variable ${key}`);
-        process.exit(1);
+        throw new Error(`Missing environment variable ${key}`);
     }
 }
 
@@ -15,11 +20,12 @@ export const config = {
     accessSecret: process.env.JWT_ACCESS_SECRET!,
     refreshSecret: process.env.JWT_REFRESH_SECRET!,
     databaseUrl: process.env.DATABASE_URL!,
-    accessTtl: process.env.ACCESS_TTL ?? '15m',
+    accessTtl: process.env.ACCESS_TTL ?? '8h',
     refreshTtl: process.env.REFRESH_TTL ?? '7d',
     cookieDomain: process.env.COOKIE_DOMAIN ?? 'localhost',
     nodeEnv: process.env.NODE_ENV ?? 'development',
-    // Provider-agnostic SMTP config (preferred)
+
+    // Provider-agnostic SMTP config
     smtpHost: process.env.SMTP_HOST,
     smtpPort: process.env.SMTP_PORT ? Number(process.env.SMTP_PORT) : undefined,
     smtpSecure: process.env.SMTP_SECURE ? process.env.SMTP_SECURE === 'true' : undefined,

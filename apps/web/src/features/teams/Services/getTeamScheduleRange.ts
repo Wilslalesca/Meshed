@@ -11,7 +11,7 @@ function parseDateOnlyLocal(dateStr: string): Date {
   return new Date(y, (m ?? 1) - 1, d ?? 1, 0, 0, 0, 0);
 }
 
-function asLocalDate(value: unknown): Date {
+export function asLocalDate(value: unknown): Date {
   if (value instanceof Date) return value;
 
   if (typeof value === "string") {
@@ -61,7 +61,7 @@ function parseTimeParts(value: unknown): { hh: number; mm: number; ss: number } 
   return { hh: 0, mm: 0, ss: 0 };
 }
 
-function combineLocalDateTime(dateValue: unknown, timeValue: unknown): Date {
+export function combineLocalDateTime(dateValue: unknown, timeValue: unknown): Date {
   const date = asLocalDate(dateValue);
   const t = parseTimeParts(timeValue);
 
