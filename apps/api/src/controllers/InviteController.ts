@@ -29,7 +29,17 @@ export class InviteController {
       token
     );
 
-    await TeamRosterModel.addToTeam(teamId, user.id, role, position);
+    // Track invited users as pending until accepted/approved.
+    if (role === "manager") {
+      const staff = await TeamStaffModel.findStaffRecord(teamId, user.id);
+      if (staff) {
+        await TeamStaffModel.updateStaffById(staff.id, { role, status: "pending" });
+      } else {
+        await TeamStaffModel.addStaff(teamId, user.id, role, null);
+      }
+    } else {
+      await TeamRosterModel.addToTeam(teamId, user.id, "athlete", position, "pending");
+    }
 
     return res.json({ success: true, invite, token });
   }
@@ -54,7 +64,7 @@ export class InviteController {
       if (invite.role === "manager") {
         const staff = await TeamStaffModel.findStaffRecord(invite.team_id, user.id);
         if (staff) {
-          await TeamStaffModel.updateStaffById(staff.id, { role: invite.role, status: "active" });
+          await TeamStaffModel.updateStaffById(staff.id, { role: invite.role, status: "pending" });
         } else {
           await TeamStaffModel.addStaff(invite.team_id, user.id, invite.role, null);
         }
@@ -62,7 +72,7 @@ export class InviteController {
         // Ensure they exist on the roster, then mark active.
         await TeamRosterModel.addToTeam(invite.team_id, user.id, "athlete", invite.position ?? null);
         await TeamRosterModel.updateAthlete(invite.team_id, user.id, {
-          status: "active",
+          status: "pending",
           position: invite.position ?? null,
         });
       }
