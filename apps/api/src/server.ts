@@ -10,7 +10,6 @@ import {
 } from "./scripts/seedUsers";
 import { seedDemoOrganization } from "./scripts/seedOrganizations";
 import { seedLeaguesAndSports } from "./scripts/seedLeagueAndSport";
-
 const port = config.port;
 
 async function start() {
@@ -27,7 +26,6 @@ Promise.resolve()
         await testingAddingUserToath();
         await seedDemoOrganization();
         await seedLeaguesAndSports();
-        await seedTeams(); // function for seeding teams
     })
     .catch((err) => console.error("Seed scripts failed:", err));
 }
