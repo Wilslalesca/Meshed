@@ -2,6 +2,9 @@ import { Request, Response } from "express";
 import { InviteModel } from "../models/InviteModel";
 import { UserModel } from "../models/UserModel";
 import { TeamRosterModel } from "../models/TeamRosterModel";
+import { TeamStaffModel } from "../models/TeamStaffModel";
+import { ActivityLogModel } from "../models/ActivityLogModel";
+import * as notifications from "../features/notifications/notifications.service";
 import crypto from "crypto";
 import { AuthedRequest } from "../middleware/authMiddleware";
 
@@ -39,13 +42,59 @@ export class InviteController {
 
     const user = await UserModel.findByEmail(invite.email);
     if (!user) return res.status(500).send("Ghost user missing");
-    await UserModel.createMembership(user.id, invite.organization_id);
-    await InviteModel.markAccepted(invite.id, invite.organization_id);    
-    await TeamRosterModel.updateAthlete(invite.team_id, user.id, {
-      status: "pending",
-      position: invite.position ?? null
-    });
 
-    return res.json({ email: invite.email, role: invite.role, position: invite.position, token } );
+    const hasFullAccount = Boolean(user.verified) && Boolean(user.passwordHash?.trim());
+
+    // If the invited email already has a verified account, don't force re-registration.
+    // Auto-accept the invite and send the user to login.
+    if (hasFullAccount) {
+      const membershipRole = invite.role === "manager" ? "manager" : "user";
+      await UserModel.createMembership(user.id, invite.organization_id, membershipRole);
+
+      if (invite.role === "manager") {
+        const staff = await TeamStaffModel.findStaffRecord(invite.team_id, user.id);
+        if (staff) {
+          await TeamStaffModel.updateStaffById(staff.id, { role: invite.role, status: "active" });
+        } else {
+          await TeamStaffModel.addStaff(invite.team_id, user.id, invite.role, null);
+        }
+      } else {
+        // Ensure they exist on the roster, then mark active.
+        await TeamRosterModel.addToTeam(invite.team_id, user.id, "athlete", invite.position ?? null);
+        await TeamRosterModel.updateAthlete(invite.team_id, user.id, {
+          status: "active",
+          position: invite.position ?? null,
+        });
+      }
+
+      await InviteModel.markAccepted(invite.id, invite.organization_id);
+      await ActivityLogModel.log(invite.organization_id, user.id, "INVITE_ACCEPTED", "invite", invite.id);
+
+      const managerIds = await TeamStaffModel.getActiveManagerIds(invite.team_id);
+      await Promise.all(
+        managerIds
+          .filter((id) => id !== user.id)
+          .map((managerId) =>
+            notifications.createForUser(
+              invite.organization_id,
+              managerId,
+              "INVITE_ACCEPTED",
+              `${invite.email} accepted their invite`,
+              { teamId: invite.team_id, inviteId: invite.id, email: invite.email },
+            ),
+          ),
+      );
+
+      return res.json({
+        email: invite.email,
+        role: invite.role,
+        position: invite.position,
+        token,
+        next: "login",
+      });
+    }
+
+    // For new/unverified accounts, only validate + return invite details.
+    return res.json({ email: invite.email, role: invite.role, position: invite.position, token, next: "register" });
   }
 }

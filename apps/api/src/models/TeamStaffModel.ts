@@ -77,4 +77,19 @@ export class TeamStaffModel {
     await pool.query(`DELETE FROM team_staff WHERE id = $1`, [staffId]);
     return true;
   }
+
+  static async getActiveManagerIds(teamId: string): Promise<string[]> {
+    const { rows } = await pool.query<{ user_id: string }>(
+      `SELECT ts.user_id
+       FROM team_staff ts
+       JOIN users u ON u.id = ts.user_id
+       WHERE ts.team_id = $1
+         AND ts.role = 'manager'
+         AND ts.status = 'active'
+         AND u.active = TRUE`,
+      [teamId]
+    );
+
+    return rows.map((r) => r.user_id);
+  }
 }

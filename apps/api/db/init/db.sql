@@ -260,7 +260,7 @@ CREATE TABLE team_event_email_log (
 DO $$
 DECLARE
   org_id UUID;
-  team_id UUID;
+  v_team_id UUID;
   manager_id UUID;
   athlete_id UUID;
 BEGIN
@@ -276,15 +276,15 @@ BEGIN
   END IF;
 
   -- Team
-  SELECT id INTO team_id
+  SELECT id INTO v_team_id
   FROM teams
   WHERE organization_id = org_id AND name = 'Meshed Dev Team'
   LIMIT 1;
 
-  IF team_id IS NULL THEN
+  IF v_team_id IS NULL THEN
     INSERT INTO teams (name, organization_id, created_at, updated_at)
     VALUES ('Meshed Dev Team', org_id, NOW(), NOW())
-    RETURNING id INTO team_id;
+    RETURNING id INTO v_team_id;
   END IF;
 
   -- Users (create if missing)
@@ -335,7 +335,7 @@ BEGIN
     INSERT INTO team_staff (
       user_id, team_id, role, status, created_at, updated_at
     )
-    VALUES (manager_id, team_id, 'manager', 'active', NOW(), NOW())
+    VALUES (manager_id, v_team_id, 'manager', 'active', NOW(), NOW())
     ON CONFLICT (user_id, team_id) DO UPDATE
       SET role = 'manager', status = 'active', updated_at = NOW();
   END IF;
@@ -345,7 +345,7 @@ BEGIN
     INSERT INTO user_teams (
       user_id, team_id, role, position, status, joined_at, updated_at
     )
-    VALUES (athlete_id, team_id, 'athlete', NULL, 'active', NOW(), NOW())
+    VALUES (athlete_id, v_team_id, 'athlete', NULL, 'active', NOW(), NOW())
     ON CONFLICT (user_id, team_id) DO UPDATE
       SET role = 'athlete', status = 'active', updated_at = NOW();
   END IF;

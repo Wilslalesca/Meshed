@@ -10,6 +10,8 @@ import { VerificationCodeModel } from "../models/VerificationCodeModel";
 import { InviteModel } from "../models/InviteModel";
 import { TeamStaffModel } from "../models/TeamStaffModel";
 import { TeamRosterModel } from "../models/TeamRosterModel";
+import { ActivityLogModel } from "../models/ActivityLogModel";
+import * as notifications from "../features/notifications/notifications.service";
 import type { SafeUser, User } from "../types";
 import type { UserWithMembership } from "../models/UserModel";
 
@@ -95,6 +97,14 @@ export const AuthController = {
     if (existing && !invitedToken) return res.status(409).json({ error: "Email already registered" });
 
     if (existing && invitedToken) {
+      // Security: an invite token should never allow resetting password for a verified account.
+      if (existing.verified) {
+        return res.status(409).json({
+          error: "Account already exists. Please log in to accept the invite.",
+          needsLogin: true,
+        });
+      }
+
       await UserModel.setPassword(existing.id, password);
       await UserModel.updateUser(existing.id, {first_name: firstName, last_name: lastName ?? "", phone: phone ?? "", role: "user"});
       user = await UserModel.findById(existing.id);
@@ -112,6 +122,10 @@ export const AuthController = {
       const invite = await InviteModel.findByToken(invitedToken);
 
       if (!invite) return res.status(400).json({ error: "Invalid invite token" });
+
+      if ((invite.email ?? "").toLowerCase() !== normalizedEmail) {
+        return res.status(400).json({ error: "Invite token does not match this email" });
+      }
         
       const membershipRole = invite.role === "manager" ? "manager" : "user";
 
@@ -134,6 +148,24 @@ export const AuthController = {
       }
 
       await InviteModel.markAccepted(invite.id, invite.organization_id);
+
+      await ActivityLogModel.log(invite.organization_id, user.id, "INVITE_ACCEPTED", "invite", invite.id);
+
+      // Notify active team managers that the invite was accepted.
+      const managerIds = await TeamStaffModel.getActiveManagerIds(invite.team_id);
+      await Promise.all(
+        managerIds
+          .filter((id) => id !== user.id)
+          .map((managerId) =>
+            notifications.createForUser(
+              invite.organization_id,
+              managerId,
+              "INVITE_ACCEPTED",
+              `${invite.email} accepted their invite`,
+              { teamId: invite.team_id, inviteId: invite.id, email: invite.email },
+            ),
+          ),
+      );
     } 
     else {
       const org = await OrganizationModel.create(organizationName!);
