@@ -1,6 +1,7 @@
 import React from "react";
 import { Routes, Route, Outlet, Navigate } from "react-router-dom";
 import { Home } from "./screens/Home";
+import Contact from "./screens/Contact";
 import LoginPage from "./features/auth/pages/Login.tsx";
 import Register  from "./features/auth/pages/Register.tsx";
 import { Dashboard } from "./routes/dashboard";
@@ -27,9 +28,10 @@ function AppLayout() {
     );
 }
 
+// PublicLayout no longer forces a background — each screen owns its own bg
 function PublicLayout() {
   return (
-    <div className="min-h-screen w-screen bg-brand-soft text-foreground">
+    <div className="min-h-screen w-screen text-foreground">
       <Outlet />
     </div>
   );
@@ -59,9 +61,11 @@ export default function App() {
           <Route path="/register" element={ <GuestRoute> <Register /> </GuestRoute> } />
         </Route>
 
+        {/* Public marketing pages — no forced background */}
         <Route element={<PublicLayout />}>
           <Route path="/" element={<Home />} />
           <Route path="/home" element={<Navigate to="/" replace />} />
+          <Route path="/contact" element={<Contact />} />
         </Route>
 
         <Route element={<AppLayout />}>
