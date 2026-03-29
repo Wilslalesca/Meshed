@@ -4,17 +4,56 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/sha
 import { Button } from "@/shared/components/ui/button";
 import { Megaphone, CalendarPlus, Users, MapPin, CheckCircle, Calendar } from "lucide-react";
 
-export const QuickActions = () => {
+export const QuickActions = ({
+  selectedTeamId,
+}: {
+  selectedTeamId?: string;
+}) => {
   const [active, setActive] = useState<string | null>(null);
   const navigate = useNavigate();
 
+  const teamBasePath = selectedTeamId ? `/teams/${selectedTeamId}` : "/teams";
+
+  const teamTabPath = (tab: "profile" | "roster" | "staff" | "schedule") =>
+    selectedTeamId ? `/teams/${selectedTeamId}?tab=${tab}` : "/teams";
+
   const actions = [
-    { id: "announce", label: "Send Announcement", icon: Megaphone, path: "/announcements/new" },
-    { id: "addTraining", label: "Add Training", icon: CalendarPlus, path: "/training/new" },
-    { id: "manageRoster", label: "Manage Roster", icon: Users, path: "/team/roster" },
-    { id: "bookFacility", label: "Book Facility", icon: MapPin, path: "/facilities" },
-    { id: "teamCalendar", label: "Team Calendar", icon: Calendar, path: "/team/calendar" },
-    { id: "approveSchedules", label: "Approve Schedules", icon: CheckCircle, path: "/schedule/approvals" },
+    {
+      id: "announce",
+      label: "Send Announcement",
+      icon: Megaphone,
+      path: teamTabPath("profile"),
+    },
+    {
+      id: "addTraining",
+      label: "Add Training",
+      icon: CalendarPlus,
+      path: teamTabPath("schedule"),
+    },
+    {
+      id: "manageRoster",
+      label: "Manage Roster",
+      icon: Users,
+      path: teamTabPath("roster"),
+    },
+    {
+      id: "bookFacility",
+      label: "Book Facility",
+      icon: MapPin,
+      path: "/facilities",
+    },
+    {
+      id: "teamCalendar",
+      label: "Team Calendar",
+      icon: Calendar,
+      path: teamTabPath("schedule"),
+    },
+    {
+      id: "approveSchedules",
+      label: "Approve Schedules",
+      icon: CheckCircle,
+      path: "/manager",
+    },
     // { id : "generateOptimalSchedule", label: "Generate Optimal Schedule", icon: Calendar, path: "/optimize" },
   ];
   const handleAction = (action: string, path: string) => {

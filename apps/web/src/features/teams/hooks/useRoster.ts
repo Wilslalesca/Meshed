@@ -9,7 +9,11 @@ export function useRoster(teamId: string) {
   const [loading, setLoading] = useState(true);
 
   const load = useCallback(async () => {
-    if (!token) return;
+    if (!token || !teamId) {
+      setRoster([]);
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     const data = await apiGetRoster(teamId, token);
     setRoster(data);

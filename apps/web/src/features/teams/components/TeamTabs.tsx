@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import {
     Tabs,
     TabsList,
@@ -60,7 +61,25 @@ export const TeamTabs = ({
 }: Props) => {
     const userRole = useUserRole();
     const isManager = userRole.isManager;
-    const [activeTab, setActiveTab] = useState<"profile" | "roster" | "staff" | "schedule">("profile");
+    const [searchParams] = useSearchParams();
+    const tabParam = searchParams.get("tab");
+
+    const urlTab = useMemo(() => {
+        if (tabParam === "profile" || tabParam === "roster" || tabParam === "staff" || tabParam === "schedule") {
+            return tabParam;
+        }
+        return null;
+    }, [tabParam]);
+
+    const [activeTab, setActiveTab] = useState<"profile" | "roster" | "staff" | "schedule">(
+        urlTab ?? "profile"
+    );
+
+    useEffect(() => {
+        if (urlTab && urlTab !== activeTab) {
+            setActiveTab(urlTab);
+        }
+    }, [urlTab, activeTab]);
     return (
         <div className="space-y-6">
             <div className="flex flex-col gap-2">
@@ -142,7 +161,7 @@ export const TeamTabs = ({
                 </div>
             </div>
 
-            <Tabs defaultValue="profile" className="w-full" onValueChange={(v: string) => setActiveTab(v as typeof activeTab)}>
+            <Tabs value={activeTab} className="w-full" onValueChange={(v: string) => setActiveTab(v as typeof activeTab)}>
                 <TabsList className="w-full">
                     <TabsTrigger
                         value="profile"
