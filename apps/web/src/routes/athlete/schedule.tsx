@@ -6,7 +6,7 @@ import { AddCourseModal } from "@/features/add-edit-courses/components/AddCourse
 import { useAuth } from '@/shared/hooks/useAuth';
 import { Button } from '@/shared/components/ui/button';
 import { Upload } from '@/features/upload/components/Upload';
-
+import { Tabs, TabsList, TabsTrigger } from "@/shared/components/ui/tabs";
 import { TeamScheduleCalendar } from "@/features/teams/components/schedule/TeamScheduleCalendar";
 import { TeamScheduleMode, TeamScheduleView, type TeamScheduleEvent } from "@/features/teams/types/schedule";
 
@@ -15,6 +15,7 @@ export default function AthleteSchedulePage() {
     const athleteId = user?.id;
     const { schedule, refetch } = useAthleteSchedule(athleteId);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+    const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
 
     const [viewMode, setViewMode] = useState<"cards" | "calendar">("cards");
     const [calendarView, setCalendarView] = useState<TeamScheduleView>("timeGridWeek");
@@ -39,27 +40,32 @@ export default function AthleteSchedulePage() {
             <div className="flex items-center justify-between flex-wrap mb-4 gap-2">
                 <h1 className='text-2xl font-semibold'>My Schedule</h1>
                 <div className="flex flex-wrap items-center gap-2">
-                    {/* View toggle buttons */}
-                    <Button
-                        variant={viewMode === "cards" ? "default" : "outline"}
-                        onClick={() => setViewMode("cards")}
-                    >
-                        Cards
-                    </Button>
-                    <Button
-                        variant={viewMode === "calendar" ? "default" : "outline"}
-                        onClick={() => setViewMode("calendar")}
-                    >
-                        Calendar
-                    </Button>
-
+                     <div className="gap-3">
+                        <Tabs
+                            value={viewMode}
+                            onValueChange={(value) => setViewMode(value as "cards" | "calendar")}
+                            className="w-full"
+                        >
+                            <TabsList className="grid w-full grid-cols-2">
+                                <TabsTrigger className="w-full" value="cards">
+                                    Cards
+                                </TabsTrigger>
+                                <TabsTrigger className="w-full" value="calendar">
+                                    Calendar
+                                </TabsTrigger>
+                            </TabsList>
+                        </Tabs>
+                    </div>
                     <Button onClick={() => setIsAddModalOpen(true)}>Add Event</Button>
                     <AddCourseModal
                         open={isAddModalOpen}
                         onOpenChange={setIsAddModalOpen}
                         onAdded={() => refetch()}
                     />
-                    <Upload onAdded={() => refetch()} />
+                    <Upload 
+                        open={isUploadModalOpen}
+                        onOpenChange={setIsUploadModalOpen}
+                        onAdded={() => refetch()} />
                 </div>
             </div>
 

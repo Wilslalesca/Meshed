@@ -8,8 +8,14 @@ import { toast } from "sonner"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/shared/components/ui/dialog';
 
 export const Upload = ({
+    open,
+    onOpenChange,
     onAdded,
-}: { onAdded: () => void }) => {
+}: {
+    open: boolean
+    onOpenChange: (open: boolean) => void
+    onAdded: () => void
+ }) => {
     const { user } = useAuth();
     const [files, setFiles] = useState<File[] | undefined>();
 
@@ -52,24 +58,25 @@ export const Upload = ({
             console.error("Unknown error Adding Course:", err);
             return { success: false, message: String(err) };
         }
+        onOpenChange(false)
         onAdded();
     }
 
     return (
-        <Dialog>
-        <DialogTrigger asChild>
-            <Button className="flex-1 sm:flex-none" >Upload iCal</Button>
-        </DialogTrigger>
-        <DialogContent className="max-w-md">
-                <DialogHeader>
-                    <DialogTitle>Upload your schedule</DialogTitle>
-                    <DialogDescription>Go to your student portal and export your schedule in csv, pdf, or iCal formats</DialogDescription>
-                </DialogHeader>
-                <div className="flex flex-col p-4 items-center">
-                    <DropzoneField onDrop={handleDrop} />
-                    <Button type="submit" onClick={handleSubmit} className="w-full gap-3">Submit</Button>
-                </div>
-        </DialogContent>
+        <Dialog open={open} onOpenChange={onOpenChange}>
+            <DialogTrigger asChild>
+                <Button className="flex-1 sm:flex-none" >Upload iCal</Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-md">
+                    <DialogHeader>
+                        <DialogTitle>Upload your schedule</DialogTitle>
+                        <DialogDescription>Go to your student portal and export your schedule in csv, pdf, or iCal formats</DialogDescription>
+                    </DialogHeader>
+                    <div className="flex flex-col p-4 items-center">
+                        <DropzoneField onDrop={handleDrop} />
+                        <Button type="submit" onClick={handleSubmit} className="w-full gap-3">Submit</Button>
+                    </div>
+            </DialogContent>
         </Dialog>
     );
 };
