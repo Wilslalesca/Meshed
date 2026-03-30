@@ -60,7 +60,6 @@ export default function App() {
           <Route path="/register" element={ <GuestRoute> <Register /> </GuestRoute> } />
         </Route>
 
-        {/* Public marketing pages — no forced background */}
         <Route element={<PublicLayout />}>
           <Route path="/" element={<Home />} />
           <Route path="/home" element={<Navigate to="/" replace />} />
