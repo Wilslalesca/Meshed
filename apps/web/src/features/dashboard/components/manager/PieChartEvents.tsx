@@ -11,6 +11,8 @@ import {
 import {
     ChartContainer,
     ChartTooltip,
+    ChartLegend,
+    ChartLegendContent,
     ChartTooltipContent,
     type ChartConfig,
 } from "@/shared/components/ui/chart";
@@ -27,15 +29,15 @@ const chartConfig = {
     },
     approved: {
         label: "Approved",
-        color: "var(--chart-1)",
+        color: "#45906e",
     },
     pending: {
         label: "Pending",
-        color: "var(--chart-3)",
+        color: "#D3D3D3",
     },
     denied: {
         label: "Denied",
-        color: "var(--chart-5)",
+        color: "#C91B00",
     },
 } satisfies ChartConfig;
 
@@ -49,17 +51,17 @@ export function EventStatusDonut({
             {
                 status: "approved",
                 count: approved,
-                fill: "var(--color-approved)",
+                fill: "#45906e",
             },
             {
                 status: "pending",
                 count: pending,
-                fill: "var(--color-pending)",
+                fill: "#D3D3D3",
             },
             {
                 status: "denied",
                 count: denied,
-                fill: "var(--color-denied)",
+                fill: "#C91B00",
             },
         ],
         [approved, pending, denied],
@@ -71,7 +73,7 @@ export function EventStatusDonut({
 
     return (
         <Card className="h-[320px] flex flex-col">
-            <CardHeader className="items-center pb-2">
+            <CardHeader className="items-center">
                 <CardTitle>Team Event Status</CardTitle>
                 <CardDescription>
                     Approved, pending, and denied events
@@ -88,6 +90,7 @@ export function EventStatusDonut({
                             cursor={false}
                             content={<ChartTooltipContent hideLabel />}
                         />
+
                         <Pie
                             data={chartData}
                             dataKey="count"
@@ -112,14 +115,14 @@ export function EventStatusDonut({
                                             >
                                                 <tspan
                                                     x={viewBox.cx}
-                                                    y={viewBox.cy}
+                                                    y={(viewBox.cy || 0) - 16}
                                                     className="fill-foreground text-3xl font-bold"
                                                 >
                                                     {totalEvents}
                                                 </tspan>
                                                 <tspan
                                                     x={viewBox.cx}
-                                                    y={(viewBox.cy || 0) + 22}
+                                                    y={(viewBox.cy || 0) + 16}
                                                     className="fill-muted-foreground text-sm"
                                                 >
                                                     Total
@@ -132,6 +135,11 @@ export function EventStatusDonut({
                                 }}
                             />
                         </Pie>
+
+                        <ChartLegend
+                            content={<ChartLegendContent nameKey="status" />}
+                            className="mt-2 flex-wrap gap-2 *:justify-center"
+                        />
                     </PieChart>
                 </ChartContainer>
             </CardContent>
