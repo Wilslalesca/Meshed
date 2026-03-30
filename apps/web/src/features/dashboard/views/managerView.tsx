@@ -151,70 +151,66 @@ export const ManagerView = () => {
     }));
 
     return (
-        <div className="p-6">
-            <div className="mx-auto flex w-full max-w-6xl flex-col gap-6">
-                <div className="flex flex-col gap-1 px-1">
-                    <h1 className="text-2xl font-semibold tracking-tight">
-                        Welcome back
-                        {user?.firstName ? `, ${user.firstName}` : ""}
-                    </h1>
-                    <p className="text-sm text-muted-foreground">
-                        Here's a quick look at your teams, approvals, and
-                        schedule updates.
-                    </p>
+        <div className="flex flex-col gap-6 p-6">
+            <div className="flex flex-col gap-1 px-1">
+                <h1 className="text-2xl font-semibold tracking-tight">
+                    Welcome back
+                    {user?.firstName ? `, ${user.firstName}` : ""}
+                </h1>
+                <p className="text-sm text-muted-foreground">
+                    Here's a quick look at your teams, approvals, and
+                    schedule updates.
+                </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <StatCard
+                    title="Total Athletes"
+                    value={String(totalAthletes)}
+                    subtitle="Active athletes across your teams"
+                />
+                <StatCard
+                    title="Total Team Events"
+                    value={String(totalTeamEvents)}
+                    subtitle="Total team events"
+                />
+                <StatCard
+                    title="Pending Events"
+                    value={String(pendingApprovals)}
+                    subtitle="Pending team events"
+                />
+                
+            </div>
+             <QuickActions selectedTeamId={selectedTeam} />
+
+            
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                <div className="lg:col-span-2">
+                    <Card className="h-full">
+                        <CardHeader>
+                            <CardTitle>Updates</CardTitle>
+                        </CardHeader>
+                        <CardContent className="p-0 h-full">
+                            <ActivityFeed data={updates} />
+                        </CardContent>
+                    </Card>
                 </div>
-
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
-                    <StatCard
-                        title="Total Athletes"
-                        value={String(totalAthletes)}
-                        subtitle="Active athletes across your teams"
-                    />
-                    <StatCard
-                        title="Total Team Events"
-                        value={String(totalTeamEvents)}
-                        subtitle="Total team events"
-                    />
-                    <StatCard
-                        title="Pending Events"
-                        value={String(pendingApprovals)}
-                        subtitle="Pending team events"
-                    />
-                    {/* removed as unimplemented / unnecessary atm */}
-                    {/* <StatCard
-                        title="Unread Messages"
-                        value={String(unreadCount)}
-                        subtitle="Unread notifications"
-                    /> */}
-                </div>
-
-                <QuickActions selectedTeamId={selectedTeam} />
-
-                <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-                    <div className="flex flex-col gap-4 lg:col-span-2">
-                        <Card className="h-full">
-                            <TeamOverview
-                                teams={teams}
-                                selectedTeamId={selectedTeam}
-                                onTeamChange={setSelectedTeam}
-                            />
-                        </Card>
-
-                        <Card className="h-full">
-                            <CardHeader>
-                                <CardTitle>Updates</CardTitle>
-                            </CardHeader>
-                            <CardContent className="p-0 h-full">
-                                <ActivityFeed data={updates} />
-                            </CardContent>
-                        </Card>
-                    </div>
-
-                    <div className="flex flex-col gap-4 lg:col-span-1">
-                        <EventWidget events={events} />
-                    </div>
+                <div className="lg:col-span-1">
+                    <EventWidget events={events} />
                 </div>
             </div>
+            <Card className="h-full">
+                <TeamOverview
+                    teams={teams}
+                    selectedTeamId={selectedTeam}
+                    onTeamChange={setSelectedTeam}
+                />
+            </Card>
+
+                    
+
+                     
         </div>
+     
     );
 };
