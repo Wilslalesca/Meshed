@@ -1,0 +1,28 @@
+.marketing {
+  /* Meshed brand palette — brighter, more saturated */
+  --color-vice-teal: #5db8ae;
+  --color-meshed-teal-light: #7dcec5;
+  --color-meshed-teal-mid: #4aa89e;
+  --color-meshed-blue: #3d8fad;
+  --color-meshed-blue-deep: #2e7a96;
+
+  /* Slightly warm white base so gradient pops */
+  --background: #f0faf9;
+}
+
+.dark .marketing {
+  --color-vice-teal: #81b9b2;
+  --background: oklch(0.145 0 0);
+}
+
+/* ── Meshed page background gradient ─────────────────────────────────────
+   Soft radial mesh that echoes the logo: teal upper-left, steel-blue
+   lower-right, gentle white centre so text stays readable.
+   ──────────────────────────────────────────────────────────────────────── */
+.marketing .meshed-bg {
+  background-color: #f0faf9;
+  background-image:
+    radial-gradient(ellipse 75% 65% at 0% 0%, #93ddd6 0%, transparent 65%),
+    radial-gradient(ellipse 60% 55% at 100% 100%, #7ec8e0 0%, transparent 65%),
+    radial-gradient(ellipse 50% 40% at 50% 0%, #b8ece7 0%, transparent 55%);
+}
