@@ -197,7 +197,7 @@ export const ManagerView = () => {
                     </Card>
                 </div>
                 <div className="lg:col-span-1">
-                    <EventStatusDonut approved={15} pending={15} denied={2}  />
+                    <EventStatusDonut approved={25} pending={5} denied={7}  />
                 </div>
             </div>
             <Card className="h-full">
