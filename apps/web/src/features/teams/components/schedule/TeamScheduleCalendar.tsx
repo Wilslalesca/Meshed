@@ -30,6 +30,14 @@ function getMonthDayChip(api: CalendarApi | null) {
   return { month, day };
 }
 
+function getColor(event: TeamScheduleEvent) {
+  if (event.type === "Class") {
+    return "#45a4ca"
+  }
+  else{
+    return "#45906e";
+  }
+}
 
 export function TeamScheduleCalendar({
   view,
@@ -72,6 +80,8 @@ export function TeamScheduleCalendar({
       start: e.startTime,
       end: e.endTime,
       extendedProps: e,
+      backgroundColor: getColor(e),
+      borderColor: getColor(e),
     }));
   }, [events]);
 
