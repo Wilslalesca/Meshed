@@ -97,7 +97,6 @@ export const AuthController = {
     if (existing && !invitedToken) return res.status(409).json({ error: "Email already registered" });
 
     if (existing && invitedToken) {
-      // Security: an invite token should never allow resetting password for a verified account.
       if (existing.verified) {
         return res.status(409).json({
           error: "Account already exists. Please log in to accept the invite.",
@@ -148,10 +147,8 @@ export const AuthController = {
       }
 
       await InviteModel.markAccepted(invite.id, invite.organization_id);
-
       await ActivityLogModel.log(invite.organization_id, user.id, "INVITE_ACCEPTED", "invite", invite.id);
 
-      // Notify active team managers that the invite was accepted.
       const managerIds = await TeamStaffModel.getActiveManagerIds(invite.team_id);
       await Promise.all(
         managerIds

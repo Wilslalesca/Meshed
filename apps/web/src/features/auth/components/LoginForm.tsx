@@ -32,8 +32,6 @@ export function LoginForm({
         if (locationState.message) {
             setInfo(locationState.message);
         }
-        // only want to react to navigation changes
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [locationState.email, locationState.message]);
 
     async function onSubmit(e: React.FormEvent<HTMLFormElement>) {

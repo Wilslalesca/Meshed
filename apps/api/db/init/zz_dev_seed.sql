@@ -1,8 +1,4 @@
--- ---------------------------------------------------------------------------
--- DEV SEED (idempotent)
--- Creates a dev org + team and links a manager + roster users for UI testing.
--- NOTE: Docker's Postgres init scripts only run on a fresh database volume.
--- ---------------------------------------------------------------------------
+-- seeding various things for testing purpose - nameing is just so this runs after db.sql
 
 -- Required for crypt()/gen_salt()
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
@@ -15,7 +11,7 @@ DECLARE
   athlete_id UUID;
   v_user_id UUID;
 BEGIN
-  -- Organization
+
   INSERT INTO organizations (name, slug, plan, active, created_at, updated_at)
   VALUES ('Meshed Dev Org', 'meshed-dev-org', 'Pro', TRUE, NOW(), NOW())
   ON CONFLICT (slug) DO UPDATE
@@ -26,7 +22,6 @@ BEGIN
     SELECT id INTO org_id FROM organizations WHERE slug = 'meshed-dev-org' LIMIT 1;
   END IF;
 
-  -- Team
   SELECT id INTO v_team_id
   FROM teams
   WHERE organization_id = org_id AND name = 'Meshed Dev Team'
@@ -38,7 +33,6 @@ BEGIN
     RETURNING id INTO v_team_id;
   END IF;
 
-  -- Users (create if missing)
   INSERT INTO users (
     first_name, last_name, email, role, password_hash,
     active, verified, created_at, updated_at
@@ -75,7 +69,6 @@ BEGIN
 
   SELECT id INTO v_user_id FROM users WHERE email = 'user@email.com' LIMIT 1;
 
-  -- Org memberships
   IF manager_id IS NOT NULL THEN
     INSERT INTO organization_memberships (
       organization_id, user_id, role, status, created_at, updated_at
@@ -101,7 +94,6 @@ BEGIN
     ON CONFLICT (organization_id, user_id) DO NOTHING;
   END IF;
 
-  -- Team staff (manager)
   IF manager_id IS NOT NULL THEN
     INSERT INTO team_staff (
       user_id, team_id, role, status, created_at, updated_at
@@ -111,7 +103,6 @@ BEGIN
       SET role = 'manager', status = 'active', updated_at = NOW();
   END IF;
 
-  -- Team roster (athletes)
   IF athlete_id IS NOT NULL THEN
     INSERT INTO user_teams (
       user_id, team_id, role, position, status, joined_at, updated_at

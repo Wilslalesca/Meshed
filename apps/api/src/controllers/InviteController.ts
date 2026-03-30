@@ -29,7 +29,6 @@ export class InviteController {
       token
     );
 
-    // Track invited users as pending until accepted/approved.
     if (role === "manager") {
       const staff = await TeamStaffModel.findStaffRecord(teamId, user.id);
       if (staff) {
@@ -55,8 +54,6 @@ export class InviteController {
 
     const hasFullAccount = Boolean(user.verified) && Boolean(user.passwordHash?.trim());
 
-    // If the invited email already has a verified account, don't force re-registration.
-    // Auto-accept the invite and send the user to login.
     if (hasFullAccount) {
       const membershipRole = invite.role === "manager" ? "manager" : "user";
       await UserModel.createMembership(user.id, invite.organization_id, membershipRole);
@@ -69,7 +66,7 @@ export class InviteController {
           await TeamStaffModel.addStaff(invite.team_id, user.id, invite.role, null);
         }
       } else {
-        // Ensure they exist on the roster, then mark active.
+
         await TeamRosterModel.addToTeam(invite.team_id, user.id, "athlete", invite.position ?? null);
         await TeamRosterModel.updateAthlete(invite.team_id, user.id, {
           status: "pending",
@@ -104,7 +101,6 @@ export class InviteController {
       });
     }
 
-    // For new/unverified accounts, only validate + return invite details.
     return res.json({ email: invite.email, role: invite.role, position: invite.position, token, next: "register" });
   }
 }

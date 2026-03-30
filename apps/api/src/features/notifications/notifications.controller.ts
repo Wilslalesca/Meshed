@@ -12,8 +12,6 @@ export async function createForTeam(req: AuthedRequest, res: Response) {
 
     const created = await service.createForTeam( req.user.organizationId, teamId as string, type, message, meta);
 
-    // If this is used as an announcement (current UI uses type=SYSTEM), also create an update
-    // for the sender so it shows up in their Updates feed with the actual message.
     if (type === "SYSTEM") {
         const team = await TeamModel.getTeam(teamId as string, req.user.organizationId);
         const teamName = team?.name ?? "your team";
