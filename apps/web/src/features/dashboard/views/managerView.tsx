@@ -206,12 +206,7 @@ export const ManagerView = () => {
                     selectedTeamId={selectedTeam}
                     onTeamChange={setSelectedTeam}
                 />
-            </Card>
-
-                    
-
-                     
+            </Card>   
         </div>
-     
     );
 };
