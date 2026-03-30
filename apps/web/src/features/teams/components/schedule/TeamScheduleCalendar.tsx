@@ -12,6 +12,11 @@ import {
   SelectValue,
 } from "@/shared/components/ui/select";
 import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card"
+import {
   ButtonGroup
 } from "@/shared/components/ui/button-group";
 import { Search, X, ArrowLeft, ArrowRight } from 'lucide-react';
@@ -35,7 +40,35 @@ function getColor(event: TeamScheduleEvent) {
     return "#45a4ca"
   }
   else{
+    if (event.status === '')
     return "#45906e";
+  }
+}
+
+function EventTriggerHover(info:EventTriggerArg) {
+  const event = info.event.extendedProps
+  if(event.type!=='Class'){
+     return (
+    <HoverCard openDelay={10} closeDelay={100}>
+      <HoverCardTrigger asChild>
+        <Button variant="link">Hover Here</Button>
+      </HoverCardTrigger>
+      <HoverCardContent className="flex w-64 flex-col gap-0.5">
+        <div className="font-semibold">@nextjs</div>
+        <div>The React Framework – created and maintained by @vercel.</div>
+        <div className="mt-1 text-xs text-muted-foreground">
+          Joined December 2021
+        </div>
+      </HoverCardContent>
+    </HoverCard>
+  )
+  }
+}
+
+function EventExitTriggerHover(info:EventTriggerArg) {
+  const event = info.event.extendedProps
+  if(event.type!=='Class'){
+    
   }
 }
 
@@ -281,6 +314,8 @@ export function TeamScheduleCalendar({
           slotMinTime="06:00:00"
           slotMaxTime="23:00:00"
           events={allEvents}
+          eventMouseover={EventTriggerHover}
+          eventMouseout={EventExitTriggerHover}
           eventClassNames={(arg) => {
             const type = (arg.event.extendedProps as TeamScheduleEvent)?.type;
             if (type === "Team Event") return ["ev", "ev-team"];
