@@ -74,7 +74,7 @@ export function EventStatusDonut({
     return (
         <Card className="h-[320px] flex flex-col">
             <CardHeader className="items-center">
-                <CardTitle>Team Event Status</CardTitle>
+                <CardTitle>All Team Events</CardTitle>
                 <CardDescription>
                     Approved, pending, and denied events
                 </CardDescription>
