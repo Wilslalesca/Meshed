@@ -13,10 +13,10 @@ export function Stats() {
               key={it.v}
               className="card p-5 text-center border border-[--color-vice-teal]/30"
             >
-              <div className="text-2xl font-extrabold text-[--color-vice-teal]">
+              <div className="text-3xl font-extrabold text-[--color-vice-teal] sm:text-4xl">
                 {it.k}
               </div>
-              <div className="mt-1 text-xs text-muted-foreground">{it.v}</div>
+              <div className="mt-2 text-sm text-muted-foreground sm:text-base">{it.v}</div>
             </div>
           ))}
         </div>

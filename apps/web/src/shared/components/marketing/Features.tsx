@@ -5,32 +5,31 @@ export function Features() {
     return (
         <section id="features" className="py-16">
             <div className="mx-auto max-w-6xl px-6">
-                <h2 className="text-2xl font-bold">
-                    What you can run on Meshed
-                </h2>
-                <p className="mt-2 text-sm text-muted-foreground">
-                    Plug-and-play modules—swap the copy later.
+                <h2 className="text-3xl font-bold sm:text-4xl">Features that fix the mess</h2>
+                <p className="mt-3 text-base text-muted-foreground sm:text-lg">
+                    Reduce time-consuming scheduling work, prevent booking conflicts,
+                    remove inefficient manual processes, and keep communication organized.
                 </p>
 
                 <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                     <FeatureCard
-                        title="Smart Scheduling"
-                        desc="Recurring events, blackout windows, and conflict warnings."
+                        title="Faster Scheduling"
+                        desc="Cut the time-consuming back-and-forth with one shared calendar and clear approvals."
                         icon={<Calendar className="h-5 w-5" />}
                     />
                     <FeatureCard
-                        title="Teams & Rosters"
-                        desc="Keep athletes, staff, and permissions in sync."
+                        title="Conflict Prevention"
+                        desc="Spot overlaps early to avoid double-bookings and last-minute facility changes."
                         icon={<Users className="h-5 w-5" />}
                     />
                     <FeatureCard
                         title="Facilities"
-                        desc="Manage fields, courts, time blocks, and requests."
+                        desc="Centralize availability and requests so booking stays efficient and consistent."
                         icon={<Building2 className="h-5 w-5" />}
                     />
                     <FeatureCard
-                        title="Compliance"
-                        desc="Eligibility, notes and simple audit trails."
+                        title="Organized Communication"
+                        desc="Keep updates, changes, and notifications in one place so everyone stays aligned."
                         icon={<ShieldCheck className="h-5 w-5" />}
                     />
                 </div>

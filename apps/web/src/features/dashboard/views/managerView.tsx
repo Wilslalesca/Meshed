@@ -27,7 +27,6 @@ export const ManagerView = () => {
     const [selectedTeam, setSelectedTeam] = useState<string>("");
     const {
         notifications,
-        unreadCount,
         refresh: refreshNotifications,
     } = useNotifications();
 
