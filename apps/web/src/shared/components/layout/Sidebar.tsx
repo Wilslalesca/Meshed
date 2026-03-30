@@ -69,7 +69,7 @@ export const Sidebar = ({
         { name: "Schedules", href: "/schedules", icon: Calendar, roles: ["user", "manager", "admin"], subLinks: [{ name: "My Schedule", href: "/myschedule" }]},
         { name: "Facilities", href: "/facilities", icon: Building2, roles: ["admin"] },
         { name: "Organization", href: "/organization", icon: Grid2X2Check, roles: ["admin"] },
-        { name: "Settings", href: "/settings", icon: Settings, roles: ["user", "manager", "admin"] },
+        { name: "Settings", href: "/profile", icon: Settings, roles: ["user", "manager", "admin"] },
     ];
     const { role } = useUserRole();
     const filteredLinks = links.filter(link => !link.roles || link.roles.includes(role));
@@ -266,7 +266,7 @@ export const Sidebar = ({
                             </DropdownMenuItem>
                             <DropdownMenuItem
                                 className="flex items-center gap-2 cursor-pointer"
-                                onClick={() => navigate("/settings")}
+                                onClick={() => navigate("/profile")}
                             >
                                 <Settings className="h-4 w-4 text-gray-500" />
                                 Settings
