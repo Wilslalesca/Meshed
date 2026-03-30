@@ -19,6 +19,7 @@ import { apiGetRoster } from "@/features/teams/api/teams";
 import type { Athlete } from "@/features/teams/types/roster";
 import { API_BASE } from "@/features/dashboard/api/userDashboard.api";
 import type { RawTeamEvent } from "@/features/dashboard/types/api";
+import { EventStatusDonut } from "../components/manager/PieChartEvents";
 
 export const ManagerView = () => {
     const { user, token } = useAuth();
@@ -196,7 +197,7 @@ export const ManagerView = () => {
                     </Card>
                 </div>
                 <div className="lg:col-span-1">
-                    {/* <EventWidget events={events} /> */}
+                    <EventStatusDonut approved={15} pending={15} denied={2}  />
                 </div>
             </div>
             <Card className="h-full">
