@@ -34,25 +34,19 @@ export const QuickActions = ({
       icon: Users,
       path: teamTabPath("roster"),
     },
-    {
-      id: "bookFacility",
-      label: "Book Facility",
-      icon: MapPin,
-      path: "/facilities",
-    },
+    // removed from facilities quick acctions
+    // {
+    //   id: "bookFacility",
+    //   label: "Book Facility",
+    //   icon: MapPin,
+    //   path: "/facilities",
+    // },
     {
       id: "teamCalendar",
       label: "Team Calendar",
       icon: Calendar,
       path: teamTabPath("schedule"),
     },
-    {
-      id: "approveSchedules",
-      label: "Approve Schedules",
-      icon: CheckCircle,
-      path: "/manager",
-    },
-    // { id : "generateOptimalSchedule", label: "Generate Optimal Schedule", icon: Calendar, path: "/optimize" },
   ];
   const handleAction = (action: string, path: string) => {
     setActive(action);

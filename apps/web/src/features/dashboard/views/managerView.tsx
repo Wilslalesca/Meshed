@@ -156,11 +156,12 @@ export const ManagerView = () => {
                         value={String(pendingApprovals)}
                         subtitle="Pending users"
                     />
-                    <StatCard
+                    {/* removed as unimplemented / unnecessary atm */}
+                    {/* <StatCard
                         title="Unread Messages"
                         value={String(unreadCount)}
                         subtitle="Unread notifications"
-                    />
+                    /> */}
                 </div>
 
                 <QuickActions selectedTeamId={selectedTeam} />
