@@ -71,7 +71,7 @@ export const ManagerView = () => {
         const stats = await apiGetManagerDashboardStats(teams, token);
 
         try {
-            const [rosters, teamEventLists] = await Promise.all([
+            const [rosters] = await Promise.all([
                 Promise.all(teams.map((t) => apiGetRoster(t.id, token))),
                 Promise.all(teams.map((t) => getTeamEventsRaw(t.id, token))),
             ]);
@@ -81,45 +81,8 @@ export const ManagerView = () => {
                 return sum + items.filter((a) => a.status === "active").length;
             }, 0);
 
-            const totalEventsCount = teamEventLists.reduce(
-                (sum, list) => sum + (Array.isArray(list) ? list.length : 0),
-                0,
-            );
-
-            const pendingEventsCount = teamEventLists.reduce((sum, list) => {
-                const items = Array.isArray(list) ? list : [];
-                return (
-                    sum +
-                    items.filter((e) =>
-                        String(e.status ?? "")
-                            .trim()
-                            .toLowerCase() === "pending",
-                    ).length
-                );
-            }, 0);
-            const approvedEventsCount = teamEventLists.reduce((sum, list) => {
-                const items = Array.isArray(list) ? list : [];
-                return (
-                    sum +
-                    items.filter(
-                        (e) =>
-                            String(e.status ?? "")
-                                .trim()
-                                .toLowerCase() === "approved",
-                    ).length
-                );
-            }, 0);
-
-            const deniedEventsCount = teamEventLists.reduce((sum, list) => {
-                const items = Array.isArray(list) ? list : [];
-                return (
-                    sum +
-                    items.filter((e) => {
-                        const status = String(e.status ?? "").trim().toLowerCase();
-                        return status === "denied" || status === "rejected";
-                    }).length
-                );
-            }, 0);
+            
+            
 
             setTotalAthletes(athleteCount);
             setTotalTeamEvents(stats.totalTeamEvents);
