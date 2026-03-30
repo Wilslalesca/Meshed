@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/shared/components/ui/card";
 import { Button } from "@/shared/components/ui/button";
-import { Megaphone, CalendarPlus, Users, MapPin, CheckCircle, Calendar } from "lucide-react";
+import { Megaphone, CalendarPlus, Users, Calendar } from "lucide-react";
 
 export const QuickActions = ({
   selectedTeamId,
@@ -63,7 +63,7 @@ export const QuickActions = ({
         <CardDescription>Tools to manage your athletes and team.</CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
           {actions.map((a) => (
             <Button
               key={a.id}
