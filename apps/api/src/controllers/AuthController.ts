@@ -10,6 +10,8 @@ import { VerificationCodeModel } from "../models/VerificationCodeModel";
 import { InviteModel } from "../models/InviteModel";
 import { TeamStaffModel } from "../models/TeamStaffModel";
 import { TeamRosterModel } from "../models/TeamRosterModel";
+import { ActivityLogModel } from "../models/ActivityLogModel";
+import * as notifications from "../features/notifications/notifications.service";
 import type { SafeUser, User } from "../types";
 import type { UserWithMembership } from "../models/UserModel";
 
@@ -95,6 +97,13 @@ export const AuthController = {
     if (existing && !invitedToken) return res.status(409).json({ error: "Email already registered" });
 
     if (existing && invitedToken) {
+      if (existing.verified) {
+        return res.status(409).json({
+          error: "Account already exists. Please log in to accept the invite.",
+          needsLogin: true,
+        });
+      }
+
       await UserModel.setPassword(existing.id, password);
       await UserModel.updateUser(existing.id, {first_name: firstName, last_name: lastName ?? "", phone: phone ?? "", role: "user"});
       user = await UserModel.findById(existing.id);
@@ -112,6 +121,10 @@ export const AuthController = {
       const invite = await InviteModel.findByToken(invitedToken);
 
       if (!invite) return res.status(400).json({ error: "Invalid invite token" });
+
+      if ((invite.email ?? "").toLowerCase() !== normalizedEmail) {
+        return res.status(400).json({ error: "Invite token does not match this email" });
+      }
         
       const membershipRole = invite.role === "manager" ? "manager" : "user";
 
@@ -134,6 +147,22 @@ export const AuthController = {
       }
 
       await InviteModel.markAccepted(invite.id, invite.organization_id);
+      await ActivityLogModel.log(invite.organization_id, user.id, "INVITE_ACCEPTED", "invite", invite.id);
+
+      const managerIds = await TeamStaffModel.getActiveManagerIds(invite.team_id);
+      await Promise.all(
+        managerIds
+          .filter((id) => id !== user.id)
+          .map((managerId) =>
+            notifications.createForUser(
+              invite.organization_id,
+              managerId,
+              "INVITE_ACCEPTED",
+              `${invite.email} accepted their invite`,
+              { teamId: invite.team_id, inviteId: invite.id, email: invite.email },
+            ),
+          ),
+      );
     } 
     else {
       const org = await OrganizationModel.create(organizationName!);
@@ -142,6 +171,11 @@ export const AuthController = {
 
     const code = Math.floor(100000 + Math.random() * 900000).toString();
     await VerificationCodeModel.create(user.id, code);
+
+    if (process.env.NODE_ENV !== "production") {
+      console.log(`[DEV] Verification code for ${user.email}: ${code}`);
+    }
+
     await sendEmail.sendVerificationEmail(user.email, code);
 
     return res.status(201).json({ message: "User registered successfully. Please verify your email.", userId: user.id});
@@ -162,6 +196,12 @@ export const AuthController = {
 
     const ok = await bcrypt.compare(password, user.passwordHash);
     if (!ok) return res.status(401).json({ error: "Invalid email or password" });
+
+    // users were stuck pending after successfully accepting an invite from a mgr
+    await Promise.all([
+      TeamRosterModel.activatePendingForUser(user.id),
+      TeamStaffModel.activatePendingForUser(user.id),
+    ]);
     
     const accessToken = signAccessToken(user.id, user.role, user.organizationId, user.organizationRole);
     const refreshToken = signRefreshToken(user.id, user.role, user.organizationId, user.organizationRole);
@@ -208,6 +248,13 @@ export const AuthController = {
     await VerificationCodeModel.markUsed(record.id);
     await UserModel.activateUser(userId);
 
+    // Invited users are inserted into team tables as "pending"; once the account is verified,
+    // flip those rows to "active" so managers see them as active members.
+    await Promise.all([
+      TeamRosterModel.activatePendingForUser(userId),
+      TeamStaffModel.activatePendingForUser(userId),
+    ]);
+
     const membership = await UserModel.findMembershipByUserId(userId);
     if (!membership) return res.status(400).json({ error: "No active organization membership found" });
     
@@ -230,6 +277,11 @@ export const AuthController = {
     await VerificationCodeModel.invalidateAllForUser(userId);
     const code = Math.floor(100000 + Math.random() * 900000).toString();
     await VerificationCodeModel.create(userId, code);
+
+    if (process.env.NODE_ENV !== "production") {
+      console.log(`[DEV] Verification code for ${user.email}: ${code}`);
+    }
+
     await sendEmail.sendVerificationEmail(user.email, code);
 
     return res.json({ message: "Verification email resent successfully" });

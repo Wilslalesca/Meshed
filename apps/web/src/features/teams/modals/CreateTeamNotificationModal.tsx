@@ -27,6 +27,9 @@ export function CreateTeamNotificationModal({
     const [message, setMessage] = useState("");
     const [loading, setLoading] = useState(false);
 
+    // double check - when using the quick action it bricked the teams page without a refresh - to be removed after confirmation it works.
+    if (!open) return null;
+
     async function onSubmit() {
         if (!message.trim()) return;
         if (!token) return;

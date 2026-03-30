@@ -27,6 +27,18 @@ export default function InviteRegisterPage() {
                 return;
             }
 
+            if (accepted.next === "login") {
+                nav("/login", {
+                    replace: true,
+                    state: {
+                        email: accepted.email,
+                        message:
+                            "Invite accepted. Please log in to continue.",
+                    },
+                });
+                return;
+            }
+
             setInvite(accepted);
             setLoading(false);
         }
