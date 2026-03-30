@@ -189,7 +189,7 @@ export const ManagerView = () => {
                 <div className="lg:col-span-2">
                     <Card className="h-full overflow-hidden">
                         <CardHeader>
-                            <CardTitle>Updates</CardTitle>
+                            <CardTitle>Recent Team Announcements</CardTitle>
                         </CardHeader>
                         <CardContent className="p-0 h-full">
                             <ActivityFeed data={updates} />
