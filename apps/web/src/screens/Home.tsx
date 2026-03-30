@@ -8,7 +8,7 @@ import { CTA } from "@/shared/components/marketing/CTA";
 export const Home: React.FC = () => (
   <div className="flex min-h-screen flex-col meshed-bg text-foreground">
 
-    {/* ── Nav ──────────────────────────────────────────────────────────── */}
+    {/* ── Nav ── */}
     <header style={{
       width: "100%",
       display: "flex",
@@ -25,7 +25,7 @@ export const Home: React.FC = () => (
       />
     </header>
 
-    {/* ── Page content ─────────────────────────────────────────────────── */}
+    {/* ── Page content ── */}
     <Hero />
     <Features />
     <Stats />
