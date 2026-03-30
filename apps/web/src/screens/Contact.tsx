@@ -44,21 +44,12 @@ export default function Contact() {
         borderBottom: "2px solid #5db8ae",
       }}>
         <Link to="/" style={{ display: "flex", alignItems: "center", gap: 20, textDecoration: "none", color: "inherit" }}>
-          <img
-            src="/Meshed_m.png"
-            alt="Meshed"
-            style={{ height: 80, width: 80, objectFit: "contain", flexShrink: 0 }}
-            draggable={false}
-            onError={(e) => {
-              const el = e.currentTarget as HTMLImageElement;
-              if (el.src.includes("/Meshed_m.png")) el.src = "/meshed_m.png";
-              else if (el.src.includes("/meshed_m.png")) el.src = "/meshed_M.png";
-              else el.style.display = "none";
-            }}
-          />
-          <span style={{ fontSize: 52, fontWeight: 700, letterSpacing: "-0.03em", lineHeight: 1 }}>
-            meshed
-          </span>
+           <img
+              src="/o_mast_color.png"
+              alt="Meshed"
+              style={{ height: 440, width: 1040, objectFit: "contain", flexShrink: 0 }}
+              draggable={false}
+            />
         </Link>
       </header>
 
