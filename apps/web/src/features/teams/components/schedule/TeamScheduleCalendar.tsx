@@ -71,6 +71,36 @@ export function TeamScheduleCalendar({
   const chip = useMemo(() => getMonthDayChip(api), [api]);
   const [searchOpen, setSearchOpen] = useState(false);
   const searchRef = useRef<HTMLInputElement | null>(null);
+  const [filter, setFilter] = useState<"all" | "team">("all")
+
+
+  const teamOnlyCalendarEvents = useMemo(() => {
+    return events
+      .filter((e) => e.type !== "Class")
+      .map((e) => ({
+        id: `${e.type}:${e.id}`,
+        title: e.type !== "Class" ? `${e.name} (${e.athleteName})` : e.athleteName,
+        start: e.startTime,
+        end: e.endTime,
+        extendedProps: e,
+        backgroundColor: getColor(e),
+        borderColor: getColor(e),
+      }));
+  }, [events]);
+
+  const teamOnlyHeatmapBackgroundEvents = useMemo(() => {
+    if (mode !== TeamScheduleMode.Heatmap) return [];
+
+    return buildHeatmapOverlayEvents({
+      events: events.filter((e) => e.type !== "Class"),
+      fromISO,
+      toISO,
+      rosterCount: rosterCount || 0,
+      slotMinutes: 30,
+      dayStartHour: 6,
+      dayEndHour: 23,
+    });
+  }, [events, fromISO, toISO, mode, rosterCount]);
 
   const calendarEvents = useMemo(() => {
     return events.map((e) => ({
@@ -100,10 +130,18 @@ export function TeamScheduleCalendar({
 
   const allEvents = useMemo(() => {
     if (mode === TeamScheduleMode.Heatmap) {
+      if (filter == "team"){
+        return teamOnlyHeatmapBackgroundEvents
+      }
         return heatmapBackgroundEvents;
     }
-    return calendarEvents;
-  }, [mode,heatmapBackgroundEvents, calendarEvents]);
+    else{
+      if(filter == "team"){
+        return teamOnlyCalendarEvents
+      }
+        return calendarEvents;
+    }
+  }, [mode, filter, heatmapBackgroundEvents, calendarEvents]);
 
   useEffect(() => {
     const calApi = calendarReference.current?.getApi();
@@ -229,6 +267,21 @@ export function TeamScheduleCalendar({
                 </Button>
             </ButtonGroup>
               )}
+
+            <ButtonGroup>
+                <Button 
+                  variant={filter === "all" ? "default" : "outline"}
+                  onClick={() => setFilter("all")}
+                  >
+                    All
+                </Button>
+                <Button
+                  variant={filter === "team" ? "default" : "outline"}
+                  onClick={() => setFilter("team")}
+                >
+                  Team Only
+                </Button>
+            </ButtonGroup>
  
             <ButtonGroup>
               <Button variant="outline" size="sm" onClick={() => api?.prev()}>
