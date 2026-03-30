@@ -14,32 +14,15 @@ export const Home: React.FC = () => (
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
-      gap: "20px",
-      padding: "28px 48px",
+      padding: "14px 36px",
       borderBottom: "2px solid #5db8ae",
     }}>
       <img
-        src="/Meshed_m.png"
+        src="/o_mast_color.png"
         alt="Meshed"
-        style={{ height: 200, width: 200, objectFit: "contain", flexShrink: 0 }}
+        style={{ height: 440, width: 1040, objectFit: "contain", flexShrink: 0 }}
         draggable={false}
-        onError={(e) => {
-          const el = e.currentTarget as HTMLImageElement;
-          if (el.src.includes("/Meshed_m.png")) el.src = "/meshed_m.png";
-          else if (el.src.includes("/meshed_m.png")) el.src = "/meshed_M.png";
-          else el.style.display = "none";
-        }}
       />
-      <span style={{
-        fontSize: 72,
-        fontWeight: 700,
-        letterSpacing: "-0.03em",
-        lineHeight: 1,
-        color: "inherit",
-        fontFamily: "primary, sans-serif",
-      }}>
-        meshed
-      </span>
     </header>
 
     {/* ── Page content ─────────────────────────────────────────────────── */}

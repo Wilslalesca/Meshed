@@ -47,15 +47,7 @@
 :root {
   --radius: 0.625rem;
 
-  /* Meshed brand palette — brighter, more saturated */
-  --color-vice-teal: #5db8ae;
-  --color-meshed-teal-light: #7dcec5;
-  --color-meshed-teal-mid: #4aa89e;
-  --color-meshed-blue: #3d8fad;
-  --color-meshed-blue-deep: #2e7a96;
-
-  /* Slightly warm white base so gradient pops */
-  --background: #f0faf9;
+  --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
@@ -90,7 +82,6 @@
 }
 
 .dark {
-  --color-vice-teal: #81b9b2;
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.205 0 0);
@@ -125,21 +116,14 @@
   --custom-color: oklch(0.6 0.2 150);
 }
 
-/* ── Meshed page background gradient ─────────────────────────────────────
-   Soft radial mesh that echoes the logo: teal upper-left, steel-blue
-   lower-right, gentle white centre so text stays readable.
-   ──────────────────────────────────────────────────────────────────────── */
-.meshed-bg {
-  background-color: #f0faf9;
-  background-image:
-    radial-gradient(ellipse 75% 65% at 0% 0%,    #93ddd6 0%, transparent 65%),
-    radial-gradient(ellipse 60% 55% at 100% 100%, #7ec8e0 0%, transparent 65%),
-    radial-gradient(ellipse 50% 40% at 50% 0%,   #b8ece7 0%, transparent 55%);
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
 }
 
-/* ── Utility ──────────────────────────────────────────────────────────── */
-.no-scrollbar::-webkit-scrollbar { display: none; }
-.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
 
 .rdp-day_today {
   background-color: transparent !important;

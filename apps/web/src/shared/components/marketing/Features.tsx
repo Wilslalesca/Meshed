@@ -5,8 +5,8 @@ export function Features() {
     return (
         <section id="features" className="py-16">
             <div className="mx-auto max-w-6xl px-6">
-                <h2 className="text-2xl font-bold">Features that fix the mess</h2>
-                <p className="mt-2 text-sm text-muted-foreground">
+                <h2 className="text-3xl font-bold sm:text-4xl">Features that fix the mess</h2>
+                <p className="mt-3 text-base text-muted-foreground sm:text-lg">
                     Reduce time-consuming scheduling work, prevent booking conflicts,
                     remove inefficient manual processes, and keep communication organized.
                 </p>

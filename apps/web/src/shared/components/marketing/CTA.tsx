@@ -6,7 +6,7 @@ export function CTA() {
         <section className="py-24">
             <div className="mx-auto max-w-5xl px-6 text-center">
                 <h3 className="text-3xl font-bold tracking-tight sm:text-4xl">Ready to try Meshed?</h3>
-                <p className="mt-3 text-base text-muted-foreground">
+                <p className="mt-3 text-lg text-muted-foreground">
                     Create a free account—bring your first team in minutes.
                 </p>
                 <div className="mt-8 flex justify-center gap-3">

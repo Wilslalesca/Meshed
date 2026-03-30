@@ -20,6 +20,8 @@ import { AthleteDetailsPage } from "@/features/teams/pages/AthleteDetailsPage.ts
 import InviteRegisterPage from "./features/auth/pages/InviteRegisterPage.tsx";
 import OrganizationPage from "@/features/organizations/page.tsx";
 
+import "./landing.css";
+
 function AppLayout() {
     return (
         <Layout>
@@ -30,7 +32,7 @@ function AppLayout() {
 
 function PublicLayout() {
   return (
-    <div className="min-h-screen w-screen text-foreground">
+    <div className="marketing min-h-screen w-screen text-foreground">
       <Outlet />
     </div>
   );
