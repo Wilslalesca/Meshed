@@ -14,10 +14,6 @@ import { apiGetMyTeams } from "@/features/teams/api/teams";
 import type { Team } from "@/features/teams/types/teams";
 import { useNotifications } from "@/features/notifications/hooks/useNotifications";
 import { formatRelativeTime } from "../utils/notifications";
-import { apiGetRoster } from "@/features/teams/api/teams";
-import type { Athlete } from "@/features/teams/types/roster";
-import { API_BASE } from "@/features/dashboard/api/userDashboard.api";
-import type { RawTeamEvent } from "@/features/dashboard/types/api";
 import {
     Select,
     SelectTrigger,
@@ -43,22 +39,6 @@ export const ManagerView = () => {
     const [approvedEvents, setApprovedEvents] = useState<number>(0);
     const [deniedEvents, setDeniedEvents] = useState<number>(0);
 
-    const getTeamEventsRaw = useCallback(
-        async (teamId: string, authToken: string): Promise<RawTeamEvent[]> => {
-            const res = await fetch(`${API_BASE}/teams/${teamId}/events`, {
-                headers: {
-                    Authorization: `Bearer ${authToken}`,
-                },
-            });
-
-            if (!res.ok) return [];
-
-            const data = (await res.json()) as RawTeamEvent[];
-            return Array.isArray(data) ? data : [];
-        },
-        [],
-    );
-
     const loadStats = useCallback(async () => {
         if (!token || teams.length === 0) {
             setTotalAthletes(0);
@@ -68,60 +48,9 @@ export const ManagerView = () => {
             setDeniedEvents(0);
             return;
         }
-        const stats = await apiGetManagerDashboardStats(teams, token);
-
         try {
-            const [rosters, teamEventLists] = await Promise.all([
-                Promise.all(teams.map((t) => apiGetRoster(t.id, token))),
-                Promise.all(teams.map((t) => getTeamEventsRaw(t.id, token))),
-            ]);
-
-            const athleteCount = rosters.reduce((sum, roster) => {
-                const items = Array.isArray(roster) ? (roster as Athlete[]) : [];
-                return sum + items.filter((a) => a.status === "active").length;
-            }, 0);
-
-            const totalEventsCount = teamEventLists.reduce(
-                (sum, list) => sum + (Array.isArray(list) ? list.length : 0),
-                0,
-            );
-
-            const pendingEventsCount = teamEventLists.reduce((sum, list) => {
-                const items = Array.isArray(list) ? list : [];
-                return (
-                    sum +
-                    items.filter((e) =>
-                        String(e.status ?? "")
-                            .trim()
-                            .toLowerCase() === "pending",
-                    ).length
-                );
-            }, 0);
-            const approvedEventsCount = teamEventLists.reduce((sum, list) => {
-                const items = Array.isArray(list) ? list : [];
-                return (
-                    sum +
-                    items.filter(
-                        (e) =>
-                            String(e.status ?? "")
-                                .trim()
-                                .toLowerCase() === "approved",
-                    ).length
-                );
-            }, 0);
-
-            const deniedEventsCount = teamEventLists.reduce((sum, list) => {
-                const items = Array.isArray(list) ? list : [];
-                return (
-                    sum +
-                    items.filter((e) => {
-                        const status = String(e.status ?? "").trim().toLowerCase();
-                        return status === "denied" || status === "rejected";
-                    }).length
-                );
-            }, 0);
-
-            setTotalAthletes(athleteCount);
+            const stats = await apiGetManagerDashboardStats(teams, token);
+            setTotalAthletes(stats.totalAthletes);
             setTotalTeamEvents(stats.totalTeamEvents);
             setPendingApprovals(stats.pendingEvents);
             setApprovedEvents(stats.approvedEvents);
@@ -133,7 +62,7 @@ export const ManagerView = () => {
             setApprovedEvents(0);
             setDeniedEvents(0);
         }
-    }, [getTeamEventsRaw, teams, token]);
+    }, [teams, token]);
 
     useEffect(() => {
         let ignore = false;
