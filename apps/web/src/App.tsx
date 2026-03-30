@@ -3,13 +3,13 @@ import { Routes, Route, Outlet, Navigate } from "react-router-dom";
 import { Home } from "./screens/Home";
 import Contact from "./screens/Contact";
 import LoginPage from "./features/auth/pages/Login.tsx";
-import Register  from "./features/auth/pages/Register.tsx";
+import Register from "./features/auth/pages/Register.tsx";
 import { Dashboard } from "./routes/dashboard";
 import { Profile } from "./screens/Profile";
 import { Facilities } from "./screens/Facilities.tsx";
 import { OptimizePage } from "./screens/OptimizePage.tsx";
 import { useAuth } from "./shared/hooks/useAuth";
-import ScheduleBackground from './screens/ScheduleBackground';
+import ScheduleBackground from "./screens/ScheduleBackground";
 import { Layout } from "./shared/components/layout/Layout.tsx";
 import AthleteSchedulePage from "./routes/athlete/schedule";
 import { Toaster } from "@/shared/components/ui/sonner";
@@ -28,7 +28,6 @@ function AppLayout() {
     );
 }
 
-// PublicLayout no longer forces a background — each screen owns its own bg
 function PublicLayout() {
   return (
     <div className="min-h-screen w-screen text-foreground">
@@ -38,9 +37,7 @@ function PublicLayout() {
 }
 
 function AuthLayout() {
-  return (
-      <Outlet />
-  );
+    return <Outlet />;
 }
 
 function GuestRoute({ children }: { children: React.ReactNode }) {

@@ -46,6 +46,13 @@ const seeds = [
         pass: "Alex123!",
         role: "user",
     },
+    {
+        first: "Isla",
+        last: "Olesen",
+        email: "isla@email.com",
+        pass: "Isla123!",
+        role: "user",
+    },
 ];
 
 export async function testingAccountGeneration() {

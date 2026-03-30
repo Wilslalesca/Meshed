@@ -5,8 +5,6 @@ import { AuthedRequest } from "../middleware/authMiddleware";
 export const AthleteController = {
 
     async getAthlete(req: AuthedRequest, res: Response) {
-        console.log("GET /athletes/:id called with params:", req.params);
-        console.log("Authenticated user:", req.user);
         if (!req.user) return res.status(401).json({ error: "Unauthorized" });
         const { athleteId } = req.params;
 
