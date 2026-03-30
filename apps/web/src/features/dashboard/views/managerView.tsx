@@ -8,7 +8,6 @@ import { QuickActions } from "../components/manager/QuickActions";
 import { StatCard } from "../components/StatCard";
 import { TeamOverview } from "../components/manager/TeamOverview";
 import { ActivityFeed } from "../components/manager/ActivityFeed";
-import { EventWidget } from "../components/EventWidget";
 import { useCallback, useEffect, useState } from "react";
 import { useAuth } from "@/shared/hooks/useAuth";
 import { apiGetMyTeams } from "@/features/teams/api/teams";
@@ -19,11 +18,17 @@ import { apiGetRoster } from "@/features/teams/api/teams";
 import type { Athlete } from "@/features/teams/types/roster";
 import { API_BASE } from "@/features/dashboard/api/userDashboard.api";
 import type { RawTeamEvent } from "@/features/dashboard/types/api";
+import {
+    Select,
+    SelectTrigger,
+    SelectValue,
+    SelectContent,
+    SelectItem,
+} from "@/shared/components/ui/select";
 import { EventStatusDonut } from "../components/manager/PieChartEvents";
 
 export const ManagerView = () => {
     const { user, token } = useAuth();
-    const [events, setEvents] = useState([]);
     const [teams, setTeams] = useState<Team[]>([]);
     const [selectedTeam, setSelectedTeam] = useState<string>("");
     const {
@@ -100,7 +105,6 @@ export const ManagerView = () => {
     useEffect(() => {
         let ignore = false;
 
-        setEvents([]);
         setTeams([]);
         setSelectedTeam("");
 
@@ -153,15 +157,36 @@ export const ManagerView = () => {
 
     return (
         <div className="flex flex-col gap-6 p-6">
-            <div className="flex flex-col gap-1 px-1">
-                <h1 className="text-2xl font-semibold tracking-tight">
-                    Welcome back
-                    {user?.firstName ? `, ${user.firstName}` : ""}
-                </h1>
-                <p className="text-sm text-muted-foreground">
-                    Here's a quick look at your teams, approvals, and
-                    schedule updates.
-                </p>
+            <div className="flex items-start justify-between gap-4 px-1">
+                <div className="flex flex-col gap-1">
+                    <h1 className="text-2xl font-semibold tracking-tight">
+                        Welcome back
+                        {user?.firstName ? `, ${user.firstName}` : ""}
+                    </h1>
+                    <p className="text-sm text-muted-foreground">
+                        Here's a quick look at your teams, approvals, and
+                        schedule updates.
+                    </p>
+                </div>
+
+                <div className="min-w-[180px]">
+                    <Select
+                        value={selectedTeam}
+                        onValueChange={setSelectedTeam}
+                        disabled={teams.length === 0}
+                    >
+                        <SelectTrigger className="h-9 w-[180px] text-sm">
+                            <SelectValue placeholder="Select team" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {teams.map((team) => (
+                                <SelectItem key={team.id} value={team.id}>
+                                    {team.name}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -204,7 +229,6 @@ export const ManagerView = () => {
                 <TeamOverview
                     teams={teams}
                     selectedTeamId={selectedTeam}
-                    onTeamChange={setSelectedTeam}
                 />
             </Card>   
         </div>
