@@ -91,7 +91,7 @@ export default function AthleteSchedulePage() {
                         const event: TeamScheduleEvent = {
                             id: item.id,
                             athleteId: athleteId ?? "unknown",
-                            athleteName: "My Class",
+                            athleteName: `${item.course_code}`,
                             title: `${item.course_code} - ${item.name}`,
                             name: item.name,
                             location: item.location ?? undefined,
