@@ -202,7 +202,7 @@ export const ManagerView = () => {
 
                         <Card className="h-full">
                             <CardHeader>
-                                <CardTitle>Updates</CardTitle>
+                                <CardTitle>Most Recent Announcements</CardTitle>
                             </CardHeader>
                             <CardContent className="p-0 h-full">
                                 <ActivityFeed data={updates} />
