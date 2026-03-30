@@ -2,20 +2,50 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/shared/components/ui/card";
 import { Button } from "@/shared/components/ui/button";
-import { Megaphone, CalendarPlus, Users, MapPin, CheckCircle, Calendar } from "lucide-react";
+import { Megaphone, CalendarPlus, Users, Calendar } from "lucide-react";
 
-export const QuickActions = () => {
+export const QuickActions = ({
+  selectedTeamId,
+}: {
+  selectedTeamId?: string;
+}) => {
   const [active, setActive] = useState<string | null>(null);
   const navigate = useNavigate();
 
+  const teamTabPath = (tab: "profile" | "roster" | "staff" | "schedule") =>
+    selectedTeamId ? `/teams/${selectedTeamId}?tab=${tab}` : "/teams";
+
+  // updated per frans note on the expected behaviour of the addevent vs add training comment for quick links - remove comment after confirmation
+  const teamModalPath = (
+    tab: "profile" | "roster" | "staff" | "schedule",
+    modal: "addEvent" | "announce",
+  ) => (selectedTeamId ? `/teams/${selectedTeamId}?tab=${tab}&${modal}=true` : "/teams");
+
   const actions = [
-    { id: "announce", label: "Send Announcement", icon: Megaphone, path: "/announcements/new" },
-    { id: "addTraining", label: "Add Training", icon: CalendarPlus, path: "/training/new" },
-    { id: "manageRoster", label: "Manage Roster", icon: Users, path: "/team/roster" },
-    { id: "bookFacility", label: "Book Facility", icon: MapPin, path: "/facilities" },
-    { id: "teamCalendar", label: "Team Calendar", icon: Calendar, path: "/team/calendar" },
-    { id: "approveSchedules", label: "Approve Schedules", icon: CheckCircle, path: "/schedule/approvals" },
-    // { id : "generateOptimalSchedule", label: "Generate Optimal Schedule", icon: Calendar, path: "/optimize" },
+    {
+      id: "announce",
+      label: "Send Announcement",
+      icon: Megaphone,
+      path: teamModalPath("profile", "announce"),
+    },
+    {
+      id: "addEvent",
+      label: "Add Event",
+      icon: CalendarPlus,
+      path: teamModalPath("schedule", "addEvent"),
+    },
+    {
+      id: "manageRoster",
+      label: "Manage Roster",
+      icon: Users,
+      path: teamTabPath("roster"),
+    },
+    {
+      id: "viewSchedule",
+      label: "View Schedule",
+      icon: Calendar,
+      path: teamTabPath("schedule"),
+    },
   ];
   const handleAction = (action: string, path: string) => {
     setActive(action);
@@ -32,7 +62,7 @@ export const QuickActions = () => {
         <CardDescription>Tools to manage your athletes and team.</CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
           {actions.map((a) => (
             <Button
               key={a.id}

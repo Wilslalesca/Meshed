@@ -1,4 +1,5 @@
 
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
 CREATE TABLE users (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -245,4 +246,6 @@ CREATE TABLE team_event_email_log (
   sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   UNIQUE (team_event_id, email_type, recipient_email)
 );
+
+
 

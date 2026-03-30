@@ -60,6 +60,7 @@ export default function App() {
           <Route path="/register" element={ <GuestRoute> <Register /> </GuestRoute> } />
         </Route>
 
+        // conflict was purely formatting of each Route path. I can add the line breaks back in if you want
         <Route element={<PublicLayout />}>
           <Route path="/" element={<Home />} />
           <Route path="/home" element={<Navigate to="/" replace />} />

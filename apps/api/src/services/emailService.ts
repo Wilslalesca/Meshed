@@ -1,30 +1,56 @@
 import nodemailer from "nodemailer";
 
-const BASE_URL = process.env.FRONTEND_ORIGIN!;
-const GMAIL_APP_PASSWORD = process.env.GMAIL_APP_PASSWORD!;
-const GMAIL_APP_EMAIL = process.env.GMAIL_APP_EMAIL!;
+const BASE_URL = process.env.FRONTEND_ORIGIN ?? "http://localhost:5173";
+const GMAIL_APP_PASSWORD = process.env.GMAIL_APP_PASSWORD;
+const GMAIL_APP_EMAIL = process.env.GMAIL_APP_EMAIL;
 
-const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 587,
-  secure: false,
-  requireTLS: true,
-  auth: {
-    user: GMAIL_APP_EMAIL,
-    pass: GMAIL_APP_PASSWORD,
-  },
-});
+const EMAIL_DISABLED =
+  process.env.DISABLE_EMAIL === "true" || process.env.NODE_ENV === "test";
+
+function getTransporter() {
+  if (EMAIL_DISABLED) return null;
+
+  if (!GMAIL_APP_EMAIL || !GMAIL_APP_PASSWORD) {
+    console.warn(
+      "Email is not configured (missing GMAIL_APP_EMAIL/GMAIL_APP_PASSWORD). Skipping send.",
+    );
+    return null;
+  }
+
+  return nodemailer.createTransport({
+    host: "smtp.gmail.com",
+    port: 587,
+    secure: false,
+    requireTLS: true,
+    auth: {
+      user: GMAIL_APP_EMAIL,
+      pass: GMAIL_APP_PASSWORD,
+    },
+  });
+}
 
 export const mail = {
   async sendEmail(to: string, subject: string, html: string) {
-    const info = await transporter.sendMail({
-      from: `"Meshed" <${GMAIL_APP_EMAIL}>`,
-      to,
-      subject,
-      html,
-    });
+    const transporter = getTransporter();
+    if (!transporter) return null;
 
-    return info; 
+    try {
+      const info = await transporter.sendMail({
+        from: `"Meshed" <${GMAIL_APP_EMAIL}>`,
+        to,
+        subject,
+        html,
+      });
+
+      return info;
+    } catch (err) {
+      console.error("Email send failed", {
+        to,
+        subject,
+        error: err instanceof Error ? err.message : String(err),
+      });
+      return null;
+    }
   },
 };
 

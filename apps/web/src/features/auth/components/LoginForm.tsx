@@ -12,15 +12,27 @@ export function LoginForm({
     ...props
 }: React.ComponentProps<"form">) {
     const { login } = useAuth();
-    const [email, setEmail] = useState("");
+    const location = useLocation();
+    const locationState = (location.state ?? {}) as { email?: string; message?: string; from?: { pathname?: string } };
+
+    const [email, setEmail] = useState(locationState.email ?? "");
     const [password, setPassword] = useState("");
     const [error, setError] = useState<string | null>(null);
+    const [info, setInfo] = useState<string | null>(locationState.message ?? null);
     const [pending, setPending] = useState(false);
     const [showPassword] = useState(false);
     const nav = useNavigate();
-    const location = useLocation();
     const [verifyOpen, setVerifyOpen] = useState(false);
     const [verifyUserId, setVerifyUserId] = useState<string | null>(null);
+
+    React.useEffect(() => {
+        if (locationState.email && !email) {
+            setEmail(locationState.email);
+        }
+        if (locationState.message) {
+            setInfo(locationState.message);
+        }
+    }, [locationState.email, locationState.message]);
 
     async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
@@ -29,7 +41,7 @@ export function LoginForm({
 
         try {
             await login({ email: email.toLowerCase(), password });
-            const next = location?.state?.from?.pathname ?? "/dashboard";
+            const next = locationState?.from?.pathname ?? "/dashboard";
             nav(next, { replace: true });
         } catch (err: unknown) {
             const authErr = err as {
@@ -112,6 +124,12 @@ export function LoginForm({
                     {error && (
                         <p className="text-sm text-destructive -mt-2">
                             {error}
+                        </p>
+                    )}
+
+                    {info && !error && (
+                        <p className="text-sm text-muted-foreground -mt-2">
+                            {info}
                         </p>
                     )}
 
