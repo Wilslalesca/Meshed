@@ -61,7 +61,7 @@ export const TeamTabs = ({
 }: Props) => {
     const userRole = useUserRole();
     const isManager = userRole.isManager;
-    const [searchParams] = useSearchParams();
+    const [searchParams, setSearchParams] = useSearchParams();
     const tabParam = searchParams.get("tab");
 
     const urlTab = useMemo(() => {
@@ -80,6 +80,19 @@ export const TeamTabs = ({
             setActiveTab(urlTab);
         }
     }, [urlTab, activeTab]);
+
+    const onTabChange = (v: string) => {
+        const nextTab = v as typeof activeTab;
+        setActiveTab(nextTab);
+
+        const next = new URLSearchParams(searchParams);
+        if (nextTab === "profile") {
+            next.delete("tab");
+        } else {
+            next.set("tab", nextTab);
+        }
+        setSearchParams(next, { replace: true });
+    };
     return (
         <div className="space-y-6">
             <div className="flex flex-col gap-2">
@@ -161,7 +174,7 @@ export const TeamTabs = ({
                 </div>
             </div>
 
-            <Tabs value={activeTab} className="w-full" onValueChange={(v: string) => setActiveTab(v as typeof activeTab)}>
+            <Tabs value={activeTab} className="w-full" onValueChange={onTabChange}>
                 <TabsList className="w-full">
                     <TabsTrigger
                         value="profile"
