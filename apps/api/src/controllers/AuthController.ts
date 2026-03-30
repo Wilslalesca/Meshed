@@ -174,6 +174,11 @@ export const AuthController = {
 
     const code = Math.floor(100000 + Math.random() * 900000).toString();
     await VerificationCodeModel.create(user.id, code);
+
+    if (process.env.NODE_ENV !== "production") {
+      console.log(`[DEV] Verification code for ${user.email}: ${code}`);
+    }
+
     await sendEmail.sendVerificationEmail(user.email, code);
 
     return res.status(201).json({ message: "User registered successfully. Please verify your email.", userId: user.id});
@@ -262,6 +267,11 @@ export const AuthController = {
     await VerificationCodeModel.invalidateAllForUser(userId);
     const code = Math.floor(100000 + Math.random() * 900000).toString();
     await VerificationCodeModel.create(userId, code);
+
+    if (process.env.NODE_ENV !== "production") {
+      console.log(`[DEV] Verification code for ${user.email}: ${code}`);
+    }
+
     await sendEmail.sendVerificationEmail(user.email, code);
 
     return res.json({ message: "Verification email resent successfully" });
