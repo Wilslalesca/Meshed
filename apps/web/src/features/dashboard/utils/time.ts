@@ -59,6 +59,7 @@ export function formatHoursToReadable(hours: number): string {
     const totalMinutes = Math.round(hours * 60);
     const h = Math.floor(totalMinutes / 60);
     const m = totalMinutes % 60;
+    
 
     if (h === 0) return `${m}min`;
     if (m === 0) return `${h}h`;

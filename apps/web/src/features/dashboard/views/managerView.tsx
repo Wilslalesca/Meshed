@@ -8,7 +8,6 @@ import { QuickActions } from "../components/manager/QuickActions";
 import { StatCard } from "../components/StatCard";
 import { TeamOverview } from "../components/manager/TeamOverview";
 import { ActivityFeed } from "../components/manager/ActivityFeed";
-import { EventWidget } from "../components/EventWidget";
 import { useCallback, useEffect, useState } from "react";
 import { useAuth } from "@/shared/hooks/useAuth";
 import { apiGetMyTeams } from "@/features/teams/api/teams";
@@ -20,10 +19,10 @@ import type { Athlete } from "@/features/teams/types/roster";
 import { API_BASE } from "@/features/dashboard/api/userDashboard.api";
 import type { RawTeamEvent } from "@/features/dashboard/types/api";
 import { EventStatusDonut } from "../components/manager/PieChartEvents";
+import { apiGetManagerDashboardStats } from "@/features/dashboard/api/managerDashboard.api";
 
 export const ManagerView = () => {
     const { user, token } = useAuth();
-    const [events, setEvents] = useState([]);
     const [teams, setTeams] = useState<Team[]>([]);
     const [selectedTeam, setSelectedTeam] = useState<string>("");
     const {
@@ -34,6 +33,8 @@ export const ManagerView = () => {
     const [totalAthletes, setTotalAthletes] = useState<number>(0);
     const [totalTeamEvents, setTotalTeamEvents] = useState<number>(0);
     const [pendingApprovals, setPendingApprovals] = useState<number>(0);
+    const [approvedEvents, setApprovedEvents] = useState<number>(0);
+    const [deniedEvents, setDeniedEvents] = useState<number>(0);
 
     const getTeamEventsRaw = useCallback(
         async (teamId: string, authToken: string): Promise<RawTeamEvent[]> => {
@@ -56,8 +57,11 @@ export const ManagerView = () => {
             setTotalAthletes(0);
             setTotalTeamEvents(0);
             setPendingApprovals(0);
+            setApprovedEvents(0);
+            setDeniedEvents(0);
             return;
         }
+        const stats = await apiGetManagerDashboardStats(teams, token);
 
         try {
             const [rosters, teamEventLists] = await Promise.all([
@@ -86,21 +90,47 @@ export const ManagerView = () => {
                     ).length
                 );
             }, 0);
+            const approvedEventsCount = teamEventLists.reduce((sum, list) => {
+                const items = Array.isArray(list) ? list : [];
+                return (
+                    sum +
+                    items.filter(
+                        (e) =>
+                            String(e.status ?? "")
+                                .trim()
+                                .toLowerCase() === "approved",
+                    ).length
+                );
+            }, 0);
+
+            const deniedEventsCount = teamEventLists.reduce((sum, list) => {
+                const items = Array.isArray(list) ? list : [];
+                return (
+                    sum +
+                    items.filter((e) => {
+                        const status = String(e.status ?? "").trim().toLowerCase();
+                        return status === "denied" || status === "rejected";
+                    }).length
+                );
+            }, 0);
 
             setTotalAthletes(athleteCount);
-            setTotalTeamEvents(totalEventsCount);
-            setPendingApprovals(pendingEventsCount);
+            setTotalTeamEvents(stats.totalTeamEvents);
+            setPendingApprovals(stats.pendingEvents);
+            setApprovedEvents(stats.approvedEvents);
+            setDeniedEvents(stats.deniedEvents);
         } catch {
             setTotalAthletes(0);
             setTotalTeamEvents(0);
             setPendingApprovals(0);
+            setApprovedEvents(0);
+            setDeniedEvents(0);
         }
     }, [getTeamEventsRaw, teams, token]);
 
     useEffect(() => {
         let ignore = false;
 
-        setEvents([]);
         setTeams([]);
         setSelectedTeam("");
 
@@ -197,7 +227,11 @@ export const ManagerView = () => {
                     </Card>
                 </div>
                 <div className="lg:col-span-1">
-                    <EventStatusDonut approved={25} pending={5} denied={7}  />
+                    <EventStatusDonut
+                        approved={approvedEvents}
+                        pending={pendingApprovals}
+                        denied={deniedEvents}
+                    />
                 </div>
             </div>
             <Card className="h-full">
