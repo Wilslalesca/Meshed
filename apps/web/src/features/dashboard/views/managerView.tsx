@@ -17,8 +17,8 @@ import { useNotifications } from "@/features/notifications/hooks/useNotification
 import { formatRelativeTime } from "../utils/notifications";
 import { apiGetRoster } from "@/features/teams/api/teams";
 import type { Athlete } from "@/features/teams/types/roster";
-import { apiGetStaff } from "@/features/teams/api/staff";
-import type { StaffMember } from "@/features/teams/types/staff";
+import { API_BASE } from "@/features/dashboard/api/userDashboard.api";
+import type { RawTeamEvent } from "@/features/dashboard/types/api";
 
 export const ManagerView = () => {
     const { user, token } = useAuth();
@@ -31,19 +31,37 @@ export const ManagerView = () => {
     } = useNotifications();
 
     const [totalAthletes, setTotalAthletes] = useState<number>(0);
+    const [totalTeamEvents, setTotalTeamEvents] = useState<number>(0);
     const [pendingApprovals, setPendingApprovals] = useState<number>(0);
+
+    const getTeamEventsRaw = useCallback(
+        async (teamId: string, authToken: string): Promise<RawTeamEvent[]> => {
+            const res = await fetch(`${API_BASE}/teams/${teamId}/events`, {
+                headers: {
+                    Authorization: `Bearer ${authToken}`,
+                },
+            });
+
+            if (!res.ok) return [];
+
+            const data = (await res.json()) as RawTeamEvent[];
+            return Array.isArray(data) ? data : [];
+        },
+        [],
+    );
 
     const loadStats = useCallback(async () => {
         if (!token || teams.length === 0) {
             setTotalAthletes(0);
+            setTotalTeamEvents(0);
             setPendingApprovals(0);
             return;
         }
 
         try {
-            const [rosters, staffLists] = await Promise.all([
+            const [rosters, teamEventLists] = await Promise.all([
                 Promise.all(teams.map((t) => apiGetRoster(t.id, token))),
-                Promise.all(teams.map((t) => apiGetStaff(t.id, token))),
+                Promise.all(teams.map((t) => getTeamEventsRaw(t.id, token))),
             ]);
 
             const athleteCount = rosters.reduce((sum, roster) => {
@@ -51,25 +69,32 @@ export const ManagerView = () => {
                 return sum + items.filter((a) => a.status === "active").length;
             }, 0);
 
-            const pendingRosterCount = rosters.reduce((sum, roster) => {
-                const items = Array.isArray(roster) ? (roster as Athlete[]) : [];
-                return sum + items.filter((a) => a.status === "pending").length;
-            }, 0);
+            const totalEventsCount = teamEventLists.reduce(
+                (sum, list) => sum + (Array.isArray(list) ? list.length : 0),
+                0,
+            );
 
-            const pendingStaffCount = staffLists.reduce((sum, staff) => {
-                const items = Array.isArray(staff)
-                    ? (staff as StaffMember[])
-                    : [];
-                return sum + items.filter((s) => s.status === "pending").length;
+            const pendingEventsCount = teamEventLists.reduce((sum, list) => {
+                const items = Array.isArray(list) ? list : [];
+                return (
+                    sum +
+                    items.filter((e) =>
+                        String(e.status ?? "")
+                            .trim()
+                            .toLowerCase() === "pending",
+                    ).length
+                );
             }, 0);
 
             setTotalAthletes(athleteCount);
-            setPendingApprovals(pendingRosterCount + pendingStaffCount);
+            setTotalTeamEvents(totalEventsCount);
+            setPendingApprovals(pendingEventsCount);
         } catch {
             setTotalAthletes(0);
+            setTotalTeamEvents(0);
             setPendingApprovals(0);
         }
-    }, [teams, token]);
+    }, [getTeamEventsRaw, teams, token]);
 
     useEffect(() => {
         let ignore = false;
@@ -146,14 +171,14 @@ export const ManagerView = () => {
                         subtitle="Active athletes across your teams"
                     />
                     <StatCard
-                        title="Avg Attendance"
-                        value="—"
-                        subtitle="Not tracked yet"
+                        title="Total Team Events"
+                        value={String(totalTeamEvents)}
+                        subtitle="Total team events"
                     />
                     <StatCard
-                        title="Pending Approvals"
+                        title="Pending Events"
                         value={String(pendingApprovals)}
-                        subtitle="Pending users"
+                        subtitle="Pending team events"
                     />
                     {/* removed as unimplemented / unnecessary atm */}
                     {/* <StatCard

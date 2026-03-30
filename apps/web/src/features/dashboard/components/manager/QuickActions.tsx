@@ -15,18 +15,24 @@ export const QuickActions = ({
   const teamTabPath = (tab: "profile" | "roster" | "staff" | "schedule") =>
     selectedTeamId ? `/teams/${selectedTeamId}?tab=${tab}` : "/teams";
 
+  // updated per frans note on the expected behaviour of the addevent vs add training comment for quick links - remove comment after confirmation
+  const teamModalPath = (
+    tab: "profile" | "roster" | "staff" | "schedule",
+    modal: "addEvent" | "announce",
+  ) => (selectedTeamId ? `/teams/${selectedTeamId}?tab=${tab}&${modal}=true` : "/teams");
+
   const actions = [
     {
       id: "announce",
       label: "Send Announcement",
       icon: Megaphone,
-      path: teamTabPath("profile"),
+      path: teamModalPath("profile", "announce"),
     },
     {
-      id: "addTraining",
-      label: "Add Training",
+      id: "addEvent",
+      label: "Add Event",
       icon: CalendarPlus,
-      path: teamTabPath("schedule"),
+      path: teamModalPath("schedule", "addEvent"),
     },
     {
       id: "manageRoster",
@@ -34,16 +40,9 @@ export const QuickActions = ({
       icon: Users,
       path: teamTabPath("roster"),
     },
-    // removed from facilities quick acctions
-    // {
-    //   id: "bookFacility",
-    //   label: "Book Facility",
-    //   icon: MapPin,
-    //   path: "/facilities",
-    // },
     {
-      id: "teamCalendar",
-      label: "Team Calendar",
+      id: "viewSchedule",
+      label: "View Schedule",
       icon: Calendar,
       path: teamTabPath("schedule"),
     },

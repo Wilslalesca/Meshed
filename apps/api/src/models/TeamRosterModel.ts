@@ -65,4 +65,13 @@ export class TeamRosterModel {
             [userId, teamId]
         );
     }
+    // related to the authcontroller pending user change - remove comment after confirmation
+    static async activatePendingForUser(userId: string) {
+        await pool.query(
+            `UPDATE user_teams
+             SET status = 'active', updated_at = NOW()
+             WHERE user_id = $1 AND status = 'pending'`,
+            [userId],
+        );
+    }
 }

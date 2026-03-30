@@ -92,4 +92,14 @@ export class TeamStaffModel {
 
     return rows.map((r) => r.user_id);
   }
+
+  // related to the authcontroller pending user change on mgr email - remove comment after confirmation
+  static async activatePendingForUser(userId: string) {
+    await pool.query(
+      `UPDATE team_staff
+       SET status = 'active', updated_at = NOW()
+       WHERE user_id = $1 AND status = 'pending'`,
+      [userId],
+    );
+  }
 }

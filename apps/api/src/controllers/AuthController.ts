@@ -196,6 +196,12 @@ export const AuthController = {
 
     const ok = await bcrypt.compare(password, user.passwordHash);
     if (!ok) return res.status(401).json({ error: "Invalid email or password" });
+
+    // users were stuck pending after successfully accepting an invite from a mgr
+    await Promise.all([
+      TeamRosterModel.activatePendingForUser(user.id),
+      TeamStaffModel.activatePendingForUser(user.id),
+    ]);
     
     const accessToken = signAccessToken(user.id, user.role, user.organizationId, user.organizationRole);
     const refreshToken = signRefreshToken(user.id, user.role, user.organizationId, user.organizationRole);
@@ -241,6 +247,13 @@ export const AuthController = {
     if (user.verified) return res.status(400).json({ error: "Email is already in use" });
     await VerificationCodeModel.markUsed(record.id);
     await UserModel.activateUser(userId);
+
+    // Invited users are inserted into team tables as "pending"; once the account is verified,
+    // flip those rows to "active" so managers see them as active members.
+    await Promise.all([
+      TeamRosterModel.activatePendingForUser(userId),
+      TeamStaffModel.activatePendingForUser(userId),
+    ]);
 
     const membership = await UserModel.findMembershipByUserId(userId);
     if (!membership) return res.status(400).json({ error: "No active organization membership found" });
