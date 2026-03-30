@@ -12,8 +12,6 @@ export const QuickActions = ({
   const [active, setActive] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  const teamBasePath = selectedTeamId ? `/teams/${selectedTeamId}` : "/teams";
-
   const teamTabPath = (tab: "profile" | "roster" | "staff" | "schedule") =>
     selectedTeamId ? `/teams/${selectedTeamId}?tab=${tab}` : "/teams";
 
