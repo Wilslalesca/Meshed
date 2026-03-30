@@ -187,7 +187,7 @@ export const ManagerView = () => {
             
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
                 <div className="lg:col-span-2">
-                    <Card className="max-h-[320px] overflow-hidden">
+                    <Card className="h-full overflow-hidden">
                         <CardHeader>
                             <CardTitle>Updates</CardTitle>
                         </CardHeader>
