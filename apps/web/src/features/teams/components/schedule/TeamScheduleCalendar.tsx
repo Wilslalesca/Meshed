@@ -141,7 +141,7 @@ export function TeamScheduleCalendar({
       }
         return calendarEvents;
     }
-  }, [mode, filter, heatmapBackgroundEvents, calendarEvents]);
+  }, [mode, filter, heatmapBackgroundEvents, calendarEvents, teamOnlyHeatmapBackgroundEvents, teamOnlyCalendarEvents]);
 
   useEffect(() => {
     const calApi = calendarReference.current?.getApi();
