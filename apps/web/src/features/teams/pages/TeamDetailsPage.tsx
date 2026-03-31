@@ -251,6 +251,7 @@ export const TeamDetailsPage = () => {
                     }
                     setOpenAddOptimizeEvent(false)
                     setOpenOptimizeResults(true)
+                    reloadSchedule();
                 }}
                 />
             )}
