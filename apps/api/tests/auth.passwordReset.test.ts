@@ -1,3 +1,124 @@
+import { describe, expect, test, vi } from "vitest";
+import { AuthController } from "../src/controllers/AuthController";
+import { UserModel } from "@/models/UserModel";
+import { PasswordResetCodeModel } from "@/models/PasswordResetCodeModel";
+import { sendEmail } from "@/services/emailService";
+import { makeHttp } from "./utils/http";
+
+vi.mock("@/models/UserModel");
+vi.mock("@/models/PasswordResetCodeModel");
+vi.mock("@/services/emailService");
+
+describe("AuthController.forgotPassword", () => {
+  test("returns generic success when user not found", async () => {
+    const { req, res } = makeHttp();
+    req.body = { email: "nobody@example.com" };
+
+    vi.mocked(UserModel.findByEmail).mockResolvedValue(null);
+
+    await AuthController.forgotPassword(req, res);
+
+    expect(res.json).toHaveBeenCalledWith({
+      message:
+        "If an account exists for that email, a password reset code has been sent.",
+    });
+    expect(PasswordResetCodeModel.invalidateAllForUser).not.toHaveBeenCalled();
+    expect(PasswordResetCodeModel.create).not.toHaveBeenCalled();
+    expect(sendEmail.sendPasswordResetEmail).not.toHaveBeenCalled();
+  });
+
+  test("creates a reset code and sends email when user exists", async () => {
+    const { req, res } = makeHttp();
+    req.body = { email: "test@example.com" };
+
+    vi.mocked(UserModel.findByEmail).mockResolvedValue({
+      id: "user-1",
+      email: "test@example.com",
+    } as any);
+    vi.mocked(PasswordResetCodeModel.invalidateAllForUser).mockResolvedValue(undefined);
+    vi.mocked(PasswordResetCodeModel.create).mockResolvedValue(undefined);
+    vi.mocked(sendEmail.sendPasswordResetEmail).mockResolvedValue({} as any);
+
+    await AuthController.forgotPassword(req, res);
+
+    expect(PasswordResetCodeModel.invalidateAllForUser).toHaveBeenCalledWith("user-1");
+
+    const createArgs = vi.mocked(PasswordResetCodeModel.create).mock.calls[0];
+    expect(createArgs[0]).toBe("user-1");
+    expect(createArgs[1]).toMatch(/^\d{6}$/);
+
+    expect(sendEmail.sendPasswordResetEmail).toHaveBeenCalledWith(
+      "test@example.com",
+      createArgs[1],
+    );
+    expect(res.json).toHaveBeenCalledWith({
+      message:
+        "If an account exists for that email, a password reset code has been sent.",
+    });
+  });
+});
+
+describe("AuthController.resetPassword", () => {
+  test("returns 400 when email not found", async () => {
+    const { req, res } = makeHttp();
+    req.body = {
+      email: "missing@example.com",
+      code: "123456",
+      newPassword: "Valid!pass1",
+    };
+
+    vi.mocked(UserModel.findByEmail).mockResolvedValue(null);
+
+    await AuthController.resetPassword(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith({ error: "Invalid or expired reset code" });
+  });
+
+  test("returns 400 when code invalid", async () => {
+    const { req, res } = makeHttp();
+    req.body = {
+      email: "test@example.com",
+      code: "123456",
+      newPassword: "Valid!pass1",
+    };
+
+    vi.mocked(UserModel.findByEmail).mockResolvedValue({
+      id: "user-1",
+      email: "test@example.com",
+    } as any);
+    vi.mocked(PasswordResetCodeModel.findValid).mockResolvedValue(null);
+
+    await AuthController.resetPassword(req, res);
+
+    expect(PasswordResetCodeModel.findValid).toHaveBeenCalledWith("user-1", "123456");
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith({ error: "Invalid or expired reset code" });
+  });
+
+  test("resets password when code valid", async () => {
+    const { req, res } = makeHttp();
+    req.body = {
+      email: "test@example.com",
+      code: "123456",
+      newPassword: "Valid!pass1",
+    };
+
+    vi.mocked(UserModel.findByEmail).mockResolvedValue({
+      id: "user-1",
+      email: "test@example.com",
+    } as any);
+    vi.mocked(PasswordResetCodeModel.findValid).mockResolvedValue({ id: "code-1" } as any);
+    vi.mocked(PasswordResetCodeModel.markUsed).mockResolvedValue(undefined);
+    vi.mocked(UserModel.setPassword).mockResolvedValue(undefined);
+
+    await AuthController.resetPassword(req, res);
+
+    expect(PasswordResetCodeModel.markUsed).toHaveBeenCalledWith("code-1");
+    expect(UserModel.setPassword).toHaveBeenCalledWith("user-1", "Valid!pass1");
+    expect(res.json).toHaveBeenCalledWith({ message: "Password reset successfully" });
+  });
+});
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 // Ensure required env vars exist before importing the controller (config.ts exits if missing).
