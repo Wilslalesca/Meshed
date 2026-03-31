@@ -1,5 +1,5 @@
-import { useParams, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { useIsTeamManager } from "../hooks/useTeamManager";
 import { useTeamById } from "../hooks/useTeamById";
 import { useRoster } from "../hooks/useRoster";
@@ -30,6 +30,7 @@ import { AddOptimizedEventModal } from "../components/add-event/AddOptimizedEven
 export const TeamDetailsPage = () => {
     const { teamId } = useParams<{ teamId: string }>();
     const navigate = useNavigate();
+    const [searchParams, setSearchParams] = useSearchParams();
     const { isManager } = useIsTeamManager(teamId!);
     const [viewMode, setViewMode] = useState<"cards" | "table">("cards");
 
@@ -58,6 +59,23 @@ export const TeamDetailsPage = () => {
 
     const[openAddOptimizeEvent, setOpenAddOptimizeEvent] = useState(false)
     const[addOptimizeEventInfo, setAddOptimizeEventInfo] = useState<OptimizationTeamEvent | null>(null)
+
+    useEffect(() => {
+        if (!isManager) return;
+
+        const shouldAddEvent = searchParams.get("addEvent") === "true";
+        const shouldAnnounce = searchParams.get("announce") === "true";
+
+        if (!shouldAddEvent && !shouldAnnounce) return;
+
+        if (shouldAddEvent) setOpenAddTeamEvent(true);
+        if (shouldAnnounce) setOpenCreateNotification(true);
+
+        const next = new URLSearchParams(searchParams);
+        next.delete("addEvent");
+        next.delete("announce");
+        setSearchParams(next, { replace: true });
+    }, [isManager, searchParams, setSearchParams]);
     
     if (loading || !team) return <p className="p-6">Loading...</p>;
 

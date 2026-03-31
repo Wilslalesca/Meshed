@@ -1,6 +1,7 @@
 import { getAthleteSchedule } from '@/features/athlete-schedule/api/getAthleteSchedule';
 export const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
+
 export async function getAthleteEvents(athleteId: string, token: string) {
     const schedule = await getAthleteSchedule(athleteId, token);
 

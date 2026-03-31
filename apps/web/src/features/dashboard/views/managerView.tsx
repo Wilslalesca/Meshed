@@ -8,73 +8,195 @@ import { QuickActions } from "../components/manager/QuickActions";
 import { StatCard } from "../components/StatCard";
 import { TeamOverview } from "../components/manager/TeamOverview";
 import { ActivityFeed } from "../components/manager/ActivityFeed";
-import { EventWidget } from "../components/EventWidget";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useAuth } from "@/shared/hooks/useAuth";
+import { apiGetMyTeams } from "@/features/teams/api/teams";
+import type { Team } from "@/features/teams/types/teams";
+import { useNotifications } from "@/features/notifications/hooks/useNotifications";
+import { formatRelativeTime } from "../utils/notifications";
+import {
+    Select,
+    SelectTrigger,
+    SelectValue,
+    SelectContent,
+    SelectItem,
+} from "@/shared/components/ui/select";
+import { EventStatusDonut } from "../components/manager/PieChartEvents";
+import { apiGetManagerDashboardStats } from "@/features/dashboard/api/managerDashboard.api";
 
 export const ManagerView = () => {
-    const { user } = useAuth();
-    const [events, setEvents] = useState([]);
-    const [teams, setTeams] = useState([]);
+    const { user, token } = useAuth();
+    const [teams, setTeams] = useState<Team[]>([]);
     const [selectedTeam, setSelectedTeam] = useState<string>("");
+    const {
+        notifications,
+        refresh: refreshNotifications,
+    } = useNotifications();
+
+    const [totalAthletes, setTotalAthletes] = useState<number>(0);
+    const [totalTeamEvents, setTotalTeamEvents] = useState<number>(0);
+    const [pendingApprovals, setPendingApprovals] = useState<number>(0);
+    const [approvedEvents, setApprovedEvents] = useState<number>(0);
+    const [deniedEvents, setDeniedEvents] = useState<number>(0);
+
+    const loadStats = useCallback(async () => {
+        if (!token || teams.length === 0) {
+            setTotalAthletes(0);
+            setTotalTeamEvents(0);
+            setPendingApprovals(0);
+            setApprovedEvents(0);
+            setDeniedEvents(0);
+            return;
+        }
+        try {
+            const stats = await apiGetManagerDashboardStats(teams, token);
+            setTotalAthletes(stats.totalAthletes);
+            setTotalTeamEvents(stats.totalTeamEvents);
+            setPendingApprovals(stats.pendingEvents);
+            setApprovedEvents(stats.approvedEvents);
+            setDeniedEvents(stats.deniedEvents);
+        } catch {
+            setTotalAthletes(0);
+            setTotalTeamEvents(0);
+            setPendingApprovals(0);
+            setApprovedEvents(0);
+            setDeniedEvents(0);
+        }
+    }, [teams, token]);
 
     useEffect(() => {
-        setEvents([]);
+        let ignore = false;
+
         setTeams([]);
         setSelectedTeam("");
-    }, [user?.id]);
+
+        const loadTeams = async () => {
+            if (!token) return;
+            const mine = await apiGetMyTeams(token);
+            if (ignore) return;
+            setTeams(mine);
+            if (mine.length > 0) setSelectedTeam(mine[0]!.id);
+        };
+
+        void loadTeams();
+
+        return () => {
+            ignore = true;
+        };
+    }, [user?.id, token]);
+
+    useEffect(() => {
+        void loadStats();
+
+        // Keep stats fresh as invites/approvals change.
+        const id = window.setInterval(() => {
+            void loadStats();
+        }, 15_000);
+
+        const onFocus = () => {
+            void loadStats();
+        };
+        window.addEventListener("focus", onFocus);
+
+        return () => {
+            window.clearInterval(id);
+            window.removeEventListener("focus", onFocus);
+        };
+    }, [loadStats]);
+
+    useEffect(() => {
+        if (!token || !user?.id) return;
+        void refreshNotifications(10);
+    }, [token, user?.id, refreshNotifications]);
+
+    const updates = notifications.slice(0, 8).map((n) => ({
+        user: n.type
+            ? n.type.charAt(0).toUpperCase() + n.type.slice(1).toLowerCase()
+            : "Meshed",
+        action: n.message,
+        time: formatRelativeTime(n.created_at),
+    }));
 
     return (
-        <div className="flex flex-col gap-6 p-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <StatCard
-                    title="Total Athletes"
-                    value="—"
-                    subtitle="No API connection"
-                />
-                <StatCard
-                    title="Avg Attendance"
-                    value="—"
-                    subtitle="No API connection"
-                />
-                <StatCard
-                    title="Pending Approvals"
-                    value="—"
-                    subtitle="No API connection"
-                />
-                <StatCard
-                    title="Unread Messages"
-                    value="—"
-                    subtitle="No API connection"
-                />
+        <div className="flex flex-col gap-6 p-6">
+            <div className="flex items-start justify-between gap-4 px-1">
+                <div className="flex flex-col gap-1">
+                    <h1 className="text-2xl font-semibold tracking-tight">
+                        Welcome back
+                        {user?.firstName ? `, ${user.firstName}` : ""}
+                    </h1>
+                    <p className="text-sm text-muted-foreground">
+                        Here's a quick look at your teams, approvals, and
+                        schedule updates.
+                    </p>
+                </div>
+
+                <div className="min-w-[180px]">
+                    <Select
+                        value={selectedTeam}
+                        onValueChange={setSelectedTeam}
+                        disabled={teams.length === 0}
+                    >
+                        <SelectTrigger className="h-9 w-[180px] text-sm">
+                            <SelectValue placeholder="Select team" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {teams.map((team) => (
+                                <SelectItem key={team.id} value={team.id}>
+                                    {team.name}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </div>
             </div>
 
-            <QuickActions />
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <StatCard
+                    title="Total Athletes"
+                    value={String(totalAthletes)}
+                    subtitle="Active athletes across your teams"
+                />
+                <StatCard
+                    title="Total Team Events"
+                    value={String(totalTeamEvents)}
+                    subtitle="Total team events"
+                />
+                <StatCard
+                    title="Pending Events"
+                    value={String(pendingApprovals)}
+                    subtitle="Pending team events"
+                />
+                
+            </div>
+             <QuickActions selectedTeamId={selectedTeam} />
 
+            
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-                <div className="flex flex-col gap-4 lg:col-span-2">
-                    <Card className="h-full">
-                        <TeamOverview
-                            teams={teams}
-                            selectedTeamId={selectedTeam}
-                            onTeamChange={setSelectedTeam}
-                        />
-                    </Card>
-
-                    <Card className="h-full">
+                <div className="lg:col-span-2">
+                    <Card className="h-full overflow-hidden">
                         <CardHeader>
-                            <CardTitle>Updates</CardTitle>
+                            <CardTitle>Recent Team Announcements</CardTitle>
                         </CardHeader>
                         <CardContent className="p-0 h-full">
-                            <ActivityFeed data={[]} />
+                            <ActivityFeed data={updates} />
                         </CardContent>
                     </Card>
                 </div>
-
-                <div className="lg:col-span-1 flex flex-col gap-4">
-                    <EventWidget events={events} />
+                <div className="lg:col-span-1">
+                    <EventStatusDonut
+                        approved={approvedEvents}
+                        pending={pendingApprovals}
+                        denied={deniedEvents}
+                    />
                 </div>
             </div>
+            <Card className="h-full">
+                <TeamOverview
+                    teams={teams}
+                    selectedTeamId={selectedTeam}
+                />
+            </Card>   
         </div>
     );
 };

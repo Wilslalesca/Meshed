@@ -119,7 +119,7 @@ export class TeamController {
             isGhost = true;
         }
 
-        await TeamRosterModel.addToTeam(teamId, user!.id, "athlete", null);
+        await TeamRosterModel.addToTeam(teamId, user!.id, "athlete", null, isGhost ? "pending" : "active");
 
         const team = await TeamModel.getTeam(teamId, req.user.organizationId);
         if (!team) return res.status(500).send("Team not found");
@@ -242,6 +242,7 @@ export class TeamController {
                         user.id,
                         "athlete",
                         null,
+                        isGhost ? "pending" : "active",
                     );
 
                     if (isGhost) {

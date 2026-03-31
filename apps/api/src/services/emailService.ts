@@ -75,14 +75,23 @@ export const mail = {
       throw new Error("MAIL_FROM is not configured.");
     }
 
-    const info = await transporter.sendMail({
-      from: `"Meshed" <${mailFrom}>`,
-      to,
-      subject,
-      html,
-    });
+    try {
+      const info = await transporter.sendMail({
+        from: `"Meshed" <${mailFrom}>`,
+        to,
+        subject,
+        html,
+      });
 
-    return info; 
+      return info;
+    } catch (err) {
+      console.error("Email send failed", {
+        to,
+        subject,
+        error: err instanceof Error ? err.message : String(err),
+      });
+      throw err;
+    }
   },
 };
 

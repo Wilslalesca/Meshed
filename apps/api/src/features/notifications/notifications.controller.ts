@@ -1,6 +1,8 @@
 import { Response } from "express";
 import * as service from "./notifications.service";
 import { AuthedRequest } from "../../middleware/authMiddleware";
+import { ActivityLogModel } from "../../models/ActivityLogModel";
+import { TeamModel } from "../../models/TeamModel";
 
 
 export async function createForTeam(req: AuthedRequest, res: Response) {
@@ -9,6 +11,26 @@ export async function createForTeam(req: AuthedRequest, res: Response) {
     const { type, message, meta } = req.body;
 
     const created = await service.createForTeam( req.user.organizationId, teamId as string, type, message, meta);
+
+    if (type === "SYSTEM") {
+        const team = await TeamModel.getTeam(teamId as string, req.user.organizationId);
+        const teamName = team?.name ?? "your team";
+        await service.createForUser(
+            req.user.organizationId,
+            req.user.id,
+            "SYSTEM",
+            `Announcement to ${teamName}: ${message}`,
+            { ...(meta ?? {}), teamId: teamId as string, url: `/teams/${teamId}` },
+        );
+
+        await ActivityLogModel.log(
+            req.user.organizationId,
+            req.user.id,
+            "ANNOUNCEMENT_SENT",
+            "team",
+            teamId as string,
+        );
+    }
     res.status(201).json({ created });
 }
 

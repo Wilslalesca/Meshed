@@ -45,15 +45,16 @@ export class TeamRosterModel {
         teamId: string,
         userId: string,
         role: string = "athlete",
-        position: string | null = null
+        position: string | null = null,
+        status: string = "active"
     ) {
         await pool.query(
             `INSERT INTO user_teams (
                 user_id, team_id, role, position, status, joined_at, updated_at
              )
-             VALUES ($1, $2, $3, $4, 'active', NOW(), NOW())
+                         VALUES ($1, $2, $3, $4, $5, NOW(), NOW())
              ON CONFLICT (user_id, team_id) DO NOTHING`,
-            [userId, teamId, role, position]
+            [userId, teamId, role, position, status]
         );
     }
 
@@ -62,6 +63,15 @@ export class TeamRosterModel {
             `DELETE FROM user_teams
          WHERE user_id = $1 AND team_id = $2 AND role = 'athlete'`,
             [userId, teamId]
+        );
+    }
+    // related to the authcontroller pending user change - remove comment after confirmation
+    static async activatePendingForUser(userId: string) {
+        await pool.query(
+            `UPDATE user_teams
+             SET status = 'active', updated_at = NOW()
+             WHERE user_id = $1 AND status = 'pending'`,
+            [userId],
         );
     }
 }
