@@ -3,6 +3,7 @@ import { UserModel } from "@/models/UserModel";
 import { PasswordResetCodeModel } from "@/models/PasswordResetCodeModel";
 import { sendEmail } from "@/services/emailService";
 import { makeHttp } from "./utils/http";
+import { vi } from "vitest";
 
 vi.mock("@/models/UserModel");
 vi.mock("@/models/PasswordResetCodeModel");
