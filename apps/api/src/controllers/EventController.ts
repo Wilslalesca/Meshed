@@ -80,8 +80,8 @@ export class EventController {
 
         if (!req.user) return res.status(401).json({ error: "Unauthorized" });
 
-        const {facilityId, status }= req.params;
-        const events = await EventModel.getAllStatusFacilityRequests(facilityId, status, req.user.organizationId);
+        const { facilityId }= req.params;
+         const events = await EventModel.getForFacility(facilityId, req.user.organizationId);
         
         if (!events || events.length === 0) return res.json([]);
         const orgId = req.user.organizationId;
