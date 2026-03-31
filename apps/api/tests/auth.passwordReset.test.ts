@@ -3,7 +3,6 @@ import { UserModel } from "@/models/UserModel";
 import { PasswordResetCodeModel } from "@/models/PasswordResetCodeModel";
 import { sendEmail } from "@/services/emailService";
 import { makeHttp } from "./utils/http";
-import { describe, expect, test, vi } from "vitest";
 
 vi.mock("@/models/UserModel");
 vi.mock("@/models/PasswordResetCodeModel");
@@ -119,7 +118,7 @@ describe("AuthController.resetPassword", () => {
     expect(res.json).toHaveBeenCalledWith({ message: "Password reset successfully" });
   });
 });
-import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeAll, beforeEach, describe, expect, it, test, vi } from "vitest";
 
 // Ensure required env vars exist before importing the controller (config.ts exits if missing).
 process.env.JWT_ACCESS_SECRET ??= "test-access-secret";
