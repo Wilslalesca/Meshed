@@ -44,7 +44,7 @@ BEGIN
     active, verified, created_at, updated_at
   )
   VALUES (
-    'Demo', 'Admin', 'demoadmin@email.com', 'admin', crypt('Password123!', gen_salt('bf', 10)),
+    'Demo', 'Admin', 'admin@email.com', 'admin', crypt('Admin123!', gen_salt('bf', 10)),
     TRUE, TRUE, NOW(), NOW()
   )
   ON CONFLICT (email) DO UPDATE
@@ -53,14 +53,14 @@ BEGIN
         verified = TRUE,
         updated_at = NOW();
 
-  SELECT id INTO admin_id FROM users WHERE email = 'demoadmin@email.com' LIMIT 1;
+  SELECT id INTO admin_id FROM users WHERE email = 'admin@email.com' LIMIT 1;
 
   INSERT INTO users (
     first_name, last_name, email, role, password_hash,
     active, verified, created_at, updated_at
   )
   VALUES (
-    'Demo', 'Manager', 'demomanager@email.com', 'manager', crypt('Password123!', gen_salt('bf', 10)),
+    'Demo', 'Manager', 'manager@email.com', 'manager', crypt('Manager123!', gen_salt('bf', 10)),
     TRUE, TRUE, NOW(), NOW()
   )
   ON CONFLICT (email) DO UPDATE
@@ -69,7 +69,7 @@ BEGIN
         verified = TRUE,
         updated_at = NOW();
 
-  SELECT id INTO manager_id FROM users WHERE email = 'demomanager@email.com' LIMIT 1;
+  SELECT id INTO manager_id FROM users WHERE email = 'manager@email.com' LIMIT 1;
 
   INSERT INTO users (
     first_name, last_name, email, role, password_hash,
@@ -88,7 +88,7 @@ BEGIN
     active, verified, created_at, updated_at
   )
   VALUES (
-    'Will', 'Athlete', 'will@email.com', 'user', crypt('Password123!', gen_salt('bf', 10)),
+    'Will', 'Athlete', 'will@email.com', 'user', crypt('Will123!', gen_salt('bf', 10)),
     TRUE, TRUE, NOW(), NOW()
   )
   ON CONFLICT (email) DO NOTHING;
@@ -100,7 +100,7 @@ BEGIN
     active, verified, created_at, updated_at
   )
   VALUES (
-    'Uma', 'User', 'user@email.com', 'user', crypt('Password123!', gen_salt('bf', 10)),
+    'Uma', 'User', 'user@email.com', 'user', crypt('User123!', gen_salt('bf', 10)),
     TRUE, TRUE, NOW(), NOW()
   )
   ON CONFLICT (email) DO NOTHING;
@@ -112,7 +112,7 @@ BEGIN
     active, verified, created_at, updated_at
   )
   VALUES (
-    'Fran', 'Stewart', 'fran@email.com', 'user', crypt('Password123!', gen_salt('bf', 10)),
+    'Fran', 'Stewart', 'fran@email.com', 'user', crypt('Fran123!', gen_salt('bf', 10)),
     TRUE, TRUE, NOW(), NOW()
   )
   ON CONFLICT (email) DO NOTHING;
@@ -305,12 +305,12 @@ BEGIN
   DELETE FROM team_events
   WHERE organization_id = org_id
     AND name IN (
-      'DEMO: Fieldhouse (Approved) 10:00-11:00',
-      'DEMO: Fieldhouse (Approved) 10:30-11:30 CONFLICT',
-      'DEMO: Fieldhouse (Pending) 12:00-13:00',
-      'DEMO: Fieldhouse (Denied) 09:00-10:00',
-      'DEMO: Training (Pending) 15:00-16:00',
-      'DEMO: Training (Approved) 16:30-17:30'
+      'DEMO: Fieldhouse 10:00-11:00',
+      'DEMO: Fieldhouse 10:30-11:30 CONFLICT',
+      'DEMO: Fieldhouse 12:00-13:00',
+      'DEMO: Fieldhouse 09:00-10:00',
+      'DEMO: Training 15:00-16:00',
+      'DEMO: Training 16:30-17:30'
     );
 
   -- Facility A: 1 conflict + some non-conflicts; mixed statuses (pending/approved/denied)
@@ -326,8 +326,8 @@ BEGIN
   VALUES
     (
       v_team_id, facility_a_id, org_id, manager_id,
-      'DEMO: Fieldhouse (Approved) 10:00-11:00', 'Practice',
-      DATE '2026-04-02', NULL, TIME '10:00', TIME '11:00',
+      'DEMO: Fieldhouse  10:00-11:00', 'Practice',
+      DATE '2026-04-09', NULL, TIME '10:00', TIME '11:00',
       FALSE, NULL, NULL,
       'approved', NULL, NULL, NULL,
       'Seeded approved booking.', NULL,
@@ -335,16 +335,16 @@ BEGIN
     ),
     (
       v_team_id, facility_a_id, org_id, manager_id,
-      'DEMO: Fieldhouse (Approved) 10:30-11:30 CONFLICT', 'Lift',
-      DATE '2026-04-02', NULL, TIME '10:30', TIME '11:30',
+      'DEMO: Fieldhouse 10:30-11:30 CONFLICT', 'Lift',
+      DATE '2026-04-09', NULL, TIME '10:30', TIME '11:30',
       FALSE, NULL, NULL,
-      'approved', NULL, NULL, 'Strength',
+      'pending', NULL, NULL, 'Strength',
       'Seeded approved booking that conflicts with the 10:00 slot.', NULL,
       NOW(), NOW()
     ),
     (
       v_team_id, facility_a_id, org_id, manager_id,
-      'DEMO: Fieldhouse (Pending) 12:00-13:00', 'Practice',
+      'DEMO: Fieldhouse 12:00-13:00', 'Practice',
       DATE '2026-04-02', NULL, TIME '12:00', TIME '13:00',
       FALSE, NULL, NULL,
       'pending', NULL, NULL, NULL,
@@ -353,7 +353,7 @@ BEGIN
     ),
     (
       v_team_id, facility_a_id, org_id, manager_id,
-      'DEMO: Fieldhouse (Denied) 09:00-10:00', 'Other',
+      'DEMO: Fieldhouse 09:00-10:00', 'Other',
       DATE '2026-04-03', NULL, TIME '09:00', TIME '10:00',
       FALSE, NULL, NULL,
       'denied', NULL, NULL, NULL,

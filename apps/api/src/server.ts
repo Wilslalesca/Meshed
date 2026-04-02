@@ -16,10 +16,10 @@ app.listen(port, async () => {
     console.log(`Backend running on http://localhost:${port}`);
 
     // test scripts
-    await testingAccountGeneration();
-    await testingAddingUserToath();
-    await seedDemoOrganization();
-    await seedLeaguesAndSports();
+    // await testingAccountGeneration();
+    // await testingAddingUserToath();
+    // await seedDemoOrganization();
+    // await seedLeaguesAndSports();
     // await seedTeams(); // function for seeding teams
     
 });
