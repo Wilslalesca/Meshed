@@ -3,6 +3,7 @@ import { Routes, Route, Outlet, Navigate } from "react-router-dom";
 import { Home } from "./screens/Home";
 import Contact from "./screens/Contact";
 import LoginPage from "./features/auth/pages/Login.tsx";
+import ForgotPasswordPage from "./features/auth/pages/ForgotPassword.tsx";
 import Register from "./features/auth/pages/Register.tsx";
 import { Dashboard } from "./routes/dashboard";
 import { Profile } from "./screens/Profile";
@@ -56,11 +57,11 @@ export default function App() {
       <Routes>
         <Route element={<AuthLayout />}>
           <Route path="/login" element={ <GuestRoute> <LoginPage /> </GuestRoute> } />
-          <Route path="/register/invite" element={<GuestRoute>< InviteRegisterPage /></GuestRoute>} />
+          <Route path="/forgot-password" element={ <GuestRoute> <ForgotPasswordPage /> </GuestRoute> } />
+          <Route path="/register/invite" element={<GuestRoute><InviteRegisterPage /></GuestRoute>} />
           <Route path="/register" element={ <GuestRoute> <Register /> </GuestRoute> } />
         </Route>
 
-        // conflict was purely formatting of each Route path. I can add the line breaks back in if you want
         <Route element={<PublicLayout />}>
           <Route path="/" element={<Home />} />
           <Route path="/home" element={<Navigate to="/" replace />} />

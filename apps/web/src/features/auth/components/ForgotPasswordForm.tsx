@@ -1,0 +1,203 @@
+import React, { useMemo, useState } from "react";
+import { cn } from "@/shared/utils/utils";
+import { Button } from "@/shared/components/ui/button";
+import { Input } from "@/shared/components/ui/input";
+import { Label } from "@/shared/components/ui/label";
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSlot,
+} from "@/shared/components/ui/input-otp";
+import { Link } from "react-router-dom";
+import { apiForgotPassword, apiResetPassword } from "../api/auth";
+import { PasswordRequirements } from "./PasswordRequirements";
+import { validatePassword } from "../utils/passwordValidation";
+
+type Step = "request" | "reset" | "done";
+
+export function ForgotPasswordForm({
+  className,
+  ...props
+}: React.ComponentProps<"form">) {
+  const [step, setStep] = useState<Step>("request");
+  const [email, setEmail] = useState("");
+  const [code, setCode] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirm, setConfirm] = useState("");
+
+  const [message, setMessage] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [pending, setPending] = useState(false);
+
+  const passwordValidation = useMemo(
+    () => validatePassword(newPassword),
+    [newPassword],
+  );
+  const passwordsMatch = newPassword === confirm;
+  const showPasswordMismatch = confirm.length > 0 && !passwordsMatch;
+
+  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setError(null);
+    setMessage(null);
+
+    if (step === "done") return;
+
+    if (step === "request") {
+      setPending(true);
+      try {
+        const res = await apiForgotPassword({ email: email.toLowerCase() });
+        setMessage(res.message);
+        setStep("reset");
+      } catch (err: unknown) {
+        const authErr = err as { message?: string };
+        setError(authErr.message || "Failed to send reset code");
+      } finally {
+        setPending(false);
+      }
+
+      return;
+    }
+
+    if (!passwordValidation.isValid) {
+      setError(
+        "Password must be at least 8 characters with 1 number and 1 special character",
+      );
+      return;
+    }
+
+    if (newPassword !== confirm) {
+      setError("Passwords do not match");
+      return;
+    }
+
+    setPending(true);
+    try {
+      const res = await apiResetPassword({
+        email: email.toLowerCase(),
+        code,
+        newPassword,
+      });
+      setMessage(res.message);
+      setStep("done");
+      setCode("");
+      setNewPassword("");
+      setConfirm("");
+    } catch (err: unknown) {
+      const authErr = err as { message?: string };
+      setError(authErr.message || "Failed to reset password");
+    } finally {
+      setPending(false);
+    }
+  }
+
+  return (
+    <form
+      onSubmit={onSubmit}
+      className={cn("flex flex-col gap-6", className)}
+      {...props}
+    >
+      <div className="flex flex-col items-center gap-2 text-center">
+        <h1 className="text-2xl font-bold">Forgot your password?</h1>
+        <p className="text-muted-foreground text-sm text-balance">
+          {step === "request"
+            ? "Enter your email and we’ll send a reset code."
+            : step === "reset"
+              ? "Enter the code from your email and choose a new password."
+              : "Your password has been reset. You can log in now."}
+        </p>
+      </div>
+
+      <div className="grid gap-6">
+        <div className="grid gap-3">
+          <Label htmlFor="email">Email</Label>
+          <Input
+            id="email"
+            type="email"
+            placeholder="name@example.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            autoComplete="email"
+            required
+            disabled={pending || step === "done"}
+          />
+        </div>
+
+        {step === "reset" && (
+          <>
+            <div className="grid gap-3">
+              <Label htmlFor="code">Reset code</Label>
+              <div className="flex justify-center">
+                <InputOTP value={code} onChange={setCode} maxLength={6}>
+                  <InputOTPGroup>
+                    {Array.from({ length: 6 }).map((_, i) => (
+                      <InputOTPSlot key={i} index={i} />
+                    ))}
+                  </InputOTPGroup>
+                </InputOTP>
+              </div>
+            </div>
+
+            <div className="grid gap-3">
+              <Label htmlFor="newPassword">New password</Label>
+              <Input
+                id="newPassword"
+                type="password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                autoComplete="new-password"
+                required
+                disabled={pending}
+                className={cn(
+                  newPassword.length > 0 &&
+                    !passwordValidation.isValid &&
+                    "border-destructive focus-visible:ring-destructive",
+                )}
+              />
+
+              <PasswordRequirements password={newPassword} />
+            </div>
+
+            <div className="grid gap-3">
+              <Label htmlFor="confirm">Confirm password</Label>
+              <Input
+                id="confirm"
+                type="password"
+                value={confirm}
+                onChange={(e) => setConfirm(e.target.value)}
+                autoComplete="new-password"
+                required
+                disabled={pending}
+                className={cn(
+                  showPasswordMismatch &&
+                    "border-destructive focus-visible:ring-destructive",
+                )}
+              />
+
+              {showPasswordMismatch && (
+                <p className="text-xs text-destructive">Passwords do not match</p>
+              )}
+            </div>
+          </>
+        )}
+
+        {error && <p className="text-sm text-destructive -mt-2">{error}</p>}
+        {message && (
+          <p className="text-sm text-muted-foreground -mt-2">{message}</p>
+        )}
+
+        {step !== "done" && (
+          <Button type="submit" className="w-full" disabled={pending}>
+            {step === "request" ? "Send reset code" : "Reset password"}
+          </Button>
+        )}
+
+        <div className="text-center text-sm">
+          <Link to="/login" className="underline underline-offset-4">
+            Back to login
+          </Link>
+        </div>
+      </div>
+    </form>
+  );
+}

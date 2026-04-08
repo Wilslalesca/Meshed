@@ -1,18 +1,20 @@
 import 'dotenv/config';
 
-const requiredEnv = ["JWT_ACCESS_SECRET", "JWT_REFRESH_SECRET"];
+const requiredEnv = ["JWT_ACCESS_SECRET", "JWT_REFRESH_SECRET"] as const;
+
+type RequiredEnvKey = (typeof requiredEnv)[number] | "DATABASE_URL";
+
+const envToCheck: RequiredEnvKey[] = [...requiredEnv];
 
 if (process.env.NODE_ENV !== "test") {
-  requiredEnv.push("DATABASE_URL", "GMAIL_APP_EMAIL", "GMAIL_APP_PASSWORD");
+    envToCheck.push("DATABASE_URL");
 }
 
-requiredEnv.forEach((key) => {
-  if (!process.env[key]) {
-    throw new Error(`Missing environment variable ${key}`);
-  }
-});
-
-
+for (const key of envToCheck) {
+    if (!process.env[key]) {
+        throw new Error(`Missing environment variable ${key}`);
+    }
+}
 
 export const config = {
     port: Number(process.env.PORT ?? 4000),
@@ -24,7 +26,16 @@ export const config = {
     refreshTtl: process.env.REFRESH_TTL ?? '7d',
     cookieDomain: process.env.COOKIE_DOMAIN ?? 'localhost',
     nodeEnv: process.env.NODE_ENV ?? 'development',
-    gmailEmail: process.env.GMAIL_APP_EMAIL!,
-    gmailAppPassword: process.env.GMAIL_APP_PASSWORD!,
-    
+
+    // Provider-agnostic SMTP config
+    smtpHost: process.env.SMTP_HOST,
+    smtpPort: process.env.SMTP_PORT ? Number(process.env.SMTP_PORT) : undefined,
+    smtpSecure: process.env.SMTP_SECURE ? process.env.SMTP_SECURE === 'true' : undefined,
+    smtpUser: process.env.SMTP_USER,
+    smtpPass: process.env.SMTP_PASS,
+    mailFrom: process.env.MAIL_FROM,
+
+    // Convenience Gmail config (for local/dev): uses Gmail SMTP under the hood
+    gmailAppEmail: process.env.GMAIL_APP_EMAIL,
+    gmailAppPassword: process.env.GMAIL_APP_PASSWORD,
 };

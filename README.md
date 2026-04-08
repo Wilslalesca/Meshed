@@ -5,3 +5,26 @@
 3. Frontend: http://localhost:5173
 4. Backend: http://localhost:4000   
 5. To stop `docker compose down -v`
+
+## Email (SMTP)
+
+The API email service uses SMTP via Nodemailer (provider-agnostic).
+
+In `development`, if SMTP is not configured, emails are logged to the API console instead of being sent.
+
+- `SMTP_HOST`
+- `SMTP_PORT` (e.g. `587`)
+- `SMTP_USER`
+- `SMTP_PASS`
+- `MAIL_FROM` (optional; defaults to `SMTP_USER`)
+
+You can provide these via your shell environment or an `.env` file in `apps/api/`.
+
+## Forgot password
+
+- UI: http://localhost:5173/forgot-password
+- API:
+	- `POST /auth/forgot-password` (sends a reset code)
+	- `POST /auth/reset-password` (verifies code + sets new password)
+
+Note: the database init schema was updated to include `password_reset_codes`. If you already have a persisted Docker volume, you’ll need to recreate it (`docker compose down -v`) or apply the table manually.

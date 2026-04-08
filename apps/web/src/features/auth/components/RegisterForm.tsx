@@ -7,6 +7,8 @@ import { useAuth } from "@/shared/hooks/useAuth";
 import { Link, useNavigate } from "react-router-dom";
 import type { RegisterCredentials } from "../types/auth";
 import { EmailVerificationModal } from "../modal/EmailVerificationModal";
+import { validatePassword } from "../utils/passwordValidation";
+import { PasswordRequirements } from "./PasswordRequirements";
 
 const normalizeInvitedRole = (
     role?: string | null,
@@ -15,19 +17,6 @@ const normalizeInvitedRole = (
         return role;
     }
     return "user";
-};
-
-const validatePassword = (password: string) => {
-    const minLength = password.length >= 8;
-    const hasNumber = /\d/.test(password);
-    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
-
-    return {
-        isValid: minLength && hasNumber && hasSpecialChar,
-        minLength,
-        hasNumber,
-        hasSpecialChar,
-    };
 };
 
 const validateEmail = (email: string) => {
@@ -178,7 +167,7 @@ export function RegisterForm({
                             <Input
                                 id="email"
                                 type="email"
-                                placeholder="test@gmail.com"
+                                placeholder="name@example.com"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 autoComplete="email"
@@ -200,7 +189,7 @@ export function RegisterForm({
                             <Input
                                 id="organizationName"
                                 type="text"
-                                placeholder="UNB Athletics"
+                                placeholder="Organization Name"
                                 value={organizationName}
                                 onChange={(e) =>
                                     setOrganizationName(e.target.value)
@@ -238,57 +227,7 @@ export function RegisterForm({
                             />
                         </div>
 
-                        {password.length > 0 && (
-                            <div className="text-xs space-y-1">
-                                <div
-                                    className={cn(
-                                        "flex items-center gap-2",
-                                        passwordValidation.minLength
-                                            ? "text-green-600"
-                                            : "text-destructive",
-                                    )}
-                                >
-                                    <span className="text-xs">
-                                        {passwordValidation.minLength
-                                            ? "✓"
-                                            : "✗"}
-                                    </span>
-                                    At least 8 characters
-                                </div>
-
-                                <div
-                                    className={cn(
-                                        "flex items-center gap-2",
-                                        passwordValidation.hasNumber
-                                            ? "text-green-600"
-                                            : "text-destructive",
-                                    )}
-                                >
-                                    <span className="text-xs">
-                                        {passwordValidation.hasNumber
-                                            ? "✓"
-                                            : "✗"}
-                                    </span>
-                                    At least 1 number
-                                </div>
-
-                                <div
-                                    className={cn(
-                                        "flex items-center gap-2",
-                                        passwordValidation.hasSpecialChar
-                                            ? "text-green-600"
-                                            : "text-destructive",
-                                    )}
-                                >
-                                    <span className="text-xs">
-                                        {passwordValidation.hasSpecialChar
-                                            ? "✓"
-                                            : "✗"}
-                                    </span>
-                                    At least 1 special character
-                                </div>
-                            </div>
-                        )}
+                        <PasswordRequirements password={password} />
                     </div>
 
                     <div className="grid gap-3">

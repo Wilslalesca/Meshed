@@ -1,42 +1,83 @@
 import nodemailer from "nodemailer";
+import { config } from "../config/config";
 
-const BASE_URL = process.env.FRONTEND_ORIGIN ?? "http://localhost:5173";
-const GMAIL_APP_PASSWORD = process.env.GMAIL_APP_PASSWORD;
-const GMAIL_APP_EMAIL = process.env.GMAIL_APP_EMAIL;
+const BASE_URL = config.frontendOrigin;
 
-const EMAIL_DISABLED =
-  process.env.DISABLE_EMAIL === "true" || process.env.NODE_ENV === "test";
-
-function getTransporter() {
-  if (EMAIL_DISABLED) return null;
-
-  if (!GMAIL_APP_EMAIL || !GMAIL_APP_PASSWORD) {
-    console.warn(
-      "Email is not configured (missing GMAIL_APP_EMAIL/GMAIL_APP_PASSWORD). Skipping send.",
-    );
-    return null;
+function buildTransport() {
+  if (config.nodeEnv === "test") {
+    // Avoid network calls in unit tests.
+    return nodemailer.createTransport({ jsonTransport: true });
   }
 
-  return nodemailer.createTransport({
-    host: "smtp.gmail.com",
-    port: 587,
-    secure: false,
-    requireTLS: true,
-    auth: {
-      user: GMAIL_APP_EMAIL,
-      pass: GMAIL_APP_PASSWORD,
-    },
-  });
+  const smtpHost = config.smtpHost;
+  const smtpPort = config.smtpPort;
+  const smtpSecure = config.smtpSecure;
+  const smtpUser = config.smtpUser;
+  const smtpPass = config.smtpPass;
+
+  const gmailUser = config.gmailAppEmail;
+  const gmailPass = config.gmailAppPassword;
+
+  const host = smtpHost;
+  const port = smtpPort;
+  const secure = smtpSecure ?? false;
+
+  const user = smtpUser;
+  const pass = smtpPass;
+
+  if (host && port && user && pass) {
+    return nodemailer.createTransport({
+      host,
+      port,
+      secure,
+      auth: { user, pass },
+    });
+  }
+
+  // Local/dev convenience: support Gmail app passwords without SMTP_* env vars.
+  if (gmailUser && gmailPass) {
+    return nodemailer.createTransport({
+      host: "smtp.gmail.com",
+      port: 465,
+      secure: true,
+      auth: { user: gmailUser, pass: gmailPass },
+    });
+  }
+
+  return null;
 }
+
+const transporter = buildTransport();
+const mailFrom =
+  config.mailFrom ??
+  config.gmailAppEmail ??
+  config.smtpUser ??
+  (config.nodeEnv === "test"
+    ? "test@example.com"
+    : config.nodeEnv !== "production"
+      ? "dev@meshed.local"
+      : undefined);
 
 export const mail = {
   async sendEmail(to: string, subject: string, html: string) {
-    const transporter = getTransporter();
-    if (!transporter) return null;
+    if (!transporter) {
+      if (config.nodeEnv !== "production") {
+        console.log("[DEV EMAIL]", { from: mailFrom, to, subject, html });
+        return { messageId: "dev-email", accepted: [to], rejected: [] };
+      }
+
+      throw new Error(
+        "Email is not configured. Set SMTP_HOST/SMTP_PORT/SMTP_USER/SMTP_PASS (and optionally MAIL_FROM)."
+      );
+    }
+
+    if (!mailFrom) {
+      throw new Error("MAIL_FROM is not configured.");
+    }
 
     try {
       const info = await transporter.sendMail({
-        from: `"Meshed" <${GMAIL_APP_EMAIL}>`,
+        from: `"Meshed" <${mailFrom}>`,
         to,
         subject,
         html,
@@ -49,7 +90,7 @@ export const mail = {
         subject,
         error: err instanceof Error ? err.message : String(err),
       });
-      return null;
+      throw err;
     }
   },
 };
